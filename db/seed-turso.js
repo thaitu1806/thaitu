@@ -34,11 +34,15 @@ async function seed() {
     ...vietQuestionsHard.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'hard' })),
   ];
 
-  for (const q of allQuestions) {
-    await db.execute({
+  // Use batch insert for better reliability
+  const batchSize = 10;
+  for (let i = 0; i < allQuestions.length; i += batchSize) {
+    const batch = allQuestions.slice(i, i + batchSize);
+    const statements = batch.map(q => ({
       sql: `INSERT INTO questions (subject, difficulty, question_text, option_a, option_b, option_c, option_d, correct_answer, explanation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [q.subject, q.difficulty, q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_answer, q.explanation || null],
-    });
+    }));
+    await db.batch(statements);
   }
 
   console.log(`Done! Seeded ${allQuestions.length} questions.`);
