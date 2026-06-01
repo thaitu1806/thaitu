@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>🌻 vs 🧟 Online</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- HOME -->
+    <div id="home-screen" class="screen active">
+      <div class="home-box">
+        <div class="home-logo">🌻⚡🧟</div>
+        <h1>Đấu Trí Online</h1>
+        <p class="home-sub">Mỗi người 1 điện thoại!</p>
+        <input type="text" id="my-name" placeholder="Tên của con..." maxlength="12">
+        <div class="home-actions">
+          <button class="btn-create" id="btn-create">🏠 Tạo phòng</button>
+          <button class="btn-join" id="btn-join">🚪 Vào phòng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CREATE ROOM -->
+    <div id="create-screen" class="screen">
+      <div class="room-box">
+        <h2>🏠 Phòng của bạn</h2>
+        <div class="room-code-display">
+          <span>Mã phòng:</span>
+          <div class="room-code" id="room-code">----</div>
+          <p class="room-hint">Cho bạn nhập mã này để vào!</p>
+        </div>
+        <div class="room-settings">
+          <div class="rs-row"><label>📚 Môn:</label>
+            <select id="rs-subject"><option value="mix">Mix</option><option value="math">Toán</option><option value="vietnamese">Tiếng Việt</option></select>
+          </div>
+          <div class="rs-row"><label>📊 Mức độ:</label>
+            <select id="rs-difficulty"><option value="easy">Dễ</option><option value="medium" selected>TB</option><option value="hard">Khó</option></select>
+          </div>
+          <div class="rs-row"><label>🔢 Số câu:</label>
+            <select id="rs-rounds"><option value="5">5</option><option value="10" selected>10</option><option value="15">15</option></select>
+          </div>
+          <div class="rs-row"><label>⏱️ Tốc độ:</label>
+            <select id="rs-speed"><option value="slow">Chậm</option><option value="normal" selected>BT</option><option value="fast">Nhanh</option></select>
+          </div>
+        </div>
+        <div class="room-players">
+          <div class="rp" id="rp-host"><span class="rp-icon">🌻</span><span class="rp-name">Đang chờ...</span></div>
+          <div class="rp rp-waiting" id="rp-guest"><span class="rp-icon">🧟</span><span class="rp-name">Chờ đối thủ...</span></div>
+        </div>
+        <button class="btn-start-match hidden" id="btn-start-match">⚔️ Bắt đầu!</button>
+        <button class="btn-back" id="btn-back-create">← Quay lại</button>
+      </div>
+    </div>
+
+    <!-- JOIN ROOM -->
+    <div id="join-screen" class="screen">
+      <div class="room-box">
+        <h2>🚪 Vào phòng</h2>
+        <div class="join-input">
+          <input type="text" id="join-code" placeholder="Nhập mã..." maxlength="4" style="text-transform:uppercase">
+        </div>
+        <button class="btn-join-go" id="btn-join-go">🚪 Vào phòng</button>
+        <p class="join-status" id="join-status"></p>
+        <button class="btn-back" id="btn-back-join">← Quay lại</button>
+      </div>
+    </div>
+
+    <!-- WAITING -->
+    <div id="wait-screen" class="screen">
+      <div class="wait-box">
+        <div class="wait-spinner">⏳</div>
+        <p id="wait-msg">Đang chờ host bắt đầu...</p>
+      </div>
+    </div>
+
+    <!-- BATTLE -->
+    <div id="battle-screen" class="screen">
+      <div class="ob-scoreboard">
+        <div class="ob-p ob-p1">
+          <span class="ob-emoji">🌻</span>
+          <span class="ob-name" id="ob-p1-name">P1</span>
+          <span class="ob-score" id="ob-p1-score">0</span>
+        </div>
+        <div class="ob-round" id="ob-round">1/10</div>
+        <div class="ob-p ob-p2">
+          <span class="ob-score" id="ob-p2-score">0</span>
+          <span class="ob-name" id="ob-p2-name">P2</span>
+          <span class="ob-emoji">🧟</span>
+        </div>
+      </div>
+
+      <div class="ob-question">
+        <div class="ob-timer"><div id="ob-timer-fill" class="ob-timer-fill"></div></div>
+        <div class="ob-badge" id="ob-badge">🔢</div>
+        <div class="ob-text" id="ob-text">Câu hỏi...</div>
+      </div>
+
+      <div class="ob-options" id="ob-options">
+        <button class="ob-btn" data-opt="a"></button>
+        <button class="ob-btn" data-opt="b"></button>
+        <button class="ob-btn" data-opt="c"></button>
+        <button class="ob-btn" data-opt="d"></button>
+      </div>
+
+      <div class="ob-status" id="ob-status"></div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="result-screen" class="screen">
+      <div class="res-box">
+        <div class="res-icon" id="res-icon">🏆</div>
+        <h2 id="res-title">Kết quả</h2>
+        <div class="res-scores">
+          <div class="res-p"><span>🌻</span><span id="res-p1-name">P1</span><strong id="res-p1-score">0</strong></div>
+          <div class="res-p"><span>🧟</span><span id="res-p2-name">P2</span><strong id="res-p2-score">0</strong></div>
+        </div>
+        <div class="res-detail" id="res-detail"></div>
+        <div class="res-btns">
+          <button class="btn-create" id="btn-rematch">🔄 Đấu lại</button>
+          <button class="btn-back" id="btn-home">🏠 Về</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>

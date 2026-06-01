@@ -1,0 +1,17 @@
+{
+  "name": "hoc-vui-game",
+  "version": "1.0.0",
+  "description": "Mini game học tập Plants vs Zombies cho bé lớp 2",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "seed": "node db/seed.js",
+    "seed:turso": "node db/seed-turso.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.6.0",
+    "better-sqlite3": "^11.0.0",
+    "express": "^4.18.2"
+  }
+}

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Quản lý câu hỏi</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-container">
+    <header class="admin-header">
+      <h1>🛠️ Quản lý câu hỏi</h1>
+      <a href="/" class="btn-link">← Về game</a>
+    </header>
+
+    <div class="admin-tabs">
+      <button class="tab active" data-tab="generator">🎲 Sinh tự động</button>
+      <button class="tab" data-tab="manual">✏️ Thêm thủ công</button>
+      <button class="tab" data-tab="list">📋 Danh sách</button>
+      <button class="tab" data-tab="exams">📝 Bài thi</button>
+      <button class="tab" data-tab="players">👤 Người chơi</button>
+      <button class="tab" data-tab="stats">📊 Thống kê</button>
+    </div>
+
+    <!-- TAB: GENERATOR -->
+    <div class="tab-content active" id="tab-generator">
+      <div class="generator-panel">
+        <h2>Sinh câu hỏi tự động</h2>
+        <div class="gen-controls">
+          <div class="gen-row">
+            <label>Môn học:</label>
+            <select id="gen-subject">
+              <option value="math">Toán</option>
+              <option value="vietnamese">Tiếng Việt</option>
+            </select>
+          </div>
+          <div class="gen-row">
+            <label>Mức độ:</label>
+            <select id="gen-difficulty">
+              <option value="easy">Dễ</option>
+              <option value="medium">Trung bình</option>
+              <option value="hard">Khó</option>
+            </select>
+          </div>
+          <div class="gen-row">
+            <label>Dạng bài:</label>
+            <select id="gen-type">
+              <!-- Populated by JS based on subject -->
+            </select>
+          </div>
+          <div class="gen-row">
+            <label>Số lượng:</label>
+            <input type="number" id="gen-count" value="20" min="1" max="100">
+          </div>
+          <button class="btn btn-generate" id="btn-generate">🎲 Sinh câu hỏi</button>
+        </div>
+
+        <div id="gen-preview" class="gen-preview hidden">
+          <h3>Xem trước (<span id="gen-preview-count">0</span> câu)</h3>
+          <div id="gen-preview-list" class="preview-list"></div>
+          <div class="preview-actions">
+            <button class="btn btn-save" id="btn-save-generated">💾 Lưu tất cả</button>
+            <button class="btn btn-clear" id="btn-clear-preview">🗑️ Xóa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: MANUAL -->
+    <div class="tab-content" id="tab-manual">
+      <h2>Thêm câu hỏi thủ công</h2>
+      <form id="manual-form" class="manual-form">
+        <div class="form-row">
+          <label>Môn học:</label>
+          <select name="subject" required>
+            <option value="math">Toán</option>
+            <option value="vietnamese">Tiếng Việt</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Mức độ:</label>
+          <select name="difficulty" required>
+            <option value="easy">Dễ</option>
+            <option value="medium">Trung bình</option>
+            <option value="hard">Khó</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Câu hỏi:</label>
+          <input type="text" name="question_text" required placeholder="Nhập câu hỏi...">
+        </div>
+        <div class="form-row options-row">
+          <div><label>A:</label><input type="text" name="option_a" required></div>
+          <div><label>B:</label><input type="text" name="option_b" required></div>
+          <div><label>C:</label><input type="text" name="option_c" required></div>
+          <div><label>D:</label><input type="text" name="option_d" required></div>
+        </div>
+        <div class="form-row">
+          <label>Đáp án đúng:</label>
+          <select name="correct_answer" required>
+            <option value="a">A</option>
+            <option value="b">B</option>
+            <option value="c">C</option>
+            <option value="d">D</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Giải thích (tùy chọn):</label>
+          <input type="text" name="explanation" placeholder="Giải thích đáp án...">
+        </div>
+        <button type="submit" class="btn btn-save">💾 Lưu câu hỏi</button>
+      </form>
+      <div id="manual-message" class="message hidden"></div>
+    </div>
+
+    <!-- TAB: LIST -->
+    <div class="tab-content" id="tab-list">
+      <h2>Danh sách câu hỏi</h2>
+      <div class="list-filters">
+        <select id="filter-subject">
+          <option value="">Tất cả môn</option>
+          <option value="math">Toán</option>
+          <option value="vietnamese">Tiếng Việt</option>
+        </select>
+        <select id="filter-difficulty">
+          <option value="">Tất cả mức độ</option>
+          <option value="easy">Dễ</option>
+          <option value="medium">Trung bình</option>
+          <option value="hard">Khó</option>
+        </select>
+        <button class="btn" id="btn-filter">Lọc</button>
+      </div>
+      <div id="questions-list" class="questions-list"></div>
+      <div id="list-pagination" class="pagination"></div>
+    </div>
+
+    <!-- TAB: STATS -->
+    <div class="tab-content" id="tab-stats">
+      <h2>Thống kê</h2>
+      <div id="stats-content" class="stats-grid"></div>
+    </div>
+
+    <!-- TAB: PLAYERS -->
+    <div class="tab-content" id="tab-players">
+      <h2>👤 Quản lý người chơi</h2>
+      <div id="players-content"></div>
+      <div id="player-detail-modal" class="modal hidden"></div>
+    </div>
+
+    <!-- TAB: EXAMS -->
+    <div class="tab-content" id="tab-exams">
+      <h2>📝 Quản lý bài thi</h2>
+      <div class="exam-admin-create">
+        <h3>Tạo bài thi mới</h3>
+        <div class="ea-form">
+          <div class="ea-row"><label>Tên bài thi:</label><input type="text" id="ea-title" placeholder="VD: Kiểm tra Toán tuần 1"></div>
+          <div class="ea-row"><label>Môn:</label>
+            <select id="ea-subject"><option value="math">Toán</option><option value="vietnamese">Tiếng Việt</option><option value="mix">Mix cả hai</option></select>
+          </div>
+          <div class="ea-row"><label>Mức độ:</label>
+            <select id="ea-difficulty"><option value="easy">Dễ</option><option value="medium" selected>Trung bình</option><option value="hard">Khó</option><option value="mix">Mix</option></select>
+          </div>
+          <div class="ea-row"><label>Số câu:</label><input type="number" id="ea-count" value="10" min="5" max="30"></div>
+          <div class="ea-row"><label>Thời gian (phút):</label><input type="number" id="ea-time" value="15" min="5" max="60"></div>
+          <button class="btn btn-save" id="btn-create-exam">📝 Tạo bài thi (tự chọn câu hỏi)</button>
+        </div>
+      </div>
+      <div class="exam-admin-list">
+        <h3>Danh sách bài thi</h3>
+        <div id="ea-list"></div>
+      </div>
+      <div id="exam-results-modal" class="modal hidden"></div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

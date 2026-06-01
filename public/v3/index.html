@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌻 vs 🧟 - Đấu Trí 2 Người</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- LOBBY -->
+    <div id="lobby-screen" class="screen active">
+      <div class="lobby-box">
+        <h1>🌻 vs 🧟</h1>
+        <p class="lobby-sub">Đấu trí 2 người!</p>
+
+        <div class="players-setup">
+          <div class="player-setup p1">
+            <span class="setup-icon">🌻</span>
+            <input type="text" id="p1-name" placeholder="Tên Plant..." maxlength="10">
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="player-setup p2">
+            <span class="setup-icon">🧟</span>
+            <input type="text" id="p2-name" placeholder="Tên Zombie..." maxlength="10">
+          </div>
+        </div>
+
+        <div class="lobby-settings">
+          <div class="setting-row">
+            <label>📚 Môn:</label>
+            <select id="set-subject">
+              <option value="mix">Mix cả hai</option>
+              <option value="math">Toán</option>
+              <option value="vietnamese">Tiếng Việt</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <label>📊 Mức độ:</label>
+            <select id="set-difficulty">
+              <option value="easy">Dễ</option>
+              <option value="medium" selected>Trung bình</option>
+              <option value="hard">Khó</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <label>🔢 Số câu:</label>
+            <select id="set-rounds">
+              <option value="5">5 câu</option>
+              <option value="10" selected>10 câu</option>
+              <option value="15">15 câu</option>
+              <option value="20">20 câu</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <label>⏱️ Tốc độ:</label>
+            <select id="set-speed">
+              <option value="slow">Chậm (30s)</option>
+              <option value="normal" selected>Bình thường (20s)</option>
+              <option value="fast">Nhanh (12s)</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="btn-start-duel" class="btn-duel">⚔️ Bắt đầu đấu!</button>
+      </div>
+    </div>
+
+    <!-- BATTLE -->
+    <div id="battle-screen" class="screen">
+      <!-- Scoreboard -->
+      <div class="duel-scoreboard">
+        <div class="duel-player p1-side">
+          <span class="dp-emoji">🌻</span>
+          <span class="dp-name" id="sb-p1-name">Plant</span>
+          <span class="dp-score" id="sb-p1-score">0</span>
+        </div>
+        <div class="duel-center">
+          <span id="round-display">1/10</span>
+        </div>
+        <div class="duel-player p2-side">
+          <span class="dp-score" id="sb-p2-score">0</span>
+          <span class="dp-name" id="sb-p2-name">Zombie</span>
+          <span class="dp-emoji">🧟</span>
+        </div>
+      </div>
+
+      <!-- Question -->
+      <div class="duel-question-area">
+        <div class="dq-badge" id="dq-badge">🔢 Toán</div>
+        <div class="dq-timer"><div id="dq-timer-fill" class="dq-timer-fill"></div></div>
+        <div class="dq-text" id="dq-text"></div>
+      </div>
+
+      <!-- Answer zones - split screen -->
+      <div class="duel-answers">
+        <div class="answer-zone p1-zone">
+          <div class="zone-label">🌻 <span id="az-p1-name">Plant</span></div>
+          <div class="zone-buttons" id="p1-buttons">
+            <button class="ans-btn p1-btn" data-opt="a"></button>
+            <button class="ans-btn p1-btn" data-opt="b"></button>
+            <button class="ans-btn p1-btn" data-opt="c"></button>
+            <button class="ans-btn p1-btn" data-opt="d"></button>
+          </div>
+          <div class="zone-status" id="p1-status"></div>
+        </div>
+
+        <div class="answer-divider"></div>
+
+        <div class="answer-zone p2-zone">
+          <div class="zone-label">🧟 <span id="az-p2-name">Zombie</span></div>
+          <div class="zone-buttons" id="p2-buttons">
+            <button class="ans-btn p2-btn" data-opt="a"></button>
+            <button class="ans-btn p2-btn" data-opt="b"></button>
+            <button class="ans-btn p2-btn" data-opt="c"></button>
+            <button class="ans-btn p2-btn" data-opt="d"></button>
+          </div>
+          <div class="zone-status" id="p2-status"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="result-screen" class="screen">
+      <div class="result-box">
+        <div id="result-winner-icon" class="winner-icon"></div>
+        <h2 id="result-title"></h2>
+        <div class="result-detail">
+          <div class="rd-player">
+            <span>🌻 <span id="rd-p1-name">Plant</span></span>
+            <div class="rd-stats">
+              <span>Đúng: <strong id="rd-p1-correct">0</strong></span>
+              <span>Nhanh hơn: <strong id="rd-p1-faster">0</strong></span>
+              <span>Điểm: <strong id="rd-p1-score">0</strong></span>
+            </div>
+          </div>
+          <div class="rd-vs">VS</div>
+          <div class="rd-player">
+            <span>🧟 <span id="rd-p2-name">Zombie</span></span>
+            <div class="rd-stats">
+              <span>Đúng: <strong id="rd-p2-correct">0</strong></span>
+              <span>Nhanh hơn: <strong id="rd-p2-faster">0</strong></span>
+              <span>Điểm: <strong id="rd-p2-score">0</strong></span>
+            </div>
+          </div>
+        </div>
+        <div class="result-btns">
+          <button class="btn-rematch" id="btn-rematch">🔄 Đấu lại</button>
+          <button class="btn-lobby" id="btn-lobby">🏠 Về phòng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

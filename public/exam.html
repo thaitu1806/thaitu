@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📝 Phòng Thi</title>
+  <link rel="stylesheet" href="exam.css">
+</head>
+<body>
+  <div id="app">
+    <!-- EXAM HOME -->
+    <div id="exam-home" class="screen active">
+      <div class="exam-box">
+        <h1>📝 Phòng Thi</h1>
+        <div class="exam-name-input">
+          <input type="text" id="exam-player" placeholder="Tên con..." maxlength="15">
+        </div>
+        <div class="exam-tabs">
+          <button class="etab active" data-tab="available">📋 Bài thi</button>
+          <button class="etab" data-tab="history">📊 Lịch sử</button>
+        </div>
+        <div class="etab-content active" id="etab-available">
+          <div id="exam-list" class="exam-list"><p>Đang tải...</p></div>
+        </div>
+        <div class="etab-content" id="etab-history">
+          <div id="exam-history" class="exam-history"><p>Nhập tên để xem lịch sử</p></div>
+        </div>
+        <a href="/" class="back-home">← Về trang chủ</a>
+      </div>
+    </div>
+
+    <!-- TAKING EXAM -->
+    <div id="exam-taking" class="screen">
+      <div class="taking-header">
+        <span id="taking-title">Bài thi</span>
+        <span id="taking-timer" class="taking-timer">⏱️ 15:00</span>
+      </div>
+      <div class="taking-progress">
+        <div id="taking-progress-fill" class="progress-fill"></div>
+      </div>
+      <div class="taking-body">
+        <div class="taking-question">
+          <div class="tq-number" id="tq-number">Câu 1/10</div>
+          <div class="tq-text" id="tq-text"></div>
+        </div>
+        <div class="taking-options" id="taking-options">
+          <button class="to-btn" data-opt="a"></button>
+          <button class="to-btn" data-opt="b"></button>
+          <button class="to-btn" data-opt="c"></button>
+          <button class="to-btn" data-opt="d"></button>
+        </div>
+        <div class="taking-nav">
+          <button id="btn-prev" class="nav-btn">← Trước</button>
+          <span id="nav-dots" class="nav-dots"></span>
+          <button id="btn-next" class="nav-btn">Tiếp →</button>
+        </div>
+      </div>
+      <div class="taking-footer">
+        <button id="btn-submit-exam" class="btn-submit">✅ Nộp bài</button>
+      </div>
+    </div>
+
+    <!-- EXAM RESULT -->
+    <div id="exam-result" class="screen">
+      <div class="result-box">
+        <div class="result-grade" id="result-grade">A+</div>
+        <h2 id="result-score-text">100 điểm</h2>
+        <div class="result-stats">
+          <div class="rs-item"><span>Đúng</span><strong id="rs-correct">0/0</strong></div>
+          <div class="rs-item"><span>Thời gian</span><strong id="rs-time">0:00</strong></div>
+          <div class="rs-item"><span>Xếp loại</span><strong id="rs-grade2">A+</strong></div>
+        </div>
+        <div id="result-review" class="result-review"></div>
+        <div class="result-btns">
+          <button id="btn-back-exams" class="btn-back-exam">📋 Danh sách thi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="exam.js"></script>
+</body>
+</html>

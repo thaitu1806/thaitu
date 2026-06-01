@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌻 Học Vui - Plants vs Zombies</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- MENU SCREEN -->
+    <div id="menu-screen" class="screen active">
+      <div class="menu-container">
+        <h1 class="game-title">🌻 HỌC VUI 🧟</h1>
+        <p class="subtitle">Bảo vệ vườn hoa bằng trí tuệ!</p>
+        <div class="player-input">
+          <input type="text" id="player-name" placeholder="Nhập tên con..." maxlength="20">
+          <div class="speed-setting">
+            <label>⏱️ Tốc độ:</label>
+            <select id="timer-speed">
+              <option value="slow">Chậm (30s)</option>
+              <option value="normal" selected>Bình thường (20s)</option>
+              <option value="fast">Nhanh (12s)</option>
+            </select>
+          </div>
+          <button id="btn-start" class="btn btn-primary">Bắt đầu chơi!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBJECT SELECT -->
+    <div id="subject-screen" class="screen">
+      <div class="menu-container">
+        <h2>Chọn môn học</h2>
+        <p id="welcome-text"></p>
+        <div class="subject-cards">
+          <div class="card" data-subject="math">
+            <span class="card-icon">🔢</span>
+            <span class="card-title">Toán</span>
+          </div>
+          <div class="card" data-subject="vietnamese">
+            <span class="card-icon">📖</span>
+            <span class="card-title">Tiếng Việt</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIFFICULTY SELECT -->
+    <div id="difficulty-screen" class="screen">
+      <div class="menu-container">
+        <h2>Chọn mức độ</h2>
+        <div class="difficulty-cards">
+          <div class="card card-easy" data-difficulty="easy">
+            <span class="card-icon">⭐</span>
+            <span class="card-title">Dễ</span>
+            <span class="card-desc">Ôn lại kiến thức</span>
+          </div>
+          <div class="card card-medium" data-difficulty="medium">
+            <span class="card-icon">⭐⭐</span>
+            <span class="card-title">Trung bình</span>
+            <span class="card-desc">Thử thách mới</span>
+          </div>
+          <div class="card card-hard" data-difficulty="hard">
+            <span class="card-icon">⭐⭐⭐</span>
+            <span class="card-title">Khó</span>
+            <span class="card-desc">Siêu tư duy!</span>
+          </div>
+        </div>
+        <button class="btn btn-back" id="btn-back-subject">← Quay lại</button>
+      </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen" class="screen">
+      <div class="game-header">
+        <div class="game-info">
+          <span id="game-subject-label"></span>
+          <span id="game-difficulty-label"></span>
+        </div>
+        <div class="game-stats">
+          <span id="score-display">💰 0</span>
+          <span id="combo-display">🔥 x0</span>
+          <span id="progress-display">📋 0/10</span>
+        </div>
+      </div>
+
+      <div class="game-arena">
+        <!-- Zombie lane -->
+        <div class="zombie-lane">
+          <div class="house">🏠</div>
+          <div class="lane-track">
+            <div id="zombie" class="zombie">🧟</div>
+            <div id="bullet" class="bullet hidden">🌻</div>
+          </div>
+          <div class="plant-spot">
+            <div id="plant" class="plant">🌻</div>
+          </div>
+        </div>
+
+        <!-- Question area -->
+        <div class="question-area">
+          <div id="question-text" class="question-text"></div>
+          <div id="options" class="options-grid">
+            <button class="option-btn" data-option="a"></button>
+            <button class="option-btn" data-option="b"></button>
+            <button class="option-btn" data-option="c"></button>
+            <button class="option-btn" data-option="d"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timer bar -->
+      <div class="timer-container">
+        <div id="timer-bar" class="timer-bar"></div>
+      </div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="result-screen" class="screen">
+      <div class="menu-container result-container">
+        <h2 id="result-title"></h2>
+        <div id="result-stars" class="result-stars"></div>
+        <div class="result-stats">
+          <p>Đúng: <span id="result-correct"></span>/<span id="result-total"></span></p>
+          <p>Điểm: <span id="result-score"></span></p>
+          <p>Combo cao nhất: <span id="result-combo"></span></p>
+        </div>
+        <div class="result-buttons">
+          <button class="btn btn-primary" id="btn-play-again">Chơi lại</button>
+          <button class="btn btn-back" id="btn-back-menu">Về menu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

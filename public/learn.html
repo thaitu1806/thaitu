@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📚 Góc Học Tập - Toán Lớp 2</title>
+  <link rel="stylesheet" href="learn.css">
+</head>
+<body>
+  <div id="app">
+    <!-- MENU -->
+    <div id="menu-screen" class="screen active">
+      <div class="learn-header">
+        <a href="/" class="back-link">← Về trang chủ</a>
+        <h1>📚 Góc Học Tập</h1>
+        <p>Toán lớp 2 - Học qua hình ảnh!</p>
+      </div>
+      <div class="topics-grid">
+        <div class="topic-card" onclick="openTopic('clock')">
+          <span class="topic-icon">🕐</span>
+          <span class="topic-name">Đồng Hồ</span>
+          <span class="topic-desc">Đọc giờ, phút, kéo kim</span>
+        </div>
+        <div class="topic-card" onclick="openTopic('units')">
+          <span class="topic-icon">📏</span>
+          <span class="topic-name">Đo Lường</span>
+          <span class="topic-desc">cm, m, kg, lít</span>
+        </div>
+        <div class="topic-card" onclick="openTopic('multiply')">
+          <span class="topic-icon">✖️</span>
+          <span class="topic-name">Bảng Nhân</span>
+          <span class="topic-desc">Nhân 2, 3, 4, 5</span>
+        </div>
+        <div class="topic-card" onclick="openTopic('carry')">
+          <span class="topic-icon">➕</span>
+          <span class="topic-name">Cộng Có Nhớ</span>
+          <span class="topic-desc">Cộng trừ qua 10</span>
+        </div>
+        <div class="topic-card" onclick="openTopic('shapes')">
+          <span class="topic-icon">🔷</span>
+          <span class="topic-name">Hình Học</span>
+          <span class="topic-desc">Hình, cạnh, chu vi</span>
+        </div>
+        <div class="topic-card" onclick="openTopic('money')">
+          <span class="topic-icon">💰</span>
+          <span class="topic-name">Tiền Việt Nam</span>
+          <span class="topic-desc">Đếm, trả tiền</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- LESSON SCREEN -->
+    <div id="lesson-screen" class="screen">
+      <div class="lesson-header">
+        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <span id="lesson-title" class="lesson-title"></span>
+        <span id="lesson-page" class="lesson-page">1/5</span>
+      </div>
+      <div class="lesson-body" id="lesson-body">
+        <!-- Dynamic content -->
+      </div>
+      <div class="lesson-nav">
+        <button id="btn-lesson-prev" class="ln-btn" onclick="prevSlide()">← Trước</button>
+        <div class="lesson-dots" id="lesson-dots"></div>
+        <button id="btn-lesson-next" class="ln-btn" onclick="nextSlide()">Tiếp →</button>
+      </div>
+    </div>
+
+    <!-- CLOCK INTERACTIVE -->
+    <div id="clock-play-screen" class="screen">
+      <div class="lesson-header">
+        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <span class="lesson-title">👆 Kéo Kim Đồng Hồ</span>
+        <span></span>
+      </div>
+      <div class="clock-play-body">
+        <div class="clock-challenge" id="clock-challenge">
+          <div class="challenge-text" id="challenge-text">Hãy chỉnh đồng hồ về: <strong id="target-time">3 giờ 00 phút</strong></div>
+          <div class="challenge-result" id="challenge-result"></div>
+        </div>
+        <div class="clock-interactive-wrap">
+          <svg id="interactive-clock" width="280" height="280" viewBox="0 0 280 280"></svg>
+          <div class="clock-display" id="clock-time-display">12:00</div>
+        </div>
+        <div class="clock-play-controls">
+          <button class="cp-btn" id="btn-check-time">✅ Kiểm tra</button>
+          <button class="cp-btn cp-btn-next" id="btn-new-challenge">🎲 Câu mới</button>
+        </div>
+        <div class="clock-play-score">
+          <span>✅ Đúng: <strong id="cp-correct">0</strong></span>
+          <span>❌ Sai: <strong id="cp-wrong">0</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="learn.js"></script>
+</body>
+</html>

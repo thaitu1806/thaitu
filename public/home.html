@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌻 Học Vui - Vương Quốc Trí Tuệ</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a5c1a 0%, #2d8a2d 30%, #87CEEB 70%, #FFD700 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .home-container {
+      text-align: center; max-width: 600px; width: 100%;
+    }
+    .home-title {
+      font-size: 2.5rem; color: white; text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+      margin-bottom: 5px;
+    }
+    .home-sub {
+      color: rgba(255,255,255,0.85); font-size: 1.1rem; margin-bottom: 30px;
+    }
+    .game-modes {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+    }
+    .mode-card {
+      background: rgba(255,255,255,0.95); border-radius: 20px; padding: 25px 15px;
+      text-decoration: none; color: #333; transition: all 0.3s;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .mode-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    }
+    .mode-icon { font-size: 3rem; }
+    .mode-name { font-size: 1.1rem; font-weight: bold; color: #2d5a27; }
+    .mode-desc { font-size: 0.8rem; color: #666; line-height: 1.3; }
+    .mode-card:nth-child(1) { border-bottom: 4px solid #FF9800; }
+    .mode-card:nth-child(2) { border-bottom: 4px solid #4CAF50; }
+    .mode-card:nth-child(3) { border-bottom: 4px solid #f44336; }
+    .mode-card:nth-child(4) { border-bottom: 4px solid #9C27B0; }
+    .mode-card:nth-child(5) { border-bottom: 4px solid #E91E63; }
+    .mode-card:nth-child(6) { border-bottom: 4px solid #2196F3; }
+    .admin-link {
+      margin-top: 25px; display: inline-block;
+      color: rgba(255,255,255,0.7); font-size: 0.85rem; text-decoration: none;
+    }
+    .admin-link:hover { color: white; }
+    @media (max-width: 500px) {
+      .game-modes { grid-template-columns: 1fr; }
+      .home-title { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="home-container">
+    <h1 class="home-title">🌻 Vương Quốc Trí Tuệ 🧟</h1>
+    <p class="home-sub">Chọn cách chơi của con nào!</p>
+
+    <div class="game-modes">
+      <a href="/learn.html" class="mode-card">
+        <span class="mode-icon">📚🧒</span>
+        <span class="mode-name">Kiến Thức</span>
+        <span class="mode-desc">Học qua hình ảnh, dễ hiểu dễ nhớ!</span>
+      </a>
+
+      <a href="/game.html" class="mode-card">
+        <span class="mode-icon">🌻🧟</span>
+        <span class="mode-name">Luyện Tập</span>
+        <span class="mode-desc">Chọn môn, chọn mức độ, luyện từng bước</span>
+      </a>
+
+      <a href="/exam.html" class="mode-card mode-exam">
+        <span class="mode-icon">📝✏️</span>
+        <span class="mode-name">Phòng Thi</span>
+        <span class="mode-desc">Làm bài thi, xem điểm, theo dõi tiến bộ!</span>
+      </a>
+
+      <a href="/v2/" class="mode-card">
+        <span class="mode-icon">🗺️⚔️</span>
+        <span class="mode-name">Phiêu Lưu</span>
+        <span class="mode-desc">50 level, mở khóa cây mới, chinh phục bản đồ!</span>
+      </a>
+
+      <a href="/v3/" class="mode-card">
+        <span class="mode-icon">👫🎮</span>
+        <span class="mode-name">Đấu 2 Bạn</span>
+        <span class="mode-desc">Ngồi cạnh nhau, ai nhanh hơn thắng!</span>
+      </a>
+
+      <a href="/v4/" class="mode-card">
+        <span class="mode-icon">📱⚡📱</span>
+        <span class="mode-name">Đấu Online</span>
+        <span class="mode-desc">Mỗi bạn 1 điện thoại, đấu qua mạng!</span>
+      </a>
+    </div>
+
+    <a href="/admin.html" class="admin-link">🛠️ Quản lý (dành cho bố mẹ)</a>
+  </div>
+</body>
+</html>

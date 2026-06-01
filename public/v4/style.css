@@ -1,0 +1,103 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --p1: #4CAF50; --p2: #9C27B0; --gold: #FFD700; --bg: #0f0c29; }
+body { font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; background: var(--bg); color: white; }
+.screen { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; }
+.screen.active { display: flex; }
+
+/* HOME */
+.home-box, .room-box, .wait-box, .res-box { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; text-align: center; width: 90%; max-width: 380px; }
+.home-logo { font-size: 3rem; margin-bottom: 8px; }
+.home-box h1 { font-size: 1.8rem; }
+.home-sub { color: rgba(255,255,255,0.6); margin-bottom: 20px; }
+#my-name { width: 100%; padding: 14px; border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; background: rgba(255,255,255,0.05); color: white; font-size: 1.1rem; text-align: center; outline: none; margin-bottom: 15px; }
+#my-name:focus { border-color: var(--gold); }
+.home-actions { display: flex; gap: 10px; }
+.btn-create, .btn-join, .btn-join-go, .btn-start-match { flex: 1; padding: 14px; border: none; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
+.btn-create { background: var(--p1); color: white; }
+.btn-join { background: var(--p2); color: white; }
+.btn-join-go { background: var(--gold); color: #333; }
+.btn-start-match { background: linear-gradient(135deg, #f44336, #e91e63); color: white; margin-top: 15px; }
+.btn-back { background: none; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin-top: 15px; }
+.hidden { display: none !important; }
+
+/* ROOM */
+.room-code-display { margin: 20px 0; }
+.room-code { font-size: 3rem; font-weight: bold; letter-spacing: 8px; color: var(--gold); font-family: monospace; }
+.room-hint { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-top: 5px; }
+.room-settings { display: flex; flex-direction: column; gap: 8px; margin: 15px 0; text-align: left; }
+.rs-row { display: flex; align-items: center; gap: 8px; }
+.rs-row label { min-width: 70px; font-size: 0.85rem; }
+.rs-row select { flex: 1; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; appearance: none; -webkit-appearance: none; }
+.rs-row select option { background: #1a1a2e; color: white; }
+.room-players { display: flex; gap: 15px; justify-content: center; margin: 15px 0; }
+.rp { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 12px 20px; border-radius: 12px; background: rgba(255,255,255,0.05); }
+.rp-icon { font-size: 2rem; }
+.rp-name { font-size: 0.85rem; }
+.rp-waiting { opacity: 0.4; }
+.rp-ready { opacity: 1; border: 2px solid var(--gold); }
+
+/* JOIN */
+.join-input { margin: 20px 0; }
+#join-code { width: 100%; padding: 16px; border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; background: rgba(255,255,255,0.05); color: white; font-size: 1.8rem; text-align: center; letter-spacing: 8px; outline: none; }
+#join-code:focus { border-color: var(--gold); }
+.btn-join-go { width: 100%; padding: 16px; border: none; border-radius: 12px; background: var(--gold); color: #333; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 12px; }
+.join-status { color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-top: 10px; }
+
+/* WAIT */
+.wait-spinner { font-size: 3rem; animation: spin 2s linear infinite; }
+@keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+/* BATTLE */
+#battle-screen { flex-direction: column; background: linear-gradient(180deg, #0f0c29, #302b63, #24243e); }
+.ob-scoreboard { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; width: 100%; }
+.ob-p { display: flex; align-items: center; gap: 6px; }
+.ob-emoji { font-size: 1.3rem; }
+.ob-name { font-size: 0.85rem; opacity: 0.8; }
+.ob-score { font-size: 1.8rem; font-weight: bold; }
+.ob-p1 .ob-score { color: var(--p1); }
+.ob-p2 .ob-score { color: var(--p2); }
+.ob-round { font-size: 0.85rem; opacity: 0.6; }
+
+.ob-question { padding: 15px 20px; text-align: center; width: 100%; }
+.ob-timer { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 12px; overflow: hidden; }
+.ob-timer-fill { height: 100%; background: var(--gold); width: 100%; transition: width 0.1s linear; }
+.ob-timer-fill.warn { background: #FF9800; }
+.ob-timer-fill.danger { background: #f44336; }
+.ob-badge { display: inline-block; padding: 3px 10px; background: rgba(255,255,255,0.1); border-radius: 10px; font-size: 0.8rem; margin-bottom: 10px; }
+.ob-text { font-size: 1.25rem; font-weight: bold; line-height: 1.4; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+
+.ob-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px; width: 100%; flex: 1; align-content: center; }
+.ob-btn {
+  padding: 16px 10px; border: 2px solid rgba(255,255,255,0.15); border-radius: 14px;
+  background: rgba(255,255,255,0.05); color: white; font-size: 1rem; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; min-height: 60px;
+}
+.ob-btn:hover { border-color: var(--gold); background: rgba(255,215,0,0.1); }
+.ob-btn:active { transform: scale(0.95); }
+.ob-btn.selected { border-color: var(--gold); background: rgba(255,215,0,0.2); }
+.ob-btn.correct { border-color: var(--p1); background: rgba(76,175,80,0.3); }
+.ob-btn.wrong { border-color: #f44336; background: rgba(244,67,54,0.2); }
+.ob-btn:disabled { cursor: default; }
+
+.ob-status { padding: 15px; text-align: center; font-size: 1.1rem; font-weight: bold; min-height: 50px; }
+
+/* RESULT */
+.res-box { max-width: 400px; }
+.res-icon { font-size: 3.5rem; margin-bottom: 10px; }
+.res-scores { display: flex; justify-content: center; gap: 30px; margin: 20px 0; }
+.res-p { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.res-p strong { font-size: 2rem; }
+.res-detail { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 15px; }
+.res-btns { display: flex; gap: 10px; }
+
+/* Animations */
+.flash-correct { animation: flashG 0.5s; }
+@keyframes flashG { 50% { background: rgba(76,175,80,0.2); } }
+.flash-wrong { animation: flashR 0.3s; }
+@keyframes flashR { 50% { background: rgba(244,67,54,0.2); } }
+
+@media (max-width: 400px) {
+  .ob-options { gap: 8px; padding: 0 12px; }
+  .ob-btn { padding: 12px 8px; font-size: 0.9rem; min-height: 50px; }
+  .ob-text { font-size: 1.1rem; }
+}

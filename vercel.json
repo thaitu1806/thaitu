@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/**/*.js", "use": "@vercel/node" },
+    { "src": "public/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/admin(.*)", "dest": "/api/admin/index.js" },
+    { "src": "/api/questions", "dest": "/api/questions.js" },
+    { "src": "/api/players", "dest": "/api/players.js" },
+    { "src": "/api/sessions", "dest": "/api/sessions.js" },
+    { "src": "/api/answers", "dest": "/api/answers.js" },
+    { "src": "/api/exams(.*)", "dest": "/api/exams.js" },
+    { "src": "/api/room(.*)", "dest": "/api/room.js" },
+    { "src": "/v2/(.*)", "dest": "/public/v2/$1" },
+    { "src": "/v3/(.*)", "dest": "/public/v3/$1" },
+    { "src": "/v4/(.*)", "dest": "/public/v4/$1" },
+    { "src": "/", "dest": "/public/home.html" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
+}
