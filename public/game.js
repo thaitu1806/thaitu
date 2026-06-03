@@ -136,7 +136,11 @@ function showQuestion() {
   // Reset option styles
   options.forEach(btn => {
     btn.classList.remove('correct', 'wrong');
+    btn.classList.add('reset');
     btn.disabled = false;
+    btn.blur();
+    // Remove reset class after a frame to allow fresh interaction
+    requestAnimationFrame(() => btn.classList.remove('reset'));
   });
 
   state.isAnswering = true;

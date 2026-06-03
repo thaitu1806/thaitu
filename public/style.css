@@ -324,10 +324,24 @@ body {
   font-weight: 600;
 }
 
-.option-btn:hover {
+@media (hover: hover) {
+  .option-btn:hover {
+    border-color: #4CAF50;
+    background: #f1f8e9;
+    transform: scale(1.02);
+  }
+}
+
+.option-btn:active {
   border-color: #4CAF50;
   background: #f1f8e9;
-  transform: scale(1.02);
+  transform: scale(0.98);
+}
+
+.option-btn.reset {
+  border-color: #e0e0e0 !important;
+  background: white !important;
+  transform: none !important;
 }
 
 .option-btn.correct {
