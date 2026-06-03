@@ -11,17 +11,33 @@ const D = {
   roundStart: 0,
 };
 
-// Auto-fill player 1 name from profile
-(function() {
+// Auto-fill player 1 name from profile + verify with server
+(async function() {
   const profile = localStorage.getItem('hocvui_profile');
-  if (profile) {
-    const p = JSON.parse(profile);
+  if (!profile) {
+    window.location.href = '/';
+    return;
+  }
+  const p = JSON.parse(profile);
+  try {
+    const res = await fetch(`/api/players?id=${p.id}`);
+    const data = await res.json();
+    if (!data || data.error || !data.id) {
+      localStorage.removeItem('hocvui_profile');
+      window.location.href = '/';
+      return;
+    }
+    localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name }));
+    document.getElementById('p1-name').value = data.name;
+    document.getElementById('p1-name').style.display = 'none';
+    document.getElementById('p1-name-label').style.display = 'inline';
+    document.getElementById('p1-name-label').textContent = data.name;
+  } catch {
+    // Network error - trust local
     document.getElementById('p1-name').value = p.name;
     document.getElementById('p1-name').style.display = 'none';
     document.getElementById('p1-name-label').style.display = 'inline';
     document.getElementById('p1-name-label').textContent = p.name;
-  } else {
-    window.location.href = '/';
   }
 })();
 

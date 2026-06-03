@@ -64,15 +64,27 @@ function showScreen(name) {
 }
 
 // MENU SCREEN
-// Auto-fill from profile
-(function() {
+// Auto-fill from profile + verify with server
+(async function() {
   const profile = localStorage.getItem('hocvui_profile');
-  if (profile) {
-    const p = JSON.parse(profile);
-    document.getElementById('player-welcome').textContent = `Chào ${p.name}! 🎉`;
-  } else {
-    // No profile - redirect to homepage to register
+  if (!profile) {
     window.location.href = '/';
+    return;
+  }
+  const p = JSON.parse(profile);
+  try {
+    const res = await fetch(`/api/players?id=${p.id}`);
+    const data = await res.json();
+    if (!data || data.error || !data.id) {
+      localStorage.removeItem('hocvui_profile');
+      window.location.href = '/';
+      return;
+    }
+    document.getElementById('player-welcome').textContent = `Chào ${data.name}! 🎉`;
+    localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name }));
+  } catch {
+    // Network error - trust local
+    document.getElementById('player-welcome').textContent = `Chào ${p.name}! 🎉`;
   }
 })();
 

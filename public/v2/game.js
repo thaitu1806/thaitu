@@ -105,6 +105,26 @@ document.getElementById('player-name').addEventListener('keypress', e => { if (e
 
 // Init
 (async () => {
+  // Verify profile exists in DB
+  const profileRaw = localStorage.getItem('hocvui_profile');
+  if (!profileRaw) {
+    window.location.href = '/';
+    return;
+  }
+  const profileCheck = JSON.parse(profileRaw);
+  try {
+    const verifyRes = await fetch(`/api/players?id=${profileCheck.id}`);
+    const verifyData = await verifyRes.json();
+    if (!verifyData || verifyData.error || !verifyData.id) {
+      localStorage.removeItem('hocvui_profile');
+      window.location.href = '/';
+      return;
+    }
+    localStorage.setItem('hocvui_profile', JSON.stringify({ id: verifyData.id, name: verifyData.name }));
+  } catch {
+    // Network error - trust local
+  }
+
   // Clear stale V2 data if version mismatch
   if (localStorage.getItem('hocvui_v2_ver') !== '4') {
     localStorage.removeItem('hocvui_v2');

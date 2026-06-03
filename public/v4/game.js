@@ -14,17 +14,33 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Auto-fill name from profile
-(function() {
+// Auto-fill name from profile + verify with server
+(async function() {
   const profile = localStorage.getItem('hocvui_profile');
-  if (profile) {
-    const p = JSON.parse(profile);
+  if (!profile) {
+    window.location.href = '/';
+    return;
+  }
+  const p = JSON.parse(profile);
+  try {
+    const res = await fetch(`/api/players?id=${p.id}`);
+    const data = await res.json();
+    if (!data || data.error || !data.id) {
+      localStorage.removeItem('hocvui_profile');
+      window.location.href = '/';
+      return;
+    }
+    localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name }));
+    document.getElementById('my-name').value = data.name;
+    document.getElementById('my-name').style.display = 'none';
+    document.getElementById('my-name-label').style.display = 'block';
+    document.getElementById('my-name-label').textContent = `Chào ${data.name}! ⚡`;
+  } catch {
+    // Network error - trust local
     document.getElementById('my-name').value = p.name;
     document.getElementById('my-name').style.display = 'none';
     document.getElementById('my-name-label').style.display = 'block';
     document.getElementById('my-name-label').textContent = `Chào ${p.name}! ⚡`;
-  } else {
-    window.location.href = '/';
   }
 })();
 

@@ -7,10 +7,31 @@ let examStartTime = 0;
 let timeRemaining = 0;
 
 // Auto-fill name from profile
-(function() {
+(async function() {
   const profile = localStorage.getItem('hocvui_profile');
-  if (profile) {
-    const p = JSON.parse(profile);
+  if (!profile) {
+    window.location.href = '/';
+    return;
+  }
+  const p = JSON.parse(profile);
+  try {
+    const res = await fetch(`/api/players?id=${p.id}`);
+    const data = await res.json();
+    if (!data || data.error || !data.id) {
+      localStorage.removeItem('hocvui_profile');
+      window.location.href = '/';
+      return;
+    }
+    localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name }));
+    const el = document.getElementById('exam-player');
+    if (el) {
+      el.value = data.name;
+      el.style.display = 'none';
+      document.getElementById('exam-player-label').style.display = 'block';
+      document.getElementById('exam-player-label').textContent = `Chào ${data.name}! 📝`;
+    }
+  } catch {
+    // Network error - trust local
     const el = document.getElementById('exam-player');
     if (el) {
       el.value = p.name;
@@ -18,8 +39,6 @@ let timeRemaining = 0;
       document.getElementById('exam-player-label').style.display = 'block';
       document.getElementById('exam-player-label').textContent = `Chào ${p.name}! 📝`;
     }
-  } else {
-    window.location.href = '/';
   }
 })();
 
