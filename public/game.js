@@ -16,7 +16,17 @@ const state = {
   sessionId: null,
   questionStartTime: 0,
   timerSpeedSetting: 'normal', // slow, normal, fast
+  zombieEmoji: '💀',
+  bulletEmoji: '☄️',
+  explosionEmoji: '💥',
+  plantEmoji: '🌻',
 };
+
+// Random sets for each game
+const ZOMBIE_SET = ['💀', '🧟', '👻', '👹', '👺', '🤖', '👾', '🦇', '🐛', '🦠'];
+const BULLET_SET = ['☄️', '🔥', '⚡', '💫', '🌟', '🚀', '🎯', '💣', '🪨', '🌊'];
+const EXPLOSION_SET = ['💥', '🔥', '✨', '⭐', '🌟', '💫', '🎆', '🎇', '☀️', '🌈'];
+const PLANT_SET = ['🌻', '🌹', '🌵', '🍄', '🌲', '🎋', '🌸', '🪴', '🌿', '🏵️'];
 
 // DOM Elements
 const screens = {
@@ -88,6 +98,17 @@ async function startGame() {
   state.zombiePosition = 0;
   state.isAnswering = false;
   state.sessionId = null;
+
+  // Random zombie, bullet, explosion, plant for this game session
+  state.zombieEmoji = ZOMBIE_SET[Math.floor(Math.random() * ZOMBIE_SET.length)];
+  state.bulletEmoji = BULLET_SET[Math.floor(Math.random() * BULLET_SET.length)];
+  state.explosionEmoji = EXPLOSION_SET[Math.floor(Math.random() * EXPLOSION_SET.length)];
+  state.plantEmoji = PLANT_SET[Math.floor(Math.random() * PLANT_SET.length)];
+
+  // Apply random emojis to DOM
+  document.getElementById('zombie').textContent = state.zombieEmoji;
+  document.getElementById('bullet').textContent = state.bulletEmoji;
+  document.getElementById('plant').textContent = state.plantEmoji;
 
   // Init audio on first interaction
   initAudio();
@@ -314,13 +335,13 @@ function shootZombie() {
   // Bullet flies to zombie position
   bullet.classList.remove('hidden', 'explode');
   bullet.classList.add('shooting');
-  bullet.textContent = '☄️';
+  bullet.textContent = state.bulletEmoji;
 
   // When bullet reaches zombie → explode at that position
   setTimeout(() => {
     bullet.classList.remove('shooting');
     bullet.style.left = targetLeft;
-    bullet.textContent = '💥';
+    bullet.textContent = state.explosionEmoji;
     bullet.classList.add('explode');
 
     // Zombie hit
@@ -336,7 +357,7 @@ function shootZombie() {
       bullet.classList.remove('explode');
       bullet.classList.add('hidden');
       bullet.style.left = '0';
-      bullet.textContent = '☄️';
+      bullet.textContent = state.bulletEmoji;
     }, 400);
   }, 500);
 }
