@@ -97,6 +97,7 @@ export default async function handler(req, res) {
       // Delete related data first
       await db.execute({ sql: `DELETE FROM answer_logs WHERE player_id = ?`, args: [playerId] });
       await db.execute({ sql: `DELETE FROM game_sessions WHERE player_id = ?`, args: [playerId] });
+      await db.execute({ sql: `DELETE FROM player_progress WHERE player_id = ?`, args: [playerId] });
       await db.execute({ sql: `DELETE FROM players WHERE id = ?`, args: [playerId] });
       return res.json({ ok: true });
     }
