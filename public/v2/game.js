@@ -126,9 +126,9 @@ document.getElementById('player-name').addEventListener('keypress', e => { if (e
   }
 
   // Clear stale V2 data if version mismatch
-  if (localStorage.getItem('hocvui_v2_ver') !== '4') {
+  if (localStorage.getItem('hocvui_v2_ver') !== '5') {
     localStorage.removeItem('hocvui_v2');
-    localStorage.setItem('hocvui_v2_ver', '4');
+    localStorage.setItem('hocvui_v2_ver', '5');
     // Also clear server progress and wait for it
     const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
     if (profile?.id) {
@@ -519,7 +519,10 @@ function winLevel() {
   // Save progress
   const prevStars = G.save.stars[G.currentLevel] || 0;
   G.save.stars[G.currentLevel] = Math.max(prevStars, stars);
-  if (G.currentLevel >= G.save.level) G.save.level = Math.min(G.currentLevel + 1, G.maxLevel);
+  // Only advance to next level (never skip levels)
+  if (G.currentLevel === G.save.level) {
+    G.save.level = Math.min(G.save.level + 1, G.maxLevel);
+  }
   G.save.coins += coins;
 
   // Check plant unlock
