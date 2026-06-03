@@ -59,14 +59,12 @@ export default async function handler(req, res) {
     case 'start': {
       const room = rooms.get(code);
       if (!room || !room.guest) return res.status(400).json({ error: 'Chưa đủ người' });
-      // Fetch questions from DB
+      // Fetch questions from DB (use api/db.js which only uses @libsql/client)
       let db;
       try {
-        const mod = await import('../db/database.js');
+        const mod = await import('./db.js');
         db = mod.getDb();
-      } catch {
-        try { const mod2 = await import('./db.js'); db = mod2.getDb(); } catch { db = null; }
-      }
+      } catch { db = null; }
 
       if (!db) {
         // Fallback: generate questions without DB
@@ -152,4 +150,25 @@ function checkAdvanceRound(room) {
     }
     room.lastUpdate = Date.now();
   }
+}
+
+function generateFallback(count) {
+  const questions = [];
+  for (let i = 0; i < count; i++) {
+    const a = Math.floor(Math.random() * 10) + 1;
+    const b = Math.floor(Math.random() * 10) + 1;
+    const sum = a + b;
+    const opts = [sum, sum + 1, sum - 1, sum + 2].sort(() => Math.random() - 0.5);
+    const correctIdx = opts.indexOf(sum);
+    questions.push({
+      question_text: `${a} + ${b} = ?`,
+      option_a: String(opts[0]),
+      option_b: String(opts[1]),
+      option_c: String(opts[2]),
+      option_d: String(opts[3]),
+      correct_answer: ['a', 'b', 'c', 'd'][correctIdx],
+      subject: 'math',
+    });
+  }
+  return questions;
 }
