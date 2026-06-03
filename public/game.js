@@ -69,6 +69,9 @@ function showScreen(name) {
   const profile = localStorage.getItem('hocvui_profile');
   if (profile) {
     const p = JSON.parse(profile);
+    document.getElementById('player-name').style.display = 'none';
+    document.getElementById('player-welcome').style.display = 'block';
+    document.getElementById('player-welcome').textContent = `Chào ${p.name}! 🎉`;
     document.getElementById('player-name').value = p.name;
   }
 })();
