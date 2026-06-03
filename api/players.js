@@ -29,7 +29,7 @@ export default async function handler(req, res) {
       }
       // Create new player with unique name
       const result = await db.execute({ sql: `INSERT INTO players (name) VALUES (?)`, args: [name.trim()] });
-      return res.json({ id: result.lastInsertRowid, name: name.trim(), total_stars: 0 });
+      return res.json({ id: Number(result.lastInsertRowid), name: name.trim(), total_stars: 0 });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
