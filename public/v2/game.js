@@ -56,6 +56,11 @@ async function loadGame() {
       const data = await res.json();
       if (data && data.level) {
         G.save = { ...G.save, ...data, name: profile.name };
+        // Validate: level should not exceed highest completed level + 1
+        const highestCompleted = Object.keys(G.save.stars).map(Number).filter(k => G.save.stars[k] > 0).sort((a, b) => b - a)[0] || 0;
+        if (G.save.level > highestCompleted + 1) {
+          G.save.level = highestCompleted + 1;
+        }
         localStorage.setItem('hocvui_v2', JSON.stringify(G.save));
         return;
       }
@@ -72,6 +77,11 @@ async function loadGame() {
     const currentProfile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
     if (currentProfile && parsed.name === currentProfile.name) {
       G.save = { ...G.save, ...parsed };
+      // Validate level
+      const highestCompleted = Object.keys(G.save.stars).map(Number).filter(k => G.save.stars[k] > 0).sort((a, b) => b - a)[0] || 0;
+      if (G.save.level > highestCompleted + 1) {
+        G.save.level = highestCompleted + 1;
+      }
     }
   }
 }
@@ -96,16 +106,18 @@ document.getElementById('player-name').addEventListener('keypress', e => { if (e
 // Init
 (async () => {
   // Clear stale V2 data if version mismatch
-  if (localStorage.getItem('hocvui_v2_ver') !== '3') {
+  if (localStorage.getItem('hocvui_v2_ver') !== '4') {
     localStorage.removeItem('hocvui_v2');
-    localStorage.setItem('hocvui_v2_ver', '3');
-    // Also clear server progress
+    localStorage.setItem('hocvui_v2_ver', '4');
+    // Also clear server progress and wait for it
     const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
     if (profile?.id) {
-      fetch(`/api/players/${profile.id}/progress/v2`, {
-        method: 'PUT', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ level: 1, stars: {}, coins: 0, plants: ['sunflower'], powerups: { eliminate: 3, freeze: 2, double: 2 } }),
-      }).catch(() => {});
+      try {
+        await fetch(`/api/players/${profile.id}/progress/v2`, {
+          method: 'PUT', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ level: 1, stars: {}, coins: 0, plants: ['sunflower'], powerups: { eliminate: 3, freeze: 2, double: 2 } }),
+        });
+      } catch {}
     }
   }
 
