@@ -149,23 +149,44 @@
 
   <script>
     (function() {
-      const profile = localStorage.getItem('hocvui_profile');
-      if (profile) {
-        // Already has profile - show welcome in header
-        const p = JSON.parse(profile);
-        document.querySelector('.home-sub').textContent = `Xin chào ${p.name}! 🎉`;
-        return;
-      }
-      // No profile - show gate
       const gate = document.getElementById('profile-gate');
-      gate.style.display = 'flex';
 
-      // Block game links until profile created
-      document.querySelectorAll('.mode-card').forEach(c => {
-        c.addEventListener('click', (e) => {
-          if (!localStorage.getItem('hocvui_profile')) { e.preventDefault(); gate.style.display = 'flex'; }
+      function showGate() {
+        gate.style.display = 'flex';
+        // Block game links
+        document.querySelectorAll('.mode-card').forEach(c => {
+          c.addEventListener('click', (e) => {
+            if (!localStorage.getItem('hocvui_profile')) { e.preventDefault(); gate.style.display = 'flex'; }
+          });
         });
-      });
+      }
+
+      async function verifyProfile() {
+        const profile = localStorage.getItem('hocvui_profile');
+        if (!profile) { showGate(); return; }
+
+        const p = JSON.parse(profile);
+        // Verify player still exists in DB
+        try {
+          const res = await fetch(`/api/players?id=${p.id}`);
+          const data = await res.json();
+          if (!data || data.error || !data.id) {
+            // Player was deleted from DB - clear localStorage and show gate
+            localStorage.removeItem('hocvui_profile');
+            showGate();
+            return;
+          }
+          // Valid - show welcome
+          document.querySelector('.home-sub').textContent = `Xin chào ${data.name}! 🎉`;
+          // Update local profile in case name changed
+          localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name }));
+        } catch {
+          // Network error - trust local profile
+          document.querySelector('.home-sub').textContent = `Xin chào ${p.name}! 🎉`;
+        }
+      }
+
+      verifyProfile();
 
       document.getElementById('gate-btn').addEventListener('click', createProfile);
       document.getElementById('gate-name').addEventListener('keypress', (e) => { if (e.key === 'Enter') createProfile(); });
@@ -176,6 +197,10 @@
         try {
           const res = await fetch('/api/players', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name}) });
           const data = await res.json();
+          if (data.error) {
+            document.getElementById('gate-msg').textContent = data.error;
+            return;
+          }
           localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name }));
           gate.style.display = 'none';
           document.querySelector('.home-sub').textContent = `Xin chào ${data.name}! 🎉`;
