@@ -23,6 +23,8 @@ const db = firebase.database();
     document.getElementById('my-name').style.display = 'none';
     document.getElementById('my-name-label').style.display = 'block';
     document.getElementById('my-name-label').textContent = `Chào ${p.name}! ⚡`;
+  } else {
+    window.location.href = '/';
   }
 })();
 

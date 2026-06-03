@@ -18,6 +18,8 @@ let timeRemaining = 0;
       document.getElementById('exam-player-label').style.display = 'block';
       document.getElementById('exam-player-label').textContent = `Chào ${p.name}! 📝`;
     }
+  } else {
+    window.location.href = '/';
   }
 })();
 

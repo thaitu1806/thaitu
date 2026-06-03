@@ -73,6 +73,9 @@ function showScreen(name) {
     document.getElementById('player-welcome').style.display = 'block';
     document.getElementById('player-welcome').textContent = `Chào ${p.name}! 🎉`;
     document.getElementById('player-name').value = p.name;
+  } else {
+    // No profile - redirect to homepage to register
+    window.location.href = '/';
   }
 })();
 

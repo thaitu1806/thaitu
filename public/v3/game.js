@@ -20,6 +20,8 @@ const D = {
     document.getElementById('p1-name').style.display = 'none';
     document.getElementById('p1-name-label').style.display = 'inline';
     document.getElementById('p1-name-label').textContent = p.name;
+  } else {
+    window.location.href = '/';
   }
 })();
 
