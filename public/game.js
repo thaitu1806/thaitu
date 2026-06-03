@@ -69,10 +69,7 @@ function showScreen(name) {
   const profile = localStorage.getItem('hocvui_profile');
   if (profile) {
     const p = JSON.parse(profile);
-    document.getElementById('player-name').style.display = 'none';
-    document.getElementById('player-welcome').style.display = 'block';
     document.getElementById('player-welcome').textContent = `Chào ${p.name}! 🎉`;
-    document.getElementById('player-name').value = p.name;
   } else {
     // No profile - redirect to homepage to register
     window.location.href = '/';
@@ -80,41 +77,17 @@ function showScreen(name) {
 })();
 
 document.getElementById('btn-start').addEventListener('click', async () => {
-  let name = document.getElementById('player-name').value.trim();
-  // Try to get from profile if empty
-  if (!name) {
-    const profile = localStorage.getItem('hocvui_profile');
-    if (profile) name = JSON.parse(profile).name;
-  }
-  if (!name) {
-    document.getElementById('player-name').style.borderColor = '#f44336';
+  const profile = localStorage.getItem('hocvui_profile');
+  if (!profile) {
+    window.location.href = '/';
     return;
   }
+  const p = JSON.parse(profile);
+  const name = p.name;
   state.timerSpeedSetting = document.getElementById('timer-speed').value;
-  // Use profile data if available
-  const profile = localStorage.getItem('hocvui_profile');
-  if (profile) {
-    state.player = JSON.parse(profile);
-  } else {
-    try {
-      const res = await fetch('/api/players', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
-      });
-      state.player = await res.json();
-      localStorage.setItem('hocvui_profile', JSON.stringify({ id: state.player.id, name: state.player.name }));
-    } catch {
-      state.player = { id: 1, name, total_stars: 0 };
-    }
-  }
-  }
+  state.player = p;
   document.getElementById('welcome-text').textContent = `Xin chào ${name}! 🎉`;
   showScreen('subject');
-});
-
-document.getElementById('player-name').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') document.getElementById('btn-start').click();
 });
 
 // SUBJECT SELECT
