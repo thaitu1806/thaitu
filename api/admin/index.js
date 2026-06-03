@@ -92,6 +92,14 @@ export default async function handler(req, res) {
       const player = await db.execute({ sql: `SELECT * FROM players WHERE id = ?`, args: [playerId] });
       return res.json({ player: player.rows[0], sessions: sessions.rows });
     }
+    if (req.method === 'DELETE' && id && action === 'delete') {
+      const playerId = parseInt(id);
+      // Delete related data first
+      await db.execute({ sql: `DELETE FROM answer_logs WHERE player_id = ?`, args: [playerId] });
+      await db.execute({ sql: `DELETE FROM game_sessions WHERE player_id = ?`, args: [playerId] });
+      await db.execute({ sql: `DELETE FROM players WHERE id = ?`, args: [playerId] });
+      return res.json({ ok: true });
+    }
   }
 
   // === STATS ===

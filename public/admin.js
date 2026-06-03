@@ -777,13 +777,30 @@ async function loadPlayers() {
             <span>⭐ ${p.total_stars_earned || 0}</span>
             <span class="acc-${accClass}">${accuracy}%</span>
             <span>${p.last_played ? new Date(p.last_played).toLocaleDateString('vi') : '-'}</span>
-            <span><button class="btn-detail" onclick="showPlayerDetail(${p.id})">📊 Chi tiết</button></span>
+            <span>
+              <button class="btn-detail" onclick="showPlayerDetail(${p.id})">📊 Chi tiết</button>
+              <button class="btn-delete" onclick="deletePlayer(${p.id}, '${p.name.replace(/'/g, "\\'")}')">🗑️</button>
+            </span>
           </div>`;
         }).join('')}
       </div>
     `;
   } catch (e) {
     content.innerHTML = `<p>Lỗi: ${e.message}</p>`;
+  }
+}
+
+async function deletePlayer(id, name) {
+  if (!confirm(`Xóa người chơi "${name}" và tất cả dữ liệu liên quan?`)) return;
+  try {
+    const res = await adminFetch(adminUrl('players', { id, action: 'delete' }), { method: 'DELETE' });
+    if (res.ok) {
+      loadPlayers();
+    } else {
+      alert('Lỗi xóa người chơi!');
+    }
+  } catch (e) {
+    alert('Lỗi: ' + e.message);
   }
 }
 
