@@ -17,6 +17,9 @@ const D = {
   if (profile) {
     const p = JSON.parse(profile);
     document.getElementById('p1-name').value = p.name;
+    document.getElementById('p1-name').style.display = 'none';
+    document.getElementById('p1-name-label').style.display = 'inline';
+    document.getElementById('p1-name-label').textContent = p.name;
   }
 })();
 

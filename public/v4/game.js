@@ -20,6 +20,9 @@ const db = firebase.database();
   if (profile) {
     const p = JSON.parse(profile);
     document.getElementById('my-name').value = p.name;
+    document.getElementById('my-name').style.display = 'none';
+    document.getElementById('my-name-label').style.display = 'block';
+    document.getElementById('my-name-label').textContent = `Chào ${p.name}! ⚡`;
   }
 })();
 

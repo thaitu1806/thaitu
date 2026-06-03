@@ -12,7 +12,12 @@ let timeRemaining = 0;
   if (profile) {
     const p = JSON.parse(profile);
     const el = document.getElementById('exam-player');
-    if (el) el.value = p.name;
+    if (el) {
+      el.value = p.name;
+      el.style.display = 'none';
+      document.getElementById('exam-player-label').style.display = 'block';
+      document.getElementById('exam-player-label').textContent = `Chào ${p.name}! 📝`;
+    }
   }
 })();
 
