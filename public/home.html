@@ -4,102 +4,185 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🌻 Học Vui - Vương Quốc Trí Tuệ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Nunito', sans-serif;
       min-height: 100vh;
-      background: linear-gradient(135deg, #1a5c1a 0%, #2d8a2d 30%, #87CEEB 70%, #FFD700 100%);
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px;
+      background: linear-gradient(160deg, #4facfe 0%, #00f2fe 100%);
+      padding: 20px 16px;
+      padding-top: env(safe-area-inset-top, 20px);
     }
-    .home-container {
-      text-align: center; max-width: 600px; width: 100%;
+    .home-container { max-width: 420px; margin: 0 auto; }
+    .home-header {
+      text-align: center; margin-bottom: 20px;
     }
     .home-title {
-      font-size: 2.5rem; color: white; text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
-      margin-bottom: 5px;
+      font-size: 1.8rem; color: white; font-weight: 900;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.2);
     }
     .home-sub {
-      color: rgba(255,255,255,0.85); font-size: 1.1rem; margin-bottom: 30px;
+      color: rgba(255,255,255,0.95); font-size: 1.1rem; font-weight: 600; margin-top: 4px;
     }
-    .game-modes {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
-    }
+    .game-modes { display: flex; flex-direction: column; gap: 12px; }
     .mode-card {
-      background: rgba(255,255,255,0.95); border-radius: 20px; padding: 25px 15px;
-      text-decoration: none; color: #333; transition: all 0.3s;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      display: flex; align-items: center; gap: 16px;
+      background: white; border-radius: 18px; padding: 16px 18px;
+      text-decoration: none; color: #333;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+      border-left: 5px solid transparent;
     }
-    .mode-card:hover {
-      transform: translateY(-5px) scale(1.02);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-    }
-    .mode-icon { font-size: 3rem; }
-    .mode-name { font-size: 1.1rem; font-weight: bold; color: #2d5a27; }
-    .mode-desc { font-size: 0.8rem; color: #666; line-height: 1.3; }
-    .mode-card:nth-child(1) { border-bottom: 4px solid #FF9800; }
-    .mode-card:nth-child(2) { border-bottom: 4px solid #4CAF50; }
-    .mode-card:nth-child(3) { border-bottom: 4px solid #f44336; }
-    .mode-card:nth-child(4) { border-bottom: 4px solid #9C27B0; }
-    .mode-card:nth-child(5) { border-bottom: 4px solid #E91E63; }
-    .mode-card:nth-child(6) { border-bottom: 4px solid #2196F3; }
+    .mode-card:active { transform: scale(0.97); }
+    .mode-icon { font-size: 2.4rem; min-width: 50px; text-align: center; }
+    .mode-info { flex: 1; }
+    .mode-name { font-size: 1.2rem; font-weight: 800; color: #222; display: block; }
+    .mode-desc { font-size: 0.9rem; color: #888; font-weight: 600; }
+
+    .mode-card:nth-child(1) { border-left-color: #FF9800; }
+    .mode-card:nth-child(2) { border-left-color: #4CAF50; }
+    .mode-card:nth-child(3) { border-left-color: #f44336; }
+    .mode-card:nth-child(4) { border-left-color: #9C27B0; }
+    .mode-card:nth-child(5) { border-left-color: #E91E63; }
+    .mode-card:nth-child(6) { border-left-color: #2196F3; }
+
     .admin-link {
-      margin-top: 25px; display: inline-block;
-      color: rgba(255,255,255,0.7); font-size: 0.85rem; text-decoration: none;
+      display: block; text-align: center; margin-top: 18px;
+      color: rgba(255,255,255,0.8); font-size: 0.9rem; text-decoration: none; font-weight: 600;
     }
-    .admin-link:hover { color: white; }
-    @media (max-width: 500px) {
-      .game-modes { grid-template-columns: 1fr; }
-      .home-title { font-size: 1.8rem; }
+
+    @media (min-width: 500px) {
+      body { display: flex; align-items: center; justify-content: center; }
+      .game-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .mode-card { flex-direction: column; text-align: center; padding: 22px 14px; border-left: none; border-bottom: 4px solid transparent; }
+      .mode-card:nth-child(1) { border-bottom-color: #FF9800; }
+      .mode-card:nth-child(2) { border-bottom-color: #4CAF50; }
+      .mode-card:nth-child(3) { border-bottom-color: #f44336; }
+      .mode-card:nth-child(4) { border-bottom-color: #9C27B0; }
+      .mode-card:nth-child(5) { border-bottom-color: #E91E63; }
+      .mode-card:nth-child(6) { border-bottom-color: #2196F3; }
+      .mode-icon { font-size: 3rem; }
+      .mode-name { font-size: 1.3rem; }
+      .mode-info { text-align: center; }
+      .home-title { font-size: 2.5rem; }
     }
   </style>
 </head>
 <body>
   <div class="home-container">
-    <h1 class="home-title">🌻 Vương Quốc Trí Tuệ 🧟</h1>
-    <p class="home-sub">Chọn cách chơi của con nào!</p>
+    <div class="home-header">
+      <h1 class="home-title">🌻 Học Vui 🧟</h1>
+      <p class="home-sub">Chọn cách chơi nào!</p>
+    </div>
 
     <div class="game-modes">
       <a href="/learn.html" class="mode-card">
-        <span class="mode-icon">📚🧒</span>
-        <span class="mode-name">Kiến Thức</span>
-        <span class="mode-desc">Học qua hình ảnh, dễ hiểu dễ nhớ!</span>
+        <span class="mode-icon">📚</span>
+        <div class="mode-info">
+          <span class="mode-name">Kiến Thức</span>
+          <span class="mode-desc">Học qua hình ảnh, dễ hiểu!</span>
+        </div>
       </a>
 
       <a href="/game.html" class="mode-card">
-        <span class="mode-icon">🌻🧟</span>
-        <span class="mode-name">Luyện Tập</span>
-        <span class="mode-desc">Chọn môn, chọn mức độ, luyện từng bước</span>
+        <span class="mode-icon">🌻</span>
+        <div class="mode-info">
+          <span class="mode-name">Luyện Tập</span>
+          <span class="mode-desc">Bắn zombie bằng trí tuệ!</span>
+        </div>
       </a>
 
-      <a href="/exam.html" class="mode-card mode-exam">
-        <span class="mode-icon">📝✏️</span>
-        <span class="mode-name">Phòng Thi</span>
-        <span class="mode-desc">Làm bài thi, xem điểm, theo dõi tiến bộ!</span>
+      <a href="/exam.html" class="mode-card">
+        <span class="mode-icon">📝</span>
+        <div class="mode-info">
+          <span class="mode-name">Phòng Thi</span>
+          <span class="mode-desc">Làm bài, xem điểm!</span>
+        </div>
       </a>
 
       <a href="/v2/" class="mode-card">
-        <span class="mode-icon">🗺️⚔️</span>
-        <span class="mode-name">Phiêu Lưu</span>
-        <span class="mode-desc">50 level, mở khóa cây mới, chinh phục bản đồ!</span>
+        <span class="mode-icon">🗺️</span>
+        <div class="mode-info">
+          <span class="mode-name">Phiêu Lưu</span>
+          <span class="mode-desc">50 level, chinh phục bản đồ!</span>
+        </div>
       </a>
 
       <a href="/v3/" class="mode-card">
-        <span class="mode-icon">👫🎮</span>
-        <span class="mode-name">Đấu 2 Bạn</span>
-        <span class="mode-desc">Ngồi cạnh nhau, ai nhanh hơn thắng!</span>
+        <span class="mode-icon">👫</span>
+        <div class="mode-info">
+          <span class="mode-name">Đấu 2 Bạn</span>
+          <span class="mode-desc">Ai nhanh hơn thắng!</span>
+        </div>
       </a>
 
       <a href="/v4/" class="mode-card">
-        <span class="mode-icon">📱⚡📱</span>
-        <span class="mode-name">Đấu Online</span>
-        <span class="mode-desc">Mỗi bạn 1 điện thoại, đấu qua mạng!</span>
+        <span class="mode-icon">📱</span>
+        <div class="mode-info">
+          <span class="mode-name">Đấu Online</span>
+          <span class="mode-desc">Mỗi bạn 1 điện thoại!</span>
+        </div>
       </a>
     </div>
 
-    <a href="/admin.html" class="admin-link">🛠️ Quản lý (dành cho bố mẹ)</a>
+    <a href="/admin.html" class="admin-link">🔒 Quản lý (bố mẹ)</a>
+    <a href="/profile.html" class="admin-link" style="margin-top:8px">👤 Hồ sơ của con</a>
   </div>
+
+  <!-- PROFILE GATE POPUP -->
+  <div id="profile-gate" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); font-family:'Nunito',sans-serif; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:24px; padding:30px 25px; max-width:320px; width:88%; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.3); animation:popIn 0.3s;">
+      <div style="font-size:3.5rem; margin-bottom:8px;">🧒</div>
+      <h2 style="font-size:1.3rem; color:#333; margin-bottom:5px;">Chào con!</h2>
+      <p style="color:#888; font-size:0.9rem; margin-bottom:18px;">Nhập tên để bắt đầu chơi nhé</p>
+      <input type="text" id="gate-name" placeholder="Tên của con..." maxlength="15" style="width:100%; padding:14px; border:2px solid #e0e0e0; border-radius:12px; font-size:1.1rem; text-align:center; outline:none; font-family:inherit; margin-bottom:12px;">
+      <button id="gate-btn" style="width:100%; padding:14px; background:linear-gradient(135deg,#4facfe,#00f2fe); color:white; border:none; border-radius:12px; font-size:1.1rem; font-weight:700; cursor:pointer;">🎮 Vào chơi!</button>
+      <p id="gate-msg" style="color:#f44336; font-size:0.85rem; margin-top:8px; min-height:18px;"></p>
+    </div>
+  </div>
+
+  <style>
+    @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  </style>
+
+  <script>
+    (function() {
+      const profile = localStorage.getItem('hocvui_profile');
+      if (profile) {
+        // Already has profile - show welcome in header
+        const p = JSON.parse(profile);
+        document.querySelector('.home-sub').textContent = `Xin chào ${p.name}! 🎉`;
+        return;
+      }
+      // No profile - show gate
+      const gate = document.getElementById('profile-gate');
+      gate.style.display = 'flex';
+
+      // Block game links until profile created
+      document.querySelectorAll('.mode-card').forEach(c => {
+        c.addEventListener('click', (e) => {
+          if (!localStorage.getItem('hocvui_profile')) { e.preventDefault(); gate.style.display = 'flex'; }
+        });
+      });
+
+      document.getElementById('gate-btn').addEventListener('click', createProfile);
+      document.getElementById('gate-name').addEventListener('keypress', (e) => { if (e.key === 'Enter') createProfile(); });
+
+      async function createProfile() {
+        const name = document.getElementById('gate-name').value.trim();
+        if (!name) { document.getElementById('gate-msg').textContent = 'Nhập tên đi con!'; return; }
+        try {
+          const res = await fetch('/api/players', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name}) });
+          const data = await res.json();
+          localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name }));
+          gate.style.display = 'none';
+          document.querySelector('.home-sub').textContent = `Xin chào ${data.name}! 🎉`;
+        } catch {
+          document.getElementById('gate-msg').textContent = 'Lỗi kết nối!';
+        }
+      }
+    })();
+  </script>
 </body>
 </html>

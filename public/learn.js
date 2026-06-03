@@ -632,6 +632,8 @@ document.getElementById('btn-check-time').addEventListener('click', () => {
     el.textContent = '🎉 Đúng rồi! Giỏi lắm!';
     el.className = 'challenge-result correct';
     clockState.correct++;
+    // Clap sound
+    try { const ac = new (window.AudioContext || window.webkitAudioContext)(); for(let i=0;i<3;i++){const b=ac.createBuffer(1,800,ac.sampleRate);const d=b.getChannelData(0);for(let j=0;j<800;j++)d[j]=(Math.random()*2-1)*(1-j/800);const s=ac.createBufferSource();const g=ac.createGain();s.buffer=b;s.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(0.25,ac.currentTime+i*0.2);g.gain.exponentialRampToValueAtTime(0.01,ac.currentTime+i*0.2+0.08);s.start(ac.currentTime+i*0.2);} } catch{}
   } else {
     el.textContent = `❌ Chưa đúng! Đáp án: ${clockState.targetHour}:${clockState.targetMinute.toString().padStart(2, '0')}`;
     el.className = 'challenge-result wrong';

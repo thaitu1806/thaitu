@@ -12,7 +12,28 @@ function generateCode() {
 }
 
 export default async function handler(req, res) {
-  const { action, code, player } = req.method === 'GET' ? req.query : { ...req.query, ...req.body };
+  const action = req.query?.action || req.body?.action;
+  const code = req.query?.code || req.body?.code;
+  const player = req.body?.player || req.query?.player;
+
+  // GET requests for polling
+  if (req.method === 'GET' && action === 'poll') {
+    const room = rooms.get(code);
+    if (!room) return res.status(404).json({ error: 'Phòng không tồn tại' });
+    // Auto-advance round if ready
+    checkAdvanceRound(room);
+    return res.json({
+      state: room.state, host: room.host, guest: room.guest, settings: room.settings,
+      currentRound: room.currentRound, totalRounds: room.questions.length,
+      question: room.currentRound >= 0 && room.currentRound < room.questions.length ? (() => { const q = room.questions[room.currentRound]; return { question_text: q.question_text, option_a: q.option_a, option_b: q.option_b, option_c: q.option_c, option_d: q.option_d, subject: q.subject }; })() : null,
+      hostScore: room.hostScore, guestScore: room.guestScore,
+      hostAnswered: !!room.hostAnswer, guestAnswered: !!room.guestAnswer,
+      roundResult: room.roundResult || null, matchResult: room.matchResult || null,
+      lastUpdate: room.lastUpdate,
+    });
+  }
+
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   switch (action) {
     case 'create': {
@@ -35,27 +56,23 @@ export default async function handler(req, res) {
       return res.json({ ok: true, host: room.host, settings: room.settings });
     }
 
-    case 'poll': {
-      const room = rooms.get(code);
-      if (!room) return res.status(404).json({ error: 'Phòng không tồn tại' });
-      return res.json({
-        state: room.state, host: room.host, guest: room.guest, settings: room.settings,
-        currentRound: room.currentRound, totalRounds: room.questions.length,
-        question: room.currentRound >= 0 && room.currentRound < room.questions.length ? (() => { const q = room.questions[room.currentRound]; return { question_text: q.question_text, option_a: q.option_a, option_b: q.option_b, option_c: q.option_c, option_d: q.option_d, subject: q.subject }; })() : null,
-        hostScore: room.hostScore, guestScore: room.guestScore,
-        hostAnswered: !!room.hostAnswer, guestAnswered: !!room.guestAnswer,
-        roundResult: room.roundResult || null, matchResult: room.matchResult || null,
-        lastUpdate: room.lastUpdate,
-      });
-    }
-
     case 'start': {
       const room = rooms.get(code);
       if (!room || !room.guest) return res.status(400).json({ error: 'Chưa đủ người' });
       // Fetch questions from DB
-      const { getDb } = await import('./db.js');
-      const db = getDb();
-      const { subject, difficulty, rounds } = room.settings;
+      let db;
+      try {
+        const mod = await import('../db/database.js');
+        db = mod.getDb();
+      } catch {
+        try { const mod2 = await import('./db.js'); db = mod2.getDb(); } catch { db = null; }
+      }
+
+      if (!db) {
+        // Fallback: generate questions without DB
+        room.questions = generateFallback(parseInt(room.settings.rounds) || 10);
+      } else {
+        const { subject, difficulty, rounds } = room.settings;
       try {
         if (subject === 'mix') {
           const half = Math.ceil(rounds / 2);
@@ -66,7 +83,10 @@ export default async function handler(req, res) {
           const r = await db.execute({ sql: `SELECT * FROM questions WHERE subject=? AND difficulty=? ORDER BY RANDOM() LIMIT ?`, args: [subject, difficulty, parseInt(rounds)] });
           room.questions = r.rows;
         }
-      } catch { room.questions = []; }
+      } catch { room.questions = generateFallback(parseInt(room.settings.rounds) || 10); }
+      } // end else (db exists)
+
+      if (room.questions.length === 0) room.questions = generateFallback(10);
       room.state = 'playing';
       room.currentRound = 0;
       room.roundStart = Date.now();
@@ -113,16 +133,23 @@ function resolveRound(room) {
   room.hostScore += hp; room.guestScore += gp;
 
   room.roundResult = { correct_answer: correct, hostCorrect: hOk, guestCorrect: gOk, hostPoints: hp, guestPoints: gp };
+  room.lastUpdate = Date.now();
 
-  // Next round after marking
-  setTimeout(() => {
+  // Advance to next round immediately (client handles display delay)
+  room.nextRoundAt = Date.now() + 2500;
+}
+
+// Called by poll - advance round if ready
+function checkAdvanceRound(room) {
+  if (room.roundResult && room.nextRoundAt && Date.now() >= room.nextRoundAt) {
     room.currentRound++;
     room.hostAnswer = null; room.guestAnswer = null; room.roundResult = null;
     room.roundStart = Date.now();
+    room.nextRoundAt = null;
     if (room.currentRound >= room.questions.length) {
       room.state = 'finished';
       room.matchResult = { winner: room.hostScore > room.guestScore ? 'host' : room.guestScore > room.hostScore ? 'guest' : 'tie', hostScore: room.hostScore, guestScore: room.guestScore, hostCorrect: room.hostCorrect, guestCorrect: room.guestCorrect };
     }
     room.lastUpdate = Date.now();
-  }, 2000);
+  }
 }

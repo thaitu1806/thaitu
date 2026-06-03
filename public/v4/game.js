@@ -1,29 +1,38 @@
-// === V4 - ONLINE DUEL CLIENT ===
-let ws = null;
-let myRole = null; // 'host' or 'guest'
+// === V4 - ONLINE DUEL (Polling-based for Vercel) ===
+let myRole = null;
 let myName = '';
 let roomCode = '';
-let timerInterval = null;
+let pollInterval = null;
+let lastUpdate = 0;
 let roundActive = false;
+let timerInterval = null;
+let currentRound = -1;
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function connectWS() {
-  const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-  ws = new WebSocket(`${protocol}//${location.host}`);
-  ws.onmessage = (e) => handleServerMsg(JSON.parse(e.data));
-  ws.onclose = () => { setTimeout(() => { if (roundActive) alert('Mất kết nối!'); }, 1000); };
-  return new Promise(resolve => { ws.onopen = resolve; });
+async function apiCall(action, body = {}) {
+  const res = await fetch('/api/room', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, code: roomCode, ...body }),
+  });
+  return res.json();
 }
 
 // === HOME ===
 document.getElementById('btn-create').addEventListener('click', async () => {
   myName = document.getElementById('my-name').value.trim() || 'Player';
-  await connectWS();
-  ws.send(JSON.stringify({ type: 'create', name: myName, settings: getSettings() }));
+  myRole = 'host';
+  const settings = getSettings();
+  const data = await apiCall('create', { player: myName, settings });
+  roomCode = data.code;
+  document.getElementById('room-code').textContent = roomCode;
+  document.getElementById('rp-host').querySelector('.rp-name').textContent = myName;
+  showScreen('create-screen');
+  startPolling();
 });
 
 document.getElementById('btn-join').addEventListener('click', () => {
@@ -34,11 +43,15 @@ document.getElementById('btn-join').addEventListener('click', () => {
 document.getElementById('btn-join-go').addEventListener('click', async () => {
   const code = document.getElementById('join-code').value.trim().toUpperCase();
   if (code.length !== 4) { document.getElementById('join-status').textContent = 'Mã phòng phải 4 ký tự!'; return; }
-  await connectWS();
-  ws.send(JSON.stringify({ type: 'join', code, name: myName }));
+  roomCode = code;
+  myRole = 'guest';
+  const data = await apiCall('join', { player: myName });
+  if (data.error) { document.getElementById('join-status').textContent = data.error; return; }
+  showScreen('wait-screen');
+  document.getElementById('wait-msg').textContent = `Đã vào phòng ${code}! Chờ ${data.host} bắt đầu...`;
+  startPolling();
 });
 
-// Enter key support
 document.getElementById('join-code').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') document.getElementById('btn-join-go').click();
 });
@@ -46,10 +59,17 @@ document.getElementById('my-name').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') document.getElementById('btn-create').click();
 });
 
-document.getElementById('btn-back-create').addEventListener('click', () => { ws?.close(); showScreen('home-screen'); });
+document.getElementById('btn-back-create').addEventListener('click', () => { stopPolling(); showScreen('home-screen'); });
 document.getElementById('btn-back-join').addEventListener('click', () => showScreen('home-screen'));
-document.getElementById('btn-home').addEventListener('click', () => { ws?.close(); showScreen('home-screen'); });
-document.getElementById('btn-rematch').addEventListener('click', () => { ws.send(JSON.stringify({ type: 'rematch' })); });
+document.getElementById('btn-home').addEventListener('click', () => { stopPolling(); showScreen('home-screen'); });
+document.getElementById('btn-rematch').addEventListener('click', async () => {
+  await apiCall('start');
+  currentRound = -1;
+});
+
+document.getElementById('btn-start-match').addEventListener('click', async () => {
+  await apiCall('start');
+});
 
 function getSettings() {
   return {
@@ -60,101 +80,79 @@ function getSettings() {
   };
 }
 
-// === START MATCH (host only) ===
-document.getElementById('btn-start-match').addEventListener('click', () => {
-  const settings = getSettings();
-  ws.send(JSON.stringify({ type: 'update_settings', settings }));
-  ws.send(JSON.stringify({ type: 'start' }));
-});
+// === POLLING ===
+function startPolling() {
+  stopPolling();
+  pollInterval = setInterval(pollRoom, 1000);
+}
 
-// Settings change -> notify
-['rs-subject', 'rs-difficulty', 'rs-rounds', 'rs-speed'].forEach(id => {
-  document.getElementById(id)?.addEventListener('change', () => {
-    if (myRole === 'host' && ws) {
-      ws.send(JSON.stringify({ type: 'update_settings', settings: getSettings() }));
+function stopPolling() {
+  clearInterval(pollInterval);
+  pollInterval = null;
+}
+
+async function pollRoom() {
+  try {
+    const res = await fetch(`/api/room?action=poll&code=${roomCode}`);
+    const data = await res.json();
+    if (data.error) { stopPolling(); return; }
+    handlePollData(data);
+  } catch {}
+}
+
+function handlePollData(data) {
+  // Guest joined (host view)
+  if (myRole === 'host' && data.guest && data.state === 'waiting') {
+    document.getElementById('rp-guest').querySelector('.rp-name').textContent = data.guest;
+    document.getElementById('rp-guest').classList.remove('rp-waiting');
+    document.getElementById('rp-guest').classList.add('rp-ready');
+    document.getElementById('btn-start-match').classList.remove('hidden');
+  }
+
+  // Match started
+  if (data.state === 'playing' && data.question) {
+    if (data.currentRound !== currentRound) {
+      currentRound = data.currentRound;
+      roundActive = true;
+      showBattle(data);
+      showRound(data);
     }
-  });
-});
-
-// === HANDLE SERVER MESSAGES ===
-function handleServerMsg(msg) {
-  switch (msg.type) {
-    case 'created':
-      myRole = 'host';
-      roomCode = msg.code;
-      document.getElementById('room-code').textContent = msg.code;
-      document.getElementById('rp-host').querySelector('.rp-name').textContent = msg.name;
-      showScreen('create-screen');
-      break;
-
-    case 'joined':
-      myRole = 'guest';
-      roomCode = msg.code;
-      showScreen('wait-screen');
-      document.getElementById('wait-msg').textContent = `Đã vào phòng ${msg.code}! Chờ ${msg.hostName} bắt đầu...`;
-      break;
-
-    case 'guest_joined':
-      document.getElementById('rp-guest').querySelector('.rp-name').textContent = msg.guestName;
-      document.getElementById('rp-guest').classList.remove('rp-waiting');
-      document.getElementById('rp-guest').classList.add('rp-ready');
-      document.getElementById('btn-start-match').classList.remove('hidden');
-      break;
-
-    case 'match_start':
-      document.getElementById('ob-p1-name').textContent = msg.hostName;
-      document.getElementById('ob-p2-name').textContent = msg.guestName;
-      document.getElementById('ob-p1-score').textContent = '0';
-      document.getElementById('ob-p2-score').textContent = '0';
-      showScreen('battle-screen');
-      document.getElementById('ob-status').textContent = '⚔️ Trận đấu bắt đầu!';
-      break;
-
-    case 'round':
-      showRound(msg);
-      break;
-
-    case 'opponent_answered':
+    // Opponent answered
+    if (myRole === 'host' && data.guestAnswered && roundActive) {
       document.getElementById('ob-status').textContent = '⚡ Đối thủ đã trả lời!';
-      break;
-
-    case 'round_result':
-      showRoundResult(msg);
-      break;
-
-    case 'match_end':
-      showMatchEnd(msg);
-      break;
-
-    case 'opponent_left':
+    }
+    if (myRole === 'guest' && data.hostAnswered && roundActive) {
+      document.getElementById('ob-status').textContent = '⚡ Đối thủ đã trả lời!';
+    }
+    // Round result
+    if (data.roundResult && roundActive) {
       roundActive = false;
-      clearInterval(timerInterval);
-      alert('Đối thủ đã rời phòng!');
-      showScreen('home-screen');
-      break;
+      showRoundResult(data);
+    }
+  }
 
-    case 'rematch_ready':
-      document.getElementById('ob-p1-score').textContent = '0';
-      document.getElementById('ob-p2-score').textContent = '0';
-      showScreen('battle-screen');
-      document.getElementById('ob-status').textContent = '🔄 Đấu lại!';
-      break;
-
-    case 'error':
-      document.getElementById('join-status').textContent = msg.message;
-      break;
+  // Match finished
+  if (data.state === 'finished' && data.matchResult) {
+    stopPolling();
+    showMatchEnd(data);
   }
 }
 
 // === BATTLE UI ===
-function showRound(msg) {
-  roundActive = true;
-  const q = msg.question;
+function showBattle(data) {
+  document.getElementById('ob-p1-name').textContent = data.host;
+  document.getElementById('ob-p2-name').textContent = data.guest;
+  showScreen('battle-screen');
+}
 
-  document.getElementById('ob-round').textContent = `${msg.round}/${msg.total}`;
+function showRound(data) {
+  const q = data.question;
+  document.getElementById('ob-round').textContent = `${data.currentRound + 1}/${data.totalRounds}`;
   document.getElementById('ob-badge').textContent = q.subject === 'math' ? '🔢 Toán' : '📖 TV';
   document.getElementById('ob-text').textContent = q.question_text;
   document.getElementById('ob-status').textContent = '';
+  document.getElementById('ob-p1-score').textContent = data.hostScore;
+  document.getElementById('ob-p2-score').textContent = data.guestScore;
 
   const btns = document.querySelectorAll('.ob-btn');
   const opts = [q.option_a, q.option_b, q.option_c, q.option_d];
@@ -164,86 +162,71 @@ function showRound(msg) {
     btn.disabled = false;
   });
 
-  startClientTimer();
+  startClientTimer(data.settings?.speed || 'normal');
 }
 
-function startClientTimer() {
+function startClientTimer(speed) {
   let timeLeft = 100;
   const fill = document.getElementById('ob-timer-fill');
   fill.style.width = '100%';
   fill.className = 'ob-timer-fill';
-
   clearInterval(timerInterval);
+
+  const ms = speed === 'slow' ? 300 : speed === 'fast' ? 120 : 200;
   timerInterval = setInterval(() => {
-    timeLeft -= 0.5;
+    timeLeft -= 1;
     fill.style.width = timeLeft + '%';
     if (timeLeft <= 20) fill.className = 'ob-timer-fill danger';
     else if (timeLeft <= 50) fill.className = 'ob-timer-fill warn';
-    if (timeLeft <= 0) { clearInterval(timerInterval); roundActive = false; }
-  }, 100); // Visual only, server controls actual timeout
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      roundActive = false;
+      apiCall('timeout');
+    }
+  }, ms);
 }
 
-// Answer buttons
-document.getElementById('ob-options').addEventListener('click', (e) => {
+// Answer
+document.getElementById('ob-options').addEventListener('click', async (e) => {
   const btn = e.target.closest('.ob-btn');
   if (!btn || !roundActive || btn.disabled) return;
-
   roundActive = false;
   document.querySelectorAll('.ob-btn').forEach(b => b.disabled = true);
   btn.classList.add('selected');
-
-  ws.send(JSON.stringify({ type: 'answer', answer: btn.dataset.opt }));
   document.getElementById('ob-status').textContent = '✅ Đã trả lời! Chờ đối thủ...';
+  await apiCall('answer', { role: myRole, answer: btn.dataset.opt });
 });
 
-function showRoundResult(msg) {
-  roundActive = false;
+function showRoundResult(data) {
   clearInterval(timerInterval);
+  const r = data.roundResult;
 
-  const myData = myRole === 'host' ? msg.host : msg.guest;
-  const oppData = myRole === 'host' ? msg.guest : msg.host;
-
-  // Highlight correct/wrong
   document.querySelectorAll('.ob-btn').forEach(btn => {
-    if (btn.dataset.opt === msg.correct_answer) btn.classList.add('correct');
-    if (btn.dataset.opt === myData.answer && !myData.correct) btn.classList.add('wrong');
+    if (btn.dataset.opt === r.correct_answer) btn.classList.add('correct');
   });
 
-  // Update scores
-  document.getElementById('ob-p1-score').textContent = msg.host.score;
-  document.getElementById('ob-p2-score').textContent = msg.guest.score;
+  document.getElementById('ob-p1-score').textContent = data.hostScore;
+  document.getElementById('ob-p2-score').textContent = data.guestScore;
 
-  // Status
-  let status = '';
-  if (myData.correct && oppData.correct) {
-    status = myData.time < oppData.time ? '⚡ Đúng + Nhanh hơn! +15' : '✅ Đúng! +10';
-  } else if (myData.correct) {
-    status = '✅ Đúng! +15';
-  } else if (myData.answer) {
-    status = '❌ Sai!';
-  } else {
-    status = '⏰ Hết giờ!';
-  }
-  document.getElementById('ob-status').textContent = status;
-
-  // Sound
-  playSound(myData.correct ? 'correct' : 'wrong');
+  const myCorrect = myRole === 'host' ? r.hostCorrect : r.guestCorrect;
+  document.getElementById('ob-status').textContent = myCorrect ? '✅ Đúng!' : '❌ Sai!';
+  playSound(myCorrect ? 'correct' : 'wrong');
 }
 
-function showMatchEnd(msg) {
+function showMatchEnd(data) {
   clearInterval(timerInterval);
-  roundActive = false;
-
-  const iWon = (myRole === 'host' && msg.winner === 'host') || (myRole === 'guest' && msg.winner === 'guest');
-  const tie = msg.winner === 'tie';
+  stopPolling();
+  const m = data.matchResult;
+  const iWon = (myRole === 'host' && m.winner === 'host') || (myRole === 'guest' && m.winner === 'guest');
+  const tie = m.winner === 'tie';
 
   document.getElementById('res-icon').textContent = tie ? '🤝' : iWon ? '🏆🎉' : '😢';
   document.getElementById('res-title').textContent = tie ? 'Hòa!' : iWon ? 'Bạn thắng!' : 'Bạn thua!';
-  document.getElementById('res-p1-name').textContent = msg.host.name;
-  document.getElementById('res-p2-name').textContent = msg.guest.name;
-  document.getElementById('res-p1-score').textContent = msg.host.score;
-  document.getElementById('res-p2-score').textContent = msg.guest.score;
-  document.getElementById('res-detail').textContent = `Đúng: ${msg.host.correct} vs ${msg.guest.correct} / ${msg.totalRounds} câu`;
+  document.getElementById('res-p1-name').textContent = data.host;
+  document.getElementById('res-p2-name').textContent = data.guest;
+  document.getElementById('res-p1-score').textContent = m.hostScore;
+  document.getElementById('res-p2-score').textContent = m.guestScore;
+  document.getElementById('res-detail').textContent = `Đúng: ${m.hostCorrect} vs ${m.guestCorrect}`;
 
   playSound(iWon || tie ? 'win' : 'lose');
   showScreen('result-screen');

@@ -1,5 +1,5 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Segoe UI', sans-serif; min-height: 100vh; background: #f0f4f8; }
+body { font-family: 'Nunito', 'Segoe UI', sans-serif; min-height: 100vh; background: #f0f4f8; font-size: 18px; }
 .screen { display: none; position: absolute; inset: 0; }
 .screen.active { display: flex; align-items: flex-start; justify-content: center; padding: 20px; }
 
@@ -19,8 +19,8 @@ body { font-family: 'Segoe UI', sans-serif; min-height: 100vh; background: #f0f4
 .exam-list { display: flex; flex-direction: column; gap: 10px; }
 .exam-card { padding: 15px; border: 2px solid #e8e8e8; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
 .exam-card:hover { border-color: #2196F3; background: #f8fbff; }
-.exam-card-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 5px; }
-.exam-card-meta { display: flex; gap: 10px; font-size: 0.8rem; color: #888; }
+.exam-card-title { font-weight: bold; font-size: 1.2rem; margin-bottom: 5px; }
+.exam-card-meta { display: flex; gap: 10px; font-size: 0.95rem; color: #888; flex-wrap: wrap; }
 .exam-card-meta span { background: #f0f0f0; padding: 2px 8px; border-radius: 4px; }
 
 .exam-history { display: flex; flex-direction: column; gap: 8px; }
@@ -49,11 +49,11 @@ body { font-family: 'Segoe UI', sans-serif; min-height: 100vh; background: #f0f4
 
 .taking-body { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px; max-width: 600px; margin: 0 auto; width: 100%; }
 .taking-question { margin-bottom: 20px; text-align: center; }
-.tq-number { font-size: 0.85rem; color: #888; margin-bottom: 8px; }
-.tq-text { font-size: 1.2rem; font-weight: bold; line-height: 1.5; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+.tq-number { font-size: 1rem; color: #888; margin-bottom: 8px; }
+.tq-text { font-size: 1.4rem; font-weight: bold; line-height: 1.5; min-height: 60px; display: flex; align-items: center; justify-content: center; }
 
 .taking-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.to-btn { padding: 15px 12px; border: 2px solid #e0e0e0; border-radius: 12px; background: white; font-size: 1rem; cursor: pointer; transition: all 0.2s; text-align: center; }
+.to-btn { padding: 18px 12px; border: 3px solid #e0e0e0; border-radius: 14px; background: white; font-size: 1.2rem; cursor: pointer; transition: all 0.2s; text-align: center; font-weight: 600; }
 .to-btn:hover { border-color: #2196F3; background: #f0f7ff; }
 .to-btn.selected { border-color: #2196F3; background: #e3f2fd; font-weight: bold; }
 

@@ -30,8 +30,6 @@ document.getElementById('btn-start-duel').addEventListener('click', async () => 
   D.currentRound = 0;
 
   // Update UI names
-  document.getElementById('sb-p1-name').textContent = p1;
-  document.getElementById('sb-p2-name').textContent = p2;
   document.getElementById('az-p1-name').textContent = p1;
   document.getElementById('az-p2-name').textContent = p2;
 
@@ -78,7 +76,10 @@ function startRound() {
   // Question
   const badge = document.getElementById('dq-badge');
   badge.textContent = q.subject === 'math' ? '🔢 Toán' : '📖 Tiếng Việt';
-  document.getElementById('dq-text').textContent = q.question_text;
+
+  // Set question in both player zones
+  document.getElementById('p1-question').textContent = q.question_text;
+  document.getElementById('p2-question').textContent = q.question_text;
 
   // Options for both players
   const opts = [q.option_a, q.option_b, q.option_c, q.option_d];
@@ -88,6 +89,8 @@ function startRound() {
       btn.textContent = `${'ABCD'[i]}. ${opts[i]}`;
       btn.className = `ans-btn ${p}-btn`;
       btn.disabled = false;
+      btn.style.borderColor = '';
+      btn.style.background = '';
     });
   });
 
@@ -147,9 +150,8 @@ function handleAnswer(player, opt, btn) {
   // Show waiting status
   document.getElementById(`${player}-status`).textContent = '✅ Đã trả lời!';
 
-  // Highlight selected
-  btn.style.borderColor = player === 'p1' ? 'var(--p1)' : 'var(--p2)';
-  btn.style.background = player === 'p1' ? 'rgba(76,175,80,0.3)' : 'rgba(156,39,176,0.3)';
+  // Highlight selected with class
+  btn.classList.add('selected');
 
   // If both answered, resolve immediately
   if (D.p1.answered && D.p2.answered) {
@@ -256,6 +258,11 @@ function endDuel() {
   document.getElementById('rd-p2-score').textContent = D.p2.score;
 
   playSound(winner === 'tie' ? 'correct' : 'win');
+  // Celebration overlay
+  if (winner !== 'tie') {
+    const name = winner === 'p1' ? D.p1.name : D.p2.name;
+    showCelebration(`🏆 ${name} thắng!`);
+  }
   showScreen('result-screen');
 }
 
@@ -310,6 +317,20 @@ function generateFallback(count) {
 // === AUDIO ===
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
+
+function showCelebration(text) {
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none;animation:celebFade 2.5s forwards;';
+  el.innerHTML = `<div style="text-align:center"><div style="font-size:3rem;animation:celebBounce 0.6s infinite alternate">🎉🎊👏✨🌟</div><div style="font-size:1.8rem;font-weight:900;color:#FFD700;text-shadow:2px 2px 8px rgba(0,0,0,0.5);margin-top:10px">${text}</div></div>`;
+  if (!document.getElementById('celeb-style')) {
+    const s = document.createElement('style'); s.id = 'celeb-style';
+    s.textContent = '@keyframes celebFade{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}@keyframes celebBounce{from{transform:scale(1) rotate(-3deg)}to{transform:scale(1.2) rotate(3deg)}}';
+    document.head.appendChild(s);
+  }
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
 function playSound(type) {
   try {
     if (!audioCtx) audioCtx = new AudioCtx();

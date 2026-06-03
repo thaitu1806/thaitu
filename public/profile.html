@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>👤 Hồ Sơ - Học Vui</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Nunito', sans-serif; min-height: 100vh; background: linear-gradient(160deg, #4facfe, #00f2fe); display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .profile-box { background: white; border-radius: 24px; padding: 30px; max-width: 380px; width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); text-align: center; }
+    .profile-avatar { font-size: 4rem; margin-bottom: 10px; }
+    .profile-box h1 { font-size: 1.5rem; color: #333; margin-bottom: 5px; }
+    .profile-box p { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
+    .profile-form { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+    .profile-form label { font-weight: 700; font-size: 0.9rem; color: #555; }
+    .profile-form input { padding: 14px 16px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 1.1rem; outline: none; font-family: inherit; }
+    .profile-form input:focus { border-color: #4facfe; }
+    .btn-save-profile { padding: 14px; background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 5px; }
+    .btn-save-profile:hover { opacity: 0.9; }
+    .profile-msg { margin-top: 10px; font-size: 0.9rem; min-height: 20px; }
+    .profile-msg.ok { color: #4CAF50; }
+    .profile-msg.err { color: #f44336; }
+    .profile-info { background: #f5f7fa; border-radius: 12px; padding: 15px; margin-top: 15px; text-align: left; }
+    .pi-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 0.9rem; }
+    .pi-row strong { color: #333; }
+    .profile-links { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+    .profile-links a { color: #4facfe; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="profile-box">
+    <div class="profile-avatar" id="avatar">🧒</div>
+    <h1 id="profile-title">Tạo hồ sơ</h1>
+    <p>Để lưu lại tiến trình học tập!</p>
+    <div class="profile-form">
+      <label>Tên con:</label>
+      <input type="text" id="pf-name" placeholder="Nhập tên..." maxlength="15">
+      <button class="btn-save-profile" id="btn-save-pf">💾 Lưu hồ sơ</button>
+    </div>
+    <div class="profile-msg" id="pf-msg"></div>
+    <div class="profile-info" id="pf-info" style="display:none">
+      <div class="pi-row"><span>⭐ Tổng sao:</span><strong id="pi-stars">0</strong></div>
+      <div class="pi-row"><span>🎮 Lượt chơi:</span><strong id="pi-games">0</strong></div>
+      <div class="pi-row"><span>🗺️ Level phiêu lưu:</span><strong id="pi-level">1</strong></div>
+    </div>
+    <div class="profile-links">
+      <a href="/">🏠 Trang chủ</a>
+    </div>
+  </div>
+  <script>
+    const saved = localStorage.getItem('hocvui_profile');
+    let profile = saved ? JSON.parse(saved) : null;
+
+    if (profile) {
+      document.getElementById('pf-name').value = profile.name;
+      document.getElementById('profile-title').textContent = `👤 ${profile.name}`;
+      document.getElementById('avatar').textContent = '🧒';
+      document.getElementById('btn-save-pf').textContent = '✏️ Cập nhật';
+      loadInfo();
+    }
+
+    document.getElementById('btn-save-pf').addEventListener('click', async () => {
+      const name = document.getElementById('pf-name').value.trim();
+      if (!name) return;
+      try {
+        const res = await fetch('/api/players', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({name}) });
+        const data = await res.json();
+        profile = { id: data.id, name: data.name };
+        localStorage.setItem('hocvui_profile', JSON.stringify(profile));
+        document.getElementById('pf-msg').textContent = '✅ Đã lưu!';
+        document.getElementById('pf-msg').className = 'profile-msg ok';
+        document.getElementById('profile-title').textContent = `👤 ${name}`;
+        document.getElementById('btn-save-pf').textContent = '✏️ Cập nhật';
+        loadInfo();
+      } catch { document.getElementById('pf-msg').textContent = '❌ Lỗi!'; document.getElementById('pf-msg').className = 'profile-msg err'; }
+    });
+
+    async function loadInfo() {
+      if (!profile) return;
+      document.getElementById('pf-info').style.display = 'block';
+      try {
+        const res = await fetch(`/api/players/${profile.id}/stats`);
+        const stats = await res.json();
+        const totalStars = stats.reduce((a, s) => a + (s.stars || 0), 0);
+        const totalGames = stats.reduce((a, s) => a + (s.games || 0), 0);
+        document.getElementById('pi-stars').textContent = totalStars;
+        document.getElementById('pi-games').textContent = totalGames;
+
+        const prog = await fetch(`/api/players/${profile.id}/progress/v2`);
+        const v2Data = await prog.json();
+        document.getElementById('pi-level').textContent = v2Data?.level || 1;
+      } catch {}
+    }
+  </script>
+</body>
+</html>

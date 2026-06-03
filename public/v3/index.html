@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🌻 vs 🧟 - Đấu Trí 2 Người</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="app">
@@ -63,39 +64,16 @@
         </div>
 
         <button id="btn-start-duel" class="btn-duel">⚔️ Bắt đầu đấu!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </div>
 
     <!-- BATTLE -->
     <div id="battle-screen" class="screen">
-      <!-- Scoreboard -->
-      <div class="duel-scoreboard">
-        <div class="duel-player p1-side">
-          <span class="dp-emoji">🌻</span>
-          <span class="dp-name" id="sb-p1-name">Plant</span>
-          <span class="dp-score" id="sb-p1-score">0</span>
-        </div>
-        <div class="duel-center">
-          <span id="round-display">1/10</span>
-        </div>
-        <div class="duel-player p2-side">
-          <span class="dp-score" id="sb-p2-score">0</span>
-          <span class="dp-name" id="sb-p2-name">Zombie</span>
-          <span class="dp-emoji">🧟</span>
-        </div>
-      </div>
-
-      <!-- Question -->
-      <div class="duel-question-area">
-        <div class="dq-badge" id="dq-badge">🔢 Toán</div>
-        <div class="dq-timer"><div id="dq-timer-fill" class="dq-timer-fill"></div></div>
-        <div class="dq-text" id="dq-text"></div>
-      </div>
-
-      <!-- Answer zones - split screen -->
-      <div class="duel-answers">
-        <div class="answer-zone p1-zone">
-          <div class="zone-label">🌻 <span id="az-p1-name">Plant</span></div>
+      <!-- P1 Zone (top - rotated for opponent facing) -->
+      <div class="answer-zone p1-zone">
+        <div class="zone-inner">
+          <div class="zone-q" id="p1-question"></div>
           <div class="zone-buttons" id="p1-buttons">
             <button class="ans-btn p1-btn" data-opt="a"></button>
             <button class="ans-btn p1-btn" data-opt="b"></button>
@@ -103,12 +81,28 @@
             <button class="ans-btn p1-btn" data-opt="d"></button>
           </div>
           <div class="zone-status" id="p1-status"></div>
+          <div class="zone-header">
+            <span class="zone-name">🌻 <span id="az-p1-name">Plant</span></span>
+            <span class="zone-score" id="sb-p1-score">0</span>
+          </div>
         </div>
+      </div>
 
-        <div class="answer-divider"></div>
+      <!-- Question (middle) -->
+      <div class="duel-middle">
+        <div class="duel-round" id="round-display">1/10</div>
+        <div class="dq-timer"><div id="dq-timer-fill" class="dq-timer-fill"></div></div>
+        <div class="dq-badge" id="dq-badge">🔢 Toán</div>
+      </div>
 
-        <div class="answer-zone p2-zone">
-          <div class="zone-label">🧟 <span id="az-p2-name">Zombie</span></div>
+      <!-- P2 Zone (bottom - normal orientation) -->
+      <div class="answer-zone p2-zone">
+        <div class="zone-inner">
+          <div class="zone-header">
+            <span class="zone-name">🧟 <span id="az-p2-name">Zombie</span></span>
+            <span class="zone-score" id="sb-p2-score">0</span>
+          </div>
+          <div class="zone-q" id="p2-question"></div>
           <div class="zone-buttons" id="p2-buttons">
             <button class="ans-btn p2-btn" data-opt="a"></button>
             <button class="ans-btn p2-btn" data-opt="b"></button>

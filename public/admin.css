@@ -273,3 +273,31 @@ body {
 .er-info span { font-size: 0.8rem; color: #888; }
 .er-score { text-align: right; }
 .er-grade { font-size: 1.5rem; font-weight: bold; margin-right: 10px; }
+
+/* ADMIN LOGIN */
+.admin-login-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Nunito', sans-serif;
+}
+.admin-login-box {
+  background: white; border-radius: 24px; padding: 35px 30px; text-align: center;
+  max-width: 340px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.login-icon { font-size: 3rem; margin-bottom: 8px; }
+.admin-login-box h2 { font-size: 1.4rem; color: #333; margin-bottom: 4px; }
+.login-sub { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
+.admin-login-box input {
+  width: 100%; padding: 14px 16px; border: 2px solid #e0e0e0; border-radius: 12px;
+  font-size: 1rem; margin-bottom: 12px; outline: none; font-family: inherit;
+}
+.admin-login-box input:focus { border-color: #667eea; }
+.btn-login {
+  width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white; border: none; border-radius: 12px; font-size: 1.1rem;
+  font-weight: 700; cursor: pointer; margin-top: 5px;
+}
+.btn-login:hover { opacity: 0.9; }
+.login-error { color: #f44336; font-size: 0.9rem; margin-top: 10px; min-height: 20px; }
+.login-back { display: block; margin-top: 15px; color: #888; text-decoration: none; font-size: 0.85rem; }

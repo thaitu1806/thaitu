@@ -16,11 +16,11 @@ const PLANTS = [
 ];
 
 const ZOMBIE_TYPES = [
-  { id: 'normal', emoji: '🧟', hp: 1, speed: 1, name: 'Zombie' },
-  { id: 'strong', emoji: '🧟‍♂️', hp: 3, speed: 0.8, name: 'Zombie Mạnh' },
-  { id: 'fast', emoji: '🏃', hp: 1, speed: 2, name: 'Zombie Nhanh' },
-  { id: 'shield', emoji: '🛡️', hp: 2, speed: 0.6, name: 'Zombie Khiên' },
-  { id: 'boss', emoji: '👑', hp: 5, speed: 0.5, name: 'Boss' },
+  { id: 'normal', emoji: '💀', hp: 1, speed: 1, name: 'Zombie' },
+  { id: 'strong', emoji: '👹', hp: 3, speed: 0.8, name: 'Quỷ Đỏ' },
+  { id: 'fast', emoji: '👻', hp: 1, speed: 2, name: 'Ma Tốc Độ' },
+  { id: 'shield', emoji: '🦹', hp: 4, speed: 0.6, name: 'Giáp Sắt' },
+  { id: 'boss', emoji: '🐉', hp: 8, speed: 0.4, name: 'Rồng Boss' },
 ];
 
 // Game state
@@ -36,10 +36,44 @@ const G = {
 };
 
 // === SAVE/LOAD ===
-function saveGame() { localStorage.setItem('hocvui_v2', JSON.stringify(G.save)); }
-function loadGame() {
-  const data = localStorage.getItem('hocvui_v2');
-  if (data) G.save = { ...G.save, ...JSON.parse(data) };
+function saveGame() {
+  localStorage.setItem('hocvui_v2', JSON.stringify(G.save));
+  // Sync to server if profile exists
+  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+  if (profile?.id) {
+    fetch(`/api/players/${profile.id}/progress/v2`, {
+      method: 'PUT', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ level: G.save.level, stars: G.save.stars, coins: G.save.coins, plants: G.save.plants, powerups: G.save.powerups }),
+    }).catch(() => {});
+  }
+}
+async function loadGame() {
+  // Try load from server first
+  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+  if (profile?.id) {
+    try {
+      const res = await fetch(`/api/players/${profile.id}/progress/v2`);
+      const data = await res.json();
+      if (data && data.level) {
+        G.save = { ...G.save, ...data, name: profile.name };
+        localStorage.setItem('hocvui_v2', JSON.stringify(G.save));
+        return;
+      }
+    } catch {}
+    // Server has no data for this player - start fresh (don't use stale localStorage)
+    G.save.name = profile.name;
+    return;
+  }
+  // No profile - try localStorage as last resort
+  const local = localStorage.getItem('hocvui_v2');
+  if (local) {
+    const parsed = JSON.parse(local);
+    // Only use if same player name
+    const currentProfile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+    if (currentProfile && parsed.name === currentProfile.name) {
+      G.save = { ...G.save, ...parsed };
+    }
+  }
 }
 
 // === SCREENS ===
@@ -60,11 +94,31 @@ document.getElementById('btn-play').addEventListener('click', () => {
 document.getElementById('player-name').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('btn-play').click(); });
 
 // Init
-loadGame();
-if (G.save.name) {
-  document.getElementById('player-name').value = G.save.name;
-  enterMap();
-}
+(async () => {
+  // Clear stale V2 data if version mismatch
+  if (localStorage.getItem('hocvui_v2_ver') !== '3') {
+    localStorage.removeItem('hocvui_v2');
+    localStorage.setItem('hocvui_v2_ver', '3');
+    // Also clear server progress
+    const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+    if (profile?.id) {
+      fetch(`/api/players/${profile.id}/progress/v2`, {
+        method: 'PUT', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ level: 1, stars: {}, coins: 0, plants: ['sunflower'], powerups: { eliminate: 3, freeze: 2, double: 2 } }),
+      }).catch(() => {});
+    }
+  }
+
+  await loadGame();
+  // Auto-fill from profile if exists
+  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+  if (profile?.name && !G.save.name) G.save.name = profile.name;
+
+  if (G.save.name) {
+    document.getElementById('player-name').value = G.save.name;
+    enterMap();
+  }
+})();
 
 // === WORLD MAP ===
 function enterMap() {
@@ -402,15 +456,25 @@ function showCombo() {
 
 function shootProjectile() {
   const container = document.getElementById('projectiles-container');
-  const plant = PLANTS.find(p => p.id === G.selectedPlant);
+  const z = G.battle.currentZombie;
+  const targetLeft = 'calc(' + (100 - (z ? z.position : 0) - 15) + '% - 20px)';
+
   const proj = document.createElement('div');
   proj.className = 'projectile';
-  proj.textContent = plant.emoji;
+  proj.textContent = '☄️';
   proj.style.left = '0%';
-  proj.style.animation = `projFly 0.4s forwards`;
+  proj.style.setProperty('--ztarget', targetLeft);
+  proj.style.animation = 'projFly 0.5s forwards';
   container.appendChild(proj);
   playSound('shoot');
-  setTimeout(() => proj.remove(), 500);
+
+  // After reaching zombie → explode at position
+  setTimeout(() => {
+    proj.style.left = targetLeft;
+    proj.textContent = '💥';
+    proj.style.animation = 'projExplode 0.4s forwards';
+    setTimeout(() => proj.remove(), 400);
+  }, 500);
 }
 
 // === WIN / LOSE ===
@@ -449,7 +513,10 @@ function winLevel() {
   if (unlockMsg) { unlockEl.textContent = unlockMsg; unlockEl.classList.remove('hidden'); }
   else { unlockEl.classList.add('hidden'); }
 
-  playSound('win');
+  // Celebration effect
+  if (stars === 3) { showCelebration('🏆 Hoàn hảo!'); }
+  else if (stars >= 2) { playSound('celebrate'); }
+  else { playSound('win'); }
   showScreen('complete-screen');
 }
 
@@ -555,6 +622,20 @@ const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
 function initAudio() { if (!audioCtx) audioCtx = new AudioCtx(); }
 
+function showCelebration(text) {
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none;animation:celebFade 2.5s forwards;';
+  el.innerHTML = `<div style="text-align:center"><div style="font-size:3rem;animation:celebBounce 0.6s infinite alternate">🎉🎊👏✨🌟</div><div style="font-size:1.8rem;font-weight:900;color:#FFD700;text-shadow:2px 2px 8px rgba(0,0,0,0.5);margin-top:10px">${text}</div></div>`;
+  if (!document.getElementById('celeb-style')) {
+    const s = document.createElement('style');
+    s.id = 'celeb-style';
+    s.textContent = '@keyframes celebFade{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}@keyframes celebBounce{from{transform:scale(1) rotate(-3deg)}to{transform:scale(1.2) rotate(3deg)}}';
+    document.head.appendChild(s);
+  }
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
 function playSound(type) {
   try {
     initAudio();
@@ -603,6 +684,16 @@ function playSound(type) {
         gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
         osc.start(); osc.stop(audioCtx.currentTime + 0.5); break;
+      case 'celebrate':
+        [523, 659, 784, 1047, 1319].forEach((f, i) => {
+          const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+          o.connect(g); g.connect(audioCtx.destination);
+          o.type = i % 2 === 0 ? 'triangle' : 'sine';
+          o.frequency.setValueAtTime(f, audioCtx.currentTime + i * 0.12);
+          g.gain.setValueAtTime(0.25, audioCtx.currentTime + i * 0.12);
+          g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.12 + 0.35);
+          o.start(audioCtx.currentTime + i * 0.12); o.stop(audioCtx.currentTime + i * 0.12 + 0.35);
+        }); break;
     }
   } catch (e) {}
 }
@@ -636,3 +727,28 @@ function generateFallback(count) {
   }
   return qs;
 }
+
+// EXIT BATTLE with custom popup
+document.getElementById('btn-exit-battle').addEventListener('click', () => {
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.innerHTML = `
+    <div class="confirm-box">
+      <div class="confirm-icon">😢</div>
+      <div class="confirm-text">Bạn có muốn thoát\ntrò chơi không?</div>
+      <div class="confirm-btns">
+        <button class="confirm-btn confirm-btn-yes">Thoát</button>
+        <button class="confirm-btn confirm-btn-no">Chơi tiếp</button>
+      </div>
+    </div>
+  `;
+  // Inject CSS if not exists
+  if (!document.getElementById('confirm-style')) {
+    const s = document.createElement('style'); s.id = 'confirm-style';
+    s.textContent = `.confirm-overlay{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;animation:fadeIn .2s}@keyframes fadeIn{from{opacity:0}to{opacity:1}}.confirm-box{background:#fff;border-radius:20px;padding:30px 25px;text-align:center;max-width:300px;width:85%;box-shadow:0 20px 50px rgba(0,0,0,.3);animation:popIn .3s}@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}.confirm-icon{font-size:3rem;margin-bottom:10px}.confirm-text{font-size:1.15rem;font-weight:700;color:#333;margin-bottom:20px;line-height:1.4}.confirm-btns{display:flex;gap:10px}.confirm-btn{flex:1;padding:14px;border:none;border-radius:12px;font-size:1.05rem;font-weight:700;cursor:pointer}.confirm-btn:active{transform:scale(.95)}.confirm-btn-yes{background:#f44336;color:#fff}.confirm-btn-no{background:#e8e8e8;color:#333}`;
+    document.head.appendChild(s);
+  }
+  document.body.appendChild(overlay);
+  overlay.querySelector('.confirm-btn-yes').addEventListener('click', () => { overlay.remove(); clearInterval(G.battle?.timer); window.location.href = '/'; });
+  overlay.querySelector('.confirm-btn-no').addEventListener('click', () => overlay.remove());
+});

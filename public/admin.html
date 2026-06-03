@@ -5,9 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin - Quản lý câu hỏi</title>
   <link rel="stylesheet" href="admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="admin-container">
+  <!-- LOGIN SCREEN -->
+  <div id="admin-login" class="admin-login-overlay">
+    <div class="admin-login-box">
+      <div class="login-icon">🔒</div>
+      <h2>Đăng nhập quản lý</h2>
+      <p class="login-sub">Dành cho bố mẹ</p>
+      <input type="text" id="login-user" placeholder="Tên đăng nhập" autocomplete="username">
+      <input type="password" id="login-pass" placeholder="Mật khẩu" autocomplete="current-password">
+      <button id="btn-login" class="btn-login">Đăng nhập</button>
+      <p id="login-error" class="login-error"></p>
+      <a href="/" class="login-back">← Về trang chủ</a>
+    </div>
+  </div>
+
+  <div class="admin-container" id="admin-main" style="display:none">
     <header class="admin-header">
       <h1>🛠️ Quản lý câu hỏi</h1>
       <a href="/" class="btn-link">← Về game</a>

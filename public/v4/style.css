@@ -1,6 +1,6 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root { --p1: #4CAF50; --p2: #9C27B0; --gold: #FFD700; --bg: #0f0c29; }
-body { font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; background: var(--bg); color: white; }
+body { font-family: 'Nunito', 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; background: var(--bg); color: white; font-size: 18px; }
 .screen { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; }
 .screen.active { display: flex; }
 
@@ -101,3 +101,6 @@ body { font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; bac
   .ob-btn { padding: 12px 8px; font-size: 0.9rem; min-height: 50px; }
   .ob-text { font-size: 1.1rem; }
 }
+
+.home-link { display: block; text-align: center; color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.9rem; margin-top: 12px; }
+.home-link:hover { color: white; }

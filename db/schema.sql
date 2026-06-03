@@ -85,3 +85,15 @@ CREATE TABLE IF NOT EXISTS exam_results (
 
 CREATE INDEX IF NOT EXISTS idx_exam_results_exam ON exam_results(exam_id);
 CREATE INDEX IF NOT EXISTS idx_exam_results_player ON exam_results(player_name);
+
+CREATE TABLE IF NOT EXISTS player_progress (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  player_id INTEGER NOT NULL,
+  game_mode TEXT NOT NULL DEFAULT 'v2',
+  progress_data TEXT NOT NULL DEFAULT '{}',
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (player_id) REFERENCES players(id),
+  UNIQUE(player_id, game_mode)
+);
+
+CREATE INDEX IF NOT EXISTS idx_progress_player ON player_progress(player_id, game_mode);

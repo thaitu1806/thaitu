@@ -1,7 +1,36 @@
+// === ADMIN LOGIN ===
+(function() {
+  const saved = sessionStorage.getItem('adminAuth');
+  if (saved) { showAdmin(); return; }
+
+  document.getElementById('btn-login').addEventListener('click', tryLogin);
+  document.getElementById('login-pass').addEventListener('keypress', (e) => { if (e.key === 'Enter') tryLogin(); });
+
+  function tryLogin() {
+    const user = document.getElementById('login-user').value.trim();
+    const pass = document.getElementById('login-pass').value;
+    if (user === 'admin' && pass === 'admin') {
+      sessionStorage.setItem('adminAuth', btoa('admin:admin'));
+      showAdmin();
+    } else {
+      document.getElementById('login-error').textContent = '❌ Sai tên đăng nhập hoặc mật khẩu!';
+    }
+  }
+
+  function showAdmin() {
+    document.getElementById('admin-login').style.display = 'none';
+    document.getElementById('admin-main').style.display = 'block';
+  }
+})();
+
 // === ADMIN API HELPER ===
 function adminUrl(resource, params = {}) {
   const p = new URLSearchParams({ resource, ...params });
   return `/api/admin?${p.toString()}`;
+}
+
+function adminFetch(url, options = {}) {
+  return fetch(url, { ...options, headers: { ...options.headers, 'Authorization': 'Basic ' + btoa('admin:admin') } });
 }
 
 // === TABS ===
@@ -481,7 +510,7 @@ document.getElementById('manual-form').addEventListener('submit', async (e) => {
   const form = e.target;
   const data = Object.fromEntries(new FormData(form));
   try {
-    const res = await fetch('/api/admin/questions', {
+    const res = await adminFetch(adminUrl('questions'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -507,13 +536,15 @@ function showMessage(id, text, type) {
 async function loadQuestionsList() {
   const subject = document.getElementById('filter-subject').value;
   const difficulty = document.getElementById('filter-difficulty').value;
-  let url = `/api/admin/questions?limit=20`;
+  let url = adminUrl('questions') + `&limit=20`;
   if (subject) url += `&subject=${subject}`;
   if (difficulty) url += `&difficulty=${difficulty}`;
 
   try {
     const res = await fetch(url);
-    const { questions, total } = await res.json();
+    const data = await res.json();
+    const questions = data.questions || [];
+    const total = data.total || 0;
     const list = document.getElementById('questions-list');
     list.innerHTML = `<p class="list-total">Tổng: ${total} câu hỏi</p>` +
       questions.map(q => `
@@ -539,7 +570,7 @@ document.getElementById('btn-filter').addEventListener('click', loadQuestionsLis
 
 async function deleteQuestion(id) {
   if (!confirm('Xóa câu hỏi này?')) return;
-  await fetch(`/api/admin/questions/${id}`, { method: 'DELETE' });
+  await adminFetch(adminUrl('questions', {id}), { method: 'DELETE' });
   loadQuestionsList();
 }
 
@@ -548,24 +579,28 @@ async function loadStats() {
   const content = document.getElementById('stats-content');
   try {
     const [statsRes, playersRes] = await Promise.all([
-      fetch('/api/admin/stats'),
-      fetch('/api/admin/players'),
+      adminFetch(adminUrl('stats')),
+      adminFetch(adminUrl('players')),
     ]);
     const stats = await statsRes.json();
     const players = await playersRes.json();
 
+    const bySubject = stats.bySubject || [];
+    const hardestQuestions = stats.hardestQuestions || [];
+    const playerList = Array.isArray(players) ? players : [];
+
     content.innerHTML = `
       <div class="stats-overview">
         <div class="stat-card">
-          <div class="stat-number">${stats.totalQuestions}</div>
+          <div class="stat-number">${stats.totalQuestions || 0}</div>
           <div class="stat-label">Câu hỏi</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">${stats.totalPlayers}</div>
+          <div class="stat-number">${stats.totalPlayers || 0}</div>
           <div class="stat-label">Người chơi</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">${stats.totalSessions}</div>
+          <div class="stat-number">${stats.totalSessions || 0}</div>
           <div class="stat-label">Lượt chơi</div>
         </div>
       </div>
@@ -573,7 +608,7 @@ async function loadStats() {
       <div class="stats-section">
         <h3>📊 Phân bổ câu hỏi</h3>
         <div class="category-grid">
-          ${stats.bySubject.map(c => `
+          ${bySubject.map(c => `
             <div class="cat-item">
               <span>${c.subject === 'math' ? '🔢' : '📖'} ${c.difficulty}</span>
               <strong>${c.count}</strong>
@@ -582,11 +617,11 @@ async function loadStats() {
         </div>
       </div>
 
-      ${stats.hardestQuestions.length > 0 ? `
+      ${hardestQuestions.length > 0 ? `
       <div class="stats-section">
         <h3>🔥 Câu hỏi khó nhất (hay sai nhất)</h3>
         <div class="hard-questions">
-          ${stats.hardestQuestions.map(q => `
+          ${hardestQuestions.map(q => `
             <div class="hard-q-item">
               <span class="badge badge-${q.subject}">${q.subject === 'math' ? '🔢' : '📖'}</span>
               <span class="hard-q-text">${q.question_text}</span>
@@ -599,7 +634,7 @@ async function loadStats() {
       <div class="stats-section">
         <h3>👤 Người chơi</h3>
         <div class="players-list">
-          ${players.length === 0 ? '<p>Chưa có người chơi nào</p>' : players.map(p => `
+          ${playerList.length === 0 ? '<p>Chưa có người chơi nào</p>' : playerList.map(p => `
             <div class="player-card" onclick="showPlayerDetail(${p.id})">
               <div class="player-name">${p.name}</div>
               <div class="player-stats-mini">
@@ -627,14 +662,17 @@ async function showPlayerDetail(playerId) {
 
   try {
     const [historyRes, weakRes] = await Promise.all([
-      fetch(`/api/admin/players/${playerId}/history`),
-      fetch(`/api/admin/players/${playerId}/weaknesses`),
+      adminFetch(adminUrl('players', {id: playerId, action: 'history'})),
+      adminFetch(adminUrl('players', {id: playerId, action: 'weaknesses'})),
     ]);
     const history = await historyRes.json();
     const weakness = await weakRes.json();
 
-    const player = history.player;
-    const sessions = history.sessions;
+    const player = history.player || { name: 'Unknown', created_at: '' };
+    const sessions = history.sessions || [];
+    const missed = missed || [];
+    const byCategory = byCategory || [];
+    const progress = progress || [];
 
     modal.innerHTML = `
       <div class="modal-content">
@@ -645,7 +683,7 @@ async function showPlayerDetail(playerId) {
         <div class="detail-section">
           <h3>📈 Tiến trình theo môn</h3>
           <div class="accuracy-grid">
-            ${weakness.byCategory.map(c => `
+            ${byCategory.map(c => `
               <div class="accuracy-item ${c.accuracy >= 80 ? 'good' : c.accuracy >= 50 ? 'ok' : 'weak'}">
                 <div>${c.subject === 'math' ? '🔢' : '📖'} ${c.difficulty}</div>
                 <div class="accuracy-bar">
@@ -659,9 +697,9 @@ async function showPlayerDetail(playerId) {
 
         <div class="detail-section">
           <h3>⚠️ Dạng hay sai / nhầm lẫn</h3>
-          ${weakness.missed.length === 0 ? '<p>Chưa có dữ liệu</p>' : `
+          ${missed.length === 0 ? '<p>Chưa có dữ liệu</p>' : `
           <div class="missed-list">
-            ${weakness.missed.slice(0, 10).map(q => `
+            ${missed.slice(0, 10).map(q => `
               <div class="missed-item">
                 <span class="badge badge-${q.subject}">${q.subject === 'math' ? '🔢' : '📖'} ${q.difficulty}</span>
                 <span class="missed-text">${q.question_text}</span>
@@ -674,7 +712,7 @@ async function showPlayerDetail(playerId) {
         <div class="detail-section">
           <h3>📉 Xu hướng điểm số</h3>
           <div class="progress-chart">
-            ${weakness.progress.slice(0, 15).reverse().map(s => `
+            ${progress.slice(0, 15).reverse().map(s => `
               <div class="progress-bar-item">
                 <div class="progress-label">${new Date(s.played_at).toLocaleDateString('vi')} ${s.subject === 'math' ? '🔢' : '📖'}</div>
                 <div class="progress-bar-track">
@@ -711,10 +749,10 @@ async function showPlayerDetail(playerId) {
 async function loadPlayers() {
   const content = document.getElementById('players-content');
   try {
-    const res = await fetch('/api/admin/players');
+    const res = await adminFetch(adminUrl('players'));
     const players = await res.json();
 
-    if (players.length === 0) {
+    if (!Array.isArray(players) || players.length === 0) {
       content.innerHTML = '<p>Chưa có người chơi nào. Hãy chơi game trước!</p>';
       return;
     }
@@ -763,7 +801,7 @@ document.getElementById('btn-create-exam').addEventListener('click', async () =>
   };
 
   try {
-    const res = await fetch('/api/admin/exams', {
+    const res = await adminFetch(adminUrl('exams'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -777,7 +815,7 @@ document.getElementById('btn-create-exam').addEventListener('click', async () =>
 
 async function loadExamsList() {
   try {
-    const res = await fetch('/api/admin/exams');
+    const res = await adminFetch(adminUrl('exams'));
     const exams = await res.json();
     const list = document.getElementById('ea-list');
     if (exams.length === 0) { list.innerHTML = '<p>Chưa có bài thi nào</p>'; return; }
@@ -808,7 +846,7 @@ async function viewExamResults(examId) {
   modal.innerHTML = '<div class="modal-content"><p>Đang tải...</p></div>';
 
   try {
-    const res = await fetch(`/api/admin/exams/${examId}/results`);
+    const res = await adminFetch(adminUrl('exams', {id: examId, action: 'results'}));
     const results = await res.json();
 
     modal.innerHTML = `
@@ -837,12 +875,12 @@ async function viewExamResults(examId) {
 
 async function toggleExam(id, active) {
   try {
-    const res = await fetch(`/api/admin/exams`);
+    const res = await adminFetch(adminUrl('exams'));
     const exams = await res.json();
     const exam = exams.find(e => e.id === id);
     if (!exam) return;
 
-    await fetch(`/api/admin/exams/${id}`, {
+    await adminFetch(adminUrl('exams', {id}), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...exam, question_ids: JSON.parse(exam.question_ids), is_active: active }),
@@ -853,6 +891,6 @@ async function toggleExam(id, active) {
 
 async function deleteExam(id) {
   if (!confirm('Xóa bài thi này?')) return;
-  await fetch(`/api/admin/exams/${id}`, { method: 'DELETE' });
+  await adminFetch(adminUrl('exams', {id}), { method: 'DELETE' });
   loadExamsList();
 }

@@ -25,9 +25,14 @@ function adminAuth(req, res, next) {
   res.status(401).send('Unauthorized');
 }
 
-// Protect admin page and admin APIs
-app.get('/admin.html', adminAuth, (req, res) => res.sendFile(join(__dirname, 'public/admin.html')));
+// Protect admin APIs only (not the HTML page)
 app.use('/api/admin', adminAuth);
+
+// Admin API - query param style (compatible with Vercel)
+import adminHandler from './api/admin/index.js';
+app.all('/api/admin', async (req, res) => {
+  await adminHandler(req, res);
+});
 
 app.use(express.static(join(__dirname, 'public')));
 app.use('/v2', express.static(join(__dirname, 'public/v2')));
@@ -101,6 +106,35 @@ app.get('/api/players/:id/stats', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// Update player profile
+app.put('/api/players/:id', async (req, res) => {
+  const { name } = req.body;
+  const db = getDb();
+  try {
+    await db.execute({ sql: `UPDATE players SET name = ? WHERE id = ?`, args: [name, parseInt(req.params.id)] });
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Save/load player progress (for V2 map, etc.)
+app.get('/api/players/:id/progress/:mode', async (req, res) => {
+  const db = getDb();
+  try {
+    const result = await db.execute({ sql: `SELECT progress_data FROM player_progress WHERE player_id = ? AND game_mode = ?`, args: [parseInt(req.params.id), req.params.mode] });
+    if (result.rows.length > 0) return res.json(JSON.parse(result.rows[0].progress_data));
+    res.json(null);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/players/:id/progress/:mode', async (req, res) => {
+  const db = getDb();
+  const data = JSON.stringify(req.body);
+  try {
+    await db.execute({ sql: `INSERT INTO player_progress (player_id, game_mode, progress_data) VALUES (?, ?, ?) ON CONFLICT(player_id, game_mode) DO UPDATE SET progress_data = ?, updated_at = CURRENT_TIMESTAMP`, args: [parseInt(req.params.id), req.params.mode, data, data] });
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // === ADMIN APIs ===
@@ -321,6 +355,12 @@ app.delete('/api/admin/questions/:id', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// === V4 ROOM API (polling-based for local + Vercel) ===
+import roomHandler from './api/room.js';
+app.all('/api/room', async (req, res) => {
+  await roomHandler(req, res);
 });
 
 // === EXAM APIs ===

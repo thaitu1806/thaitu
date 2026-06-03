@@ -9,9 +9,19 @@ function checkAuth(req) {
 }
 
 export default async function handler(req, res) {
-  if (!checkAuth(req)) {
-    res.setHeader('WWW-Authenticate', 'Basic realm="Admin"');
-    return res.status(401).json({ error: 'Unauthorized' });
+  // Auth check - skip if already handled by middleware (local server.js)
+  const skipAuth = req._adminAuthed;
+  if (!skipAuth) {
+    const auth = req.headers.authorization;
+    if (!auth || !auth.startsWith('Basic ')) {
+      res.setHeader('WWW-Authenticate', 'Basic realm="Admin"');
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const [user, pass] = Buffer.from(auth.split(' ')[1], 'base64').toString().split(':');
+    if (user !== 'admin' || pass !== 'admin') {
+      res.setHeader('WWW-Authenticate', 'Basic realm="Admin"');
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
   }
 
   const db = getDb();

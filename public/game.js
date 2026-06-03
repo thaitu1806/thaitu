@@ -167,6 +167,13 @@ function startTimer() {
       timerBar.className = 'timer-bar warning';
     }
 
+    // Zombie creeps forward while player hasn't answered
+    if (state.timeLeft % 10 === 0 && state.timeLeft < 80) {
+      state.zombiePosition += 2;
+      const zombie = document.getElementById('zombie');
+      zombie.style.right = Math.min(state.zombiePosition, 85) + '%';
+    }
+
     if (state.timeLeft <= 0) {
       clearInterval(state.timerInterval);
       handleTimeout();
@@ -177,7 +184,12 @@ function startTimer() {
 function handleTimeout() {
   state.isAnswering = false;
   state.combo = 0;
-  moveZombieForward();
+  // Zombie đã bò dần rồi, chỉ thêm 1 bước nhỏ khi hết giờ
+  state.zombiePosition += 5;
+  const zombie = document.getElementById('zombie');
+  zombie.style.right = Math.min(state.zombiePosition, 85) + '%';
+
+  if (state.zombiePosition >= 85) { endGame(); return; }
 
   // Show correct answer
   const q = state.questions[state.currentIndex];
@@ -188,6 +200,8 @@ function handleTimeout() {
       btn.classList.add('correct');
     }
   });
+
+  playSound('wrong');
 
   setTimeout(() => {
     state.currentIndex++;
@@ -289,13 +303,21 @@ function shootZombie() {
   plant.classList.add('attack');
   setTimeout(() => plant.classList.remove('attack'), 300);
 
-  // Bullet animation
-  bullet.classList.remove('hidden');
-  bullet.classList.add('shooting');
+  // Calculate where zombie is (zombie uses right:X%, so bullet target from left, offset for zombie width)
+  const targetLeft = 'calc(' + (100 - state.zombiePosition - 15) + '% - 20px)';
+  bullet.style.setProperty('--target', targetLeft);
 
+  // Bullet flies to zombie position
+  bullet.classList.remove('hidden', 'explode');
+  bullet.classList.add('shooting');
+  bullet.textContent = '☄️';
+
+  // When bullet reaches zombie → explode at that position
   setTimeout(() => {
     bullet.classList.remove('shooting');
-    bullet.classList.add('hidden');
+    bullet.style.left = targetLeft;
+    bullet.textContent = '💥';
+    bullet.classList.add('explode');
 
     // Zombie hit
     zombie.classList.add('hit');
@@ -304,7 +326,15 @@ function shootZombie() {
     // Push zombie back
     state.zombiePosition = Math.max(0, state.zombiePosition - 10);
     zombie.style.right = state.zombiePosition + '%';
-  }, 400);
+
+    // Hide bullet after explosion
+    setTimeout(() => {
+      bullet.classList.remove('explode');
+      bullet.classList.add('hidden');
+      bullet.style.left = '0';
+      bullet.textContent = '☄️';
+    }, 400);
+  }, 500);
 }
 
 // UPDATE STATS
@@ -326,14 +356,15 @@ function endGame() {
   if (percentage >= 0.9) {
     stars = 3;
     title = '🏆 Xuất sắc!';
-    playSound('win');
+    showCelebration('🏆 Xuất sắc! Giỏi quá!');
   } else if (percentage >= 0.7) {
     stars = 2;
     title = '👏 Giỏi lắm!';
-    playSound('win');
+    showCelebration('👏 Giỏi lắm!');
   } else if (percentage >= 0.5) {
     stars = 1;
     title = '👍 Cố gắng thêm!';
+    playSound('clap');
   } else {
     stars = 0;
     title = '💪 Lần sau sẽ tốt hơn!';
@@ -398,6 +429,32 @@ async function logAnswer(question, selected, isCorrect, timeSpent) {
 // RESULT BUTTONS
 document.getElementById('btn-play-again').addEventListener('click', () => startGame());
 document.getElementById('btn-back-menu').addEventListener('click', () => showScreen('subject'));
+
+// EXIT GAME with custom popup
+document.getElementById('btn-exit-game').addEventListener('click', () => {
+  showConfirmPopup('😢', 'Bạn có muốn thoát\ntrò chơi không?', () => {
+    clearInterval(state.timerInterval);
+    window.location.href = '/';
+  });
+});
+
+function showConfirmPopup(icon, text, onYes) {
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.innerHTML = `
+    <div class="confirm-box">
+      <div class="confirm-icon">${icon}</div>
+      <div class="confirm-text">${text}</div>
+      <div class="confirm-btns">
+        <button class="confirm-btn confirm-btn-yes">Thoát</button>
+        <button class="confirm-btn confirm-btn-no">Chơi tiếp</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.confirm-btn-yes').addEventListener('click', () => { overlay.remove(); onYes(); });
+  overlay.querySelector('.confirm-btn-no').addEventListener('click', () => overlay.remove());
+}
 
 // FALLBACK QUESTIONS (when server is not available)
 function generateFallbackQuestions() {
@@ -501,8 +558,50 @@ function playSound(type) {
           o.stop(audioCtx.currentTime + i * 0.15 + 0.3);
         });
         break;
+      case 'clap':
+        // Tiếng vỗ tay - noise burst pattern
+        for (let i = 0; i < 4; i++) {
+          const bufSize = 800;
+          const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+          const data = buf.getChannelData(0);
+          for (let j = 0; j < bufSize; j++) data[j] = (Math.random() * 2 - 1) * (1 - j / bufSize);
+          const src = audioCtx.createBufferSource();
+          const g = audioCtx.createGain();
+          src.buffer = buf; src.connect(g); g.connect(audioCtx.destination);
+          const t = audioCtx.currentTime + i * 0.25;
+          g.gain.setValueAtTime(0.3, t);
+          g.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+          src.start(t); src.stop(t + 0.1);
+        }
+        break;
+      case 'celebrate':
+        // Fanfare chúc mừng
+        [523, 659, 784, 1047, 1319].forEach((freq, i) => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.connect(g); g.connect(audioCtx.destination);
+          o.type = i % 2 === 0 ? 'triangle' : 'sine';
+          o.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.12);
+          g.gain.setValueAtTime(0.25, audioCtx.currentTime + i * 0.12);
+          g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.12 + 0.35);
+          o.start(audioCtx.currentTime + i * 0.12);
+          o.stop(audioCtx.currentTime + i * 0.12 + 0.35);
+        });
+        // Add clap after fanfare
+        setTimeout(() => playSound('clap'), 600);
+        break;
     }
   } catch (e) { /* audio not supported */ }
+}
+
+// === CELEBRATION EFFECTS ===
+function showCelebration(text) {
+  const el = document.createElement('div');
+  el.className = 'celebration-overlay';
+  el.innerHTML = `<div class="celebration-content"><div class="celebration-emojis">🎉🎊👏✨🌟</div><div class="celebration-text">${text}</div></div>`;
+  document.body.appendChild(el);
+  playSound('celebrate');
+  setTimeout(() => el.remove(), 2500);
 }
 
 // === PARTICLE EFFECTS ===
