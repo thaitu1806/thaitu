@@ -168,6 +168,13 @@ function listenRoom() {
     const data = snapshot.val();
     if (!data) return;
     handleUpdate(data);
+
+    // Host: auto-resolve when both answers are in
+    if (myRole === 'host' && data.state === 'playing' && !data.roundResult) {
+      if (data.hostAnswer && data.guestAnswer) {
+        resolveRound(data);
+      }
+    }
   });
 
   // Cleanup room when disconnected (host only)
@@ -266,10 +273,10 @@ function startClientTimer(speed) {
       clearInterval(timerInterval);
       if (!answeredThisRound) {
         answeredThisRound = true;
+        document.querySelectorAll('.ob-btn').forEach(b => b.disabled = true);
         // Send timeout answer
         const key = myRole === 'host' ? 'hostAnswer' : 'guestAnswer';
         roomRef.update({ [key]: { answer: null, time: 99999 } });
-        checkResolve();
       }
     }
   }, ms);
@@ -287,35 +294,28 @@ document.getElementById('ob-options').addEventListener('click', (e) => {
 
   const key = myRole === 'host' ? 'hostAnswer' : 'guestAnswer';
   roomRef.update({ [key]: { answer: btn.dataset.opt, time: Date.now() } });
-
-  // Check if we can resolve (maybe opponent already answered)
-  checkResolve();
 });
 
-// Check if both answered and resolve round
-async function checkResolve() {
-  // Only host resolves to avoid race conditions
-  if (myRole !== 'host') return;
-
+// Host resolves the round when both answers are detected
+async function resolveRound(data) {
+  // Double-check to avoid duplicate resolves
   const snapshot = await roomRef.once('value');
-  const data = snapshot.val();
-  if (!data || data.roundResult) return;
-  if (!data.hostAnswer || !data.guestAnswer) return;
+  const latest = snapshot.val();
+  if (!latest || latest.roundResult || !latest.hostAnswer || !latest.guestAnswer) return;
 
-  // Both answered - resolve!
-  const q = data.questions[data.currentRound];
+  const q = latest.questions[latest.currentRound];
   const correct = q.correct_answer;
-  const hOk = data.hostAnswer.answer === correct;
-  const gOk = data.guestAnswer.answer === correct;
+  const hOk = latest.hostAnswer.answer === correct;
+  const gOk = latest.guestAnswer.answer === correct;
 
   let hp = 0, gp = 0;
-  if (hOk) { hp = 10; if (!gOk || data.hostAnswer.time < data.guestAnswer.time) hp += 5; }
-  if (gOk) { gp = 10; if (!hOk || data.guestAnswer.time < data.hostAnswer.time) gp += 5; }
+  if (hOk) { hp = 10; if (!gOk || latest.hostAnswer.time < latest.guestAnswer.time) hp += 5; }
+  if (gOk) { gp = 10; if (!hOk || latest.guestAnswer.time < latest.hostAnswer.time) gp += 5; }
 
-  const hostScore = (data.hostScore || 0) + hp;
-  const guestScore = (data.guestScore || 0) + gp;
-  const hostCorrect = (data.hostCorrect || 0) + (hOk ? 1 : 0);
-  const guestCorrect = (data.guestCorrect || 0) + (gOk ? 1 : 0);
+  const hostScore = (latest.hostScore || 0) + hp;
+  const guestScore = (latest.guestScore || 0) + gp;
+  const hostCorrect = (latest.hostCorrect || 0) + (hOk ? 1 : 0);
+  const guestCorrect = (latest.guestCorrect || 0) + (gOk ? 1 : 0);
 
   await roomRef.update({
     roundResult: { correct_answer: correct, hostCorrect: hOk, guestCorrect: gOk },
@@ -326,7 +326,7 @@ async function checkResolve() {
   });
 
   // Advance to next round after 3s
-  setTimeout(() => advanceRound(data), 3000);
+  setTimeout(() => advanceRound(latest), 3000);
 }
 
 async function advanceRound(data) {
