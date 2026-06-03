@@ -764,6 +764,7 @@ async function loadPlayers() {
           <span>Lượt chơi</span>
           <span>Tổng sao</span>
           <span>Tỉ lệ đúng</span>
+          <span>Level PL</span>
           <span>Lần chơi cuối</span>
           <span></span>
         </div>
@@ -776,6 +777,7 @@ async function loadPlayers() {
             <span>🎮 ${p.total_games || 0}</span>
             <span>⭐ ${p.total_stars_earned || 0}</span>
             <span class="acc-${accClass}">${accuracy}%</span>
+            <span>🗺️ ${p.adventure_level || 1}</span>
             <span>${p.last_played ? new Date(p.last_played).toLocaleDateString('vi') : '-'}</span>
             <span>
               <button class="btn-detail" onclick="showPlayerDetail(${p.id})">📊 Chi tiết</button>

@@ -74,7 +74,7 @@ export default async function handler(req, res) {
   if (resource === 'players') {
     if (req.method === 'GET' && !id) {
       const result = await db.execute({
-        sql: `SELECT p.*, (SELECT COUNT(*) FROM game_sessions WHERE player_id = p.id) as total_games, (SELECT SUM(stars_earned) FROM game_sessions WHERE player_id = p.id) as total_stars_earned, (SELECT SUM(correct_answers) FROM game_sessions WHERE player_id = p.id) as total_correct, (SELECT SUM(total_questions) FROM game_sessions WHERE player_id = p.id) as total_answered, (SELECT MAX(played_at) FROM game_sessions WHERE player_id = p.id) as last_played FROM players p ORDER BY p.created_at DESC`,
+        sql: `SELECT p.*, p.adventure_level, (SELECT COUNT(*) FROM game_sessions WHERE player_id = p.id) as total_games, (SELECT SUM(stars_earned) FROM game_sessions WHERE player_id = p.id) as total_stars_earned, (SELECT SUM(correct_answers) FROM game_sessions WHERE player_id = p.id) as total_correct, (SELECT SUM(total_questions) FROM game_sessions WHERE player_id = p.id) as total_answered, (SELECT MAX(played_at) FROM game_sessions WHERE player_id = p.id) as last_played FROM players p ORDER BY p.created_at DESC`,
         args: [],
       });
       return res.json(result.rows);

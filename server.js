@@ -133,6 +133,10 @@ app.put('/api/players/:id/progress/:mode', async (req, res) => {
   const data = JSON.stringify(req.body);
   try {
     await db.execute({ sql: `INSERT INTO player_progress (player_id, game_mode, progress_data) VALUES (?, ?, ?) ON CONFLICT(player_id, game_mode) DO UPDATE SET progress_data = ?, updated_at = CURRENT_TIMESTAMP`, args: [parseInt(req.params.id), req.params.mode, data, data] });
+    // Update adventure_level in players table for V2
+    if (req.params.mode === 'v2' && req.body.level) {
+      await db.execute({ sql: `UPDATE players SET adventure_level = ? WHERE id = ?`, args: [parseInt(req.body.level), parseInt(req.params.id)] });
+    }
     res.json({ ok: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

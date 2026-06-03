@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 let db;
+let migrated = false;
 
 export function getDb() {
   if (db) return db;
@@ -17,6 +18,12 @@ export function getDb() {
     db = createClient({
       url: 'file:' + join(__dirname, '..', 'db', 'local.db'),
     });
+  }
+
+  // Run migrations once
+  if (!migrated) {
+    migrated = true;
+    db.execute({ sql: `ALTER TABLE players ADD COLUMN adventure_level INTEGER DEFAULT 1`, args: [] }).catch(() => {});
   }
 
   return db;

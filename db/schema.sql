@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS players (
   total_stars INTEGER DEFAULT 0,
   current_level_math INTEGER DEFAULT 1,
   current_level_viet INTEGER DEFAULT 1,
+  adventure_level INTEGER DEFAULT 1,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

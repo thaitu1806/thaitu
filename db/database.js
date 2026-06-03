@@ -70,5 +70,13 @@ export async function initDb() {
   } else if (db._sqlite) {
     db._sqlite.exec(schema);
   }
+
+  // Migrations: add columns if missing
+  try {
+    await db.execute({ sql: `ALTER TABLE players ADD COLUMN adventure_level INTEGER DEFAULT 1`, args: [] });
+  } catch (e) {
+    // Column already exists - ignore
+  }
+
   return db;
 }
