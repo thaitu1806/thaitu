@@ -7,6 +7,7 @@ let lastUpdate = 0;
 let roundActive = false;
 let timerInterval = null;
 let currentRound = -1;
+let resultShown = false; // track if we already showed the round result
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -117,18 +118,20 @@ function handlePollData(data) {
     if (data.currentRound !== currentRound) {
       currentRound = data.currentRound;
       roundActive = true;
+      resultShown = false;
       showBattle(data);
       showRound(data);
     }
     // Opponent answered
-    if (myRole === 'host' && data.guestAnswered && roundActive) {
+    if (myRole === 'host' && data.guestAnswered && !resultShown) {
       document.getElementById('ob-status').textContent = '⚡ Đối thủ đã trả lời!';
     }
-    if (myRole === 'guest' && data.hostAnswered && roundActive) {
+    if (myRole === 'guest' && data.hostAnswered && !resultShown) {
       document.getElementById('ob-status').textContent = '⚡ Đối thủ đã trả lời!';
     }
-    // Round result
-    if (data.roundResult && roundActive) {
+    // Round result - show once
+    if (data.roundResult && !resultShown) {
+      resultShown = true;
       roundActive = false;
       showRoundResult(data);
     }
@@ -196,7 +199,7 @@ function startClientTimer(speed) {
 document.getElementById('ob-options').addEventListener('click', async (e) => {
   const btn = e.target.closest('.ob-btn');
   if (!btn || !roundActive || btn.disabled) return;
-  roundActive = false;
+  // Don't set roundActive = false here! Let poll handle round result
   document.querySelectorAll('.ob-btn').forEach(b => b.disabled = true);
   btn.classList.add('selected');
   document.getElementById('ob-status').textContent = '✅ Đã trả lời! Chờ đối thủ...';

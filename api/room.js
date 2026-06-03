@@ -3,10 +3,6 @@
 
 import { getDb } from './db.js';
 
-// In-memory cache with short TTL for performance
-const roomCache = new Map();
-const CACHE_TTL = 500; // 500ms cache
-
 async function ensureRoomTable() {
   const db = getDb();
   await db.execute({
@@ -28,16 +24,10 @@ async function init() {
 }
 
 async function getRoom(code) {
-  // Check cache first
-  const cached = roomCache.get(code);
-  if (cached && Date.now() - cached.time < CACHE_TTL) return cached.room;
-
   const db = getDb();
   const result = await db.execute({ sql: `SELECT data FROM rooms WHERE code = ?`, args: [code] });
   if (result.rows.length === 0) return null;
-  const room = JSON.parse(result.rows[0].data);
-  roomCache.set(code, { room, time: Date.now() });
-  return room;
+  return JSON.parse(result.rows[0].data);
 }
 
 async function saveRoom(code, room) {
@@ -47,13 +37,6 @@ async function saveRoom(code, room) {
     sql: `INSERT OR REPLACE INTO rooms (code, data, updated_at) VALUES (?, ?, ?)`,
     args: [code, JSON.stringify(room), Date.now()],
   });
-  roomCache.set(code, { room, time: Date.now() });
-}
-
-async function deleteRoom(code) {
-  const db = getDb();
-  await db.execute({ sql: `DELETE FROM rooms WHERE code = ?`, args: [code] });
-  roomCache.delete(code);
 }
 
 function generateCode() {
@@ -160,14 +143,23 @@ export default async function handler(req, res) {
     }
 
     case 'answer': {
+      // Re-read fresh from DB each time to avoid race conditions
       const room = await getRoom(code);
       if (!room || room.state !== 'playing') return res.status(400).json({ error: 'Invalid' });
+      // Don't accept answers if round already resolved
+      if (room.roundResult) return res.json({ ok: true, alreadyResolved: true });
+
       const isHost = req.body.role === 'host';
-      if (isHost) room.hostAnswer = { answer: req.body.answer, time: Date.now() - room.roundStart };
-      else room.guestAnswer = { answer: req.body.answer, time: Date.now() - room.roundStart };
+      if (isHost && !room.hostAnswer) {
+        room.hostAnswer = { answer: req.body.answer, time: Date.now() - room.roundStart };
+      } else if (!isHost && !room.guestAnswer) {
+        room.guestAnswer = { answer: req.body.answer, time: Date.now() - room.roundStart };
+      }
 
       // If both answered, resolve round
-      if (room.hostAnswer && room.guestAnswer) resolveRound(room);
+      if (room.hostAnswer && room.guestAnswer && !room.roundResult) {
+        resolveRound(room);
+      }
       await saveRoom(code, room);
       return res.json({ ok: true });
     }
@@ -196,10 +188,9 @@ function resolveRound(room) {
   room.hostScore += hp; room.guestScore += gp;
 
   room.roundResult = { correct_answer: correct, hostCorrect: hOk, guestCorrect: gOk, hostPoints: hp, guestPoints: gp };
-  room.nextRoundAt = Date.now() + 3000; // 3s to show result before advancing
+  room.nextRoundAt = Date.now() + 3000;
 }
 
-// Called by poll - advance round if enough time has passed
 function checkAdvanceRound(room) {
   if (room.roundResult && room.nextRoundAt && Date.now() >= room.nextRoundAt) {
     room.currentRound++;
