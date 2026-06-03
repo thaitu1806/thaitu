@@ -14,6 +14,15 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// Auto-fill name from profile
+(function() {
+  const profile = localStorage.getItem('hocvui_profile');
+  if (profile) {
+    const p = JSON.parse(profile);
+    document.getElementById('my-name').value = p.name;
+  }
+})();
+
 // State
 let myRole = null; // 'host' or 'guest'
 let myName = '';
@@ -46,7 +55,12 @@ function getSettings() {
 
 // === CREATE ROOM ===
 document.getElementById('btn-create').addEventListener('click', async () => {
-  myName = document.getElementById('my-name').value.trim() || 'Player';
+  myName = document.getElementById('my-name').value.trim();
+  if (!myName) {
+    const profile = localStorage.getItem('hocvui_profile');
+    if (profile) myName = JSON.parse(profile).name;
+  }
+  if (!myName) myName = 'Player';
   myRole = 'host';
   showScreen('create-screen');
   document.getElementById('rp-host').querySelector('.rp-name').textContent = myName;
@@ -75,7 +89,12 @@ document.getElementById('btn-create').addEventListener('click', async () => {
 
 // === JOIN ROOM ===
 document.getElementById('btn-join').addEventListener('click', () => {
-  myName = document.getElementById('my-name').value.trim() || 'Player';
+  myName = document.getElementById('my-name').value.trim();
+  if (!myName) {
+    const profile = localStorage.getItem('hocvui_profile');
+    if (profile) myName = JSON.parse(profile).name;
+  }
+  if (!myName) myName = 'Player';
   showScreen('join-screen');
 });
 

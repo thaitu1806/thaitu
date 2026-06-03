@@ -64,22 +64,44 @@ function showScreen(name) {
 }
 
 // MENU SCREEN
+// Auto-fill from profile
+(function() {
+  const profile = localStorage.getItem('hocvui_profile');
+  if (profile) {
+    const p = JSON.parse(profile);
+    document.getElementById('player-name').value = p.name;
+  }
+})();
+
 document.getElementById('btn-start').addEventListener('click', async () => {
-  const name = document.getElementById('player-name').value.trim();
+  let name = document.getElementById('player-name').value.trim();
+  // Try to get from profile if empty
+  if (!name) {
+    const profile = localStorage.getItem('hocvui_profile');
+    if (profile) name = JSON.parse(profile).name;
+  }
   if (!name) {
     document.getElementById('player-name').style.borderColor = '#f44336';
     return;
   }
   state.timerSpeedSetting = document.getElementById('timer-speed').value;
-  try {
-    const res = await fetch('/api/players', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
-    });
-    state.player = await res.json();
-  } catch {
-    state.player = { id: 1, name, total_stars: 0 };
+  // Use profile data if available
+  const profile = localStorage.getItem('hocvui_profile');
+  if (profile) {
+    state.player = JSON.parse(profile);
+  } else {
+    try {
+      const res = await fetch('/api/players', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      });
+      state.player = await res.json();
+      localStorage.setItem('hocvui_profile', JSON.stringify({ id: state.player.id, name: state.player.name }));
+    } catch {
+      state.player = { id: 1, name, total_stars: 0 };
+    }
+  }
   }
   document.getElementById('welcome-text').textContent = `Xin chào ${name}! 🎉`;
   showScreen('subject');

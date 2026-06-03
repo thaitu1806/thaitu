@@ -11,6 +11,15 @@ const D = {
   roundStart: 0,
 };
 
+// Auto-fill player 1 name from profile
+(function() {
+  const profile = localStorage.getItem('hocvui_profile');
+  if (profile) {
+    const p = JSON.parse(profile);
+    document.getElementById('p1-name').value = p.name;
+  }
+})();
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');

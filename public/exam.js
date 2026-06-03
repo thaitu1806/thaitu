@@ -6,6 +6,16 @@ let examTimer = null;
 let examStartTime = 0;
 let timeRemaining = 0;
 
+// Auto-fill name from profile
+(function() {
+  const profile = localStorage.getItem('hocvui_profile');
+  if (profile) {
+    const p = JSON.parse(profile);
+    const el = document.getElementById('exam-player');
+    if (el) el.value = p.name;
+  }
+})();
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
