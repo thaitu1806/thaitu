@@ -3,12 +3,9 @@ import { getDb } from './db.js';
 export default async function handler(req, res) {
   const db = getDb();
 
-  // Parse player id and mode from URL: /api/players/123/progress/v2
-  const url = new URL(req.url, `http://${req.headers.host}`);
-  const parts = url.pathname.split('/').filter(Boolean);
-  // Expected: ['api', 'players', ':id', 'progress', ':mode']
-  const playerId = parseInt(parts[2]);
-  const mode = parts[4] || 'v2';
+  // Get player id and mode from query params (set by vercel.json route)
+  const playerId = parseInt(req.query.id);
+  const mode = req.query.mode || 'v2';
 
   if (!playerId || isNaN(playerId)) {
     return res.status(400).json({ error: 'Invalid player id' });
