@@ -26,12 +26,13 @@ async function apiCall(action, body = {}) {
 document.getElementById('btn-create').addEventListener('click', async () => {
   myName = document.getElementById('my-name').value.trim() || 'Player';
   myRole = 'host';
+  // Show create screen first so settings elements are available
+  showScreen('create-screen');
+  document.getElementById('rp-host').querySelector('.rp-name').textContent = myName;
   const settings = getSettings();
   const data = await apiCall('create', { player: myName, settings });
   roomCode = data.code;
   document.getElementById('room-code').textContent = roomCode;
-  document.getElementById('rp-host').querySelector('.rp-name').textContent = myName;
-  showScreen('create-screen');
   startPolling();
 });
 
@@ -68,7 +69,9 @@ document.getElementById('btn-rematch').addEventListener('click', async () => {
 });
 
 document.getElementById('btn-start-match').addEventListener('click', async () => {
-  await apiCall('start');
+  // Send latest settings when starting the match
+  const settings = getSettings();
+  await apiCall('start', { settings });
 });
 
 function getSettings() {

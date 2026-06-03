@@ -59,6 +59,10 @@ export default async function handler(req, res) {
     case 'start': {
       const room = rooms.get(code);
       if (!room || !room.guest) return res.status(400).json({ error: 'Chưa đủ người' });
+      // Update settings if provided (host can change settings before starting)
+      if (req.body.settings) {
+        room.settings = { ...room.settings, ...req.body.settings };
+      }
       // Fetch questions from DB (use api/db.js which only uses @libsql/client)
       let db;
       try {
