@@ -163,6 +163,9 @@ function showRound(data) {
     btn.textContent = `${'ABCD'[i]}. ${opts[i]}`;
     btn.className = 'ob-btn';
     btn.disabled = false;
+    btn.blur();
+    btn.style.borderColor = '';
+    btn.style.background = '';
   });
 
   startClientTimer(data.settings?.speed || 'normal');
