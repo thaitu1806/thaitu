@@ -1287,34 +1287,89 @@ function animateTokenMovement(player, startPos, endPos) {
 /**
  * Handle special tile effect (star or trap).
  * Shows notification, plays sound, animates if needed.
+ * Star: +2 tiles forward
+ * Trap: random 1 of 3 outcomes:
+ *   1. Zombie wins → move back 3 tiles
+ *   2. Player wins → stay in place
+ *   3. Challenge → answer a question: correct = +1, wrong = -3
  * @param {Object} player - the current player
  * @param {string} tileType - 'star' or 'trap'
  * @returns {Promise<number>} new position after effect
  */
 async function handleSpecialTileEffect(player, tileType) {
   const currentPos = player.position;
-  const newPos = applySpecialTileEffect(currentPos, tileType);
 
   if (tileType === 'star') {
+    const newPos = Math.min(currentPos + 2, BOARD_CONFIG.finishPosition);
     AudioManager.play('star');
     showToast('⭐ Tiến thêm 2 ô!', 2000);
-    // Animate forward
     if (newPos !== currentPos) {
       await animateTokenMovement(player, currentPos, newPos);
     }
-  } else if (tileType === 'trap') {
-    AudioManager.play('trap');
-    // Show zombie battle overlay with random zombie
-    const zombie = ZOMBIE_SET[Math.floor(Math.random() * ZOMBIE_SET.length)];
-    await showZombieBattle(player);
-    showToast(`${zombie} đẩy lùi 3 ô!`, 2500);
-    // Animate backward
-    if (newPos !== currentPos) {
-      await animateTokenBackward(player, currentPos, newPos);
+    return newPos;
+  }
+
+  if (tileType === 'trap') {
+    const outcome = Math.floor(Math.random() * 3); // 0, 1, 2
+
+    if (outcome === 0) {
+      // Zombie wins → back 3
+      AudioManager.play('trap');
+      await showZombieBattle(player);
+      const newPos = Math.max(currentPos - 3, 0);
+      showToast('💀 Zombie thắng! Lùi 3 ô!', 2500);
+      if (newPos !== currentPos) {
+        await animateTokenBackward(player, currentPos, newPos);
+      }
+      return newPos;
+    } else if (outcome === 1) {
+      // Player wins → stay
+      AudioManager.play('correct');
+      const zombie = ZOMBIE_SET[Math.floor(Math.random() * ZOMBIE_SET.length)];
+      showToast(`⚔️ ${COLOR_EMOJIS[player.color]} đánh bại ${zombie}! Ở lại chỗ cũ!`, 2500);
+      await wait(1500);
+      return currentPos;
+    } else {
+      // Challenge → answer question
+      AudioManager.play('trap');
+      showToast('❓ Cơ hội thử thách! Trả lời đúng +1, sai -3!', 2500);
+      await wait(1500);
+
+      const question = QuestionManager.getNextQuestion();
+      if (!question) {
+        // No question available, treat as stay
+        showToast('⏳ Không có câu hỏi, ở lại chỗ cũ!', 2000);
+        return currentPos;
+      }
+
+      let answerResult;
+      if (player.type === 'bot') {
+        answerResult = await handleBotAnswer(question);
+      } else {
+        answerResult = await showQuestionPopup(question);
+      }
+
+      if (answerResult.isCorrect) {
+        AudioManager.play('correct');
+        const newPos = Math.min(currentPos + 1, BOARD_CONFIG.finishPosition);
+        showToast('✅ Đúng! Tiến thêm 1 ô!', 2000);
+        if (newPos !== currentPos) {
+          await animateTokenMovement(player, currentPos, newPos);
+        }
+        return newPos;
+      } else {
+        AudioManager.play('wrong');
+        const newPos = Math.max(currentPos - 3, 0);
+        showToast('❌ Sai! Lùi 3 ô!', 2500);
+        if (newPos !== currentPos) {
+          await animateTokenBackward(player, currentPos, newPos);
+        }
+        return newPos;
+      }
     }
   }
 
-  return newPos;
+  return currentPos;
 }
 
 /**
