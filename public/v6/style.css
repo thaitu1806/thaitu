@@ -1,0 +1,765 @@
+/* V6 Đua Xe Trí Tuệ - Racing Game Styles */
+
+:root {
+  --p1-color: #e74c3c;
+  --p1-bg: #fdeaea;
+  --p2-color: #3498db;
+  --p2-bg: #eaf2fd;
+  --bg: #f0f4ff;
+  --card-bg: #ffffff;
+  --text: #2c3e50;
+  --text-light: #7f8c8d;
+  --border: #e0e6ed;
+  --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  --radius: 16px;
+  --font: 'Nunito', sans-serif;
+  --green: #27ae60;
+  --orange: #f39c12;
+  --red: #e74c3c;
+  --tile-size: 40px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== SCREEN MANAGEMENT ===== */
+.screen {
+  display: none;
+  width: 100%;
+  min-height: 100dvh;
+}
+
+.screen.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== SETUP SCREEN ===== */
+.setup-container {
+  width: 100%;
+  max-width: 480px;
+  padding: 24px 16px;
+  padding-top: max(24px, env(safe-area-inset-top));
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+}
+
+.setup-title {
+  font-size: 2rem;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.setup-subtitle {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--text-light);
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+.setup-section {
+  margin-bottom: 20px;
+}
+
+.setup-label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.player-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.player-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.car-icon {
+  font-size: 1.6rem;
+  width: 36px;
+  text-align: center;
+}
+
+.player-input-row input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.player-input-row input:focus {
+  border-color: var(--p1-color);
+}
+
+.player-input-row:nth-child(2) input:focus {
+  border-color: var(--p2-color);
+}
+
+/* Button Group */
+.btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-option {
+  flex: 1;
+  min-width: 60px;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-option.active {
+  border-color: var(--p1-color);
+  background: var(--p1-bg);
+  color: var(--p1-color);
+}
+
+.btn-option:active {
+  transform: scale(0.95);
+}
+
+/* Start Button */
+.btn-start {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  margin-top: 24px;
+  background: linear-gradient(135deg, var(--p1-color), #c0392b);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-family: var(--font);
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 16px rgba(231, 76, 60, 0.3);
+}
+
+.btn-start:active {
+  transform: scale(0.97);
+}
+
+.home-link {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  color: var(--text-light);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* ===== RACE SCREEN ===== */
+#race-screen.active {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 8px;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* Track Area */
+.track-area {
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.track-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.race-track {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: fit-content;
+}
+
+.lane {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 50px;
+  gap: 2px;
+}
+
+.tile {
+  width: var(--tile-size);
+  height: var(--tile-size);
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  background: var(--card-bg);
+  position: relative;
+}
+
+.tile-obstacle {
+  background: #fff3cd;
+  border-color: #f39c12;
+}
+
+.tile-obstacle::after {
+  content: '🍌';
+  font-size: 1rem;
+}
+
+.tile-finish {
+  background: #d4edda;
+  border-color: var(--green);
+}
+
+.tile-finish::after {
+  content: '🏁';
+  font-size: 1.1rem;
+}
+
+.tile-start {
+  background: #e8f4fd;
+  border-color: var(--p2-color);
+}
+
+/* Cars */
+.car {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translate(0, -50%);
+  font-size: 1.8rem;
+  z-index: 10;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.car-p1 {
+  filter: drop-shadow(0 2px 4px rgba(231,76,60,0.3));
+}
+
+.car-p2 {
+  filter: drop-shadow(0 2px 4px rgba(52,152,219,0.3));
+}
+
+/* Lane labels */
+.lane-p1::before {
+  content: '🚗';
+  position: absolute;
+  left: -30px;
+  font-size: 0.8rem;
+  opacity: 0.5;
+}
+
+.lane-p2::before {
+  content: '🚙';
+  position: absolute;
+  left: -30px;
+  font-size: 0.8rem;
+  opacity: 0.5;
+}
+
+/* Timer Bar */
+.timer-bar-container {
+  flex-shrink: 0;
+  width: 100%;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.timer-bar {
+  height: 100%;
+  width: 100%;
+  background: var(--green);
+  border-radius: 4px;
+  transition: width 0.1s linear;
+}
+
+.timer-bar.warn {
+  background: var(--orange);
+}
+
+.timer-bar.danger {
+  background: var(--red);
+}
+
+/* Round Info */
+.round-info {
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.round-counter {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+/* Question Area */
+.question-area {
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.question-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* Answer Zones */
+.answer-zones {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.answer-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 10px;
+  box-shadow: var(--shadow);
+}
+
+.zone-p1 {
+  border-top: 3px solid var(--p1-color);
+}
+
+.zone-p2 {
+  border-top: 3px solid var(--p2-color);
+}
+
+.zone-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.zone-name {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.zone-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  flex: 1;
+}
+
+.ans-btn {
+  padding: 10px 8px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  word-break: break-word;
+}
+
+.ans-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.p1-btn:hover:not(:disabled) {
+  border-color: var(--p1-color);
+  background: var(--p1-bg);
+}
+
+.p2-btn:hover:not(:disabled) {
+  border-color: var(--p2-color);
+  background: var(--p2-bg);
+}
+
+.ans-btn.selected {
+  color: white;
+}
+
+.p1-btn.selected {
+  background: var(--p1-color);
+  border-color: var(--p1-color);
+}
+
+.p2-btn.selected {
+  background: var(--p2-color);
+  border-color: var(--p2-color);
+}
+
+.ans-btn.correct {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+.ans-btn.wrong {
+  background: var(--red);
+  border-color: var(--red);
+  color: white;
+  opacity: 0.7;
+}
+
+.ans-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ans-btn.locked {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.zone-status {
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  min-height: 20px;
+  margin-top: 6px;
+}
+
+/* ===== RESULT SCREEN ===== */
+#result-screen.active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.result-container {
+  text-align: center;
+  padding: 24px 16px;
+  max-width: 480px;
+  width: 100%;
+  position: relative;
+}
+
+.result-celebration {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.result-trophy {
+  font-size: 4rem;
+  margin-bottom: 12px;
+  animation: trophyBounce 1s ease infinite alternate;
+}
+
+@keyframes trophyBounce {
+  from { transform: scale(1) rotate(-3deg); }
+  to { transform: scale(1.1) rotate(3deg); }
+}
+
+.result-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+
+.result-winner {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.stats-table {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+
+.stats-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 8px 10px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.stats-table th {
+  font-weight: 800;
+  border-bottom: 2px solid var(--border);
+}
+
+.stats-table td {
+  border-bottom: 1px solid var(--border);
+}
+
+.stats-table tr:last-child td {
+  border-bottom: none;
+}
+
+.result-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn-play-again {
+  padding: 14px 24px;
+  background: linear-gradient(135deg, var(--green), #219a52);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.btn-play-again:active {
+  transform: scale(0.95);
+}
+
+.btn-home {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 24px;
+  background: var(--card-bg);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  text-decoration: none;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 800;
+  transition: transform 0.15s;
+}
+
+.btn-home:active {
+  transform: scale(0.95);
+}
+
+/* ===== ANIMATIONS ===== */
+
+/* Shake - obstacle hit */
+@keyframes shake {
+  0%, 100% { transform: translateX(var(--car-x)) translateY(-50%); }
+  20% { transform: translateX(calc(var(--car-x) - 6px)) translateY(-50%); }
+  40% { transform: translateX(calc(var(--car-x) + 6px)) translateY(-50%); }
+  60% { transform: translateX(calc(var(--car-x) - 4px)) translateY(-50%); }
+  80% { transform: translateX(calc(var(--car-x) + 4px)) translateY(-50%); }
+}
+
+.car.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Speed Lines - boost effect */
+@keyframes speedLines {
+  0% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(-30px); }
+}
+
+.car.boost::after {
+  content: '💨';
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  animation: speedLines 0.5s ease-out forwards;
+}
+
+/* Star Burst - correct answer */
+@keyframes starBurst {
+  0% { opacity: 1; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.5); }
+  100% { opacity: 0; transform: scale(2); }
+}
+
+.car.star::before {
+  content: '⭐';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  animation: starBurst 0.4s ease-out forwards;
+}
+
+/* Confetti - win celebration */
+@keyframes confetti {
+  0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.confetti-piece {
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: confetti 2.5s ease-in forwards;
+}
+
+/* Timer color transitions */
+.timer-bar {
+  transition: width 0.1s linear, background 0.3s;
+}
+
+/* ===== RESPONSIVE LAYOUT ===== */
+
+/* Narrow screens (<500px): vertical stacked layout */
+@media (max-width: 499px) {
+  .answer-zones {
+    flex-direction: column;
+  }
+
+  .answer-zone {
+    min-height: 120px;
+  }
+
+  .zone-buttons {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .track-area {
+    padding: 8px;
+  }
+
+  .lane {
+    height: 44px;
+  }
+
+  .tile {
+    width: 34px;
+    height: 34px;
+  }
+
+  .car {
+    font-size: 1.5rem;
+  }
+
+  .question-text {
+    font-size: 1rem;
+  }
+}
+
+/* Wide screens (>=500px): horizontal side-by-side */
+@media (min-width: 500px) {
+  .answer-zones {
+    flex-direction: row;
+  }
+
+  .answer-zone {
+    min-height: 160px;
+  }
+
+  #race-screen.active {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .track-area {
+    padding: 16px;
+  }
+
+  .question-area {
+    padding: 16px 20px;
+  }
+
+  .question-text {
+    font-size: 1.2rem;
+  }
+}
+
+/* Very narrow (320px minimum) */
+@media (max-width: 359px) {
+  .setup-container {
+    padding: 16px 10px;
+  }
+
+  .btn-option {
+    padding: 8px 6px;
+    font-size: 0.8rem;
+    min-width: 50px;
+  }
+
+  .btn-start {
+    font-size: 1rem;
+    padding: 14px;
+  }
+
+  .tile {
+    width: 28px;
+    height: 28px;
+  }
+
+  .car {
+    font-size: 1.3rem;
+  }
+}
+
+/* ===== SCREEN TRANSITIONS ===== */
+.screen {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.screen.active {
+  opacity: 1;
+}
