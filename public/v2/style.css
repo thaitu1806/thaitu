@@ -163,7 +163,7 @@ body {
 .q-timer-fill { height: 100%; background: var(--green); width: 100%; transition: width 0.1s linear; }
 .q-timer-fill.warn { background: #FF9800; }
 .q-timer-fill.danger { background: var(--red); }
-.q-text { font-size: 1.4rem; font-weight: bold; text-align: center; margin-bottom: 15px; min-height: 50px; display: flex; align-items: center; justify-content: center; line-height: 1.4; }
+.q-text { font-size: 1.4rem; font-weight: bold; text-align: center; margin-bottom: 15px; min-height: 50px; display: flex; align-items: center; justify-content: center; line-height: 1.4; white-space: pre-line; }
 .q-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .q-btn {
   padding: 16px; border: 2px solid #e0e0e0; border-radius: 12px; background: white;
