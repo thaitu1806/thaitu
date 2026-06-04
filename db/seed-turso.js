@@ -11,6 +11,7 @@ import { mathQuestionsHard } from './questions/math-hard.js';
 import { vietQuestionsEasy } from './questions/viet-easy.js';
 import { vietQuestionsMedium } from './questions/viet-medium.js';
 import { vietQuestionsHard } from './questions/viet-hard.js';
+import { extraMathEasy, extraMathMedium, extraMathHard, extraVietEasy, extraVietMedium, extraVietHard } from './questions/extra-questions.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -24,14 +25,24 @@ async function seed() {
   const schema = readFileSync(join(__dirname, 'schema.sql'), 'utf-8');
   await db.executeMultiple(schema);
 
+  // Clear existing questions to avoid duplicates
+  console.log('Clearing old questions...');
+  await db.execute('DELETE FROM questions');
+
   console.log('Seeding questions...');
   const allQuestions = [
     ...mathQuestionsEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy' })),
+    ...extraMathEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy' })),
     ...mathQuestionsMedium.map(q => ({ ...q, subject: 'math', difficulty: 'medium' })),
+    ...extraMathMedium.map(q => ({ ...q, subject: 'math', difficulty: 'medium' })),
     ...mathQuestionsHard.map(q => ({ ...q, subject: 'math', difficulty: 'hard' })),
+    ...extraMathHard.map(q => ({ ...q, subject: 'math', difficulty: 'hard' })),
     ...vietQuestionsEasy.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'easy' })),
+    ...extraVietEasy.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'easy' })),
     ...vietQuestionsMedium.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'medium' })),
+    ...extraVietMedium.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'medium' })),
     ...vietQuestionsHard.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'hard' })),
+    ...extraVietHard.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'hard' })),
   ];
 
   // Use batch insert for better reliability
