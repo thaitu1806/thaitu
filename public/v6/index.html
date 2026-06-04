@@ -70,42 +70,9 @@
 
     <!-- RACE SCREEN -->
     <section id="race-screen" class="screen">
-      <!-- Track Area -->
-      <div class="track-area">
-        <div class="track-wrapper">
-          <div class="race-track" id="race-track">
-            <div class="lane lane-p1" id="lane-p1">
-              <div class="car car-p1" id="car-p1">🚗</div>
-            </div>
-            <div class="lane lane-p2" id="lane-p2">
-              <div class="car car-p2" id="car-p2">🚙</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Timer -->
-      <div class="timer-bar-container">
-        <div class="timer-bar" id="timer-bar"></div>
-      </div>
-
-      <!-- Round Info -->
-      <div class="round-info">
-        <span class="round-counter" id="round-counter">Vòng 1</span>
-      </div>
-
-      <!-- Question -->
-      <div class="question-area">
-        <p class="question-text" id="question-text">Đang tải câu hỏi...</p>
-      </div>
-
-      <!-- Answer Zones -->
-      <div class="answer-zones">
-        <!-- P1 Zone (Left / Top) -->
-        <div class="answer-zone zone-p1" id="zone-p1">
-          <div class="zone-header">
-            <span class="zone-name">🚗 <span id="az-p1-name">Xe Đỏ</span></span>
-          </div>
+      <!-- P1 Zone (Top - rotated 180° for player sitting opposite) -->
+      <div class="answer-zone zone-p1" id="zone-p1">
+        <div class="zone-inner">
           <div class="zone-buttons" id="p1-buttons">
             <button class="ans-btn p1-btn" data-opt="a">A</button>
             <button class="ans-btn p1-btn" data-opt="b">B</button>
@@ -113,10 +80,45 @@
             <button class="ans-btn p1-btn" data-opt="d">D</button>
           </div>
           <div class="zone-status" id="p1-status"></div>
+          <div class="zone-header">
+            <span class="zone-name">🚗 <span id="az-p1-name">Xe Đỏ</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle Area: Track + Question -->
+      <div class="race-middle">
+        <!-- Track Area -->
+        <div class="track-area">
+          <div class="track-wrapper">
+            <div class="race-track" id="race-track">
+              <div class="lane lane-p1" id="lane-p1">
+                <div class="car car-p1" id="car-p1">🚗</div>
+              </div>
+              <div class="lane lane-p2" id="lane-p2">
+                <div class="car car-p2" id="car-p2">🚙</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- P2 Zone (Right / Bottom) -->
-        <div class="answer-zone zone-p2" id="zone-p2">
+        <!-- Timer -->
+        <div class="timer-bar-container">
+          <div class="timer-bar" id="timer-bar"></div>
+        </div>
+
+        <!-- Round + Question -->
+        <div class="round-info">
+          <span class="round-counter" id="round-counter">Vòng 1</span>
+        </div>
+        <div class="question-area">
+          <p class="question-text" id="question-text">Đang tải câu hỏi...</p>
+        </div>
+      </div>
+
+      <!-- P2 Zone (Bottom - normal orientation) -->
+      <div class="answer-zone zone-p2" id="zone-p2">
+        <div class="zone-inner">
           <div class="zone-header">
             <span class="zone-name">🚙 <span id="az-p2-name">Xe Xanh</span></span>
           </div>
