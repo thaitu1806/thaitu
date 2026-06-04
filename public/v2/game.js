@@ -23,6 +23,12 @@ const ZOMBIE_TYPES = [
   { id: 'boss', emoji: '🐉', hp: 8, speed: 0.4, name: 'Rồng Boss' },
 ];
 
+// Random emoji sets for visual variety each game
+const ZOMBIE_SET = ['💀', '🧟', '👻', '👹', '👺', '🤖', '👾', '🦇', '🐛', '🦠','🎃', '☠️', '🕷️', '🦂', '🐍', '🦎', '🐲', '🐉', '🦖', '🦕','🐊', '🦈', '🐙', '🦑', '🪳', '🪲', '🐜', '🦗', '🕸️', '🦟','🐺', '🦁', '🐗', '🦍', '🦬', '🐏', '🦏', '🐻', '🧛', '🧙'];
+const BULLET_SET = ['☄️', '🔥', '⚡', '💫', '🌟', '🚀', '🎯', '💣', '🪨', '🌊','🏹', '🗡️', '🪃', '🛡️', '⚔️', '🔱', '💎', '🧨', '🎱', '🪓','🌩️', '❄️', '🌪️', '☀️', '🌶️', '🍉', '🥊', '🎾', '⚾', '🏈','🪁', '🎳', '🧊', '💧', '🫧', '🌀', '⭐', '🔔', '🎵', '🍳'];
+const EXPLOSION_SET = ['💥', '🔥', '✨', '⭐', '🌟', '💫', '🎆', '🎇', '☀️', '🌈','🎊', '🎉', '🪅', '🎀', '🌸', '🌺', '🏵️', '🌼', '💐', '🌻','⚡', '💢', '❗', '🔆', '🔅', '✳️', '❇️', '🌠', '☄️', '🫨','💨', '💦', '🫧', '🌀', '🎭', '🧧', '🪩', '🎪', '🎠', '🩵'];
+const PLANT_SET = ['🌻', '🌹', '🌵', '🍄', '🌲', '🎋', '🌸', '🪴', '🌿', '🏵️','🌷', '🌺', '🌼', '💐', '🍀', '☘️', '🌱', '🎍', '🪻', '🫘','🌾', '🎄', '🌳', '🍁', '🍂', '🍃', '🪷', '🪹', '🐚', '🥀','🍇', '🍊', '🍋', '🍓', '🫐', '🥝', '🥥', '🌽', '🥕', '🥦'];
+
 // Game state
 const G = {
   player: null,
@@ -41,11 +47,13 @@ function saveGame() {
   // Sync to server if profile exists
   const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
   if (profile?.id) {
-    fetch(`/api/players/${profile.id}/progress/v2`, {
+    return fetch(`/api/players/${profile.id}/progress/v2`, {
       method: 'PUT', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ level: G.save.level, stars: G.save.stars, coins: G.save.coins, plants: G.save.plants, powerups: G.save.powerups }),
-    }).catch(() => {});
+    }).then(r => { if (!r.ok) console.warn('Save progress failed:', r.status); })
+      .catch(e => console.warn('Save progress error:', e));
   }
+  return Promise.resolve();
 }
 async function loadGame() {
   // Try load from server first
@@ -67,25 +75,33 @@ async function loadGame() {
         return;
       }
     } catch {}
-    // Server has no data for this player - start fresh (don't use stale localStorage)
+    // Server has no data - try localStorage as fallback before starting fresh
+    const local = localStorage.getItem('hocvui_v2');
+    if (local) {
+      const parsed = JSON.parse(local);
+      if (parsed.name === profile.name && parsed.level > 1) {
+        G.save = { ...G.save, ...parsed };
+        G.save.level = Number(G.save.level);
+        G.save.coins = Number(G.save.coins) || 0;
+        // Push local progress to server
+        saveGame();
+        return;
+      }
+    }
     G.save.name = profile.name;
     return;
   }
-  // No profile - try localStorage as last resort
+  // No profile - use localStorage directly (guest mode)
   const local = localStorage.getItem('hocvui_v2');
   if (local) {
     const parsed = JSON.parse(local);
-    // Only use if same player name
-    const currentProfile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
-    if (currentProfile && parsed.name === currentProfile.name) {
-      G.save = { ...G.save, ...parsed };
-      G.save.level = Number(G.save.level);
-      G.save.coins = Number(G.save.coins) || 0;
-      // Validate level
-      const highestCompleted = Object.keys(G.save.stars).map(Number).filter(k => G.save.stars[k] > 0).sort((a, b) => b - a)[0] || 0;
-      if (G.save.level > highestCompleted + 1) {
-        G.save.level = highestCompleted + 1;
-      }
+    G.save = { ...G.save, ...parsed };
+    G.save.level = Number(G.save.level);
+    G.save.coins = Number(G.save.coins) || 0;
+    // Validate level
+    const highestCompleted = Object.keys(G.save.stars).map(Number).filter(k => G.save.stars[k] > 0).sort((a, b) => b - a)[0] || 0;
+    if (G.save.level > highestCompleted + 1) {
+      G.save.level = highestCompleted + 1;
     }
   }
 }
@@ -192,7 +208,8 @@ function renderMap() {
       if (isCompleted) node.innerHTML += `<div class="level-stars">${'⭐'.repeat(stars)}</div>`;
 
       if (!isLocked) {
-        node.addEventListener('click', () => startLevel(levelNum));
+        const lvl = levelNum;
+        node.addEventListener('click', () => startLevel(lvl));
       }
       levelsEl.appendChild(node);
     }
@@ -294,6 +311,10 @@ function spawnZombies() {
   const level = G.battle.level;
   const count = G.battle.questions.length;
 
+  // Pick random emojis for this battle's variety
+  G.battle.bulletEmoji = BULLET_SET[Math.floor(Math.random() * BULLET_SET.length)];
+  G.battle.explosionEmoji = EXPLOSION_SET[Math.floor(Math.random() * EXPLOSION_SET.length)];
+
   G.battle.zombies = G.battle.questions.map((_, i) => {
     let type;
     if (G.battle.isBoss && i === count - 1) {
@@ -305,7 +326,9 @@ function spawnZombies() {
     } else {
       type = ZOMBIE_TYPES[0]; // normal
     }
-    return { ...type, currentHp: type.hp, position: 0, alive: true };
+    // Assign random emoji from ZOMBIE_SET for visual variety
+    const randomEmoji = ZOMBIE_SET[Math.floor(Math.random() * ZOMBIE_SET.length)];
+    return { ...type, emoji: randomEmoji, currentHp: type.hp, position: 0, alive: true };
   });
 
   document.getElementById('wave-display').textContent = `👾 1/${count}`;
@@ -324,8 +347,9 @@ function nextZombie() {
 function renderZombie() {
   const container = document.getElementById('zombies-container');
   const z = G.battle.currentZombie;
+  const variantClass = z.id === 'boss' ? 'boss' : z.id === 'fast' ? 'fast' : z.id === 'strong' ? 'strong' : z.id === 'shield' ? 'shield' : '';
   container.innerHTML = `
-    <div class="zombie-entity" id="active-zombie" style="right:${z.position}%">
+    <div class="zombie-entity ${variantClass}" id="active-zombie" style="right:${z.position}%">
       ${z.hp > 1 ? `<div class="zombie-hp"><div class="zombie-hp-fill" style="width:${100 * z.currentHp / z.hp}%"></div></div>` : ''}
       ${z.emoji}
     </div>
@@ -339,7 +363,20 @@ function animateZombieHit() {
 
 function animateZombieDead() {
   const el = document.getElementById('active-zombie');
-  if (el) el.classList.add('dead');
+  if (el) {
+    el.classList.add('dead');
+    // Death particles
+    const container = document.getElementById('projectiles-container');
+    const deathEmojis = ['💀', '👻', '💨', '✨', '🌟'];
+    for (let i = 0; i < 8; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.textContent = deathEmojis[Math.floor(Math.random() * deathEmojis.length)];
+      p.style.cssText = `right: ${el.style.right}; top: 50%; font-size: ${12 + Math.random() * 16}px; animation: particleFly ${0.5 + Math.random() * 0.5}s forwards; --dx: ${(Math.random() - 0.5) * 120}px; --dy: ${-40 - Math.random() * 80}px;`;
+      container.appendChild(p);
+      setTimeout(() => p.remove(), 1000);
+    }
+  }
 }
 
 function moveZombieCloser() {
@@ -385,6 +422,7 @@ function startTimer() {
   fill.className = 'q-timer-fill';
 
   clearInterval(G.battle.timer);
+  clearInterval(G.battle.creepTimer);
   const speedMultiplier = G.save.timerSpeed === 'slow' ? 1.5 : G.save.timerSpeed === 'fast' ? 0.6 : 1;
   const baseSpeed = G.battle.frozen ? 300 : G.battle.level > 30 ? 120 : G.battle.level > 15 ? 150 : 200;
   const speed = Math.round(baseSpeed * speedMultiplier);
@@ -397,9 +435,30 @@ function startTimer() {
 
     if (G.battle.timeLeft <= 0) {
       clearInterval(G.battle.timer);
+      clearInterval(G.battle.creepTimer);
       handleWrong(null);
     }
   }, speed);
+
+  // Zombie auto-creep: slowly moves toward house based on zombie speed
+  const z = G.battle.currentZombie;
+  const creepInterval = G.battle.frozen ? 3000 : Math.round(2000 / (z ? z.speed : 1));
+  G.battle.creepTimer = setInterval(() => {
+    if (!G.battle.currentZombie || !G.battle.currentZombie.alive) { clearInterval(G.battle.creepTimer); return; }
+    G.battle.currentZombie.position += 3;
+    const el = document.getElementById('active-zombie');
+    if (el) el.style.right = Math.min(G.battle.currentZombie.position, 80) + '%';
+
+    if (G.battle.currentZombie.position >= 80) {
+      clearInterval(G.battle.creepTimer);
+      G.battle.hp--;
+      document.getElementById('hp-display').textContent = `❤️ ${G.battle.hp}`;
+      if (G.battle.hp <= 0) { clearInterval(G.battle.timer); loseLevel(); return; }
+      G.battle.currentZombie.position = 0;
+      if (el) el.style.right = '0%';
+      playSound('wrong');
+    }
+  }, creepInterval);
 }
 
 // === ANSWER HANDLING ===
@@ -493,29 +552,55 @@ function showCombo() {
 function shootProjectile() {
   const container = document.getElementById('projectiles-container');
   const z = G.battle.currentZombie;
-  const targetLeft = 'calc(' + (100 - (z ? z.position : 0) - 15) + '% - 20px)';
+  const isMobile = window.innerWidth <= 600;
+  const targetLeft = isMobile
+    ? 'calc(' + (100 - (z ? z.position : 0) - 15) + '% - 20px)'
+    : 'calc(' + (100 - (z ? z.position : 0) - 15) + '% + 20px)';
+
+  // Plant attack animation
+  const plantEl = document.getElementById('active-plant');
+  plantEl.classList.add('attack');
+  setTimeout(() => plantEl.classList.remove('attack'), 300);
+
+  // Use random bullet emoji from this battle's set
+  const bulletEmoji = G.battle.bulletEmoji || '☄️';
+  const explosionEmoji = G.battle.explosionEmoji || '💥';
 
   const proj = document.createElement('div');
   proj.className = 'projectile';
-  proj.textContent = '☄️';
+  proj.textContent = bulletEmoji;
   proj.style.left = '0%';
   proj.style.setProperty('--ztarget', targetLeft);
   proj.style.animation = 'projFly 0.5s forwards';
   container.appendChild(proj);
   playSound('shoot');
 
-  // After reaching zombie → explode at position
+  // After reaching zombie → explode at position with particles
   setTimeout(() => {
     proj.style.left = targetLeft;
-    proj.textContent = '💥';
+    proj.textContent = explosionEmoji;
     proj.style.animation = 'projExplode 0.4s forwards';
+    createParticles(container, targetLeft);
     setTimeout(() => proj.remove(), 400);
   }, 500);
+}
+
+function createParticles(container, targetLeft) {
+  const emojis = ['⭐', '✨', '💫', '🔥', '💥'];
+  for (let i = 0; i < 6; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    p.style.cssText = `left: ${targetLeft}; top: 50%; font-size: ${10 + Math.random() * 14}px; animation: particleFly ${0.4 + Math.random() * 0.4}s forwards; --dx: ${(Math.random() - 0.5) * 80}px; --dy: ${-30 - Math.random() * 60}px;`;
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 800);
+  }
 }
 
 // === WIN / LOSE ===
 function winLevel() {
   clearInterval(G.battle.timer);
+  clearInterval(G.battle.creepTimer);
   const pct = G.battle.correct / G.battle.total;
   const stars = pct >= 0.9 ? 3 : pct >= 0.7 ? 2 : 1;
   const coins = G.battle.score + (stars * 10);
@@ -538,7 +623,25 @@ function winLevel() {
     }
   });
 
-  saveGame();
+  saveGame().then(() => {
+    // Save game session for admin stats (after progress is saved)
+    const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+    if (profile?.id) {
+      fetch('/api/sessions', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          player_id: profile.id,
+          subject: 'mixed',
+          difficulty: G.battle.difficulty || 'easy',
+          correct_answers: G.battle.correct,
+          total_questions: G.battle.total,
+          score: G.battle.score,
+          stars_earned: stars,
+          combo_max: G.battle.maxCombo,
+        }),
+      }).catch(() => {});
+    }
+  });
   updateDailyProgress(G.battle.correct, G.battle.maxCombo, pct >= 1);
 
   // UI
@@ -561,6 +664,7 @@ function winLevel() {
 
 function loseLevel() {
   clearInterval(G.battle.timer);
+  clearInterval(G.battle.creepTimer);
   playSound('gameover');
   showScreen('gameover-screen');
 }

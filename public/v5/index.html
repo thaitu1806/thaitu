@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🎲 Cờ Cá Ngựa - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- SETUP SCREEN -->
+    <section id="setup-screen" class="screen active">
+      <div class="setup-container">
+        <h1 class="setup-title">🎲 Cờ Cá Ngựa</h1>
+        <p class="setup-subtitle">Chọn người chơi và bắt đầu!</p>
+
+        <!-- Player Count Selector -->
+        <div class="setup-section">
+          <label class="setup-label">👥 Số người chơi</label>
+          <div class="btn-group" id="player-count-group">
+            <button class="btn-option active" data-count="2">2</button>
+            <button class="btn-option" data-count="3">3</button>
+            <button class="btn-option" data-count="4">4</button>
+          </div>
+        </div>
+
+        <!-- Player Slots -->
+        <div class="setup-section">
+          <label class="setup-label">🎮 Người chơi</label>
+          <div id="player-slots" class="player-slots">
+            <!-- Dynamically generated -->
+          </div>
+        </div>
+
+        <!-- Subject Selector -->
+        <div class="setup-section">
+          <label class="setup-label">📚 Môn học</label>
+          <div class="btn-group" id="subject-group">
+            <button class="btn-option active" data-subject="math">Toán</button>
+            <button class="btn-option" data-subject="vietnamese">Tiếng Việt</button>
+            <button class="btn-option" data-subject="mix">Trộn</button>
+          </div>
+        </div>
+
+        <!-- Difficulty Selector -->
+        <div class="setup-section">
+          <label class="setup-label">📊 Mức độ</label>
+          <div class="btn-group" id="difficulty-group">
+            <button class="btn-option active" data-difficulty="easy">Dễ</button>
+            <button class="btn-option" data-difficulty="medium">Trung bình</button>
+            <button class="btn-option" data-difficulty="hard">Khó</button>
+          </div>
+        </div>
+
+        <!-- Start Button -->
+        <button class="btn-start" id="btn-start" disabled>🚀 Bắt đầu!</button>
+
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- BOARD/GAME SCREEN -->
+    <section id="board-screen" class="screen">
+    </section>
+
+    <!-- VICTORY SCREEN -->
+    <section id="victory-screen" class="screen">
+    </section>
+  </div>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>

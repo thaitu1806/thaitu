@@ -670,9 +670,9 @@ async function showPlayerDetail(playerId) {
 
     const player = history.player || { name: 'Unknown', created_at: '' };
     const sessions = history.sessions || [];
-    const missed = missed || [];
-    const byCategory = byCategory || [];
-    const progress = progress || [];
+    const missed = weakness.missed || [];
+    const byCategory = weakness.byCategory || [];
+    const progress = weakness.progress || [];
 
     modal.innerHTML = `
       <div class="modal-content">

@@ -38,6 +38,7 @@ app.use(express.static(join(__dirname, 'public')));
 app.use('/v2', express.static(join(__dirname, 'public/v2')));
 app.use('/v3', express.static(join(__dirname, 'public/v3')));
 app.use('/v4', express.static(join(__dirname, 'public/v4')));
+app.use('/v5', express.static(join(__dirname, 'public/v5')));
 
 // Home page -> game selector
 app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/home.html')));
@@ -72,6 +73,14 @@ app.post('/api/sessions', async (req, res) => {
       sql: `INSERT INTO game_sessions (player_id, subject, difficulty, score, total_questions, correct_answers, stars_earned, combo_max) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [player_id, subject, difficulty, score, total_questions, correct_answers, stars_earned, combo_max],
     });
+    // Also update adventure_level from player_progress if available
+    const prog = await db.execute({ sql: `SELECT progress_data FROM player_progress WHERE player_id = ? AND game_mode = 'v2'`, args: [player_id] });
+    if (prog.rows.length > 0) {
+      const data = JSON.parse(prog.rows[0].progress_data);
+      if (data.level) {
+        await db.execute({ sql: `UPDATE players SET adventure_level = ? WHERE id = ?`, args: [parseInt(data.level), player_id] });
+      }
+    }
     res.json({ id: result.lastInsertRowid });
   } catch (err) {
     res.status(500).json({ error: err.message });
