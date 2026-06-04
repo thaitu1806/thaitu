@@ -168,8 +168,11 @@ body {
 .q-btn {
   padding: 16px; border: 2px solid #e0e0e0; border-radius: 12px; background: white;
   font-size: 1.2rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
-.q-btn:hover { border-color: var(--green); background: #f1f8e9; }
+@media (hover: hover) {
+  .q-btn:hover { border-color: var(--green); background: #f1f8e9; }
+}
 .q-btn.correct { border-color: var(--green); background: #c8e6c9; }
 .q-btn.wrong { border-color: var(--red); background: #ffcdd2; }
 .q-btn.eliminated { opacity: 0.3; pointer-events: none; text-decoration: line-through; }

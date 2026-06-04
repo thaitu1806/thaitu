@@ -409,7 +409,7 @@ function showQuestion() {
   btns[1].textContent = `B. ${q.option_b}`;
   btns[2].textContent = `C. ${q.option_c}`;
   btns[3].textContent = `D. ${q.option_d}`;
-  btns.forEach(b => { b.className = 'q-btn'; b.disabled = false; });
+  btns.forEach(b => { b.className = 'q-btn'; b.disabled = false; b.blur(); });
 
   G.battle.questionStart = Date.now();
   startTimer();
