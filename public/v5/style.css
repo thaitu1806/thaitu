@@ -162,6 +162,25 @@ body {
   text-overflow: ellipsis;
 }
 
+.player-slot-name-input {
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  border-bottom: 1.5px dashed #ccc;
+  background: transparent;
+  padding: 2px 4px;
+  width: 100%;
+  max-width: 140px;
+  font-family: inherit;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.player-slot-name-input:focus {
+  border-bottom-color: #4facfe;
+}
+
 .player-slot-type {
   font-size: 0.8rem;
   color: var(--text-light);

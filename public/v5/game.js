@@ -194,7 +194,7 @@ const SetupManager = {
       slot.innerHTML = `
         <div class="player-slot-color color-${player.color}">${COLOR_EMOJIS[player.color]}</div>
         <div class="player-slot-info">
-          <div class="player-slot-name">${player.name}</div>
+          <input type="text" class="player-slot-name-input" data-slot="${index}" value="${player.name}" maxlength="12">
           <div class="player-slot-type">${player.type === 'human' ? '👤 Người chơi' : '🤖 Máy'}</div>
         </div>
         <button class="btn-toggle-type ${player.type === 'human' ? 'is-human' : 'is-bot'}" data-slot="${index}">
@@ -202,6 +202,19 @@ const SetupManager = {
         </button>
       `;
       container.appendChild(slot);
+    });
+
+    // Bind name inputs
+    container.querySelectorAll('.player-slot-name-input').forEach(input => {
+      input.addEventListener('change', () => {
+        const slotIndex = parseInt(input.dataset.slot);
+        const newName = input.value.trim();
+        if (newName) {
+          this.config.players[slotIndex].name = newName;
+        } else {
+          input.value = this.config.players[slotIndex].name;
+        }
+      });
     });
 
     // Bind toggle buttons
