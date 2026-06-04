@@ -73,6 +73,10 @@
       <!-- P1 Zone (Top - rotated 180° for player sitting opposite) -->
       <div class="answer-zone zone-p1" id="zone-p1">
         <div class="zone-inner">
+          <div class="zone-header">
+            <span class="zone-name">🚗 <span id="az-p1-name">Xe Đỏ</span></span>
+          </div>
+          <div class="zone-q" id="p1-question"></div>
           <div class="zone-buttons" id="p1-buttons">
             <button class="ans-btn p1-btn" data-opt="a">A</button>
             <button class="ans-btn p1-btn" data-opt="b">B</button>
@@ -80,15 +84,11 @@
             <button class="ans-btn p1-btn" data-opt="d">D</button>
           </div>
           <div class="zone-status" id="p1-status"></div>
-          <div class="zone-header">
-            <span class="zone-name">🚗 <span id="az-p1-name">Xe Đỏ</span></span>
-          </div>
         </div>
       </div>
 
-      <!-- Middle Area: Track + Question -->
+      <!-- Middle Area: Track + Timer -->
       <div class="race-middle">
-        <!-- Track Area -->
         <div class="track-area">
           <div class="track-wrapper">
             <div class="race-track" id="race-track">
@@ -101,18 +101,11 @@
             </div>
           </div>
         </div>
-
-        <!-- Timer -->
         <div class="timer-bar-container">
           <div class="timer-bar" id="timer-bar"></div>
         </div>
-
-        <!-- Round + Question -->
         <div class="round-info">
           <span class="round-counter" id="round-counter">Vòng 1</span>
-        </div>
-        <div class="question-area">
-          <p class="question-text" id="question-text">Đang tải câu hỏi...</p>
         </div>
       </div>
 
@@ -122,6 +115,7 @@
           <div class="zone-header">
             <span class="zone-name">🚙 <span id="az-p2-name">Xe Xanh</span></span>
           </div>
+          <div class="zone-q" id="p2-question"></div>
           <div class="zone-buttons" id="p2-buttons">
             <button class="ans-btn p2-btn" data-opt="a">A</button>
             <button class="ans-btn p2-btn" data-opt="b">B</button>

@@ -192,9 +192,10 @@ function startRound() {
   // Update round counter
   document.getElementById('round-counter').textContent = `Vòng ${State.round.number}`;
 
-  // Display question
+  // Display question in both zones
   const q = State.round.question;
-  document.getElementById('question-text').textContent = q.question_text;
+  document.getElementById('p1-question').textContent = q.question_text;
+  document.getElementById('p2-question').textContent = q.question_text;
 
   // Set button labels
   const opts = [q.option_a, q.option_b, q.option_c, q.option_d];

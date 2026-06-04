@@ -231,21 +231,29 @@ body {
 }
 
 .zone-name {
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 800;
+}
+
+.zone-q {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 6px 4px;
+  min-height: 28px;
 }
 
 .zone-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: 8px;
 }
 
 .zone-status {
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  min-height: 18px;
+  min-height: 20px;
 }
 
 /* Middle area: track + timer + question */
@@ -418,18 +426,19 @@ body {
 
 /* Answer Buttons */
 .ans-btn {
-  padding: 12px 8px;
-  border: 2px solid var(--border);
-  border-radius: 10px;
+  padding: 16px 10px;
+  border: 2.5px solid var(--border);
+  border-radius: 12px;
   background: var(--card-bg);
   font-family: var(--font);
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
   text-align: center;
   word-break: break-word;
   -webkit-tap-highlight-color: transparent;
+  min-height: 48px;
 }
 
 .ans-btn:active:not(:disabled) {
