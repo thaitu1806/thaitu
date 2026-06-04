@@ -768,7 +768,7 @@ function formatQuestionText(text) {
   const opLine = lines[2] ? lines[2].trim() : '';
   const op = opLine.charAt(0);
   const num2 = opLine.substring(1).trim();
-  return `<div class="vertical-math"><div class="vm-row"><span class="vm-op-space"></span><span class="vm-num">${num1}</span></div><div class="vm-row"><span class="vm-op">${op}</span><span class="vm-num">${num2}</span></div><div class="vm-line"></div></div>`;
+  return `<div class="vertical-math"><div class="vm-num">${num1}</div><div class="vm-op">${op}</div><div class="vm-num">${num2}</div><div class="vm-line"></div></div>`;
 }
 
 // === AUDIO ===

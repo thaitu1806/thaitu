@@ -164,12 +164,10 @@ body {
 .q-timer-fill.warn { background: #FF9800; }
 .q-timer-fill.danger { background: var(--red); }
 .q-text { font-size: 1.4rem; font-weight: bold; text-align: center; margin-bottom: 15px; min-height: 50px; display: flex; align-items: center; justify-content: center; line-height: 1.4; white-space: pre-line; }
-.vertical-math { text-align: center; display: inline-block; }
-.vm-row { display: flex; align-items: baseline; }
-.vm-op-space { width: 22px; }
-.vm-op { width: 22px; font-size: 0.7em; font-weight: bold; text-align: left; }
-.vm-num { font-size: 1.5em; font-weight: 900; text-align: right; min-width: 45px; }
-.vm-line { border-top: 3px solid #333; margin-top: 4px; }
+.vertical-math { display: inline-flex; flex-direction: column; align-items: center; }
+.vm-num { font-size: 1.7em; font-weight: 900; }
+.vm-op { font-size: 1em; font-weight: bold; margin: 2px 0; }
+.vm-line { border-top: 3px solid #333; width: 70px; margin-top: 4px; }
 .q-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .q-btn {
   padding: 16px; border: 2px solid #e0e0e0; border-radius: 12px; background: white;
