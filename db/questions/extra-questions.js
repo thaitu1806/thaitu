@@ -85,15 +85,15 @@ export const extraMathEasy = [
 
 // === TOÁN TRUNG BÌNH (30 câu) - Cộng trừ có nhớ trong 100, nhân chia, đo lường, giờ ===
 export const extraMathMedium = [
-  // Cộng trừ có nhớ
-  { question_text: "34 + 29 = ?", option_a: "63", option_b: "62", option_c: "64", option_d: "61", correct_answer: "a" },
-  { question_text: "45 + 38 = ?", option_a: "82", option_b: "83", option_c: "81", option_d: "84", correct_answer: "b" },
-  { question_text: "56 + 27 = ?", option_a: "82", option_b: "84", option_c: "83", option_d: "81", correct_answer: "c" },
-  { question_text: "68 + 15 = ?", option_a: "82", option_b: "84", option_c: "81", option_d: "83", correct_answer: "d" },
-  { question_text: "72 - 35 = ?", option_a: "37", option_b: "36", option_c: "38", option_d: "35", correct_answer: "a" },
-  { question_text: "83 - 47 = ?", option_a: "35", option_b: "36", option_c: "37", option_d: "34", correct_answer: "b" },
-  { question_text: "91 - 54 = ?", option_a: "36", option_b: "38", option_c: "37", option_d: "35", correct_answer: "c" },
-  { question_text: "65 - 28 = ?", option_a: "36", option_b: "38", option_c: "35", option_d: "37", correct_answer: "d" },
+  // Cộng trừ có nhớ - đặt tính hàng dọc
+  { question_text: "Đặt tính:\n  34\n+ 29\n———", option_a: "63", option_b: "62", option_c: "64", option_d: "61", correct_answer: "a" },
+  { question_text: "Đặt tính:\n  45\n+ 38\n———", option_a: "82", option_b: "83", option_c: "81", option_d: "84", correct_answer: "b" },
+  { question_text: "Đặt tính:\n  56\n+ 27\n———", option_a: "82", option_b: "84", option_c: "83", option_d: "81", correct_answer: "c" },
+  { question_text: "Đặt tính:\n  68\n+ 15\n———", option_a: "82", option_b: "84", option_c: "81", option_d: "83", correct_answer: "d" },
+  { question_text: "Đặt tính:\n  72\n- 35\n———", option_a: "37", option_b: "36", option_c: "38", option_d: "35", correct_answer: "a" },
+  { question_text: "Đặt tính:\n  83\n- 47\n———", option_a: "35", option_b: "36", option_c: "37", option_d: "34", correct_answer: "b" },
+  { question_text: "Đặt tính:\n  91\n- 54\n———", option_a: "36", option_b: "38", option_c: "37", option_d: "35", correct_answer: "c" },
+  { question_text: "Đặt tính:\n  65\n- 28\n———", option_a: "36", option_b: "38", option_c: "35", option_d: "37", correct_answer: "d" },
   // Bảng nhân
   { question_text: "3 x 7 = ?", option_a: "21", option_b: "18", option_c: "24", option_d: "15", correct_answer: "a" },
   { question_text: "4 x 6 = ?", option_a: "20", option_b: "24", option_c: "28", option_d: "16", correct_answer: "b" },
