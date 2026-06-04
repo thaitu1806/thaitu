@@ -56,6 +56,8 @@ async function loadGame() {
       const data = await res.json();
       if (data && data.level) {
         G.save = { ...G.save, ...data, name: profile.name };
+        G.save.level = Number(G.save.level);
+        G.save.coins = Number(G.save.coins) || 0;
         // Validate: level should not exceed highest completed level + 1
         const highestCompleted = Object.keys(G.save.stars).map(Number).filter(k => G.save.stars[k] > 0).sort((a, b) => b - a)[0] || 0;
         if (G.save.level > highestCompleted + 1) {
@@ -77,6 +79,8 @@ async function loadGame() {
     const currentProfile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
     if (currentProfile && parsed.name === currentProfile.name) {
       G.save = { ...G.save, ...parsed };
+      G.save.level = Number(G.save.level);
+      G.save.coins = Number(G.save.coins) || 0;
       // Validate level
       const highestCompleted = Object.keys(G.save.stars).map(Number).filter(k => G.save.stars[k] > 0).sort((a, b) => b - a)[0] || 0;
       if (G.save.level > highestCompleted + 1) {
@@ -520,7 +524,7 @@ function winLevel() {
   const prevStars = G.save.stars[G.currentLevel] || 0;
   G.save.stars[G.currentLevel] = Math.max(prevStars, stars);
   // Only advance to next level (never skip levels)
-  if (G.currentLevel === G.save.level) {
+  if (Number(G.currentLevel) === Number(G.save.level)) {
     G.save.level = Math.min(G.save.level + 1, G.maxLevel);
   }
   G.save.coins += coins;
