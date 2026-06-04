@@ -5,6 +5,7 @@ import { mathQuestionsHard } from './questions/math-hard.js';
 import { vietQuestionsEasy } from './questions/viet-easy.js';
 import { vietQuestionsMedium } from './questions/viet-medium.js';
 import { vietQuestionsHard } from './questions/viet-hard.js';
+import { extraMathEasy, extraMathMedium, extraMathHard, extraVietEasy, extraVietMedium, extraVietHard } from './questions/extra-questions.js';
 
 async function seed() {
   console.log('Initializing database...');
@@ -16,11 +17,17 @@ async function seed() {
 
   const allQuestions = [
     ...mathQuestionsEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy' })),
+    ...extraMathEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy' })),
     ...mathQuestionsMedium.map(q => ({ ...q, subject: 'math', difficulty: 'medium' })),
+    ...extraMathMedium.map(q => ({ ...q, subject: 'math', difficulty: 'medium' })),
     ...mathQuestionsHard.map(q => ({ ...q, subject: 'math', difficulty: 'hard' })),
+    ...extraMathHard.map(q => ({ ...q, subject: 'math', difficulty: 'hard' })),
     ...vietQuestionsEasy.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'easy' })),
+    ...extraVietEasy.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'easy' })),
     ...vietQuestionsMedium.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'medium' })),
+    ...extraVietMedium.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'medium' })),
     ...vietQuestionsHard.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'hard' })),
+    ...extraVietHard.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'hard' })),
   ];
 
   console.log(`Seeding ${allQuestions.length} questions...`);
@@ -36,12 +43,12 @@ async function seed() {
   }
 
   console.log(`Done! Seeded ${allQuestions.length} questions.`);
-  console.log('- Math Easy:', mathQuestionsEasy.length);
-  console.log('- Math Medium:', mathQuestionsMedium.length);
-  console.log('- Math Hard:', mathQuestionsHard.length);
-  console.log('- Vietnamese Easy:', vietQuestionsEasy.length);
-  console.log('- Vietnamese Medium:', vietQuestionsMedium.length);
-  console.log('- Vietnamese Hard:', vietQuestionsHard.length);
+  console.log('- Math Easy:', mathQuestionsEasy.length + extraMathEasy.length);
+  console.log('- Math Medium:', mathQuestionsMedium.length + extraMathMedium.length);
+  console.log('- Math Hard:', mathQuestionsHard.length + extraMathHard.length);
+  console.log('- Vietnamese Easy:', vietQuestionsEasy.length + extraVietEasy.length);
+  console.log('- Vietnamese Medium:', vietQuestionsMedium.length + extraVietMedium.length);
+  console.log('- Vietnamese Hard:', vietQuestionsHard.length + extraVietHard.length);
 }
 
 seed().catch(console.error);
