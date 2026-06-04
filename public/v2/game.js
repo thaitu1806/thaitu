@@ -764,13 +764,11 @@ function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Mat
 function formatQuestionText(text) {
   if (!text.startsWith('Đặt tính:')) return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const lines = text.split('\n');
-  const title = lines[0];
   const num1 = lines[1] ? lines[1].trim() : '';
   const opLine = lines[2] ? lines[2].trim() : '';
   const op = opLine.charAt(0);
   const num2 = opLine.substring(1).trim();
-  const maxLen = Math.max(num1.length, num2.length);
-  return `<div class="vertical-math"><div class="vm-title">${title}</div><div class="vm-calc"><div class="vm-num">${num1.padStart(maxLen, '\u00A0')}</div><div class="vm-op-row"><span class="vm-op">${op}</span><span class="vm-num2">${num2.padStart(maxLen, '\u00A0')}</span></div><div class="vm-line"></div></div></div>`;
+  return `<div class="vertical-math"><div class="vm-row"><span class="vm-op-space"></span><span class="vm-num">${num1}</span></div><div class="vm-row"><span class="vm-op">${op}</span><span class="vm-num">${num2}</span></div><div class="vm-line"></div></div>`;
 }
 
 // === AUDIO ===

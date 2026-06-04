@@ -308,14 +308,12 @@ body {
   white-space: pre-line;
 }
 
-.vertical-math { text-align: center; }
-.vm-title { font-size: 0.9em; margin-bottom: 8px; }
-.vm-calc { display: inline-block; font-family: 'Courier New', monospace; font-size: 1.4em; text-align: right; }
-.vm-num { padding-right: 0; }
-.vm-op-row { display: flex; align-items: center; gap: 6px; }
-.vm-op { font-weight: bold; }
-.vm-num2 { }
-.vm-line { border-top: 3px solid #333; margin-top: 4px; width: 100%; }
+.vertical-math { text-align: center; display: inline-block; }
+.vm-row { display: flex; align-items: baseline; }
+.vm-op-space { width: 24px; }
+.vm-op { width: 24px; font-size: 0.7em; font-weight: bold; text-align: left; }
+.vm-num { font-family: 'Nunito', sans-serif; font-size: 1.6em; font-weight: 900; text-align: right; min-width: 50px; }
+.vm-line { border-top: 3px solid #333; margin-top: 4px; }
 
 .options-grid {
   display: grid;
