@@ -179,7 +179,7 @@ function showQuestion() {
   }
 
   const q = state.questions[state.currentIndex];
-  document.getElementById('question-text').textContent = q.question_text;
+  document.getElementById('question-text').innerHTML = formatQuestionText(q.question_text);
 
   const options = document.querySelectorAll('.option-btn');
   options[0].textContent = `A. ${q.option_a}`;
@@ -545,6 +545,21 @@ function generateFallbackQuestions() {
   if (state.subject === 'math') return mathEasy;
   return vietEasy;
 }
+
+// === FORMAT QUESTION TEXT (vertical math) ===
+function formatQuestionText(text) {
+  if (!text.startsWith('Đặt tính:')) return escapeHtml(text);
+  // Parse: "Đặt tính:\n  91\n- 63\n———"
+  const lines = text.split('\n');
+  const title = lines[0]; // "Đặt tính:"
+  const num1 = lines[1] ? lines[1].trim() : '';
+  const opLine = lines[2] ? lines[2].trim() : ''; // "+ 14" or "- 63"
+  const op = opLine.charAt(0); // "+" or "-"
+  const num2 = opLine.substring(1).trim();
+  const maxLen = Math.max(num1.length, num2.length);
+  return `<div class="vertical-math"><div class="vm-title">${escapeHtml(title)}</div><div class="vm-calc"><div class="vm-num">${num1.padStart(maxLen, '\u00A0')}</div><div class="vm-op-row"><span class="vm-op">${op}</span><span class="vm-num2">${num2.padStart(maxLen, '\u00A0')}</span></div><div class="vm-line"></div></div></div>`;
+}
+function escapeHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // === SOUND EFFECTS (Web Audio API - no files needed) ===
 const AudioCtx = window.AudioContext || window.webkitAudioContext;

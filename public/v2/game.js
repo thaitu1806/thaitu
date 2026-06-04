@@ -403,7 +403,7 @@ function showQuestion() {
   const badge = document.getElementById('q-type-badge');
   badge.textContent = q.subject === 'math' ? '🔢 Toán' : '📖 Tiếng Việt';
 
-  document.getElementById('q-text').textContent = q.question_text;
+  document.getElementById('q-text').innerHTML = formatQuestionText(q.question_text);
   const btns = document.querySelectorAll('.q-btn');
   btns[0].textContent = `A. ${q.option_a}`;
   btns[1].textContent = `B. ${q.option_b}`;
@@ -759,6 +759,19 @@ document.getElementById('close-daily').addEventListener('click', () => {
 function getZone(level) { let acc = 0; for (let i = 0; i < ZONES.length; i++) { acc += ZONES[i].levels; if (level <= acc) return i; } return ZONES.length - 1; }
 function getZoneStartLevel(zoneIdx) { let acc = 0; for (let i = 0; i < zoneIdx; i++) acc += ZONES[i].levels; return acc; }
 function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+
+// === FORMAT QUESTION TEXT (vertical math) ===
+function formatQuestionText(text) {
+  if (!text.startsWith('Đặt tính:')) return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const lines = text.split('\n');
+  const title = lines[0];
+  const num1 = lines[1] ? lines[1].trim() : '';
+  const opLine = lines[2] ? lines[2].trim() : '';
+  const op = opLine.charAt(0);
+  const num2 = opLine.substring(1).trim();
+  const maxLen = Math.max(num1.length, num2.length);
+  return `<div class="vertical-math"><div class="vm-title">${title}</div><div class="vm-calc"><div class="vm-num">${num1.padStart(maxLen, '\u00A0')}</div><div class="vm-op-row"><span class="vm-op">${op}</span><span class="vm-num2">${num2.padStart(maxLen, '\u00A0')}</span></div><div class="vm-line"></div></div></div>`;
+}
 
 // === AUDIO ===
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
