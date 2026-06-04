@@ -5,6 +5,11 @@ const ZONES = [
   { name: '🏔️ Núi Cao', levels: 10, bg: '#87CEEB' },
   { name: '🌋 Núi Lửa', levels: 10, bg: '#FF6B35' },
   { name: '🏰 Lâu Đài', levels: 10, bg: '#4a0e4e' },
+  { name: '🌊 Biển Sâu', levels: 10, bg: '#006994' },
+  { name: '🏜️ Sa Mạc', levels: 10, bg: '#C2B280' },
+  { name: '❄️ Băng Giá', levels: 10, bg: '#A5F2F3' },
+  { name: '🌌 Vũ Trụ', levels: 10, bg: '#1a1a2e' },
+  { name: '🐉 Hang Rồng', levels: 10, bg: '#8B0000' },
 ];
 
 const PLANTS = [
@@ -13,6 +18,11 @@ const PLANTS = [
   { id: 'cactus', emoji: '🌵', name: 'Xương Rồng', unlockLevel: 20, damage: 1, special: 'slow' },
   { id: 'mushroom', emoji: '🍄', name: 'Nấm', unlockLevel: 30, damage: 1, special: 'freeze' },
   { id: 'tree', emoji: '🌳', name: 'Cây Cổ Thụ', unlockLevel: 40, damage: 3 },
+  { id: 'coral', emoji: '🪸', name: 'San Hô', unlockLevel: 50, damage: 2, special: 'slow' },
+  { id: 'palm', emoji: '🌴', name: 'Cây Dừa', unlockLevel: 60, damage: 2 },
+  { id: 'crystal', emoji: '💎', name: 'Pha Lê', unlockLevel: 70, damage: 1, special: 'freeze' },
+  { id: 'rocket', emoji: '🚀', name: 'Tên Lửa', unlockLevel: 80, damage: 4 },
+  { id: 'dragon', emoji: '🐲', name: 'Rồng Lửa', unlockLevel: 90, damage: 5 },
 ];
 
 const ZOMBIE_TYPES = [
@@ -33,7 +43,7 @@ const PLANT_SET = ['🌻', '🌹', '🌵', '🍄', '🌲', '🎋', '🌸', '🪴
 const G = {
   player: null,
   currentLevel: 1,
-  maxLevel: 50,
+  maxLevel: 100,
   selectedPlant: 'sunflower',
   // Battle state
   battle: null,
@@ -250,7 +260,7 @@ function startLevel(level) {
   const isBoss = (localLevel === ZONES[zone].levels - 1);
 
   // Determine difficulty mix based on level
-  const difficulty = level <= 10 ? 'easy' : level <= 30 ? 'medium' : 'hard';
+  const difficulty = level <= 20 ? 'easy' : level <= 50 ? 'medium' : 'hard';
   const questionsNeeded = isBoss ? 8 : 5;
 
   G.battle = {
@@ -319,9 +329,11 @@ function spawnZombies() {
     let type;
     if (G.battle.isBoss && i === count - 1) {
       type = ZOMBIE_TYPES[4]; // boss
-    } else if (level > 30 && Math.random() < 0.3) {
+    } else if (level > 70 && Math.random() < 0.4) {
+      type = ZOMBIE_TYPES[3]; // shield
+    } else if (level > 40 && Math.random() < 0.3) {
       type = ZOMBIE_TYPES[1]; // strong
-    } else if (level > 20 && Math.random() < 0.2) {
+    } else if (level > 20 && Math.random() < 0.25) {
       type = ZOMBIE_TYPES[2]; // fast
     } else {
       type = ZOMBIE_TYPES[0]; // normal
