@@ -198,7 +198,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 8px;
+  padding: 12px 16px;
   min-height: 0;
 }
 
@@ -207,7 +207,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 /* P1 zone rotated 180° (player sits opposite side) */
@@ -256,13 +256,13 @@ body {
   min-height: 20px;
 }
 
-/* Middle area: track + timer + question */
+/* Middle area: track + timer - compact */
 .race-middle {
   flex-shrink: 0;
-  padding: 6px 8px;
+  padding: 4px 8px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   background: var(--card-bg);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
@@ -295,20 +295,20 @@ body {
   display: flex;
   align-items: center;
   position: relative;
-  height: 50px;
+  height: 36px;
   gap: 2px;
 }
 
 .tile {
-  width: var(--tile-size);
-  height: var(--tile-size);
+  width: 30px;
+  height: 30px;
   flex-shrink: 0;
-  border: 2px solid var(--border);
-  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   background: var(--card-bg);
   position: relative;
 }
@@ -344,7 +344,7 @@ body {
   left: 0;
   top: 50%;
   transform: translate(0, -50%);
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   z-index: 10;
   transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
