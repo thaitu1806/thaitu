@@ -176,3 +176,14 @@ body {
   .question-text { font-size: 1rem; }
   .ans-btn { min-height: 44px; font-size: 0.9rem; }
 }
+
+.player-slots { display: flex; flex-direction: column; gap: 8px; }
+.player-slot { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fff; border-radius: 10px; border: 2px solid var(--border); }
+.player-slot-color { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+.player-slot-info { flex: 1; }
+.player-slot-name { font-size: 0.9rem; font-weight: 700; border: none; border-bottom: 1.5px dashed #ccc; background: transparent; padding: 2px 4px; width: 100%; max-width: 120px; font-family: inherit; outline: none; }
+.player-slot-name:focus { border-bottom-color: #3498db; }
+.player-slot-type { font-size: 0.75rem; color: #7f8c8d; font-weight: 600; }
+.btn-toggle-type { min-width: 38px; min-height: 38px; border: 2px solid var(--border); border-radius: 8px; background: #fff; font-size: 1rem; cursor: pointer; }
+.btn-toggle-type.is-human { border-color: #27ae60; background: #eafaf1; }
+.btn-toggle-type.is-bot { border-color: #f39c12; background: #fef9e7; }

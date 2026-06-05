@@ -32,6 +32,56 @@ const State = {
   weatherCountdown: 0,
 };
 
+// ===== PLAYER SLOTS =====
+function renderPlayerSlots() {
+  const container = document.getElementById('player-slots');
+  if (!container) return;
+  const count = State.config.playerCount;
+  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+  
+  container.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const isFirst = i === 0;
+    const defaultName = isFirst && profile?.name ? profile.name : NAMES_DEFAULT[i];
+    const defaultType = isFirst ? 'human' : 'bot';
+    
+    container.innerHTML += `
+      <div class="player-slot" data-index="${i}">
+        <div class="player-slot-color" style="background:${COLORS[i]}">${EMOJIS[i]}</div>
+        <div class="player-slot-info">
+          <input type="text" class="player-slot-name" data-index="${i}" value="${defaultName}" maxlength="10">
+          <div class="player-slot-type">${defaultType === 'human' ? '👤 Người chơi' : '🤖 Máy'}</div>
+        </div>
+        <button class="btn-toggle-type ${defaultType === 'human' ? 'is-human' : 'is-bot'}" data-index="${i}" data-type="${defaultType}">
+          ${defaultType === 'human' ? '👤' : '🤖'}
+        </button>
+      </div>
+    `;
+  }
+  
+  // Bind toggles
+  container.querySelectorAll('.btn-toggle-type').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.index);
+      const slot = container.querySelector(`.player-slot[data-index="${idx}"]`);
+      const typeLabel = slot.querySelector('.player-slot-type');
+      if (btn.dataset.type === 'human') {
+        btn.dataset.type = 'bot';
+        btn.textContent = '🤖';
+        btn.classList.remove('is-human');
+        btn.classList.add('is-bot');
+        typeLabel.textContent = '🤖 Máy';
+      } else {
+        btn.dataset.type = 'human';
+        btn.textContent = '👤';
+        btn.classList.remove('is-bot');
+        btn.classList.add('is-human');
+        typeLabel.textContent = '👤 Người chơi';
+      }
+    });
+  });
+}
+
 // ===== SETUP =====
 document.getElementById('player-count-group').addEventListener('click', e => {
   const btn = e.target.closest('.btn-option');
@@ -39,6 +89,7 @@ document.getElementById('player-count-group').addEventListener('click', e => {
   document.querySelectorAll('#player-count-group .btn-option').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   State.config.playerCount = parseInt(btn.dataset.count);
+  renderPlayerSlots();
 });
 
 document.getElementById('subject-group').addEventListener('click', e => {
@@ -62,19 +113,29 @@ document.getElementById('height-slider').addEventListener('input', e => {
   document.getElementById('height-display').textContent = e.target.value;
 });
 
+renderPlayerSlots();
+
 document.getElementById('btn-start').addEventListener('click', startGame);
 
 // ===== GAME INIT =====
 async function startGame() {
   // Create players
   State.players = [];
+  const slots = document.querySelectorAll('.player-slot');
   for (let i = 0; i < State.config.playerCount; i++) {
+    const slot = slots[i];
+    const nameInput = slot?.querySelector('.player-slot-name');
+    const typeBtn = slot?.querySelector('.btn-toggle-type');
+    const name = nameInput?.value.trim() || NAMES_DEFAULT[i];
+    const type = typeBtn?.dataset.type || 'human';
+    
     State.players.push({
       index: i,
-      name: NAMES_DEFAULT[i],
+      name: name,
+      type: type,
       color: COLORS[i],
       emoji: EMOJIS[i],
-      position: 0, // row index (0 = bottom/start, height = summit)
+      position: 0,
       combo: 0,
       items: [],
       stats: { correct: 0, incorrect: 0, turns: 0 },
@@ -295,6 +356,27 @@ function showQuestion(player, question) {
 
   // Start countdown timer (10 seconds)
   startQuestionTimer(10);
+
+  // Bot auto-answer
+  if (player.type === 'bot') {
+    const delay = 1000 + Math.random() * 2000;
+    setTimeout(() => {
+      if (State._currentQuestion !== question) return; // question changed
+      const btns = document.querySelectorAll('#answer-buttons .ans-btn');
+      if (btns[0]?.disabled) return; // already answered
+      
+      const isCorrect = Math.random() < 0.65;
+      let opt;
+      if (isCorrect) {
+        opt = question.correct_answer;
+      } else {
+        const wrongs = ['a','b','c','d'].filter(o => o !== question.correct_answer);
+        opt = wrongs[Math.floor(Math.random() * wrongs.length)];
+      }
+      const btn = document.querySelector(`#answer-buttons .ans-btn[data-opt="${opt}"]`);
+      if (btn && !btn.disabled) btn.click();
+    }, delay);
+  }
 }
 
 function updateComboDisplay(player) {
