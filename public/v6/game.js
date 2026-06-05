@@ -536,17 +536,21 @@ const TrackController = {
   scrollToView() {
     const wrapper = document.querySelector('.track-wrapper');
     if (!wrapper) return;
-    const carP1 = document.getElementById('car-p1');
-    const carP2 = document.getElementById('car-p2');
 
-    // Get the furthest car position
-    const p1X = carP1 ? carP1.offsetLeft + parseInt(carP1.style.transform?.match(/translateX\((\d+)px\)/)?.[1] || 0) : 0;
-    const p2X = carP2 ? carP2.offsetLeft + parseInt(carP2.style.transform?.match(/translateX\((\d+)px\)/)?.[1] || 0) : 0;
-    const maxX = Math.max(p1X, p2X);
+    // Use the furthest car's tile position to calculate scroll
+    const maxPos = Math.max(State.track.p1Position, State.track.p2Position);
+    const lane = document.getElementById('lane-p1');
+    if (!lane) return;
+    const tiles = lane.querySelectorAll('.tile');
+    if (tiles.length === 0) return;
 
-    // Scroll so furthest car is visible with some margin
-    const scrollTarget = Math.max(0, maxX - wrapper.clientWidth / 2);
-    wrapper.scrollLeft = scrollTarget;
+    const targetTile = tiles[Math.min(maxPos, tiles.length - 1)];
+    if (!targetTile) return;
+
+    // Scroll so the furthest car is centered in the wrapper
+    const tileLeft = targetTile.offsetLeft;
+    const scrollTarget = Math.max(0, tileLeft - wrapper.clientWidth / 2 + 20);
+    wrapper.scrollTo({ left: scrollTarget, behavior: 'smooth' });
   },
 
   showObstacleHit(player) {
