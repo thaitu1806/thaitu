@@ -756,6 +756,9 @@ function showObstacleChallenge(player, obstaclePos) {
   const q = getNextQuestion(player);
   const zone = document.getElementById(`zone-${player}`);
   if (!zone) return;
+  // Append inside zone-inner so it inherits the 180° rotation for P1
+  const zoneInner = zone.querySelector('.zone-inner');
+  if (!zoneInner) return;
 
   const popup = document.createElement('div');
   popup.className = 'obstacle-challenge-popup';
@@ -769,7 +772,7 @@ function showObstacleChallenge(player, obstaclePos) {
       </div>
     </div>
   `;
-  zone.appendChild(popup);
+  zoneInner.appendChild(popup);
   requestAnimationFrame(() => popup.classList.add('show'));
 
   // Handle answer
