@@ -33,6 +33,25 @@ function adminFetch(url, options = {}) {
   return fetch(url, { ...options, headers: { ...options.headers, 'Authorization': 'Basic ' + btoa('admin:admin') } });
 }
 
+// Custom popup to replace alert()
+function showPopup(icon, text) {
+  let overlay = document.getElementById('admin-popup-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'admin-popup-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);';
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:18px;padding:28px 22px;text-align:center;max-width:320px;width:88%;box-shadow:0 20px 50px rgba(0,0,0,0.3);animation:popIn 0.25s;">
+      <div style="font-size:2.5rem;margin-bottom:10px;">${icon}</div>
+      <div style="font-size:1.05rem;font-weight:700;color:#333;margin-bottom:18px;line-height:1.4;">${text}</div>
+      <button onclick="document.getElementById('admin-popup-overlay').remove()" style="padding:12px 32px;border:none;border-radius:10px;background:#4CAF50;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;">OK</button>
+    </div>
+  `;
+  overlay.style.display = 'flex';
+}
+
 // === TABS ===
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -485,17 +504,17 @@ function removePreview(idx) {
 document.getElementById('btn-save-generated').addEventListener('click', async () => {
   if (generatedQuestions.length === 0) return;
   try {
-    const res = await fetch('/api/admin?resource=questions&action=batch', {
+    const res = await adminFetch('/api/admin?resource=questions&action=batch', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ questions: generatedQuestions }),
     });
     const data = await res.json();
-    alert(`✅ Đã lưu ${data.inserted} câu hỏi!`);
+    showPopup('✅', `Đã lưu ${data.inserted} câu hỏi!`);
     generatedQuestions = [];
     document.getElementById('gen-preview').classList.add('hidden');
   } catch (e) {
-    alert('❌ Lỗi: ' + e.message);
+    showPopup('❌', 'Lỗi: ' + e.message);
   }
 });
 
@@ -799,17 +818,17 @@ async function deletePlayer(id, name) {
     if (res.ok) {
       loadPlayers();
     } else {
-      alert('Lỗi xóa người chơi!');
+      showPopup('❌', 'Lỗi xóa người chơi!');
     }
   } catch (e) {
-    alert('Lỗi: ' + e.message);
+    showPopup('❌', 'Lỗi: ' + e.message);
   }
 }
 
 // === EXAM ADMIN ===
 document.getElementById('btn-create-exam').addEventListener('click', async () => {
   const title = document.getElementById('ea-title').value.trim();
-  if (!title) { alert('Nhập tên bài thi!'); return; }
+  if (!title) { showPopup('⚠️', 'Nhập tên bài thi!'); return; }
 
   const data = {
     title,
@@ -826,10 +845,10 @@ document.getElementById('btn-create-exam').addEventListener('click', async () =>
       body: JSON.stringify(data),
     });
     const result = await res.json();
-    alert(`✅ Đã tạo bài thi "${title}" với ${result.question_ids.length} câu hỏi!`);
+    showPopup('✅', `Đã tạo bài thi "${title}" với ${result.question_ids.length} câu hỏi!`);
     document.getElementById('ea-title').value = '';
     loadExamsList();
-  } catch (e) { alert('Lỗi: ' + e.message); }
+  } catch (e) { showPopup('❌', 'Lỗi: ' + e.message); }
 });
 
 async function loadExamsList() {
