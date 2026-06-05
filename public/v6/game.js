@@ -409,7 +409,6 @@ function nextRound() {
   // Start next round
   startRound();
 }
-}
 
 // ===== (resolveRound removed - instant move mechanic) =====
 
