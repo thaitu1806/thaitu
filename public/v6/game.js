@@ -161,21 +161,32 @@ async function fetchQuestions() {
       questions = await res.json();
     }
     if (Array.isArray(questions) && questions.length > 0) {
-      State.questions = shuffleArray(questions);
+      State.questions = questions;
     } else {
       throw new Error('Empty response');
     }
   } catch {
-    State.questions = shuffleArray(generateFallbackQuestions(30));
+    State.questions = generateFallbackQuestions(30);
   }
+  // Same pool, different order for each player
+  State.p1Questions = shuffleArray([...State.questions]);
+  State.p2Questions = shuffleArray([...State.questions]);
+  State.p1QuestionIndex = 0;
+  State.p2QuestionIndex = 0;
 }
 
-function getNextQuestion() {
-  if (State.questionIndex >= State.questions.length) {
-    // Pool exhausted — try to fetch more, but use fallback immediately
-    State.questions = [...State.questions, ...generateFallbackQuestions(15)];
+function getNextQuestion(player) {
+  if (player === 'p2') {
+    if (State.p2QuestionIndex >= State.p2Questions.length) {
+      State.p2Questions = [...State.p2Questions, ...shuffleArray(generateFallbackQuestions(15))];
+    }
+    return State.p2Questions[State.p2QuestionIndex++];
   }
-  return State.questions[State.questionIndex++];
+  // Default: p1
+  if (State.p1QuestionIndex >= State.p1Questions.length) {
+    State.p1Questions = [...State.p1Questions, ...shuffleArray(generateFallbackQuestions(15))];
+  }
+  return State.p1Questions[State.p1QuestionIndex++];
 }
 
 // ===== ROUND LIFECYCLE =====
@@ -183,28 +194,21 @@ function startRound() {
   if (State.current !== 'RACING') return;
 
   State.round.number++;
-  State.round.question = getNextQuestion();
   State.round.p1 = { answered: false, answer: null, time: 0 };
   State.round.p2 = { answered: false, answer: null, time: 0 };
+
+  // Give each player their own independent question
+  State.round.p1Question = getNextQuestion('p1');
+  State.round.p2Question = getNextQuestion('p2');
+  // Keep backward-compat reference
+  State.round.question = State.round.p1Question;
 
   // Update round counter
   document.getElementById('round-counter').textContent = `Vòng ${State.round.number}`;
 
-  // Display question in both zones
-  const q = State.round.question;
-  document.getElementById('p1-question').textContent = q.question_text;
-  document.getElementById('p2-question').textContent = q.question_text;
-
-  // Set button labels
-  const opts = [q.option_a, q.option_b, q.option_c, q.option_d];
-  ['p1', 'p2'].forEach(p => {
-    const btns = document.querySelectorAll(`#${p}-buttons .ans-btn`);
-    btns.forEach((btn, i) => {
-      btn.textContent = `${'ABCD'[i]}. ${opts[i]}`;
-      btn.className = `ans-btn ${p}-btn`;
-      btn.disabled = false;
-    });
-  });
+  // Display question in each zone independently
+  renderPlayerQuestion('p1', State.round.p1Question);
+  renderPlayerQuestion('p2', State.round.p2Question);
 
   // Clear statuses
   document.getElementById('p1-status').textContent = '';
@@ -214,6 +218,18 @@ function startRound() {
   transition('ROUND_ACTIVE');
   State.round.timerStart = Date.now();
   startTimer();
+}
+
+function renderPlayerQuestion(player, q) {
+  document.getElementById(`${player}-question`).textContent = q.question_text;
+  const opts = [q.option_a, q.option_b, q.option_c, q.option_d];
+  const btns = document.querySelectorAll(`#${player}-buttons .ans-btn`);
+  btns.forEach((btn, i) => {
+    btn.textContent = `${'ABCD'[i]}. ${opts[i]}`;
+    btn.className = `ans-btn ${player}-btn`;
+    btn.disabled = false;
+    btn.dataset.opt = 'abcd'[i];
+  });
 }
 
 // ===== TIMER =====
@@ -292,7 +308,8 @@ function handleAnswer(player, opt, btn) {
   pState.answer = opt;
   pState.time = Date.now() - State.round.timerStart;
 
-  const q = State.round.question;
+  // Use each player's own question
+  const q = player === 'p1' ? State.round.p1Question : State.round.p2Question;
   const isCorrect = opt === q.correct_answer;
 
   // Lock buttons for this player
@@ -303,17 +320,15 @@ function handleAnswer(player, opt, btn) {
 
   // Show correct/wrong immediately
   btn.classList.add(isCorrect ? 'correct' : 'wrong');
-  // Show correct answer
   if (!isCorrect) {
     const correctBtn = document.querySelector(`#${player}-buttons .ans-btn[data-opt="${q.correct_answer}"]`);
     if (correctBtn) correctBtn.classList.add('correct');
   }
 
   if (isCorrect) {
-    // Move car forward immediately!
     document.getElementById(`${player}-status`).textContent = '✅ Đúng! Tiến!';
     AudioEngine.play('correct');
-    moveCarForward(player, 2);
+    moveCarForward(player, 1);
   } else {
     document.getElementById(`${player}-status`).textContent = '❌ Sai!';
     AudioEngine.play('wrong');
@@ -323,25 +338,54 @@ function handleAnswer(player, opt, btn) {
   if (player === 'p1') State.round._p1Correct = isCorrect;
   else State.round._p2Correct = isCorrect;
 
-  // If both answered, go to next round quickly
-  if (State.round.p1.answered && State.round.p2.answered) {
-    clearInterval(State.round.timerId);
-    setTimeout(nextRound, 1000);
-  }
+  // Auto-load next question for THIS player immediately after short delay
+  setTimeout(() => {
+    if (State.current !== 'ROUND_ACTIVE') return;
+    const nextQ = getNextQuestion(player);
+    if (player === 'p1') {
+      State.round.p1Question = nextQ;
+      State.round.p1.answered = false;
+    } else {
+      State.round.p2Question = nextQ;
+      State.round.p2.answered = false;
+    }
+    document.getElementById(`${player}-status`).textContent = '';
+    renderPlayerQuestion(player, nextQ);
+  }, 800);
 }
+
+// Obstacle outcomes: random when hitting an obstacle
+const OBSTACLE_OUTCOMES = ['lose', 'win', 'challenge']; // 1/3 each
 
 // Move a car forward immediately (racing style)
 function moveCarForward(player, tiles) {
   const pos = player === 'p1' ? 'p1Position' : 'p2Position';
   let newPos = State.track[pos] + tiles;
 
-  // Check obstacle
+  // Check obstacle — random outcome
   if (State.track.obstacles.includes(newPos) && newPos < State.track.finishLine) {
-    newPos = Math.max(0, newPos - 1);
-    setTimeout(() => {
-      TrackController.showObstacleHit(player);
-      AudioEngine.play('obstacle');
-    }, 600);
+    const outcome = OBSTACLE_OUTCOMES[Math.floor(Math.random() * OBSTACLE_OUTCOMES.length)];
+    
+    if (outcome === 'lose') {
+      // Trượt: xe dừng ở ô TRƯỚC vỏ chuối
+      newPos = newPos - 1;
+      showObstacleNotify(player, '🍌', 'Trượt chuối! Dừng lại!');
+      setTimeout(() => {
+        TrackController.showObstacleHit(player);
+        AudioEngine.play('obstacle');
+      }, 300);
+    } else if (outcome === 'win') {
+      // Thắng: xe ở luôn chỗ vỏ chuối
+      showObstacleNotify(player, '💪', 'Vượt qua!');
+      // newPos stays the same (on the obstacle tile)
+    } else {
+      // Hòa: thử thách — popup câu hỏi
+      // Tạm đặt xe ở ô chuối, chờ kết quả
+      State.track[pos] = newPos;
+      TrackController.moveCar(player, newPos);
+      showObstacleChallenge(player, newPos);
+      return; // exit early, challenge handles the rest
+    }
   }
 
   // Clamp to finish
@@ -445,6 +489,17 @@ document.getElementById('btn-play-again').addEventListener('click', () => {
   transition('SETUP');
 });
 
+// Exit button with confirm
+document.getElementById('btn-exit-race').addEventListener('click', () => {
+  document.getElementById('exit-confirm-overlay').classList.add('active');
+});
+document.getElementById('exit-cancel').addEventListener('click', () => {
+  document.getElementById('exit-confirm-overlay').classList.remove('active');
+});
+document.getElementById('exit-confirm').addEventListener('click', () => {
+  window.location.href = '/';
+});
+
 // ===== TRACK CONTROLLER =====
 const TrackController = {
   initTrack(trackLength, obstacles) {
@@ -496,7 +551,8 @@ const TrackController = {
     }
 
     car.style.setProperty('--car-x', `${xPos}px`);
-    car.style.transform = `translateX(${xPos}px) translateY(-50%)`;
+    car.style.left = `${xPos}px`;
+    car.style.transform = `translateY(-50%) scaleX(-1)`;
 
     // Scroll track to keep cars visible
     this.scrollToView();
@@ -672,4 +728,87 @@ function showConfetti() {
 // ===== UTILITY =====
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// ===== NOTIFICATION POPUP =====
+function showObstacleNotify(player, emoji, text) {
+  const zone = document.getElementById(`zone-${player}`);
+  if (!zone) return;
+
+  const notify = document.createElement('div');
+  notify.className = 'obstacle-notify';
+  notify.innerHTML = `
+    <span class="obstacle-notify-emoji">${emoji}</span>
+    <span class="obstacle-notify-text">${text}</span>
+  `;
+  zone.appendChild(notify);
+
+  requestAnimationFrame(() => notify.classList.add('show'));
+
+  setTimeout(() => {
+    notify.classList.remove('show');
+    setTimeout(() => notify.remove(), 300);
+  }, 1500);
+}
+
+// ===== OBSTACLE CHALLENGE (Hòa case) =====
+function showObstacleChallenge(player, obstaclePos) {
+  const q = getNextQuestion(player);
+  const zone = document.getElementById(`zone-${player}`);
+  if (!zone) return;
+
+  const popup = document.createElement('div');
+  popup.className = 'obstacle-challenge-popup';
+  const opts = [q.option_a, q.option_b, q.option_c, q.option_d];
+  popup.innerHTML = `
+    <div class="obstacle-challenge-card">
+      <div class="obstacle-challenge-title">⚡ Thử thách vượt chướng ngại!</div>
+      <div class="obstacle-challenge-q">${q.question_text}</div>
+      <div class="obstacle-challenge-btns">
+        ${opts.map((o, i) => `<button class="obstacle-challenge-btn" data-opt="${'abcd'[i]}">${'ABCD'[i]}. ${o}</button>`).join('')}
+      </div>
+    </div>
+  `;
+  zone.appendChild(popup);
+  requestAnimationFrame(() => popup.classList.add('show'));
+
+  // Handle answer
+  popup.addEventListener('click', (e) => {
+    const btn = e.target.closest('.obstacle-challenge-btn');
+    if (!btn) return;
+
+    const selected = btn.dataset.opt;
+    const isCorrect = selected === q.correct_answer;
+
+    // Disable all buttons
+    popup.querySelectorAll('.obstacle-challenge-btn').forEach(b => b.disabled = true);
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect) {
+      const correctBtn = popup.querySelector(`.obstacle-challenge-btn[data-opt="${q.correct_answer}"]`);
+      if (correctBtn) correctBtn.classList.add('correct');
+    }
+
+    const pos = player === 'p1' ? 'p1Position' : 'p2Position';
+
+    setTimeout(() => {
+      popup.classList.remove('show');
+      setTimeout(() => popup.remove(), 300);
+
+      if (isCorrect) {
+        // Thắng: ở lại ô chuối
+        showObstacleNotify(player, '✅', 'Vượt qua!');
+        AudioEngine.play('correct');
+      } else {
+        // Thua: về ô trước vỏ chuối
+        const backPos = Math.max(0, obstaclePos - 1);
+        State.track[pos] = backPos;
+        TrackController.moveCar(player, backPos);
+        showObstacleNotify(player, '❌', 'Trượt chuối! Lùi lại!');
+        AudioEngine.play('wrong');
+      }
+
+      // Check win after challenge resolves
+      setTimeout(() => checkForWinner(), 400);
+    }, 800);
+  });
 }

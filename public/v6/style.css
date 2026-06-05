@@ -201,6 +201,8 @@ body {
   padding: 8px;
   min-height: 0;
   width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .zone-inner {
@@ -270,15 +272,19 @@ body {
   background: var(--card-bg);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Track Area */
 .track-area {
   flex-shrink: 0;
-  overflow: hidden;
   border-radius: 8px;
   background: #f8f9fa;
   padding: 6px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 .track-wrapper {
@@ -287,6 +293,8 @@ body {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  width: 100%;
+  max-width: 100%;
 }
 
 .track-wrapper::-webkit-scrollbar {
@@ -297,7 +305,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-width: fit-content;
+  width: max-content;
 }
 
 .lane {
@@ -306,11 +314,12 @@ body {
   position: relative;
   height: 36px;
   gap: 2px;
+  width: max-content;
 }
 
 .tile {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
   border: 1.5px solid var(--border);
   border-radius: 4px;
@@ -352,10 +361,10 @@ body {
   position: absolute;
   left: 0;
   top: 50%;
-  transform: translate(0, -50%);
+  transform: translate(0, -50%) scaleX(-1);
   font-size: 1.4rem;
   z-index: 10;
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
@@ -424,7 +433,109 @@ body {
 /* Round Info */
 .round-info {
   flex-shrink: 0;
+  display: none;
+}
+
+.race-middle-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.race-info-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+
+.btn-exit-race {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--red);
+  border: none;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4);
+  transition: all 0.2s ease;
+}
+
+.btn-exit-race:hover {
+  background: #c0392b;
+  transform: scale(1.1);
+}
+
+/* Exit confirm */
+.exit-confirm-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 5000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+}
+
+.exit-confirm-overlay.active {
+  display: flex;
+}
+
+.exit-confirm-card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 28px 24px;
+  width: 90%;
+  max-width: 300px;
   text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.exit-confirm-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.exit-confirm-text {
+  font-family: var(--font);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.exit-confirm-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.exit-confirm-btn {
+  flex: 1;
+  min-height: 44px;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.exit-confirm-btn.cancel {
+  background: #e0e6ed;
+  color: var(--text);
+}
+
+.exit-confirm-btn.confirm {
+  background: var(--red);
+  color: #fff;
 }
 
 .round-counter {
@@ -634,11 +745,11 @@ body {
 
 /* Shake - obstacle hit */
 @keyframes shake {
-  0%, 100% { transform: translateX(var(--car-x)) translateY(-50%); }
-  20% { transform: translateX(calc(var(--car-x) - 6px)) translateY(-50%); }
-  40% { transform: translateX(calc(var(--car-x) + 6px)) translateY(-50%); }
-  60% { transform: translateX(calc(var(--car-x) - 4px)) translateY(-50%); }
-  80% { transform: translateX(calc(var(--car-x) + 4px)) translateY(-50%); }
+  0%, 100% { transform: translateY(-50%) scaleX(-1) translateX(0); }
+  20% { transform: translateY(-50%) scaleX(-1) translateX(-6px); }
+  40% { transform: translateY(-50%) scaleX(-1) translateX(6px); }
+  60% { transform: translateY(-50%) scaleX(-1) translateX(-4px); }
+  80% { transform: translateY(-50%) scaleX(-1) translateX(4px); }
 }
 
 .car.shake {
@@ -676,6 +787,117 @@ body {
   transform: translateX(-50%);
   font-size: 1rem;
   animation: starBurst 0.4s ease-out forwards;
+}
+
+/* Obstacle Notification Popup */
+.obstacle-notify {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 16px 24px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 100;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.obstacle-notify.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.obstacle-notify-emoji {
+  font-size: 2rem;
+}
+
+.obstacle-notify-text {
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+/* Obstacle Challenge Popup */
+.obstacle-challenge-popup {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: 12px;
+}
+
+.obstacle-challenge-popup.show {
+  opacity: 1;
+}
+
+.obstacle-challenge-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+}
+
+.obstacle-challenge-title {
+  font-family: var(--font);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #e67e22;
+  margin-bottom: 8px;
+}
+
+.obstacle-challenge-q {
+  font-family: var(--font);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.obstacle-challenge-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.obstacle-challenge-btn {
+  padding: 10px 8px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.obstacle-challenge-btn:hover {
+  border-color: var(--p2-color);
+  background: #eef6ff;
+}
+
+.obstacle-challenge-btn.correct {
+  border-color: var(--green);
+  background: #e8f5e9;
+}
+
+.obstacle-challenge-btn.wrong {
+  border-color: var(--red);
+  background: #fdecea;
 }
 
 /* Confetti - win celebration */

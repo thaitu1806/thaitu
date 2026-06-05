@@ -19,7 +19,7 @@ import {
 const COLORS = ['red', 'blue', 'green', 'yellow'];
 const COLOR_EMOJIS = { red: '🐴', blue: '🦄', green: '🏇', yellow: '🎠' };
 const BOT_NAMES = ['Bot 1', 'Bot 2', 'Bot 3'];
-const ZOMBIE_SET = ['💀', '🧟', '👻', '👹', '👺', '🤖', '👾', '🦇', '🐛', '🦠','🎃', '☠️', '🕷️', '🦂', '🐍', '🦎', '🐲', '🐉', '🦖', '🦕','🐊', '🦈', '🐙', '🦑', '🪳', '🪲', '🐜', '🦗', '🕸️', '🦟','🐺', '🦁', '🐗', '🦍', '🦬', '🐏', '🦏', '🐻', '🧛', '🧙'];
+const ZOMBIE_SET = ['💀', '🧟', '👻', '👹', '👺', '🤖', '👾', '🦇', '🐛', '🦠','🎃', '☠️', '🕷️', '🦂', '🐍', '🦎', '🐲', '🐉', '🦖', '🦕','🐊', '🦈', '🐙', '🦑', '🐜', '🦗', '🕸️', '🦟','🐺', '🦁', '🐗', '🦍', '🐏', '🦏', '🐻', '🧛', '🧙'];
 
 // ===== BOARD CONFIGURATION =====
 // Import from game-logic.js and add layout for rendering
@@ -90,6 +90,7 @@ const SetupManager = {
     this.bindPlayerCountButtons();
     this.bindSubjectButtons();
     this.bindDifficultyButtons();
+    this.bindTrapSlider();
     this.bindStartButton();
     this.renderPlayerSlots();
     this.loadProfileName();
@@ -155,6 +156,18 @@ const SetupManager = {
       btn.classList.add('active');
       this.config.difficulty = btn.dataset.difficulty;
     });
+  },
+
+  bindTrapSlider() {
+    const slider = document.getElementById('trap-count-slider');
+    const display = document.getElementById('trap-count-display');
+    if (slider && display) {
+      this.config.trapCount = parseInt(slider.value);
+      slider.addEventListener('input', () => {
+        this.config.trapCount = parseInt(slider.value);
+        display.textContent = slider.value;
+      });
+    }
   },
 
   bindStartButton() {
@@ -294,7 +307,7 @@ const SetupManager = {
     gameState = initializeGame(config);
 
     // Randomize star/trap tile positions for this game
-    const randomTiles = generateRandomTiles();
+    const randomTiles = generateRandomTiles(SetupManager.config.trapCount || 5);
     BOARD_CONFIG.starTiles = randomTiles.starTiles;
     BOARD_CONFIG.trapTiles = randomTiles.trapTiles;
 

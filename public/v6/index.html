@@ -87,6 +87,12 @@
         </div>
       </div>
 
+      <!-- Exit + Round info bar (separate from track) -->
+      <div class="race-info-bar">
+        <button class="btn-exit-race" id="btn-exit-race" title="Thoát">✕</button>
+        <span class="round-counter" id="round-counter">Vòng 1</span>
+      </div>
+
       <!-- Middle Area: Track + Timer -->
       <div class="race-middle">
         <div class="track-area">
@@ -104,8 +110,17 @@
         <div class="timer-bar-container">
           <div class="timer-bar" id="timer-bar"></div>
         </div>
-        <div class="round-info">
-          <span class="round-counter" id="round-counter">Vòng 1</span>
+      </div>
+
+      <!-- Exit confirm popup -->
+      <div class="exit-confirm-overlay" id="exit-confirm-overlay">
+        <div class="exit-confirm-card">
+          <div class="exit-confirm-icon">🚪</div>
+          <div class="exit-confirm-text">Bạn muốn thoát trò chơi?</div>
+          <div class="exit-confirm-buttons">
+            <button class="exit-confirm-btn cancel" id="exit-cancel">Tiếp tục</button>
+            <button class="exit-confirm-btn confirm" id="exit-confirm">Thoát</button>
+          </div>
         </div>
       </div>
 

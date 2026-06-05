@@ -40,6 +40,8 @@ app.use('/v3', express.static(join(__dirname, 'public/v3')));
 app.use('/v4', express.static(join(__dirname, 'public/v4')));
 app.use('/v5', express.static(join(__dirname, 'public/v5')));
 app.use('/v6', express.static(join(__dirname, 'public/v6')));
+app.use('/v7', express.static(join(__dirname, 'public/v7')));
+app.use('/v8', express.static(join(__dirname, 'public/v8')));
 
 // Home page -> game selector
 app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/home.html')));

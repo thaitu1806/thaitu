@@ -16,10 +16,11 @@ export const BOARD_CONFIG = {
  * Rules:
  * - Not on position 0 (start) or 35 (finish)
  * - Stars and traps not adjacent to each other
- * - 4 stars, 5 traps
+ * - 4 stars, trapCount traps (default 5, max 20)
+ * @param {number} trapCount - number of trap tiles (5-20)
  * @returns {{ starTiles: number[], trapTiles: number[] }}
  */
-export function generateRandomTiles() {
+export function generateRandomTiles(trapCount = 5) {
   const available = [];
   for (let i = 1; i <= 34; i++) {
     available.push(i);
@@ -52,9 +53,10 @@ export function generateRandomTiles() {
     }
   }
 
-  // Pick 5 traps
+  // Pick traps
+  const maxTraps = Math.min(Math.max(trapCount, 5), 20);
   for (const pos of available) {
-    if (trapTiles.length >= 5) break;
+    if (trapTiles.length >= maxTraps) break;
     if (!picked.includes(pos) && isValidPick(pos)) {
       trapTiles.push(pos);
       picked.push(pos);
