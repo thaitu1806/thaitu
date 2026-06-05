@@ -50,9 +50,7 @@ const VALID_TRANSITIONS = {
   SETUP: ['LOADING'],
   LOADING: ['RACING'],
   RACING: ['ROUND_ACTIVE'],
-  ROUND_ACTIVE: ['ROUND_RESOLVING'],
-  ROUND_RESOLVING: ['ANIMATING'],
-  ANIMATING: ['RACING', 'RACE_OVER'],
+  ROUND_ACTIVE: ['RACING', 'RACE_OVER'],
   RACE_OVER: ['RESULT'],
   RESULT: ['SETUP'],
 };
@@ -243,10 +241,13 @@ function startTimer() {
       timerBar.className = 'timer-bar warn';
     }
 
-    // Time's up
+    // Time's up — go to next round
     if (elapsed >= TIMER_DURATION) {
       clearInterval(State.round.timerId);
-      resolveRound();
+      // Show timeout for players who didn't answer
+      if (!State.round.p1.answered) document.getElementById('p1-status').textContent = '⏰ Hết giờ!';
+      if (!State.round.p2.answered) document.getElementById('p2-status').textContent = '⏰ Hết giờ!';
+      setTimeout(() => nextRound(), 800);
     }
   }, TIMER_INTERVAL);
 }
@@ -291,143 +292,90 @@ function handleAnswer(player, opt, btn) {
   pState.answer = opt;
   pState.time = Date.now() - State.round.timerStart;
 
+  const q = State.round.question;
+  const isCorrect = opt === q.correct_answer;
+
   // Lock buttons for this player
   const buttons = document.querySelectorAll(`#${player}-buttons .ans-btn`);
   buttons.forEach(b => {
     b.disabled = true;
-    b.classList.add('locked');
-  });
-  btn.classList.add('selected');
-  btn.classList.remove('locked');
-
-  // Show status
-  document.getElementById(`${player}-status`).textContent = '✅ Đã trả lời';
-
-  // If both answered, resolve immediately
-  if (State.round.p1.answered && State.round.p2.answered) {
-    clearInterval(State.round.timerId);
-    setTimeout(resolveRound, 300);
-  }
-}
-
-// ===== ROUND RESOLUTION =====
-function resolveRound() {
-  if (State.current !== 'ROUND_ACTIVE') return;
-  transition('ROUND_RESOLVING');
-
-  const q = State.round.question;
-  const correct = q.correct_answer;
-
-  const p1Correct = State.round.p1.answer === correct;
-  const p2Correct = State.round.p2.answer === correct;
-  const p1Time = State.round.p1.answered ? State.round.p1.time : TIMER_DURATION * 1000;
-  const p2Time = State.round.p2.answered ? State.round.p2.time : TIMER_DURATION * 1000;
-  const p1Faster = p1Time < p2Time;
-
-  // Show correct/wrong on buttons
-  ['p1', 'p2'].forEach(p => {
-    const btns = document.querySelectorAll(`#${p}-buttons .ans-btn`);
-    btns.forEach(btn => {
-      btn.disabled = true;
-      if (btn.dataset.opt === correct) btn.classList.add('correct');
-      if (btn.dataset.opt === State.round[p].answer && State.round[p].answer !== correct) {
-        btn.classList.add('wrong');
-      }
-    });
   });
 
-  // Update status messages
-  if (!State.round.p1.answered) {
-    document.getElementById('p1-status').textContent = '⏰ Hết giờ!';
-  } else {
-    document.getElementById('p1-status').textContent = p1Correct ? '✅ Đúng!' : '❌ Sai!';
-  }
-  if (!State.round.p2.answered) {
-    document.getElementById('p2-status').textContent = '⏰ Hết giờ!';
-  } else {
-    document.getElementById('p2-status').textContent = p2Correct ? '✅ Đúng!' : '❌ Sai!';
+  // Show correct/wrong immediately
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  // Show correct answer
+  if (!isCorrect) {
+    const correctBtn = document.querySelector(`#${player}-buttons .ans-btn[data-opt="${q.correct_answer}"]`);
+    if (correctBtn) correctBtn.classList.add('correct');
   }
 
-  // Record result
-  State.roundResults.push({ p1Correct, p2Correct, p1Time, p2Time });
-
-  // Play sound
-  if (p1Correct || p2Correct) {
+  if (isCorrect) {
+    // Move car forward immediately!
+    document.getElementById(`${player}-status`).textContent = '✅ Đúng! Tiến!';
     AudioEngine.play('correct');
+    moveCarForward(player, 2);
   } else {
+    document.getElementById(`${player}-status`).textContent = '❌ Sai!';
     AudioEngine.play('wrong');
   }
 
-  // Calculate movement
-  const roundResult = { p1Correct, p2Correct, p1Faster };
-  const positions = { p1: State.track.p1Position, p2: State.track.p2Position };
-  const movement = calculateMovement(roundResult, positions, State.track.obstacles, State.track.finishLine);
+  // Record for stats
+  if (player === 'p1') State.round._p1Correct = isCorrect;
+  else State.round._p2Correct = isCorrect;
 
-  // Animate after a short delay to show correct/wrong
-  setTimeout(() => {
-    animateMovement(movement);
-  }, 800);
+  // If both answered, go to next round quickly
+  if (State.round.p1.answered && State.round.p2.answered) {
+    clearInterval(State.round.timerId);
+    setTimeout(nextRound, 1000);
+  }
 }
 
-// ===== ANIMATION =====
-async function animateMovement(movement) {
-  transition('ANIMATING');
+// Move a car forward immediately (racing style)
+function moveCarForward(player, tiles) {
+  const pos = player === 'p1' ? 'p1Position' : 'p2Position';
+  let newPos = State.track[pos] + tiles;
 
-  const { p1NewPos, p2NewPos, p1Events, p2Events } = movement;
-  const oldP1 = State.track.p1Position;
-  const oldP2 = State.track.p2Position;
-
-  // Update positions
-  State.track.p1Position = p1NewPos;
-  State.track.p2Position = p2NewPos;
-
-  // Move cars
-  TrackController.moveCar('p1', p1NewPos);
-  TrackController.moveCar('p2', p2NewPos);
-
-  // Show effects
-  if (p1Events.includes('boost')) {
-    TrackController.showBoostEffect('p1');
-    AudioEngine.play('boost');
-  } else if (p1Events.includes('correct')) {
-    TrackController.showCorrectEffect('p1');
+  // Check obstacle
+  if (State.track.obstacles.includes(newPos) && newPos < State.track.finishLine) {
+    newPos = Math.max(0, newPos - 1);
+    setTimeout(() => {
+      TrackController.showObstacleHit(player);
+      AudioEngine.play('obstacle');
+    }, 600);
   }
 
-  if (p2Events.includes('boost')) {
-    TrackController.showBoostEffect('p2');
-    AudioEngine.play('boost');
-  } else if (p2Events.includes('correct')) {
-    TrackController.showCorrectEffect('p2');
-  }
+  // Clamp to finish
+  newPos = Math.min(newPos, State.track.finishLine);
+  State.track[pos] = newPos;
 
-  // Wait for movement animation
-  await sleep(ANIMATION_DURATION + 100);
+  // Animate
+  TrackController.moveCar(player, newPos);
+  TrackController.showCorrectEffect(player);
 
-  // Obstacle effects
-  if (p1Events.includes('obstacle')) {
-    TrackController.showObstacleHit('p1');
-    AudioEngine.play('obstacle');
-    await sleep(500);
-  }
-  if (p2Events.includes('obstacle')) {
-    TrackController.showObstacleHit('p2');
-    AudioEngine.play('obstacle');
-    await sleep(500);
-  }
+  // Check win
+  setTimeout(() => checkForWinner(), ANIMATION_DURATION + 100);
+}
 
-  // Check win condition
+function checkForWinner() {
   const winner = checkWinCondition(
     { p1: State.track.p1Position, p2: State.track.p2Position },
     State.track.finishLine
   );
 
-  if (winner) {
-    // Resolve ties by speed
+  if (winner && State.current === 'ROUND_ACTIVE') {
+    clearInterval(State.round.timerId);
     let finalWinner = winner;
     if (winner === 'tie') {
-      const lastResult = State.roundResults[State.roundResults.length - 1];
-      finalWinner = lastResult.p1Time <= lastResult.p2Time ? 'p1' : 'p2';
+      finalWinner = (State.round.p1.time || 99999) <= (State.round.p2.time || 99999) ? 'p1' : 'p2';
     }
+
+    // Record final round stats
+    State.roundResults.push({
+      p1Correct: State.round._p1Correct || false,
+      p2Correct: State.round._p2Correct || false,
+      p1Time: State.round.p1.time || TIMER_DURATION * 1000,
+      p2Time: State.round.p2.time || TIMER_DURATION * 1000,
+    });
 
     transition('RACE_OVER');
     AudioEngine.play('win');
@@ -436,12 +384,34 @@ async function animateMovement(movement) {
     setTimeout(() => {
       showResult(finalWinner);
     }, 1500);
-  } else {
-    // Next round
-    transition('RACING');
-    startRound();
   }
 }
+
+// Timer expired → go to next round (no one gains)
+function nextRound() {
+  if (State.current !== 'ROUND_ACTIVE') return;
+
+  // Record round result for stats
+  State.roundResults.push({
+    p1Correct: State.round._p1Correct || false,
+    p2Correct: State.round._p2Correct || false,
+    p1Time: State.round.p1.time || TIMER_DURATION * 1000,
+    p2Time: State.round.p2.time || TIMER_DURATION * 1000,
+  });
+
+  // Check if someone won already
+  const winner = checkWinCondition(
+    { p1: State.track.p1Position, p2: State.track.p2Position },
+    State.track.finishLine
+  );
+  if (winner) return; // checkForWinner already handled it
+
+  // Start next round
+  startRound();
+}
+}
+
+// ===== (resolveRound removed - instant move mechanic) =====
 
 // ===== RESULT SCREEN =====
 function showResult(winner) {
