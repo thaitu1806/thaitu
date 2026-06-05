@@ -104,6 +104,23 @@ document.querySelectorAll('.btn-group').forEach(group => {
   });
 });
 
+// Player type toggle (Human/Bot)
+document.querySelectorAll('.btn-toggle-type').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.type === 'human') {
+      btn.dataset.type = 'bot';
+      btn.textContent = '🤖';
+      btn.classList.remove('is-human');
+      btn.classList.add('is-bot');
+    } else {
+      btn.dataset.type = 'human';
+      btn.textContent = '👤';
+      btn.classList.remove('is-bot');
+      btn.classList.add('is-human');
+    }
+  });
+});
+
 // Start button
 document.getElementById('btn-start').addEventListener('click', async () => {
   if (State.current !== 'SETUP') return;
@@ -111,6 +128,8 @@ document.getElementById('btn-start').addEventListener('click', async () => {
   // Read settings
   State.settings.p1Name = document.getElementById('p1-name').value.trim() || 'Xe Đỏ';
   State.settings.p2Name = document.getElementById('p2-name').value.trim() || 'Xe Xanh';
+  State.settings.p1Type = document.getElementById('p1-type').dataset.type || 'human';
+  State.settings.p2Type = document.getElementById('p2-type').dataset.type || 'bot';
   State.settings.subject = document.querySelector('#subject-group .btn-option.active')?.dataset.value || 'math';
   State.settings.difficulty = document.querySelector('#difficulty-group .btn-option.active')?.dataset.value || 'medium';
   State.settings.trackLength = parseInt(document.querySelector('#track-length-group .btn-option.active')?.dataset.value) || 15;
@@ -230,6 +249,29 @@ function renderPlayerQuestion(player, q) {
     btn.disabled = false;
     btn.dataset.opt = 'abcd'[i];
   });
+
+  // Bot auto-answer
+  const playerType = player === 'p1' ? State.settings.p1Type : State.settings.p2Type;
+  if (playerType === 'bot') {
+    const delay = 1500 + Math.random() * 2500; // 1.5-4s random delay
+    setTimeout(() => {
+      if (State.current !== 'ROUND_ACTIVE') return;
+      const pState = State.round[player];
+      if (pState.answered) return;
+
+      // Bot has 70% chance to answer correctly
+      const isCorrect = Math.random() < 0.7;
+      let opt;
+      if (isCorrect) {
+        opt = q.correct_answer;
+      } else {
+        const wrongs = ['a','b','c','d'].filter(o => o !== q.correct_answer);
+        opt = wrongs[Math.floor(Math.random() * wrongs.length)];
+      }
+      const btn = document.querySelector(`#${player}-buttons .ans-btn[data-opt="${opt}"]`);
+      if (btn && !btn.disabled) handleAnswer(player, opt, btn);
+    }, delay);
+  }
 }
 
 // ===== TIMER =====

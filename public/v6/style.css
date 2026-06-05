@@ -112,6 +112,28 @@ body {
   transition: border-color 0.2s;
 }
 
+.btn-toggle-type {
+  min-width: 44px;
+  min-height: 44px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-toggle-type.is-human {
+  border-color: var(--p1-color);
+  background: var(--p1-bg);
+}
+
+.btn-toggle-type.is-bot {
+  border-color: var(--orange);
+  background: #fef9e7;
+}
+
 .player-input-row input:focus {
   border-color: var(--p1-color);
 }
