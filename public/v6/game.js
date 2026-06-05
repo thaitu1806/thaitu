@@ -479,8 +479,9 @@ const TrackController = {
     this.moveCar('p1', 0);
     this.moveCar('p2', 0);
 
-    // Scroll to start
-    this.scrollToView();
+    // Scroll to start (left edge)
+    const wrapper = document.querySelector('.track-wrapper');
+    if (wrapper) wrapper.scrollLeft = 0;
   },
 
   moveCar(player, toTile) {
@@ -508,24 +509,23 @@ const TrackController = {
 
     const maxPos = Math.max(State.track.p1Position, State.track.p2Position);
 
-    // At start position, always scroll to beginning
-    if (maxPos <= 1) {
-      wrapper.scrollTo({ left: 0, behavior: 'smooth' });
-      return;
-    }
-
+    // Don't scroll if cars are still in the first visible portion
     const lane = document.getElementById('lane-p1');
     if (!lane) return;
     const tiles = lane.querySelectorAll('.tile');
-    if (tiles.length === 0) return;
+    if (tiles.length === 0 || maxPos === 0) return;
 
     const targetTile = tiles[Math.min(maxPos, tiles.length - 1)];
     if (!targetTile) return;
 
-    // Scroll so the furthest car is visible with car slightly left of center
     const tileLeft = targetTile.offsetLeft;
-    const scrollTarget = Math.max(0, tileLeft - wrapper.clientWidth * 0.3);
-    wrapper.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+    const halfView = wrapper.clientWidth / 2;
+
+    // Only scroll when car goes beyond half the visible width
+    if (tileLeft > halfView) {
+      const scrollTarget = tileLeft - halfView + 40;
+      wrapper.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+    }
   },
 
   showObstacleHit(player) {
