@@ -406,11 +406,10 @@ function nextRound() {
   );
   if (winner) return; // checkForWinner already handled it
 
-  // Start next round
+  // Transition to RACING then start next round
+  transition('RACING');
   startRound();
 }
-
-// ===== (resolveRound removed - instant move mechanic) =====
 
 // ===== RESULT SCREEN =====
 function showResult(winner) {
