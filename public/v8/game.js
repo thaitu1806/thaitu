@@ -287,7 +287,8 @@ function addBlock() {
   const block = document.createElement('div');
   block.className = 'castle-block';
   block.style.background = getBlockColor(State.towerHeight);
-  block.textContent = emoji;
+  // Fill block with repeating emojis
+  block.textContent = emoji.repeat(8);
   block.dataset.level = State.towerHeight;
 
   // Milestone every 5 blocks
@@ -300,7 +301,6 @@ function addBlock() {
   }
 
   tower.appendChild(block);
-  // Scroll to show top block (scroll to top of container since tower is column-reverse)
   const area = document.getElementById('castle-area');
   area.scrollTop = 0;
 }
