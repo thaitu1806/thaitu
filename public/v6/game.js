@@ -85,7 +85,7 @@ function transition(newState) {
   try {
     const p = JSON.parse(profile);
     if (p && p.name) {
-      document.getElementById('p1-name').value = p.name;
+      document.getElementById('p2-name').value = p.name;
     }
   } catch {
     localStorage.removeItem('hocvui_profile');
@@ -126,7 +126,7 @@ document.getElementById('btn-start').addEventListener('click', async () => {
   if (State.current !== 'SETUP') return;
 
   // Read settings
-  State.settings.p1Name = document.getElementById('p1-name').value.trim() || 'Xe Đỏ';
+  State.settings.p1Name = document.getElementById('p1-name').value.trim() || 'Bot';
   State.settings.p2Name = document.getElementById('p2-name').value.trim() || 'Xe Xanh';
   State.settings.p1Type = document.getElementById('p1-type').dataset.type || 'human';
   State.settings.p2Type = document.getElementById('p2-type').dataset.type || 'bot';
