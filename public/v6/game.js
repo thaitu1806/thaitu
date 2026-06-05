@@ -506,8 +506,14 @@ const TrackController = {
     const wrapper = document.querySelector('.track-wrapper');
     if (!wrapper) return;
 
-    // Use the furthest car's tile position to calculate scroll
     const maxPos = Math.max(State.track.p1Position, State.track.p2Position);
+
+    // At start position, always scroll to beginning
+    if (maxPos <= 1) {
+      wrapper.scrollTo({ left: 0, behavior: 'smooth' });
+      return;
+    }
+
     const lane = document.getElementById('lane-p1');
     if (!lane) return;
     const tiles = lane.querySelectorAll('.tile');
@@ -516,9 +522,9 @@ const TrackController = {
     const targetTile = tiles[Math.min(maxPos, tiles.length - 1)];
     if (!targetTile) return;
 
-    // Scroll so the furthest car is centered in the wrapper
+    // Scroll so the furthest car is visible with car slightly left of center
     const tileLeft = targetTile.offsetLeft;
-    const scrollTarget = Math.max(0, tileLeft - wrapper.clientWidth / 2 + 20);
+    const scrollTarget = Math.max(0, tileLeft - wrapper.clientWidth * 0.3);
     wrapper.scrollTo({ left: scrollTarget, behavior: 'smooth' });
   },
 
