@@ -7,6 +7,15 @@
   <title>🎲 Cờ Cá Ngựa - Học Vui</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .help-btn { position: fixed; top: 12px; right: 12px; width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(0,0,0,0.15); color: #fff; font-size: 1.3rem; cursor: pointer; z-index: 50; display: flex; align-items: center; justify-content: center; }
+    .help-popup { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+    .help-popup.active { display: flex; }
+    .help-content { background: #fff; color: #333; border-radius: 20px; padding: 24px 20px; max-width: 340px; width: 90%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+    .help-content h3 { margin-bottom: 14px; font-size: 1.1rem; }
+    .help-content p { text-align: left; line-height: 2; font-size: 0.95rem; margin-bottom: 18px; }
+    .help-content button { padding: 12px 28px; background: #4CAF50; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; }
+  </style>
 </head>
 <body>
   <div id="app">
@@ -15,6 +24,21 @@
       <div class="setup-container">
         <h1 class="setup-title">🎲 Cờ Cá Ngựa</h1>
         <p class="setup-subtitle">Chọn người chơi và bắt đầu!</p>
+        <button class="help-btn" id="help-btn-open">❓</button>
+        <div class="help-popup" id="help-popup">
+          <div class="help-content">
+            <h3>🎲 Cách chơi Cờ Cá Ngựa</h3>
+            <p>• Tung 2 xúc xắc → bấm ô đích → trả lời câu hỏi<br>
+            • Đúng = quân tiến đến ô đó<br>
+            • Sai = mất lượt, quân đứng yên<br>
+            • Ô ⭐ sao = tiến thêm 2 ô bonus<br>
+            • Ô ⚠️ bẫy = random: zombie thắng/bạn thắng/thử thách<br>
+            • Quân đạp lên quân khác = đá về start<br>
+            • Ai về đích 🏆 trước thắng!<br>
+            • Chơi 2-4 người hoặc với Bot 🤖</p>
+            <button onclick="document.getElementById('help-popup').classList.remove('active')">Hiểu rồi!</button>
+          </div>
+        </div>
 
         <!-- Player Count Selector -->
         <div class="setup-section">
@@ -77,5 +101,10 @@
   </div>
 
   <script type="module" src="game.js"></script>
+  <script>
+    document.getElementById('help-btn-open')?.addEventListener('click', () => {
+      document.getElementById('help-popup').classList.toggle('active');
+    });
+  </script>
 </body>
 </html>

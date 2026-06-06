@@ -7,6 +7,15 @@
   <title>🌻 Học Vui V2 - Phiêu Lưu</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .help-btn { position: fixed; top: 12px; right: 12px; width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(0,0,0,0.15); color: #fff; font-size: 1.3rem; cursor: pointer; z-index: 50; display: flex; align-items: center; justify-content: center; }
+    .help-popup { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+    .help-popup.active { display: flex; }
+    .help-content { background: #fff; color: #333; border-radius: 20px; padding: 24px 20px; max-width: 340px; width: 90%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+    .help-content h3 { margin-bottom: 14px; font-size: 1.1rem; }
+    .help-content p { text-align: left; line-height: 2; font-size: 0.95rem; margin-bottom: 18px; }
+    .help-content button { padding: 12px 28px; background: #4CAF50; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; }
+  </style>
 </head>
 <body>
   <div id="app">
@@ -16,6 +25,20 @@
         <div class="splash-logo">🌻⚔️🧟</div>
         <h1>HỌC VUI PHIÊU LƯU</h1>
         <p class="splash-sub">Bảo vệ vương quốc bằng trí tuệ!</p>
+        <button class="help-btn" id="help-btn-open">❓</button>
+        <div class="help-popup" id="help-popup">
+          <div class="help-content">
+            <h3>🗺️ Cách chơi Phiêu Lưu</h3>
+            <p>• Bản đồ 100 level chia 10 vùng<br>
+            • Mỗi level: chiến đấu zombie bằng câu hỏi<br>
+            • Đúng = bắn zombie, Sai = zombie tiến<br>
+            • Qua level = mở khóa level tiếp theo<br>
+            • Thu thập 1-3 sao ⭐ mỗi level<br>
+            • Level càng cao, câu hỏi càng khó<br>
+            • Chọn cây khác nhau để chiến đấu</p>
+            <button onclick="document.getElementById('help-popup').classList.remove('active')">Hiểu rồi!</button>
+          </div>
+        </div>
         <div class="splash-input">
           <input type="text" id="player-name" placeholder="Tên chiến binh..." maxlength="15">
           <div class="speed-setting">
@@ -145,5 +168,10 @@
   </div>
 
   <script src="game.js"></script>
+  <script>
+    document.getElementById('help-btn-open')?.addEventListener('click', () => {
+      document.getElementById('help-popup').classList.toggle('active');
+    });
+  </script>
 </body>
 </html>
