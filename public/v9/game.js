@@ -216,7 +216,7 @@ function generateFallbackQuestions() {
     ]);
     const correctOpt = ['a','b','c','d'][options.indexOf(correct)];
     questions.push({
-      question: `${a} + ${b} = ?`,
+      question_text: `${a} + ${b} = ?`,
       option_a: String(options[0]),
       option_b: String(options[1]),
       option_c: String(options[2]),
@@ -463,7 +463,7 @@ function showQuiz() {
   const overlay = $('quiz-overlay');
   const playerName = State.turn === P1 ? State.settings.p1Name : State.settings.p2Name;
   $('quiz-header').textContent = `${State.turn === P1 ? '🔴' : '🔵'} ${playerName} — Trả lời đúng để đi!`;
-  $('quiz-question').textContent = question.question;
+  $('quiz-question').textContent = question.question_text || question.question || '';
   $('quiz-result').textContent = '';
   $('quiz-result').className = 'quiz-result';
 
