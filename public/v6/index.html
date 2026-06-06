@@ -16,6 +16,15 @@
         <h1 class="setup-title">🏎️ Đua Xe Trí Tuệ</h1>
         <p class="setup-subtitle">Ai về đích trước thắng!</p>
 
+        <button class="help-btn" onclick="document.getElementById('help-popup').classList.toggle('active')">❓</button>
+        <div class="help-popup" id="help-popup">
+          <div class="help-content">
+            <h3>Cách chơi Đua Xe</h3>
+            <p>• Trả lời đúng = xe tiến 2 ô<br>• Không cần đợi đối thủ<br>• Ô 🍌 = chướng ngại vật<br>• Ai về 🏁 trước thắng!</p>
+            <button onclick="this.parentElement.parentElement.classList.remove('active')">Hiểu rồi!</button>
+          </div>
+        </div>
+
         <!-- Player Names -->
         <div class="setup-section">
           <label class="setup-label">🎮 Người chơi</label>

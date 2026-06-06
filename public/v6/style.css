@@ -49,6 +49,7 @@ body {
 
 /* ===== SETUP SCREEN ===== */
 .setup-container {
+  position: relative;
   width: 100%;
   max-width: 480px;
   padding: 24px 16px;
@@ -1025,3 +1026,12 @@ body {
 .screen.active {
   opacity: 1;
 }
+
+/* Help Button & Popup */
+.help-btn { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(255,255,255,0.2); color: #fff; font-size: 1.2rem; cursor: pointer; z-index: 10; }
+.help-popup { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
+.help-popup.active { display: flex; }
+.help-content { background: #fff; color: #333; border-radius: 18px; padding: 24px 20px; max-width: 320px; width: 88%; text-align: center; }
+.help-content h3 { margin-bottom: 12px; }
+.help-content p { text-align: left; line-height: 1.8; font-size: 0.95rem; margin-bottom: 16px; }
+.help-content button { padding: 10px 24px; background: #4CAF50; color: #fff; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }

@@ -15,6 +15,15 @@
       <div class="setup-header">
         <h1>💣 Dò Mìn Trí Tuệ</h1>
         <p class="setup-sub">Mở ô bằng trí tuệ, tránh mìn!</p>
+
+        <button class="help-btn" onclick="document.getElementById('help-popup').classList.toggle('active')">❓</button>
+        <div class="help-popup" id="help-popup">
+          <div class="help-content">
+            <h3>Cách chơi Dò Mìn</h3>
+            <p>• Bấm ô → trả lời câu hỏi<br>• Đúng = ô mở ra<br>• Sai = mất 1 ❤️<br>• Tránh 💣, tìm 💎<br>• Nhấn giữ = cắm 🚩<br>• Mở hết ô an toàn = thắng!</p>
+            <button onclick="this.parentElement.parentElement.classList.remove('active')">Hiểu rồi!</button>
+          </div>
+        </div>
       </div>
 
       <div class="setup-options">

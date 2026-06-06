@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>📖 Hướng Dẫn Chơi - Học Vui</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(160deg, #e8f5e9 0%, #e3f2fd 100%);
+      padding: 20px 16px;
+      padding-top: env(safe-area-inset-top, 20px);
+    }
+    .guide-container { max-width: 480px; margin: 0 auto; }
+    .guide-header {
+      text-align: center; margin-bottom: 24px;
+    }
+    .guide-title {
+      font-size: 1.8rem; color: #333; font-weight: 900;
+    }
+    .guide-sub {
+      color: #666; font-size: 1rem; font-weight: 600; margin-top: 4px;
+    }
+    .accordion { display: flex; flex-direction: column; gap: 10px; }
+    .accordion-item {
+      background: white; border-radius: 16px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      overflow: hidden;
+      border-left: 5px solid transparent;
+    }
+    .accordion-item:nth-child(1) { border-left-color: #FF9800; }
+    .accordion-item:nth-child(2) { border-left-color: #4CAF50; }
+    .accordion-item:nth-child(3) { border-left-color: #f44336; }
+    .accordion-item:nth-child(4) { border-left-color: #9C27B0; }
+    .accordion-item:nth-child(5) { border-left-color: #E91E63; }
+    .accordion-item:nth-child(6) { border-left-color: #2196F3; }
+    .accordion-item:nth-child(7) { border-left-color: #00BCD4; }
+    .accordion-item:nth-child(8) { border-left-color: #FF5722; }
+    .accordion-item:nth-child(9) { border-left-color: #795548; }
+    .accordion-item:nth-child(10) { border-left-color: #607D8B; }
+    .accordion-item:nth-child(11) { border-left-color: #8BC34A; }
+    .accordion-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .accordion-icon { font-size: 1.6rem; min-width: 36px; text-align: center; }
+    .accordion-name { font-size: 1.05rem; font-weight: 800; color: #222; flex: 1; }
+    .accordion-arrow {
+      font-size: 0.9rem; color: #aaa; transition: transform 0.3s;
+    }
+    .accordion-item.open .accordion-arrow { transform: rotate(180deg); }
+    .accordion-body {
+      max-height: 0; overflow: hidden; transition: max-height 0.35s ease;
+    }
+    .accordion-item.open .accordion-body { max-height: 300px; }
+    .accordion-content {
+      padding: 0 16px 16px 16px;
+      color: #555; font-size: 0.92rem; line-height: 1.7; font-weight: 600;
+    }
+    .back-link {
+      display: block; text-align: center; margin-top: 24px;
+      color: #4facfe; font-size: 0.95rem; text-decoration: none; font-weight: 700;
+    }
+    @media (min-width: 500px) {
+      .guide-title { font-size: 2.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="guide-container">
+    <div class="guide-header">
+      <h1 class="guide-title">📖 Hướng Dẫn Chơi</h1>
+      <p class="guide-sub">Cách chơi từng trò trong Học Vui</p>
+    </div>
+
+    <div class="accordion">
+      <!-- 1 -->
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <span class="accordion-icon">🌻</span>
+          <span class="accordion-name">Luyện Tập</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-content">
+            Trả lời câu hỏi, bắn zombie bảo vệ vườn hoa.<br>
+            • Trả lời đúng = zombie bị đẩy lùi<br>
+            • Trả lời sai = zombie tiến lại gần<br>
+            • Zombie chạm nhà = thua cuộc!
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <span class="accordion-icon">📝</span>
+          <span class="accordion-name">Phòng Thi</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-content">
+            Làm bài kiểm tra có thời gian.<br>
+            • Chọn bài thi muốn làm<br>
+            • Trả lời từng câu hỏi<br>
+            • Nộp bài và xem điểm!
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <span class="accordion-icon">🗺️</span>
+          <span class="accordion-name">Phiêu Lưu</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-content">
+            100 level trên bản đồ phiêu lưu.<br>
+            • Chiến đấu zombie bằng câu hỏi<br>
+            • Qua level = mở khóa level mới<br>
+            • Thu thập sao ⭐ trên đường đi!
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <span class="accordion-icon">👫</span>
+          <span class="accordion-name">Đấu 2 Bạn</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-content">
+            2 người chơi cùng 1 điện thoại.<br>
+            • Ai trả lời đúng + nhanh hơn thì thắng<br>
+            • Bàn phím: P1 dùng phím 1-2-3-4<br>
+            • P2 dùng phím 7-8-9-0
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <span class="accordion-icon">📱</span>
+          <span class="accordion-name">Đấu Online</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-content">
+            2 người chơi, mỗi bạn 1 điện thoại.<br>
+            • Tạo phòng → chia mã phòng cho bạn<br>
+            • Đấu online thời gian thực<br>
+            • Ai đúng nhiều hơn thắng!
+          </div>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <span class="accordion-icon">🎲</span>
+          <span class="accordion-name">Cờ Cá Ngựa</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-content">
+            Tung xúc xắc, trả lời câu hỏi để tiến.<br>
+            • Ô sao ⭐ = được tiến thêm<br>
+            • Ô bẫy 🪤 = random 3 kết quả<br>
+            • Ai về đích trước thắng!
+          </div>
+        </div>
+      </div>
+
+      <!-- 7 -->
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <span class="accordion-icon">🏎️</span>
+          <span class="accordion-name">Đua Xe Trí Tuệ</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-content">
+            2 người đua xe trên cùng đường đua.<br>
+            • Trả lời đúng = xe tiến ngay 2 ô<br>
+            • Không cần đợi đối thủ<br>
+            • Ai về đích 🏁 trước thắng!
+          </div>
+        </div>
+      </div>
+
+      <!-- 8 -->
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <span class="accordion-icon">🧗</span>
+          <span class="accordion-name">Leo Núi Trí Tuệ</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-content">
+            2-4 người leo núi bằng trí tuệ.<br>
+            • Trả lời đúng = leo 1 tầng<br>
+            • Combo x3 = leo 2 tầng<br>
+            • Thời tiết random ảnh hưởng kết quả<br>
+            • Ai lên đỉnh trước thắng!
+          </div>
+        </div>
+      </div>
+
+      <!-- 9 -->
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <span class="accordion-icon">🏰</span>
+          <span class="accordion-name">Xây Lâu Đài</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-content">
+            Xây tháp cao bằng câu hỏi.<br>
+            • Đúng = +1 gạch 🧱<br>
+            • Sai = mất 1 gạch<br>
+            • Combo x5 = +2 gạch<br>
+            • Có động đất random 🌋<br>
+            • Xây cao nhất có thể!
+          </div>
+        </div>
+      </div>
+
+      <!-- 10 -->
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <span class="accordion-icon">♟️</span>
+          <span class="accordion-name">Đấu Tướng</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-content">
+            Cờ vua mini trên bàn 4x6.<br>
+            • Mỗi lượt: chọn quân → trả lời câu hỏi<br>
+            • Đúng = được đi, Sai = mất lượt<br>
+            • Bắt Vua 👑 đối phương để thắng!
+          </div>
+        </div>
+      </div>
+
+      <!-- 11 -->
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <span class="accordion-icon">💣</span>
+          <span class="accordion-name">Dò Mìn Trí Tuệ</span>
+          <span class="accordion-arrow">▼</span>
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-content">
+            Bấm ô → trả lời câu hỏi → ô mở ra.<br>
+            • Tránh mìn 💣!<br>
+            • Tìm kho báu 💎 = bonus điểm<br>
+            • Bạn có 3 mạng ❤️<br>
+            • Mở hết ô an toàn = thắng!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a href="/" class="back-link">🏠 Về trang chủ</a>
+  </div>
+
+  <script>
+    document.querySelectorAll('.accordion-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const item = header.parentElement;
+        const wasOpen = item.classList.contains('open');
+        // Close all
+        document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('open'));
+        // Toggle current
+        if (!wasOpen) item.classList.add('open');
+      });
+    });
+  </script>
+</body>
+</html>
