@@ -21,6 +21,7 @@
     { "src": "/v7/(.*)", "dest": "/public/v7/$1" },
     { "src": "/v8/(.*)", "dest": "/public/v8/$1" },
     { "src": "/v9/(.*)", "dest": "/public/v9/$1" },
+    { "src": "/v10/(.*)", "dest": "/public/v10/$1" },
     { "src": "/", "dest": "/public/home.html" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
