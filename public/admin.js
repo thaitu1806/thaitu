@@ -72,8 +72,12 @@ const questionTypes = {
     easy: [
       { value: 'add10', label: 'Cộng trong phạm vi 10' },
       { value: 'add20', label: 'Cộng trong phạm vi 20' },
+      { value: 'add20carry', label: 'Cộng có nhớ phạm vi 20' },
+      { value: 'add100nocarry', label: 'Cộng không nhớ phạm vi 100' },
       { value: 'sub10', label: 'Trừ trong phạm vi 10' },
       { value: 'sub20', label: 'Trừ trong phạm vi 20' },
+      { value: 'sub20borrow', label: 'Trừ có nhớ phạm vi 20' },
+      { value: 'sub100noborrow', label: 'Trừ không nhớ phạm vi 100' },
       { value: 'compare', label: 'So sánh số' },
       { value: 'sequence', label: 'Số liền trước/sau' },
       { value: 'add3nums', label: 'Cộng 3 số' },
@@ -81,6 +85,10 @@ const questionTypes = {
     medium: [
       { value: 'add100', label: 'Cộng có nhớ (phạm vi 100)' },
       { value: 'sub100', label: 'Trừ có nhớ (phạm vi 100)' },
+      { value: 'add500', label: 'Cộng phạm vi 500' },
+      { value: 'sub500', label: 'Trừ phạm vi 500' },
+      { value: 'add1000', label: 'Cộng phạm vi 1000' },
+      { value: 'sub1000', label: 'Trừ phạm vi 1000' },
       { value: 'mul2', label: 'Bảng nhân 2' },
       { value: 'mul3', label: 'Bảng nhân 3' },
       { value: 'mul4', label: 'Bảng nhân 4' },
@@ -94,6 +102,7 @@ const questionTypes = {
       { value: 'wordProblem', label: 'Bài toán có lời văn' },
       { value: 'fastCalc', label: 'Tính nhanh' },
       { value: 'logic', label: 'Logic tư duy' },
+      { value: 'add1000hard', label: 'Cộng trừ phạm vi 1000 (khó)' },
     ],
   },
   vietnamese: {
@@ -194,6 +203,56 @@ function generateMathQuestion(difficulty, type) {
       const a = rand(11, 20), b = rand(3, a - 1);
       const answer = a - b;
       return { question_text: `${a} - ${b} = ?`, ...makeOptions(answer, 4) };
+    }
+    case 'add20carry': {
+      const a = rand(5, 12), b = rand(9 - (a % 10) + 1, 12);
+      const answer = a + b;
+      return { question_text: `${a} + ${b} = ?`, ...makeOptions(answer, 3) };
+    }
+    case 'sub20borrow': {
+      const a = rand(11, 20), b = rand(a % 10 + 1, Math.min(a - 1, 9));
+      const answer = a - b;
+      return { question_text: `${a} - ${b} = ?`, ...makeOptions(answer, 3) };
+    }
+    case 'add100nocarry': {
+      const a = rand(10, 60), b = rand(10, 30);
+      const answer = a + b;
+      return { question_text: `Đặt tính:\n  ${a}\n+ ${b}\n———`, ...makeOptions(answer, 5) };
+    }
+    case 'sub100noborrow': {
+      const a = rand(40, 99), b = rand(10, Math.min(a - 10, 40));
+      const answer = a - b;
+      return { question_text: `Đặt tính:\n  ${a}\n- ${b}\n———`, ...makeOptions(answer, 5) };
+    }
+    case 'add500': {
+      const a = rand(100, 350), b = rand(50, 200);
+      const answer = a + b;
+      return { question_text: `Đặt tính:\n ${a}\n+${b}\n———`, ...makeOptions(answer, 10) };
+    }
+    case 'sub500': {
+      const a = rand(200, 500), b = rand(50, a - 50);
+      const answer = a - b;
+      return { question_text: `Đặt tính:\n ${a}\n-${b}\n———`, ...makeOptions(answer, 10) };
+    }
+    case 'add1000': {
+      const a = rand(200, 700), b = rand(100, 400);
+      const answer = a + b;
+      return { question_text: `Đặt tính:\n ${a}\n+${b}\n———`, ...makeOptions(answer, 15) };
+    }
+    case 'sub1000': {
+      const a = rand(400, 1000), b = rand(100, a - 100);
+      const answer = a - b;
+      return { question_text: `Đặt tính:\n ${a}\n-${b}\n———`, ...makeOptions(answer, 15) };
+    }
+    case 'add1000hard': {
+      const a = rand(300, 800), b = rand(200, 600);
+      const answer = a + b;
+      const isSub = rand(0, 1);
+      if (isSub) {
+        const a2 = rand(500, 1000), b2 = rand(200, a2 - 100);
+        return { question_text: `${a2} - ${b2} = ?`, ...makeOptions(a2 - b2, 20) };
+      }
+      return { question_text: `${a} + ${b} = ?`, ...makeOptions(answer, 20) };
     }
     case 'compare': {
       const a = rand(1, 20), b = rand(1, 20);
