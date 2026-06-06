@@ -18,6 +18,9 @@
     { "src": "/v4/(.*)", "dest": "/public/v4/$1" },
     { "src": "/v5/(.*)", "dest": "/public/v5/$1" },
     { "src": "/v6/(.*)", "dest": "/public/v6/$1" },
+    { "src": "/v7/(.*)", "dest": "/public/v7/$1" },
+    { "src": "/v8/(.*)", "dest": "/public/v8/$1" },
+    { "src": "/v9/(.*)", "dest": "/public/v9/$1" },
     { "src": "/", "dest": "/public/home.html" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
