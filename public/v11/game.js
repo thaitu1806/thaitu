@@ -8,7 +8,7 @@
   }
 })();
 
-// --- Board data (28 cells, 8x11 rectangular loop) ---
+// --- Board data (34 cells, full 8x11 rectangular loop) ---
 const BOARD = [
   // Top row (left to right): 0-7
   { id: 0, type: 'start', name: 'Xuất phát', icon: '🏠', price: 0, rent: 0 },
@@ -29,35 +29,40 @@ const BOARD = [
   { id: 14, type: 'lucky', name: 'Hộp quà', icon: '🎁', price: 0, rent: 0 },
   { id: 15, type: 'land', name: 'TP.HCM', icon: '🏙️', price: 350, rent: 70 },
   { id: 16, type: 'land', name: 'Vũng Tàu', icon: '🌊', price: 230, rent: 45 },
-  // Bottom row (right to left): 17-22
+  // Bottom row (right to left): 17-24
   { id: 17, type: 'tax', name: 'Thuế', icon: '💰', price: 0, rent: 150 },
   { id: 18, type: 'land', name: 'Cần Thơ', icon: '🍜', price: 220, rent: 45 },
   { id: 19, type: 'land', name: 'Phú Quốc', icon: '🏝️', price: 300, rent: 60 },
   { id: 20, type: 'quiz', name: 'Câu hỏi', icon: '❓', price: 0, rent: 0 },
   { id: 21, type: 'land', name: 'Cà Mau', icon: '🦐', price: 180, rent: 36 },
-  { id: 22, type: 'lucky', name: 'Hộp quà', icon: '🎁', price: 0, rent: 0 },
-  // Left column (bottom to top): 23-27
-  { id: 23, type: 'land', name: 'Hạ Long', icon: '🎋', price: 290, rent: 55 },
-  { id: 24, type: 'land', name: 'Sapa', icon: '🌿', price: 240, rent: 48 },
-  { id: 25, type: 'land', name: 'Hội An', icon: '🏺', price: 280, rent: 55 },
-  { id: 26, type: 'tax', name: 'Thuế', icon: '💰', price: 0, rent: 120 },
-  { id: 27, type: 'land', name: 'Mũi Né', icon: '🏄', price: 250, rent: 50 },
+  { id: 22, type: 'land', name: 'Rạch Giá', icon: '🐠', price: 190, rent: 38 },
+  { id: 23, type: 'lucky', name: 'Hộp quà', icon: '🎁', price: 0, rent: 0 },
+  { id: 24, type: 'land', name: 'Long An', icon: '🌻', price: 200, rent: 40 },
+  // Left column (bottom to top): 25-33
+  { id: 25, type: 'land', name: 'Hạ Long', icon: '🎋', price: 290, rent: 55 },
+  { id: 26, type: 'land', name: 'Sapa', icon: '🌿', price: 240, rent: 48 },
+  { id: 27, type: 'land', name: 'Hội An', icon: '🏺', price: 280, rent: 55 },
+  { id: 28, type: 'tax', name: 'Thuế', icon: '💰', price: 0, rent: 120 },
+  { id: 29, type: 'land', name: 'Mũi Né', icon: '🏄', price: 250, rent: 50 },
+  { id: 30, type: 'land', name: 'Tây Ninh', icon: '⛩️', price: 210, rent: 42 },
+  { id: 31, type: 'quiz', name: 'Câu hỏi', icon: '❓', price: 0, rent: 0 },
+  { id: 32, type: 'land', name: 'Bắc Ninh', icon: '🏯', price: 230, rent: 46 },
+  { id: 33, type: 'land', name: 'Thanh Hoá', icon: '🌾', price: 220, rent: 44 },
 ];
 
-// Grid positions for 28 cells on 8 cols × 11 rows
-// Format: [row, col] (1-indexed for CSS grid)
+// Grid positions for 34 cells on 8 cols × 11 rows (full perimeter)
 const GRID_POSITIONS = [
   // Top row: cells 0-7, row=1, col=1..8
   [1,1], [1,2], [1,3], [1,4], [1,5], [1,6], [1,7], [1,8],
   // Right column: cells 8-16, col=8, rows 2..10
   [2,8], [3,8], [4,8], [5,8], [6,8], [7,8], [8,8], [9,8], [10,8],
-  // Bottom row: cells 17-22, row=11, cols 7..2
-  [11,7], [11,6], [11,5], [11,4], [11,3], [11,2],
-  // Left column: cells 23-27, col=1, rows 10..6
-  [10,1], [9,1], [8,1], [7,1], [6,1],
+  // Bottom row: cells 17-24, row=11, cols 8..1
+  [11,8], [11,7], [11,6], [11,5], [11,4], [11,3], [11,2], [11,1],
+  // Left column: cells 25-33, col=1, rows 10..2
+  [10,1], [9,1], [8,1], [7,1], [6,1], [5,1], [4,1], [3,1], [2,1],
 ];
 
-const BOARD_SIZE = 28;
+const BOARD_SIZE = 34;
 
 const LUCKY_EVENTS = [
   { text: '🎉 Trúng xổ số! +200 coin', amount: 200, type: 'gain' },
@@ -157,10 +162,18 @@ const $playersBar = document.getElementById('players-bar');
 const $roundNum = document.getElementById('round-num');
 const $board = document.getElementById('board');
 const $boardContainer = document.getElementById('board-container');
-const $diceBtn = document.getElementById('dice-btn');
-const $diceResult = document.getElementById('dice-result');
-const $actionInfo = document.getElementById('action-info');
 const $popupOverlay = document.getElementById('popup-overlay');
+
+// Helper to update action info (uses center-info in board)
+function setActionInfo(text) {
+  const el = document.getElementById('center-info');
+  if (el) el.textContent = text;
+}
+
+// Stub removed elements
+const $diceBtn = { disabled: false, addEventListener() {} };
+const $diceResult = { textContent: '', classList: { add() {}, remove() {} }, style: { animation: '' }, offsetWidth: 0 };
+const $actionInfo = { set textContent(v) { setActionInfo(v); } };
 const $popupContent = document.getElementById('popup-content');
 const $resultTitle = document.getElementById('result-title');
 const $resultRankings = document.getElementById('result-rankings');
@@ -207,8 +220,6 @@ function bindSetupEvents() {
     showScreen('setup');
     resetState();
   });
-
-  $diceBtn.addEventListener('click', onDiceClick);
 }
 
 function renderPlayerSlots() {
