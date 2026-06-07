@@ -351,18 +351,32 @@ function resetState() {
   state.turnInProgress = false;
 }
 
-// --- 3D Dice rendering ---
-function renderDice(containerId, value, colorClass) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  container.className = `dice-box ${colorClass}`;
-  const pattern = DICE_DOT_PATTERNS[value] || [];
-  container.innerHTML = '';
-  for (let i = 1; i <= 9; i++) {
-    const dot = document.createElement('span');
-    dot.className = pattern.includes(i) ? 'dot visible' : 'dot';
-    container.appendChild(dot);
+// --- 3D Dice rendering (V5 style - 6 faces per cube) ---
+function initDiceCube(wrapperId) {
+  const wrapper = document.getElementById(wrapperId);
+  if (!wrapper) return;
+  wrapper.innerHTML = '';
+  for (let v = 1; v <= 6; v++) {
+    const face = document.createElement('div');
+    face.className = `dice-face dice-face--${v}`;
+    const pattern = DICE_DOT_PATTERNS[v];
+    for (let i = 1; i <= 9; i++) {
+      const dot = document.createElement('span');
+      dot.className = pattern.includes(i) ? 'dot visible' : 'dot';
+      face.appendChild(dot);
+    }
+    wrapper.appendChild(face);
   }
+  wrapper.dataset.showing = '1';
+}
+
+function showDiceFace(wrapperId, value) {
+  const wrapper = document.getElementById(wrapperId);
+  if (wrapper) wrapper.dataset.showing = String(value);
+}
+
+function renderDice(containerId, value, colorClass) {
+  showDiceFace(containerId, value);
 }
 
 // --- Render board ---
@@ -400,8 +414,8 @@ function renderBoard() {
   html += `
     <div class="board-center">
       <div class="center-dice-row">
-        <div class="dice-box die-red" id="dice-box-1"></div>
-        <div class="dice-box die-blue" id="dice-box-2"></div>
+        <div class="dice-wrapper" id="dice-box-1" data-showing="1"></div>
+        <div class="dice-wrapper" id="dice-box-2" data-showing="1"></div>
       </div>
       <button id="center-roll-btn" class="btn-dice">🎲 Tung xúc xắc</button>
       <div class="center-info" id="center-info"></div>
@@ -416,9 +430,9 @@ function renderBoard() {
     centerRollBtn.addEventListener('click', onDiceClick);
   }
 
-  // Initialize dice display
-  renderDice('dice-box-1', 1, 'die-red');
-  renderDice('dice-box-2', 1, 'die-blue');
+  // Initialize 3D dice cubes
+  initDiceCube('dice-box-1');
+  initDiceCube('dice-box-2');
 }
 
 function getRent(cell) {
@@ -506,26 +520,34 @@ function rollDice() {
 
   sfxDice();
 
-  // Start rolling animation
-  const box1 = document.getElementById('dice-box-1');
-  const box2 = document.getElementById('dice-box-2');
-  if (box1) { box1.classList.add('rolling'); }
-  if (box2) { box2.classList.add('rolling'); }
+  // Start 3D tumble animation with random directions
+  const w1 = document.getElementById('dice-box-1');
+  const w2 = document.getElementById('dice-box-2');
+  if (w1) {
+    w1.style.setProperty('--rx-dir', Math.random() > 0.5 ? '1' : '-1');
+    w1.style.setProperty('--ry-dir', Math.random() > 0.5 ? '1' : '-1');
+    w1.style.setProperty('--rz-dir', Math.random() > 0.5 ? '1' : '-1');
+    w1.classList.add('rolling');
+  }
+  if (w2) {
+    w2.style.setProperty('--rx-dir', Math.random() > 0.5 ? '1' : '-1');
+    w2.style.setProperty('--ry-dir', Math.random() > 0.5 ? '1' : '-1');
+    w2.style.setProperty('--rz-dir', Math.random() > 0.5 ? '1' : '-1');
+    w2.classList.add('rolling');
+  }
 
-  // After animation, show result with bounce
+  // After tumble, stop and show result face with bounce
   setTimeout(() => {
-    if (box1) { box1.classList.remove('rolling'); box1.classList.add('bounce'); }
-    if (box2) { box2.classList.remove('rolling'); box2.classList.add('bounce'); }
-    renderDice('dice-box-1', die1, 'die-red');
-    renderDice('dice-box-2', die2, 'die-blue');
+    if (w1) { w1.classList.remove('rolling'); w1.classList.add('bounce'); showDiceFace('dice-box-1', die1); }
+    if (w2) { w2.classList.remove('rolling'); w2.classList.add('bounce'); showDiceFace('dice-box-2', die2); }
     setActionInfo(`🎲 ${die1} + ${die2} = ${totalSteps} bước`);
     setTimeout(() => {
-      if (box1) box1.classList.remove('bounce');
-      if (box2) box2.classList.remove('bounce');
-    }, 400);
-  }, 700);
+      if (w1) w1.classList.remove('bounce');
+      if (w2) w2.classList.remove('bounce');
+    }, 500);
+  }, 1000);
 
-  setTimeout(() => movePlayer(totalSteps), 1200);
+  setTimeout(() => movePlayer(totalSteps), 1500);
 }
 
 function movePlayer(steps) {

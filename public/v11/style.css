@@ -342,63 +342,90 @@ body {
   border-radius: 10px;
 }
 
-/* 3D Dice */
+/* 3D Dice (copied from V5 Cờ Cá Ngựa) */
 .center-dice-row {
   display: flex;
-  gap: 16px;
+  gap: 20px;
+  perspective: 600px;
 }
 
-.dice-box {
+.dice-wrapper {
   width: 50px;
   height: 50px;
-  background: linear-gradient(145deg, #ffffff, #f0f0f5);
-  border-radius: 10px;
-  box-shadow: 2px 4px 12px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.8);
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease-out;
+  --rx-dir: 1;
+  --ry-dir: 1;
+  --rz-dir: 1;
+}
+
+.dice-wrapper:first-child { --dot-color: #e74c3c; }
+.dice-wrapper:last-child { --dot-color: #3498db; }
+
+.dice-face {
+  position: absolute;
+  width: 50px;
+  height: 50px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  padding: 8px;
   gap: 2px;
-  transition: transform 0.3s ease;
+  padding: 7px;
+  background: linear-gradient(145deg, #ffffff, #f0f0f5);
+  border-radius: 8px;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.08);
+  backface-visibility: hidden;
 }
 
-.dice-box.rolling {
-  animation: diceRoll 0.6s ease-in-out;
-}
+.dice-face--1 { transform: rotateY(0deg) translateZ(25px); }
+.dice-face--2 { transform: rotateY(90deg) translateZ(25px); }
+.dice-face--3 { transform: rotateX(-90deg) translateZ(25px); }
+.dice-face--4 { transform: rotateX(90deg) translateZ(25px); }
+.dice-face--5 { transform: rotateY(-90deg) translateZ(25px); }
+.dice-face--6 { transform: rotateY(180deg) translateZ(25px); }
 
-@keyframes diceRoll {
-  0% { transform: rotateZ(0deg) scale(1); }
-  25% { transform: rotateZ(90deg) scale(0.8); }
-  50% { transform: rotateZ(180deg) scale(1.1); }
-  75% { transform: rotateZ(270deg) scale(0.9); }
-  100% { transform: rotateZ(360deg) scale(1); }
-}
-
-.dice-box.bounce {
-  animation: diceBounce 0.4s ease-out;
-}
-
-@keyframes diceBounce {
-  0% { transform: scale(1.2); }
-  50% { transform: scale(0.9); }
-  100% { transform: scale(1); }
-}
-
-.dice-box .dot {
+.dice-face .dot {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   background: transparent;
 }
 
-.dice-box.die-red .dot.visible {
-  background: radial-gradient(circle at 35% 35%, #e74c3c, #c0392b);
+.dice-face .dot.visible {
+  background: radial-gradient(circle at 35% 35%, var(--dot-color), color-mix(in srgb, var(--dot-color) 70%, black));
   box-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
-.dice-box.die-blue .dot.visible {
-  background: radial-gradient(circle at 35% 35%, #3498db, #2471a3);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+.dice-wrapper[data-showing="1"] { transform: rotateY(0deg); }
+.dice-wrapper[data-showing="2"] { transform: rotateY(-90deg); }
+.dice-wrapper[data-showing="3"] { transform: rotateX(90deg); }
+.dice-wrapper[data-showing="4"] { transform: rotateX(-90deg); }
+.dice-wrapper[data-showing="5"] { transform: rotateY(90deg); }
+.dice-wrapper[data-showing="6"] { transform: rotateY(180deg); }
+
+.dice-wrapper.rolling {
+  animation: cubeTumble 0.8s linear infinite;
+}
+
+@keyframes cubeTumble {
+  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  100% { 
+    transform: 
+      rotateX(calc(var(--rx-dir) * 720deg)) 
+      rotateY(calc(var(--ry-dir) * 540deg)) 
+      rotateZ(calc(var(--rz-dir) * 180deg)); 
+  }
+}
+
+.dice-wrapper.bounce {
+  animation: cubeBounce 0.5s ease-out;
+}
+
+@keyframes cubeBounce {
+  0% { transform: scale(1.2); }
+  40% { transform: scale(0.9); }
+  100% { transform: scale(1); }
 }
 
 .board-center .btn-dice {
