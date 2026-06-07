@@ -359,6 +359,29 @@ body {
   grid-template-rows: repeat(3, 1fr);
   padding: 8px;
   gap: 2px;
+  transition: transform 0.3s ease;
+}
+
+.dice-box.rolling {
+  animation: diceRoll 0.6s ease-in-out;
+}
+
+@keyframes diceRoll {
+  0% { transform: rotateZ(0deg) scale(1); }
+  25% { transform: rotateZ(90deg) scale(0.8); }
+  50% { transform: rotateZ(180deg) scale(1.1); }
+  75% { transform: rotateZ(270deg) scale(0.9); }
+  100% { transform: rotateZ(360deg) scale(1); }
+}
+
+.dice-box.bounce {
+  animation: diceBounce 0.4s ease-out;
+}
+
+@keyframes diceBounce {
+  0% { transform: scale(1.2); }
+  50% { transform: scale(0.9); }
+  100% { transform: scale(1); }
 }
 
 .dice-box .dot {

@@ -506,18 +506,26 @@ function rollDice() {
 
   sfxDice();
 
-  // Render 3D dot dice in center
-  renderDice('dice-box-1', die1, 'die-red');
-  renderDice('dice-box-2', die2, 'die-blue');
+  // Start rolling animation
+  const box1 = document.getElementById('dice-box-1');
+  const box2 = document.getElementById('dice-box-2');
+  if (box1) { box1.classList.add('rolling'); }
+  if (box2) { box2.classList.add('rolling'); }
 
-  // Also update bottom action panel
-  $diceResult.textContent = `${die1} + ${die2} = ${totalSteps}`;
-  $diceResult.classList.remove('hidden');
-  $diceResult.style.animation = 'none';
-  void $diceResult.offsetWidth;
-  $diceResult.style.animation = 'diceAnim 0.5s ease';
+  // After animation, show result with bounce
+  setTimeout(() => {
+    if (box1) { box1.classList.remove('rolling'); box1.classList.add('bounce'); }
+    if (box2) { box2.classList.remove('rolling'); box2.classList.add('bounce'); }
+    renderDice('dice-box-1', die1, 'die-red');
+    renderDice('dice-box-2', die2, 'die-blue');
+    setActionInfo(`🎲 ${die1} + ${die2} = ${totalSteps} bước`);
+    setTimeout(() => {
+      if (box1) box1.classList.remove('bounce');
+      if (box2) box2.classList.remove('bounce');
+    }, 400);
+  }, 700);
 
-  setTimeout(() => movePlayer(totalSteps), 800);
+  setTimeout(() => movePlayer(totalSteps), 1200);
 }
 
 function movePlayer(steps) {
