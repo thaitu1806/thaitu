@@ -148,7 +148,10 @@ const FALLBACK_QUESTIONS = [
 ];
 
 // --- DOM refs ---
+const $modeScreen = document.getElementById('mode-screen');
 const $setupScreen = document.getElementById('setup-screen');
+const $onlineScreen = document.getElementById('online-screen');
+const $waitingScreen = document.getElementById('waiting-screen');
 const $gameScreen = document.getElementById('game-screen');
 const $resultScreen = document.getElementById('result-screen');
 const $playerCountGroup = document.getElementById('player-count-group');
@@ -156,7 +159,6 @@ const $subjectGroup = document.getElementById('subject-group');
 const $difficultyGroup = document.getElementById('difficulty-group');
 const $playerSlots = document.getElementById('player-slots');
 const $startBtn = document.getElementById('start-btn');
-const $helpBtn = document.getElementById('help-btn');
 const $helpOverlay = document.getElementById('help-overlay');
 const $playersBar = document.getElementById('players-bar');
 const $roundNum = document.getElementById('round-num');
@@ -181,10 +183,31 @@ const $playAgainBtn = document.getElementById('play-again-btn');
 
 // --- Setup logic ---
 let setupPlayerCount = 3;
+let onlineMode = false; // Track if current game is online
 
 function initSetup() {
   renderPlayerSlots();
+  bindModeEvents();
   bindSetupEvents();
+  bindOnlineEvents();
+}
+
+function bindModeEvents() {
+  document.getElementById('mode-local-btn').addEventListener('click', () => showScreen('setup'));
+  document.getElementById('mode-online-btn').addEventListener('click', () => {
+    // Pre-fill name from profile
+    const profile = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+    const nameInput = document.getElementById('online-name');
+    if (nameInput && !nameInput.value) nameInput.value = profile.name || '';
+    showScreen('online');
+  });
+  document.getElementById('help-btn-mode').addEventListener('click', () => $helpOverlay.classList.remove('hidden'));
+  document.getElementById('back-to-mode-btn').addEventListener('click', () => showScreen('mode'));
+  document.getElementById('back-to-mode-btn2').addEventListener('click', () => showScreen('mode'));
+  document.getElementById('back-to-mode-result').addEventListener('click', () => {
+    resetState();
+    showScreen('mode');
+  });
 }
 
 function bindSetupEvents() {
@@ -215,10 +238,14 @@ function bindSetupEvents() {
   });
 
   $startBtn.addEventListener('click', startGame);
-  $helpBtn.addEventListener('click', () => $helpOverlay.classList.remove('hidden'));
   $playAgainBtn.addEventListener('click', () => {
-    showScreen('setup');
-    resetState();
+    if (onlineMode) {
+      showScreen('mode');
+      resetState();
+    } else {
+      showScreen('setup');
+      resetState();
+    }
   });
 }
 
@@ -283,6 +310,7 @@ function shuffleArray(arr) {
 
 // --- Start game ---
 async function startGame() {
+  onlineMode = false;
   const subject = $subjectGroup.querySelector('.active').dataset.value;
   const difficulty = $difficultyGroup.querySelector('.active').dataset.value;
 
@@ -338,10 +366,16 @@ async function startGame() {
 
 // --- Screen management ---
 function showScreen(name) {
+  $modeScreen.classList.remove('active');
   $setupScreen.classList.remove('active');
+  $onlineScreen.classList.remove('active');
+  $waitingScreen.classList.remove('active');
   $gameScreen.classList.remove('active');
   $resultScreen.classList.remove('active');
+  if (name === 'mode') $modeScreen.classList.add('active');
   if (name === 'setup') $setupScreen.classList.add('active');
+  if (name === 'online') $onlineScreen.classList.add('active');
+  if (name === 'waiting') $waitingScreen.classList.add('active');
   if (name === 'game') $gameScreen.classList.add('active');
   if (name === 'result') $resultScreen.classList.add('active');
 }
@@ -427,7 +461,11 @@ function renderBoard() {
   // Bind center roll button
   const centerRollBtn = document.getElementById('center-roll-btn');
   if (centerRollBtn) {
-    centerRollBtn.addEventListener('click', onDiceClick);
+    if (onlineMode) {
+      centerRollBtn.addEventListener('click', onlineDiceClick);
+    } else {
+      centerRollBtn.addEventListener('click', onDiceClick);
+    }
   }
 
   // Initialize 3D dice cubes
@@ -471,6 +509,7 @@ function getCurrentPlayer() {
 
 function startTurn() {
   if (state.gameOver) return;
+  if (onlineMode) return; // Online mode uses server-driven turns
 
   const player = getCurrentPlayer();
   if (player.bankrupt) {
@@ -932,6 +971,7 @@ function botHandleQuiz(player) {
 // --- End turn / Next player ---
 function endTurn() {
   state.turnInProgress = false;
+  if (onlineMode) return; // Online turns are server-driven
 
   if (state.gameOver) return;
 
@@ -946,6 +986,7 @@ function endTurn() {
 
 function nextPlayer() {
   if (state.gameOver) return;
+  if (onlineMode) return; // Online turns are server-driven
 
   let nextIdx = (state.currentPlayerIdx + 1) % state.players.length;
 
@@ -1018,6 +1059,488 @@ function showPopup(html) {
 
 function hidePopup() {
   $popupOverlay.classList.add('hidden');
+}
+
+// ===== ONLINE MULTIPLAYER (WebSocket) =====
+let ws = null;
+let myRole = null; // 'host' or 'guest'
+let roomCode = null;
+let onlineOpponent = null;
+let onlineName = '';
+let onlineDiceResolve = null; // for awaiting dice results from server
+
+function getWsUrl() {
+  const loc = window.location;
+  const proto = loc.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${proto}//${loc.host}`;
+}
+
+function bindOnlineEvents() {
+  // Subject group in online screen
+  document.getElementById('online-subject-group').querySelectorAll('.btn-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('online-subject-group').querySelectorAll('.btn-option').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Difficulty group in online screen
+  document.getElementById('online-difficulty-group').querySelectorAll('.btn-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('online-difficulty-group').querySelectorAll('.btn-option').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  document.getElementById('create-room-btn').addEventListener('click', createOnlineRoom);
+  document.getElementById('join-room-btn').addEventListener('click', joinOnlineRoom);
+  document.getElementById('leave-room-btn').addEventListener('click', leaveRoom);
+  document.getElementById('start-online-btn').addEventListener('click', startOnlineGame);
+}
+
+function connectWs() {
+  return new Promise((resolve, reject) => {
+    if (ws && ws.readyState === WebSocket.OPEN) { resolve(); return; }
+    ws = new WebSocket(getWsUrl());
+    ws.onopen = () => resolve();
+    ws.onerror = () => reject(new Error('WebSocket connection failed'));
+    ws.onclose = () => {
+      if (roomCode) {
+        showPopup('<h3>⚠️ Mất kết nối</h3><p>Kết nối đã bị ngắt.</p><div style="margin-top:14px;"><button class="popup-btn btn-ok" onclick="hidePopup(); showScreen(\'mode\');">OK</button></div>');
+        roomCode = null;
+      }
+    };
+    ws.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        handleOnlineMessage(msg);
+      } catch(e) {}
+    };
+  });
+}
+
+async function createOnlineRoom() {
+  const nameInput = document.getElementById('online-name');
+  onlineName = nameInput.value.trim() || 'Người chơi';
+  if (!onlineName) { nameInput.focus(); return; }
+
+  const subject = document.getElementById('online-subject-group').querySelector('.active').dataset.value;
+  const difficulty = document.getElementById('online-difficulty-group').querySelector('.active').dataset.value;
+
+  try {
+    await connectWs();
+    ws.send(JSON.stringify({
+      type: 'v11_create',
+      name: onlineName,
+      settings: { subject, difficulty, maxRounds: 20 }
+    }));
+  } catch(e) {
+    alert('Không thể kết nối server. Vui lòng thử lại!');
+  }
+}
+
+async function joinOnlineRoom() {
+  const nameInput = document.getElementById('online-name');
+  onlineName = nameInput.value.trim() || 'Người chơi';
+  if (!onlineName) { nameInput.focus(); return; }
+
+  const codeInput = document.getElementById('room-code-input');
+  const code = codeInput.value.trim().toUpperCase();
+  if (code.length !== 4) { codeInput.focus(); return; }
+
+  try {
+    await connectWs();
+    ws.send(JSON.stringify({
+      type: 'v11_join',
+      name: onlineName,
+      code: code
+    }));
+  } catch(e) {
+    alert('Không thể kết nối server. Vui lòng thử lại!');
+  }
+}
+
+function leaveRoom() {
+  if (ws) {
+    ws.send(JSON.stringify({ type: 'v11_leave' }));
+    ws.close();
+    ws = null;
+  }
+  roomCode = null;
+  myRole = null;
+  showScreen('mode');
+}
+
+function startOnlineGame() {
+  if (!ws || myRole !== 'host') return;
+  ws.send(JSON.stringify({ type: 'v11_start' }));
+  document.getElementById('start-online-btn').disabled = true;
+  document.getElementById('start-online-btn').textContent = '⏳ Đang tải...';
+}
+
+function handleOnlineMessage(msg) {
+  switch (msg.type) {
+    case 'v11_created':
+      roomCode = msg.code;
+      myRole = 'host';
+      showScreen('waiting');
+      document.getElementById('display-room-code').textContent = msg.code;
+      document.getElementById('waiting-status').textContent = 'Đang đợi đối thủ...';
+      renderWaitingPlayers([{ name: onlineName, color: PLAYER_COLORS[0], tag: 'Bạn (Host)' }]);
+      document.getElementById('start-online-btn').classList.add('hidden');
+      break;
+
+    case 'v11_joined':
+      roomCode = msg.code;
+      myRole = 'guest';
+      onlineOpponent = msg.hostName;
+      showScreen('waiting');
+      document.getElementById('display-room-code').textContent = msg.code;
+      document.getElementById('waiting-status').textContent = 'Đã vào phòng! Đợi host bắt đầu...';
+      renderWaitingPlayers([
+        { name: msg.hostName, color: PLAYER_COLORS[0], tag: 'Host' },
+        { name: onlineName, color: PLAYER_COLORS[1], tag: 'Bạn' },
+      ]);
+      document.getElementById('start-online-btn').classList.add('hidden');
+      break;
+
+    case 'v11_guest_joined':
+      onlineOpponent = msg.guestName;
+      document.getElementById('waiting-status').textContent = `${msg.guestName} đã vào! Bắt đầu thôi!`;
+      renderWaitingPlayers([
+        { name: onlineName, color: PLAYER_COLORS[0], tag: 'Bạn (Host)' },
+        { name: msg.guestName, color: PLAYER_COLORS[1], tag: 'Khách' },
+      ]);
+      document.getElementById('start-online-btn').classList.remove('hidden');
+      document.getElementById('start-online-btn').disabled = false;
+      document.getElementById('start-online-btn').textContent = '🎲 Bắt đầu!';
+      break;
+
+    case 'v11_game_start':
+      onlineMode = true;
+      startOnlineMatch(msg);
+      break;
+
+    case 'v11_turn':
+      handleOnlineTurn(msg);
+      break;
+
+    case 'v11_dice_result':
+      handleOnlineDiceResult(msg);
+      break;
+
+    case 'v11_question':
+      handleOnlineQuestion(msg);
+      break;
+
+    case 'v11_answer_result':
+      handleOnlineAnswerResult(msg);
+      break;
+
+    case 'v11_state_update':
+      handleOnlineStateUpdate(msg);
+      break;
+
+    case 'v11_game_over':
+      handleOnlineGameOver(msg);
+      break;
+
+    case 'v11_opponent_left':
+      showPopup('<h3>😢 Đối thủ đã rời phòng</h3><p>Trận đấu kết thúc!</p><div style="margin-top:14px;"><button class="popup-btn btn-ok" onclick="hidePopup(); showScreen(\'mode\'); resetState();">OK</button></div>');
+      roomCode = null;
+      break;
+
+    case 'error':
+      alert(msg.message || 'Có lỗi xảy ra!');
+      break;
+  }
+}
+
+function renderWaitingPlayers(players) {
+  const container = document.getElementById('waiting-players');
+  container.innerHTML = players.map(p => `
+    <div class="waiting-player">
+      <div class="wp-dot" style="background:${p.color}"></div>
+      <span class="wp-name">${p.name}</span>
+      <span class="wp-tag">${p.tag}</span>
+    </div>
+  `).join('');
+}
+
+function startOnlineMatch(msg) {
+  // Initialize game state from server data
+  const myIdx = myRole === 'host' ? 0 : 1;
+  const players = [
+    { id: 0, name: msg.hostName, isBot: false, money: 1500, position: 0, properties: [], bankrupt: false, color: PLAYER_COLORS[0] },
+    { id: 1, name: msg.guestName, isBot: false, money: 1500, position: 0, properties: [], bankrupt: false, color: PLAYER_COLORS[1] },
+  ];
+
+  state = {
+    players,
+    currentPlayerIdx: 0,
+    round: 1,
+    maxRounds: msg.maxRounds || 20,
+    board: BOARD.map(c => ({ ...c, owner: null })),
+    questions: [],
+    questionIdx: 0,
+    subject: msg.settings?.subject || 'mix',
+    difficulty: msg.settings?.difficulty || 'easy',
+    gameOver: false,
+    turnInProgress: false,
+    online: true,
+    myIdx,
+  };
+
+  showScreen('game');
+  renderBoard();
+  renderPlayersBar();
+  updateRound();
+}
+
+function handleOnlineTurn(msg) {
+  state.currentPlayerIdx = msg.currentPlayerIdx;
+  state.round = msg.round || state.round;
+  state.turnInProgress = true;
+  updateRound();
+  renderPlayersBar();
+
+  const isMyTurn = msg.currentPlayerIdx === state.myIdx;
+  const centerInfo = document.getElementById('center-info');
+  const centerRollBtn = document.getElementById('center-roll-btn');
+
+  if (isMyTurn) {
+    if (centerInfo) centerInfo.textContent = `Lượt của bạn! Tung xúc xắc!`;
+    if (centerRollBtn) {
+      centerRollBtn.disabled = false;
+      centerRollBtn.onclick = onlineDiceClick;
+    }
+  } else {
+    if (centerInfo) centerInfo.textContent = `Đợi ${state.players[msg.currentPlayerIdx].name} tung xúc xắc...`;
+    if (centerRollBtn) centerRollBtn.disabled = true;
+  }
+}
+
+function onlineDiceClick() {
+  const centerRollBtn = document.getElementById('center-roll-btn');
+  if (centerRollBtn) centerRollBtn.disabled = true;
+  ws.send(JSON.stringify({ type: 'v11_roll_dice' }));
+}
+
+function handleOnlineDiceResult(msg) {
+  const { die1, die2, playerIdx, newPosition, passedStart, moneyAfterMove } = msg;
+  const player = state.players[playerIdx];
+
+  sfxDice();
+
+  // Animate 3D dice
+  const w1 = document.getElementById('dice-box-1');
+  const w2 = document.getElementById('dice-box-2');
+  if (w1) { w1.style.setProperty('--rx-dir', Math.random()>0.5?'1':'-1'); w1.style.setProperty('--ry-dir', Math.random()>0.5?'1':'-1'); w1.style.setProperty('--rz-dir', Math.random()>0.5?'1':'-1'); w1.classList.add('rolling'); }
+  if (w2) { w2.style.setProperty('--rx-dir', Math.random()>0.5?'1':'-1'); w2.style.setProperty('--ry-dir', Math.random()>0.5?'1':'-1'); w2.style.setProperty('--rz-dir', Math.random()>0.5?'1':'-1'); w2.classList.add('rolling'); }
+
+  setTimeout(() => {
+    if (w1) { w1.classList.remove('rolling'); w1.classList.add('bounce'); showDiceFace('dice-box-1', die1); }
+    if (w2) { w2.classList.remove('rolling'); w2.classList.add('bounce'); showDiceFace('dice-box-2', die2); }
+    setActionInfo(`🎲 ${die1} + ${die2} = ${die1+die2} bước`);
+    setTimeout(() => { if(w1) w1.classList.remove('bounce'); if(w2) w2.classList.remove('bounce'); }, 500);
+  }, 1000);
+
+  setTimeout(() => {
+    player.position = newPosition;
+    player.money = moneyAfterMove;
+    if (passedStart) setActionInfo(`${player.name} đi qua Xuất phát! +200 🪙`);
+    renderBoard();
+    renderPlayersBar();
+  }, 1500);
+}
+
+function handleOnlineQuestion(msg) {
+  const { question, context, cellName, cellPrice, playerIdx } = msg;
+  const isMyTurn = playerIdx === state.myIdx;
+
+  if (!isMyTurn) {
+    setActionInfo(`${state.players[playerIdx].name} đang trả lời câu hỏi...`);
+    return;
+  }
+
+  let title = '';
+  let desc = '';
+  if (context === 'land') {
+    title = `🏘️ ${cellName} (${cellPrice}🪙)`;
+    desc = 'Trả lời đúng = mua miễn phí!';
+  } else {
+    title = '❓ Câu hỏi';
+    desc = 'Đúng +100 🪙!';
+  }
+
+  let html = `
+    <h3>${title}</h3>
+    <p>${desc}</p>
+    <p style="margin-top:10px; font-size:1.05rem; font-weight:800;">${question.question_text}</p>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-ans="A">A. ${question.option_a}</button>
+      <button class="quiz-opt" data-ans="B">B. ${question.option_b}</button>
+      <button class="quiz-opt" data-ans="C">C. ${question.option_c}</button>
+      <button class="quiz-opt" data-ans="D">D. ${question.option_d}</button>
+    </div>
+  `;
+  showPopup(html);
+
+  $popupContent.querySelectorAll('.quiz-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Disable all buttons
+      $popupContent.querySelectorAll('.quiz-opt').forEach(b => b.style.pointerEvents = 'none');
+      btn.style.background = 'rgba(255,255,255,0.3)';
+      ws.send(JSON.stringify({ type: 'v11_answer', answer: btn.dataset.ans }));
+    });
+  });
+}
+
+function handleOnlineAnswerResult(msg) {
+  const { correct, correctAnswer, playerIdx, context, bought, cellName, moneyChange } = msg;
+  const isMyTurn = playerIdx === state.myIdx;
+
+  if (isMyTurn) {
+    // Show result in popup
+    $popupContent.querySelectorAll('.quiz-opt').forEach(b => {
+      if (b.dataset.ans === correctAnswer) b.classList.add('correct');
+      if (b.dataset.ans !== correctAnswer && b.style.background) b.classList.add('wrong');
+    });
+
+    setTimeout(() => {
+      hidePopup();
+      if (correct) {
+        sfxCorrect();
+        if (context === 'land' && bought) {
+          sfxBuy();
+          setActionInfo(`✅ Đúng! Bạn mua ${cellName} miễn phí!`);
+        } else if (context === 'quiz') {
+          setActionInfo(`✅ Đúng! +100🪙!`);
+        }
+      } else {
+        sfxWrong();
+        if (context === 'land') {
+          // Show buy/skip option
+          if (msg.canBuy) {
+            showOnlineBuyPopup(cellName, msg.cellPrice);
+          } else {
+            setActionInfo(`❌ Sai! Không đủ tiền mua ${cellName}`);
+          }
+        } else {
+          setActionInfo(`❌ Sai! Đáp án: ${correctAnswer}`);
+        }
+      }
+    }, 1000);
+  } else {
+    // Opponent's turn result
+    const name = state.players[playerIdx].name;
+    if (correct) {
+      sfxCorrect();
+      if (context === 'land' && bought) {
+        setActionInfo(`✅ ${name} trả lời đúng! Mua ${cellName}!`);
+      } else if (context === 'quiz') {
+        setActionInfo(`✅ ${name} đúng! +100🪙`);
+      }
+    } else {
+      setActionInfo(`❌ ${name} trả lời sai!`);
+    }
+  }
+}
+
+function showOnlineBuyPopup(cellName, cellPrice) {
+  let html = `
+    <h3>❌ Sai rồi!</h3>
+    <p>Mua ${cellName} với giá ${cellPrice}🪙?</p>
+    <div style="margin-top:14px;">
+      <button class="popup-btn btn-yes" id="popup-online-buy">Mua (${cellPrice}🪙)</button>
+      <button class="popup-btn btn-no" id="popup-online-skip">Bỏ qua</button>
+    </div>
+  `;
+  showPopup(html);
+
+  document.getElementById('popup-online-buy').addEventListener('click', () => {
+    ws.send(JSON.stringify({ type: 'v11_buy', buy: true }));
+    hidePopup();
+  });
+  document.getElementById('popup-online-skip').addEventListener('click', () => {
+    ws.send(JSON.stringify({ type: 'v11_buy', buy: false }));
+    hidePopup();
+  });
+}
+
+function handleOnlineStateUpdate(msg) {
+  // Sync full game state from server
+  if (msg.players) {
+    msg.players.forEach((p, i) => {
+      state.players[i].money = p.money;
+      state.players[i].position = p.position;
+      state.players[i].properties = p.properties || [];
+      state.players[i].bankrupt = p.bankrupt || false;
+    });
+  }
+  if (msg.board) {
+    msg.board.forEach((cell, i) => {
+      state.board[i].owner = cell.owner;
+    });
+  }
+  if (msg.round) state.round = msg.round;
+  if (msg.actionText) setActionInfo(msg.actionText);
+
+  // Handle lucky/tax events with popup for the active player
+  if (msg.eventPopup && msg.eventPlayerIdx === state.myIdx) {
+    let html = `
+      <h3>${msg.eventPopup.title}</h3>
+      <p style="font-size:1.1rem; margin-top:10px;">${msg.eventPopup.text}</p>
+      <div style="margin-top:16px;">
+        <button class="popup-btn btn-ok" id="popup-event-ok">OK</button>
+      </div>
+    `;
+    showPopup(html);
+    document.getElementById('popup-event-ok').addEventListener('click', () => {
+      hidePopup();
+      ws.send(JSON.stringify({ type: 'v11_event_ack' }));
+    });
+  } else if (msg.eventPopup) {
+    // Opponent's event - just show action text
+    if (msg.eventPopup.sfx === 'lucky') sfxLucky();
+  }
+
+  renderBoard();
+  renderPlayersBar();
+  updateRound();
+}
+
+function handleOnlineGameOver(msg) {
+  state.gameOver = true;
+
+  const ranked = msg.rankings || [...state.players].sort((a, b) => {
+    if (a.bankrupt && !b.bankrupt) return 1;
+    if (!a.bankrupt && b.bankrupt) return -1;
+    return b.money - a.money;
+  });
+
+  const medals = ['🥇', '🥈', '🥉', '4️⃣'];
+  let html = '';
+  ranked.forEach((p, i) => {
+    const isWinner = i === 0;
+    html += `
+      <div class="rank-item ${isWinner ? 'winner' : ''}">
+        <div class="rank-pos">${medals[i] || ''}</div>
+        <div class="rank-info">
+          <div class="rank-name">${p.name}</div>
+          <div class="rank-money">${p.bankrupt ? '💀 Phá sản' : p.money + ' 🪙'}</div>
+          <div class="rank-props">${p.properties?.length || 0} tỉnh thành</div>
+        </div>
+      </div>
+    `;
+  });
+
+  $resultRankings.innerHTML = html;
+  $resultTitle.textContent = `🏆 ${ranked[0].name} thắng!`;
+  showScreen('result');
+
+  if (ws) { ws.close(); ws = null; }
+  roomCode = null;
 }
 
 // --- Init ---
