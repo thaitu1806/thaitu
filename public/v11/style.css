@@ -227,79 +227,93 @@ body {
 /* Board */
 #board-container {
   flex: 1;
-  overflow-y: auto;
-  padding: 10px 12px;
-  -webkit-overflow-scrolling: touch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  overflow: hidden;
 }
 
 #board {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 2px;
+  width: min(95vw, 400px);
+  height: min(95vw, 400px);
+  max-height: 60vh;
+  aspect-ratio: 1;
 }
 
 .board-cell {
+  border-radius: 6px;
+  background: rgba(255,255,255,0.08);
+  border: 1.5px solid rgba(255,255,255,0.15);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.06);
-  border: 2px solid transparent;
-  transition: all 0.3s;
+  justify-content: center;
+  padding: 2px;
   position: relative;
-  min-height: 50px;
-}
-
-.board-cell.highlight {
-  background: rgba(255,255,255,0.15);
-  border-color: rgba(255,255,255,0.3);
-  box-shadow: 0 0 12px rgba(255,255,255,0.1);
+  font-size: 0.6rem;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
 }
 
 .board-cell .cell-icon {
-  font-size: 1.5rem;
-  min-width: 36px;
-  text-align: center;
-}
-
-.board-cell .cell-info {
-  flex: 1;
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .board-cell .cell-name {
+  font-size: 0.5rem;
   font-weight: 800;
-  font-size: 0.9rem;
+  text-align: center;
+  line-height: 1.1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .board-cell .cell-detail {
-  font-size: 0.75rem;
-  opacity: 0.7;
+  display: none; /* Too small for details on grid */
+}
+
+.board-cell .cell-info {
+  text-align: center;
+}
+
+.board-cell.highlight {
+  background: rgba(255,255,255,0.25);
+  border-color: #FFD700;
+  box-shadow: 0 0 8px rgba(255,215,0,0.4);
 }
 
 .board-cell .cell-owner {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 2px;
+  right: 2px;
 }
 
 .board-cell .cell-players {
-  display: flex;
-  gap: 3px;
   position: absolute;
-  bottom: 6px;
-  right: 8px;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1px;
 }
 
 .board-cell .cell-players .token {
-  width: 16px;
-  height: 16px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  border: 2px solid white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  border: 1px solid white;
   animation: tokenPop 0.3s ease;
 }
 
@@ -309,11 +323,36 @@ body {
 }
 
 /* Cell type colors */
-.board-cell.type-start { border-left: 4px solid #4CAF50; }
-.board-cell.type-land { border-left: 4px solid #2196F3; }
-.board-cell.type-quiz { border-left: 4px solid #9C27B0; }
-.board-cell.type-lucky { border-left: 4px solid #FF9800; }
-.board-cell.type-tax { border-left: 4px solid #f44336; }
+.board-cell.type-start { border-color: #4CAF50; }
+.board-cell.type-land { border-color: #2196F3; }
+.board-cell.type-quiz { border-color: #9C27B0; }
+.board-cell.type-lucky { border-color: #FF9800; }
+.board-cell.type-tax { border-color: #f44336; }
+
+/* Center area (for dice/info display) */
+.board-center {
+  grid-column: 2 / 6;
+  grid-row: 2 / 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  padding: 8px;
+  gap: 4px;
+}
+
+.board-center .center-dice {
+  font-size: 2.5rem;
+}
+
+.board-center .center-info {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  opacity: 0.8;
+}
 
 /* Action panel */
 #action-panel {
@@ -562,10 +601,27 @@ body {
 .hidden { display: none !important; }
 
 /* ===== RESPONSIVE ===== */
+@media (max-width: 360px) {
+  #board {
+    gap: 1px;
+  }
+  .board-cell .cell-icon {
+    font-size: 0.8rem;
+  }
+  .board-cell .cell-name {
+    font-size: 0.45rem;
+  }
+}
+
 @media (min-width: 600px) {
   #board {
-    max-width: 500px;
-    margin: 0 auto;
+    width: min(95vw, 500px);
+    height: min(95vw, 500px);
   }
-  .board-cell { padding: 12px 16px; }
+  .board-cell .cell-icon {
+    font-size: 1.2rem;
+  }
+  .board-cell .cell-name {
+    font-size: 0.6rem;
+  }
 }

@@ -307,9 +307,25 @@ function resetState() {
 }
 
 // --- Render board ---
+
+// Grid positions for 20 cells on a 6x6 rectangular loop
+// Format: [row, col] (1-indexed for CSS grid)
+const GRID_POSITIONS = [
+  // Bottom row: cells 0-5 (left to right), row 6
+  [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6],
+  // Right column: cells 6-10 (bottom to top), col 6
+  [5, 6], [4, 6], [3, 6], [2, 6], [1, 6],
+  // Top row: cells 11-15 (right to left), row 1
+  [1, 5], [1, 4], [1, 3], [1, 2], [1, 1],
+  // Left column: cells 16-19 (top to bottom), col 1
+  [2, 1], [3, 1], [4, 1], [5, 1],
+];
+
 function renderBoard() {
   let html = '';
+
   state.board.forEach((cell, idx) => {
+    const [row, col] = GRID_POSITIONS[idx];
     const typeClass = `type-${cell.type}`;
     const ownerHTML = cell.owner !== null
       ? `<div class="cell-owner" style="background:${state.players[cell.owner].color}"></div>`
@@ -321,35 +337,28 @@ function renderBoard() {
       `<div class="token" style="background:${p.color}" title="${p.name}"></div>`
     ).join('');
 
-    let detail = '';
-    if (cell.type === 'land') {
-      detail = cell.owner !== null
-        ? `Chủ: ${state.players[cell.owner].name} | Thuê: ${getRent(cell)} 🪙`
-        : `Giá: ${cell.price} 🪙 | Thuê: ${cell.rent} 🪙`;
-    } else if (cell.type === 'tax') {
-      detail = `-${cell.rent} 🪙`;
-    } else if (cell.type === 'start') {
-      detail = '+200 🪙 mỗi lần qua';
-    } else if (cell.type === 'quiz') {
-      detail = 'Đúng +100 🪙';
-    } else if (cell.type === 'lucky') {
-      detail = 'Sự kiện ngẫu nhiên';
-    }
-
     const isHighlight = playersHere.length > 0;
 
     html += `
-      <div class="board-cell ${typeClass} ${isHighlight ? 'highlight' : ''}" data-idx="${idx}">
+      <div class="board-cell ${typeClass} ${isHighlight ? 'highlight' : ''}" data-idx="${idx}" style="grid-row:${row}; grid-column:${col};">
         <div class="cell-icon">${cell.icon}</div>
         <div class="cell-info">
-          <div class="cell-name">${idx}. ${cell.name}</div>
-          <div class="cell-detail">${detail}</div>
+          <div class="cell-name">${cell.name}</div>
         </div>
         ${ownerHTML}
         <div class="cell-players">${tokensHTML}</div>
       </div>
     `;
   });
+
+  // Center area
+  html += `
+    <div class="board-center">
+      <div class="center-dice" id="center-dice"></div>
+      <div class="center-info" id="center-info"></div>
+    </div>
+  `;
+
   $board.innerHTML = html;
 }
 
@@ -401,6 +410,10 @@ function startTurn() {
   $diceResult.classList.add('hidden');
   $actionInfo.textContent = `Lượt: ${player.name}`;
 
+  // Update center info
+  const centerInfo = document.getElementById('center-info');
+  if (centerInfo) centerInfo.textContent = `Lượt: ${player.name}`;
+
   if (player.isBot) {
     $diceBtn.disabled = true;
     setTimeout(() => botTurn(), 1500);
@@ -413,10 +426,7 @@ function startTurn() {
 }
 
 function scrollToCell(idx) {
-  const cell = $board.querySelector(`[data-idx="${idx}"]`);
-  if (cell) {
-    cell.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
+  // No scrolling needed - board is always fully visible in grid layout
 }
 
 function onDiceClick() {
@@ -435,6 +445,10 @@ function rollDice() {
   $diceResult.style.animation = 'none';
   void $diceResult.offsetWidth;
   $diceResult.style.animation = 'diceAnim 0.5s ease';
+
+  // Update center dice display
+  const centerDice = document.getElementById('center-dice');
+  if (centerDice) centerDice.textContent = DICE_FACES[value - 1];
 
   setTimeout(() => movePlayer(value), 600);
 }
