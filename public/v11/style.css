@@ -329,7 +329,7 @@ body {
 .board-cell.type-lucky { border-color: #FF9800; }
 .board-cell.type-tax { border-color: #f44336; }
 
-/* Center area (for dice/info display) */
+/* Center area (for horse + dice display) */
 .board-center {
   grid-column: 2 / 6;
   grid-row: 2 / 6;
@@ -340,15 +340,40 @@ body {
   background: rgba(255,255,255,0.03);
   border-radius: 10px;
   padding: 8px;
-  gap: 4px;
+  gap: 8px;
 }
 
-.board-center .center-dice {
-  font-size: 2.5rem;
+.center-horse {
+  font-size: 3rem;
+  transition: color 0.3s, text-shadow 0.3s;
+  animation: horseIdle 1s ease-in-out infinite alternate;
+}
+
+@keyframes horseIdle {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
+}
+
+.center-dice-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.center-die {
+  font-size: 2rem;
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
 .board-center .center-info {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-align: center;
   opacity: 0.8;

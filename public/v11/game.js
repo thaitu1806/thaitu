@@ -351,10 +351,14 @@ function renderBoard() {
     `;
   });
 
-  // Center area
+  // Center area with horse + 2 dice
   html += `
     <div class="board-center">
-      <div class="center-dice" id="center-dice"></div>
+      <div class="center-horse" id="center-horse">🐴</div>
+      <div class="center-dice-row">
+        <div class="center-die" id="center-die-1">⚀</div>
+        <div class="center-die" id="center-die-2">⚀</div>
+      </div>
       <div class="center-info" id="center-info"></div>
     </div>
   `;
@@ -410,9 +414,14 @@ function startTurn() {
   $diceResult.classList.add('hidden');
   $actionInfo.textContent = `Lượt: ${player.name}`;
 
-  // Update center info
+  // Update center info and horse color
   const centerInfo = document.getElementById('center-info');
   if (centerInfo) centerInfo.textContent = `Lượt: ${player.name}`;
+  const centerHorse = document.getElementById('center-horse');
+  if (centerHorse) {
+    centerHorse.style.color = player.color;
+    centerHorse.style.textShadow = `0 0 12px ${player.color}`;
+  }
 
   if (player.isBot) {
     $diceBtn.disabled = true;
@@ -446,9 +455,13 @@ function rollDice() {
   void $diceResult.offsetWidth;
   $diceResult.style.animation = 'diceAnim 0.5s ease';
 
-  // Update center dice display
-  const centerDice = document.getElementById('center-dice');
-  if (centerDice) centerDice.textContent = DICE_FACES[value - 1];
+  // Update center dice display (split into 2 dice visually)
+  const die1 = Math.ceil(value / 2);
+  const die2 = value - die1;
+  const centerDie1 = document.getElementById('center-die-1');
+  const centerDie2 = document.getElementById('center-die-2');
+  if (centerDie1) centerDie1.textContent = DICE_FACES[Math.max(0, die1 - 1)];
+  if (centerDie2) centerDie2.textContent = DICE_FACES[Math.max(0, die2 - 1)];
 
   setTimeout(() => movePlayer(value), 600);
 }
