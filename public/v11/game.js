@@ -1,4 +1,4 @@
-// ===== TỈ PHÚ TRÍ TUỆ - Game Engine =====
+// ===== TỈ PHÚ TRÍ TUỆ - Game Engine (V11 - Rectangular Loop) =====
 
 // --- Profile check ---
 (function() {
@@ -8,29 +8,56 @@
   }
 })();
 
-// --- Board data ---
+// --- Board data (28 cells, 8x11 rectangular loop) ---
 const BOARD = [
+  // Top row (left to right): 0-7
   { id: 0, type: 'start', name: 'Xuất phát', icon: '🏠', price: 0, rent: 0 },
   { id: 1, type: 'land', name: 'Hà Nội', icon: '🏙️', price: 300, rent: 60 },
   { id: 2, type: 'quiz', name: 'Câu hỏi', icon: '❓', price: 0, rent: 0 },
   { id: 3, type: 'land', name: 'Hải Phòng', icon: '🌾', price: 200, rent: 40 },
-  { id: 4, type: 'land', name: 'Huế', icon: '🏛️', price: 250, rent: 50 },
+  { id: 4, type: 'land', name: 'Ninh Bình', icon: '⛰️', price: 220, rent: 44 },
   { id: 5, type: 'lucky', name: 'Hộp quà', icon: '🎁', price: 0, rent: 0 },
-  { id: 6, type: 'land', name: 'Đà Nẵng', icon: '🏖️', price: 280, rent: 55 },
-  { id: 7, type: 'land', name: 'Nha Trang', icon: '🌴', price: 260, rent: 50 },
+  { id: 6, type: 'land', name: 'Huế', icon: '🏛️', price: 250, rent: 50 },
+  { id: 7, type: 'land', name: 'Đà Nẵng', icon: '🏖️', price: 280, rent: 55 },
+  // Right column (top to bottom): 8-16
   { id: 8, type: 'tax', name: 'Thuế', icon: '💰', price: 0, rent: 100 },
-  { id: 9, type: 'land', name: 'Đà Lạt', icon: '🌺', price: 270, rent: 55 },
-  { id: 10, type: 'land', name: 'TP.HCM', icon: '🏙️', price: 350, rent: 70 },
+  { id: 9, type: 'land', name: 'Nha Trang', icon: '🌴', price: 260, rent: 50 },
+  { id: 10, type: 'land', name: 'Quy Nhơn', icon: '🐟', price: 230, rent: 46 },
   { id: 11, type: 'quiz', name: 'Câu hỏi', icon: '❓', price: 0, rent: 0 },
-  { id: 12, type: 'land', name: 'Cần Thơ', icon: '🍜', price: 220, rent: 45 },
-  { id: 13, type: 'land', name: 'Phú Quốc', icon: '🏝️', price: 300, rent: 60 },
+  { id: 12, type: 'land', name: 'Đà Lạt', icon: '🌺', price: 270, rent: 55 },
+  { id: 13, type: 'land', name: 'Buôn Ma Thuột', icon: '☕', price: 200, rent: 40 },
   { id: 14, type: 'lucky', name: 'Hộp quà', icon: '🎁', price: 0, rent: 0 },
-  { id: 15, type: 'land', name: 'Hạ Long', icon: '🎋', price: 290, rent: 55 },
-  { id: 16, type: 'land', name: 'Sapa', icon: '🌿', price: 240, rent: 48 },
+  { id: 15, type: 'land', name: 'TP.HCM', icon: '🏙️', price: 350, rent: 70 },
+  { id: 16, type: 'land', name: 'Vũng Tàu', icon: '🌊', price: 230, rent: 45 },
+  // Bottom row (right to left): 17-22
   { id: 17, type: 'tax', name: 'Thuế', icon: '💰', price: 0, rent: 150 },
-  { id: 18, type: 'land', name: 'Hội An', icon: '🏺', price: 280, rent: 55 },
-  { id: 19, type: 'land', name: 'Vũng Tàu', icon: '🌊', price: 230, rent: 45 },
+  { id: 18, type: 'land', name: 'Cần Thơ', icon: '🍜', price: 220, rent: 45 },
+  { id: 19, type: 'land', name: 'Phú Quốc', icon: '🏝️', price: 300, rent: 60 },
+  { id: 20, type: 'quiz', name: 'Câu hỏi', icon: '❓', price: 0, rent: 0 },
+  { id: 21, type: 'land', name: 'Cà Mau', icon: '🦐', price: 180, rent: 36 },
+  { id: 22, type: 'lucky', name: 'Hộp quà', icon: '🎁', price: 0, rent: 0 },
+  // Left column (bottom to top): 23-27
+  { id: 23, type: 'land', name: 'Hạ Long', icon: '🎋', price: 290, rent: 55 },
+  { id: 24, type: 'land', name: 'Sapa', icon: '🌿', price: 240, rent: 48 },
+  { id: 25, type: 'land', name: 'Hội An', icon: '🏺', price: 280, rent: 55 },
+  { id: 26, type: 'tax', name: 'Thuế', icon: '💰', price: 0, rent: 120 },
+  { id: 27, type: 'land', name: 'Mũi Né', icon: '🏄', price: 250, rent: 50 },
 ];
+
+// Grid positions for 28 cells on 8 cols × 11 rows
+// Format: [row, col] (1-indexed for CSS grid)
+const GRID_POSITIONS = [
+  // Top row: cells 0-7, row=1, col=1..8
+  [1,1], [1,2], [1,3], [1,4], [1,5], [1,6], [1,7], [1,8],
+  // Right column: cells 8-16, col=8, rows 2..10
+  [2,8], [3,8], [4,8], [5,8], [6,8], [7,8], [8,8], [9,8], [10,8],
+  // Bottom row: cells 17-22, row=11, cols 7..2
+  [11,7], [11,6], [11,5], [11,4], [11,3], [11,2],
+  // Left column: cells 23-27, col=1, rows 10..6
+  [10,1], [9,1], [8,1], [7,1], [6,1],
+];
+
+const BOARD_SIZE = 28;
 
 const LUCKY_EVENTS = [
   { text: '🎉 Trúng xổ số! +200 coin', amount: 200, type: 'gain' },
@@ -41,7 +68,16 @@ const LUCKY_EVENTS = [
 ];
 
 const PLAYER_COLORS = ['#FF5722', '#2196F3', '#4CAF50', '#9C27B0'];
-const DICE_FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+
+// --- 3D Dice dot patterns (positions 1-9 in 3x3 grid) ---
+const DICE_DOT_PATTERNS = {
+  1: [5],
+  2: [3, 7],
+  3: [3, 5, 7],
+  4: [1, 3, 7, 9],
+  5: [1, 3, 5, 7, 9],
+  6: [1, 3, 4, 6, 7, 9],
+};
 
 // --- Audio (Web Audio API) ---
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -185,7 +221,7 @@ function renderPlayerSlots() {
     html += `
       <div class="player-slot">
         <div class="slot-color" style="background:${PLAYER_COLORS[i]}"></div>
-        <input type="text" class="slot-name" data-idx="${i}" value="${defaultName}" maxlength="10" ${isFirst ? '' : ''}>
+        <input type="text" class="slot-name" data-idx="${i}" value="${defaultName}" maxlength="10">
         <button class="slot-toggle ${isBot ? 'bot' : 'human'}" data-idx="${i}">${isBot ? '🤖' : '👤'}</button>
       </div>
     `;
@@ -206,9 +242,7 @@ function renderPlayerSlots() {
 // --- Fetch questions ---
 async function fetchQuestions(subject, difficulty) {
   try {
-    let url;
     if (subject === 'mix') {
-      // Fetch both subjects
       const [mathRes, vietRes] = await Promise.all([
         fetch(`/api/questions?subject=math&difficulty=${difficulty}&limit=25`),
         fetch(`/api/questions?subject=vietnamese&difficulty=${difficulty}&limit=25`),
@@ -306,21 +340,21 @@ function resetState() {
   state.turnInProgress = false;
 }
 
+// --- 3D Dice rendering ---
+function renderDice(containerId, value, colorClass) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.className = `dice-box ${colorClass}`;
+  const pattern = DICE_DOT_PATTERNS[value] || [];
+  container.innerHTML = '';
+  for (let i = 1; i <= 9; i++) {
+    const dot = document.createElement('span');
+    dot.className = pattern.includes(i) ? 'dot visible' : 'dot';
+    container.appendChild(dot);
+  }
+}
+
 // --- Render board ---
-
-// Grid positions for 20 cells on a 6x6 rectangular loop
-// Format: [row, col] (1-indexed for CSS grid)
-const GRID_POSITIONS = [
-  // Bottom row: cells 0-5 (left to right), row 6
-  [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6],
-  // Right column: cells 6-10 (bottom to top), col 6
-  [5, 6], [4, 6], [3, 6], [2, 6], [1, 6],
-  // Top row: cells 11-15 (right to left), row 1
-  [1, 5], [1, 4], [1, 3], [1, 2], [1, 1],
-  // Left column: cells 16-19 (top to bottom), col 1
-  [2, 1], [3, 1], [4, 1], [5, 1],
-];
-
 function renderBoard() {
   let html = '';
 
@@ -334,7 +368,7 @@ function renderBoard() {
     // Players on this cell
     const playersHere = state.players.filter(p => !p.bankrupt && p.position === idx);
     const tokensHTML = playersHere.map(p =>
-      `<div class="token" style="background:${p.color}" title="${p.name}"></div>`
+      `<div class="token" style="background:${p.color}" title="${p.name}">🐴</div>`
     ).join('');
 
     const isHighlight = playersHere.length > 0;
@@ -351,19 +385,29 @@ function renderBoard() {
     `;
   });
 
-  // Center area with horse + 2 dice
+  // Center area with 3D dice and roll button
   html += `
     <div class="board-center">
-      <div class="center-horse" id="center-horse">🐴</div>
       <div class="center-dice-row">
-        <div class="center-die" id="center-die-1">⚀</div>
-        <div class="center-die" id="center-die-2">⚀</div>
+        <div class="dice-box die-red" id="dice-box-1"></div>
+        <div class="dice-box die-blue" id="dice-box-2"></div>
       </div>
+      <button id="center-roll-btn" class="btn-dice">🎲 Tung xúc xắc</button>
       <div class="center-info" id="center-info"></div>
     </div>
   `;
 
   $board.innerHTML = html;
+
+  // Bind center roll button
+  const centerRollBtn = document.getElementById('center-roll-btn');
+  if (centerRollBtn) {
+    centerRollBtn.addEventListener('click', onDiceClick);
+  }
+
+  // Initialize dice display
+  renderDice('dice-box-1', 1, 'die-red');
+  renderDice('dice-box-2', 1, 'die-blue');
 }
 
 function getRent(cell) {
@@ -414,28 +458,24 @@ function startTurn() {
   $diceResult.classList.add('hidden');
   $actionInfo.textContent = `Lượt: ${player.name}`;
 
-  // Update center info and horse color
+  // Update center info
   const centerInfo = document.getElementById('center-info');
   if (centerInfo) centerInfo.textContent = `Lượt: ${player.name}`;
-  const centerHorse = document.getElementById('center-horse');
-  if (centerHorse) {
-    centerHorse.style.color = player.color;
-    centerHorse.style.textShadow = `0 0 12px ${player.color}`;
-  }
 
+  // Enable/disable buttons based on bot
+  const centerRollBtn = document.getElementById('center-roll-btn');
   if (player.isBot) {
     $diceBtn.disabled = true;
+    if (centerRollBtn) centerRollBtn.disabled = true;
     setTimeout(() => botTurn(), 1500);
   } else {
     $diceBtn.disabled = false;
+    if (centerRollBtn) centerRollBtn.disabled = false;
   }
-
-  // Scroll to player position
-  scrollToCell(player.position);
 }
 
 function scrollToCell(idx) {
-  // No scrolling needed - board is always fully visible in grid layout
+  // Board is fully visible in grid layout, no scrolling needed
 }
 
 function onDiceClick() {
@@ -443,36 +483,39 @@ function onDiceClick() {
   const player = getCurrentPlayer();
   if (player.isBot || player.bankrupt) return;
   $diceBtn.disabled = true;
+  const centerRollBtn = document.getElementById('center-roll-btn');
+  if (centerRollBtn) centerRollBtn.disabled = true;
   rollDice();
 }
 
 function rollDice() {
-  const value = Math.floor(Math.random() * 6) + 1;
+  const die1 = Math.floor(Math.random() * 6) + 1;
+  const die2 = Math.floor(Math.random() * 6) + 1;
+  const totalSteps = die1 + die2;
+
   sfxDice();
-  $diceResult.textContent = DICE_FACES[value - 1];
+
+  // Render 3D dot dice in center
+  renderDice('dice-box-1', die1, 'die-red');
+  renderDice('dice-box-2', die2, 'die-blue');
+
+  // Also update bottom action panel
+  $diceResult.textContent = `${die1} + ${die2} = ${totalSteps}`;
   $diceResult.classList.remove('hidden');
   $diceResult.style.animation = 'none';
   void $diceResult.offsetWidth;
   $diceResult.style.animation = 'diceAnim 0.5s ease';
 
-  // Update center dice display (split into 2 dice visually)
-  const die1 = Math.ceil(value / 2);
-  const die2 = value - die1;
-  const centerDie1 = document.getElementById('center-die-1');
-  const centerDie2 = document.getElementById('center-die-2');
-  if (centerDie1) centerDie1.textContent = DICE_FACES[Math.max(0, die1 - 1)];
-  if (centerDie2) centerDie2.textContent = DICE_FACES[Math.max(0, die2 - 1)];
-
-  setTimeout(() => movePlayer(value), 600);
+  setTimeout(() => movePlayer(totalSteps), 800);
 }
 
 function movePlayer(steps) {
   const player = getCurrentPlayer();
   const oldPos = player.position;
-  const newPos = (oldPos + steps) % 20;
+  const newPos = (oldPos + steps) % BOARD_SIZE;
 
   // Check if passed START
-  if (newPos < oldPos || (oldPos + steps >= 20)) {
+  if (newPos < oldPos || (oldPos + steps >= BOARD_SIZE)) {
     player.money += 200;
     $actionInfo.textContent = `${player.name} đi qua Xuất phát! +200 🪙`;
   }
@@ -480,7 +523,6 @@ function movePlayer(steps) {
   player.position = newPos;
   renderBoard();
   renderPlayersBar();
-  scrollToCell(newPos);
 
   setTimeout(() => handleLanding(), 500);
 }
@@ -514,7 +556,6 @@ function handleLanding() {
 // --- Land cell logic ---
 function handleLand(player, cell) {
   if (cell.owner === null) {
-    // Unowned - ask quiz to buy free
     if (player.isBot) {
       botHandleLand(player, cell);
     } else {
@@ -542,7 +583,6 @@ function handleLand(player, cell) {
 }
 
 function humanHandleLand(player, cell) {
-  // Show quiz popup - correct = buy free, wrong = pay or skip
   showQuizForLand(player, cell);
 }
 
@@ -563,14 +603,12 @@ function showQuizForLand(player, cell) {
   `;
   showPopup(html);
 
-  // Bind answer buttons
   $popupContent.querySelectorAll('.quiz-opt').forEach(btn => {
     btn.addEventListener('click', () => {
       const ans = btn.dataset.ans;
       const correct = q.correct_answer.toUpperCase();
       const isCorrect = ans === correct;
 
-      // Show result
       $popupContent.querySelectorAll('.quiz-opt').forEach(b => {
         if (b.dataset.ans === correct) b.classList.add('correct');
         if (b.dataset.ans === ans && !isCorrect) b.classList.add('wrong');
@@ -580,7 +618,6 @@ function showQuizForLand(player, cell) {
       if (isCorrect) {
         sfxCorrect();
         sfxBuy();
-        // Buy for free
         cell.owner = player.id;
         player.properties.push(cell.id);
         setTimeout(() => {
@@ -592,7 +629,6 @@ function showQuizForLand(player, cell) {
         }, 1200);
       } else {
         sfxWrong();
-        // Must pay or skip
         setTimeout(() => {
           showBuyOrSkipPopup(player, cell);
         }, 1200);
@@ -698,9 +734,8 @@ function handleLucky(player) {
   if (event.type === 'gain') {
     player.money += event.amount;
   } else if (event.type === 'lose') {
-    player.money += event.amount; // negative
+    player.money += event.amount;
   } else if (event.type === 'free_land') {
-    // Give random unowned land
     const unowned = state.board.filter(c => c.type === 'land' && c.owner === null);
     if (unowned.length > 0) {
       const land = unowned[Math.floor(Math.random() * unowned.length)];
@@ -774,7 +809,6 @@ function handleTax(player, cell) {
 function handleBankrupt(player) {
   player.bankrupt = true;
   player.money = 0;
-  // Return properties to unowned
   player.properties.forEach(propId => {
     const cell = state.board.find(c => c.id === propId);
     if (cell) cell.owner = null;
@@ -785,7 +819,6 @@ function handleBankrupt(player) {
   renderBoard();
   renderPlayersBar();
 
-  // Check win condition
   const activePlayers = state.players.filter(p => !p.bankrupt);
   if (activePlayers.length <= 1) {
     setTimeout(() => endGame(), 1000);
@@ -810,7 +843,6 @@ function botTurn() {
 }
 
 function botHandleLand(player, cell) {
-  // Bot answers quiz with 60% correct rate
   const q = getNextQuestion();
   const isCorrect = Math.random() < 0.6;
 
@@ -822,7 +854,6 @@ function botHandleLand(player, cell) {
       player.properties.push(cell.id);
       $actionInfo.textContent = `✅ ${player.name} trả lời đúng! Mua ${cell.name} miễn phí!`;
     } else {
-      // Bot always buys if can afford
       if (player.money >= cell.price) {
         player.money -= cell.price;
         cell.owner = player.id;
@@ -863,7 +894,6 @@ function endTurn() {
 
   if (state.gameOver) return;
 
-  // Check win condition
   const activePlayers = state.players.filter(p => !p.bankrupt);
   if (activePlayers.length <= 1) {
     setTimeout(() => endGame(), 800);
@@ -911,7 +941,6 @@ function nextPlayer() {
 function endGame() {
   state.gameOver = true;
 
-  // Rank by money (non-bankrupt first, then by money)
   const ranked = [...state.players].sort((a, b) => {
     if (a.bankrupt && !b.bankrupt) return 1;
     if (!a.bankrupt && b.bankrupt) return -1;

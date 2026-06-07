@@ -224,7 +224,7 @@ body {
   text-align: center;
 }
 
-/* Board */
+/* ===== BOARD (8 cols × 11 rows rectangular loop) ===== */
 #board-container {
   flex: 1;
   display: flex;
@@ -236,13 +236,12 @@ body {
 
 #board {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(11, 1fr);
   gap: 2px;
-  width: min(95vw, 400px);
-  height: min(95vw, 400px);
-  max-height: 60vh;
-  aspect-ratio: 1;
+  width: min(95vw, 380px);
+  aspect-ratio: 8 / 11;
+  max-height: 70vh;
 }
 
 .board-cell {
@@ -262,12 +261,12 @@ body {
 }
 
 .board-cell .cell-icon {
-  font-size: 1rem;
+  font-size: 0.9rem;
   line-height: 1;
 }
 
 .board-cell .cell-name {
-  font-size: 0.5rem;
+  font-size: 0.45rem;
   font-weight: 800;
   text-align: center;
   line-height: 1.1;
@@ -275,10 +274,6 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.board-cell .cell-detail {
-  display: none; /* Too small for details on grid */
 }
 
 .board-cell .cell-info {
@@ -302,7 +297,7 @@ body {
 
 .board-cell .cell-players {
   position: absolute;
-  bottom: 2px;
+  bottom: 1px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -310,10 +305,14 @@ body {
 }
 
 .board-cell .cell-players .token {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  border: 1px solid white;
+  border: 1.5px solid white;
+  font-size: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   animation: tokenPop 0.3s ease;
 }
 
@@ -329,47 +328,59 @@ body {
 .board-cell.type-lucky { border-color: #FF9800; }
 .board-cell.type-tax { border-color: #f44336; }
 
-/* Center area (for horse + dice display) */
+/* ===== CENTER AREA (inner space with 3D dice) ===== */
 .board-center {
-  grid-column: 2 / 6;
-  grid-row: 2 / 6;
+  grid-column: 2 / 8;
+  grid-row: 2 / 11;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 12px;
+  padding: 10px;
   background: rgba(255,255,255,0.03);
   border-radius: 10px;
-  padding: 8px;
-  gap: 8px;
 }
 
-.center-horse {
-  font-size: 3rem;
-  transition: color 0.3s, text-shadow 0.3s;
-  animation: horseIdle 1s ease-in-out infinite alternate;
-}
-
-@keyframes horseIdle {
-  from { transform: translateY(0); }
-  to { transform: translateY(-4px); }
-}
-
+/* 3D Dice */
 .center-dice-row {
   display: flex;
-  gap: 12px;
-  align-items: center;
+  gap: 16px;
 }
 
-.center-die {
-  font-size: 2rem;
-  background: rgba(255,255,255,0.1);
-  border-radius: 8px;
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255,255,255,0.2);
+.dice-box {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(145deg, #ffffff, #f0f0f5);
+  border-radius: 10px;
+  box-shadow: 2px 4px 12px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.8);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  padding: 8px;
+  gap: 2px;
+}
+
+.dice-box .dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.dice-box.die-red .dot.visible {
+  background: radial-gradient(circle at 35% 35%, #e74c3c, #c0392b);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.dice-box.die-blue .dot.visible {
+  background: radial-gradient(circle at 35% 35%, #3498db, #2471a3);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.board-center .btn-dice {
+  padding: 10px 20px;
+  font-size: 0.95rem;
 }
 
 .board-center .center-info {
@@ -379,7 +390,7 @@ body {
   opacity: 0.8;
 }
 
-/* Action panel */
+/* ===== ACTION PANEL ===== */
 #action-panel {
   padding: 12px 16px;
   background: rgba(0,0,0,0.4);
@@ -415,7 +426,8 @@ body {
 }
 
 #dice-result {
-  font-size: 2.5rem;
+  font-size: 1.2rem;
+  font-weight: 800;
   animation: diceAnim 0.5s ease;
 }
 
@@ -631,22 +643,32 @@ body {
     gap: 1px;
   }
   .board-cell .cell-icon {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
   .board-cell .cell-name {
-    font-size: 0.45rem;
+    font-size: 0.4rem;
+  }
+  .dice-box {
+    width: 40px;
+    height: 40px;
+    padding: 6px;
   }
 }
 
 @media (min-width: 600px) {
   #board {
-    width: min(95vw, 500px);
-    height: min(95vw, 500px);
+    width: min(95vw, 480px);
+    max-height: 75vh;
   }
   .board-cell .cell-icon {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   .board-cell .cell-name {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
+  }
+  .dice-box {
+    width: 60px;
+    height: 60px;
+    padding: 10px;
   }
 }
