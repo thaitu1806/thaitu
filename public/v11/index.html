@@ -57,6 +57,7 @@
         <div class="btn-group" id="subject-group">
           <button class="btn-option" data-value="math">Toán</button>
           <button class="btn-option" data-value="vietnamese">Tiếng Việt</button>
+          <button class="btn-option" data-value="english">English</button>
           <button class="btn-option active" data-value="mix">Trộn</button>
         </div>
       </div>
@@ -92,6 +93,7 @@
         <div class="btn-group" id="online-subject-group">
           <button class="btn-option" data-value="math">Toán</button>
           <button class="btn-option" data-value="vietnamese">Tiếng Việt</button>
+          <button class="btn-option" data-value="english">English</button>
           <button class="btn-option active" data-value="mix">Trộn</button>
         </div>
       </div>
@@ -102,6 +104,15 @@
           <button class="btn-option active" data-value="easy">Dễ</button>
           <button class="btn-option" data-value="medium">Vừa</button>
           <button class="btn-option" data-value="hard">Khó</button>
+        </div>
+      </div>
+
+      <div class="setup-section">
+        <label>Số người chơi:</label>
+        <div class="btn-group" id="online-player-count-group">
+          <button class="btn-option active" data-value="2">2</button>
+          <button class="btn-option" data-value="3">3</button>
+          <button class="btn-option" data-value="4">4</button>
         </div>
       </div>
 
@@ -189,6 +200,8 @@
     </div>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="game.js"></script>
 </body>
 </html>

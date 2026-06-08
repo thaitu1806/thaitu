@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS questions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  subject TEXT NOT NULL CHECK(subject IN ('math', 'vietnamese')),
+  subject TEXT NOT NULL CHECK(subject IN ('math', 'vietnamese', 'english')),
   difficulty TEXT NOT NULL CHECK(difficulty IN ('easy', 'medium', 'hard')),
   question_text TEXT NOT NULL,
   option_a TEXT NOT NULL,

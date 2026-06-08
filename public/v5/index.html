@@ -64,6 +64,7 @@
           <div class="btn-group" id="subject-group">
             <button class="btn-option active" data-subject="math">Toán</button>
             <button class="btn-option" data-subject="vietnamese">Tiếng Việt</button>
+            <button class="btn-option" data-subject="english">English</button>
             <button class="btn-option" data-subject="mix">Trộn</button>
           </div>
         </div>
@@ -87,7 +88,74 @@
         <!-- Start Button -->
         <button class="btn-start" id="btn-start" disabled>🚀 Bắt đầu!</button>
 
+        <button class="btn-online" id="btn-online-mode">🌐 Chơi Online</button>
+
         <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- ONLINE SETUP SCREEN -->
+    <section id="online-screen" class="screen">
+      <div class="setup-container">
+        <h1 class="setup-title">🌐 Online Cờ Cá Ngựa</h1>
+        <p class="setup-subtitle">Chơi với bạn bè qua mã phòng</p>
+
+        <div class="setup-section">
+          <label class="setup-label">👤 Tên của bạn</label>
+          <input type="text" id="v5-online-name" class="online-input" placeholder="Nhập tên..." maxlength="12">
+        </div>
+
+        <div class="setup-section">
+          <label class="setup-label">👥 Số người chơi</label>
+          <div class="btn-group" id="v5-online-count">
+            <button class="btn-option active" data-count="2">2</button>
+            <button class="btn-option" data-count="3">3</button>
+            <button class="btn-option" data-count="4">4</button>
+          </div>
+        </div>
+
+        <div class="setup-section">
+          <label class="setup-label">📚 Môn học</label>
+          <div class="btn-group" id="v5-online-subject">
+            <button class="btn-option active" data-subject="math">Toán</button>
+            <button class="btn-option" data-subject="vietnamese">Tiếng Việt</button>
+            <button class="btn-option" data-subject="english">English</button>
+            <button class="btn-option" data-subject="mix">Trộn</button>
+          </div>
+        </div>
+
+        <div class="setup-section">
+          <label class="setup-label">📊 Mức độ</label>
+          <div class="btn-group" id="v5-online-difficulty">
+            <button class="btn-option active" data-difficulty="easy">Dễ</button>
+            <button class="btn-option" data-difficulty="medium">Trung bình</button>
+            <button class="btn-option" data-difficulty="hard">Khó</button>
+          </div>
+        </div>
+
+        <button class="btn-start" id="v5-create-room">🏠 Tạo phòng</button>
+
+        <div class="setup-section" style="margin-top:16px;">
+          <label class="setup-label">Hoặc nhập mã phòng:</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="v5-room-code-input" class="online-input" placeholder="ABCD" maxlength="4" style="text-transform:uppercase;flex:1;">
+            <button class="btn-option active" id="v5-join-room" style="flex:0 0 auto;min-width:60px;">Vào</button>
+          </div>
+        </div>
+
+        <button class="btn-option" id="v5-back-setup" style="width:100%;margin-top:12px;">⬅️ Quay lại</button>
+      </div>
+    </section>
+
+    <!-- ONLINE WAITING SCREEN -->
+    <section id="online-waiting-screen" class="screen">
+      <div class="setup-container" style="text-align:center;">
+        <h2>🕐 Phòng chờ</h2>
+        <p class="setup-subtitle">Mã phòng: <strong id="v5-display-code">----</strong></p>
+        <p id="v5-waiting-status">Đang đợi...</p>
+        <div id="v5-waiting-players" style="margin:16px 0;"></div>
+        <button class="btn-start hidden" id="v5-start-online">🎲 Bắt đầu!</button>
+        <button class="btn-option" id="v5-leave-room" style="width:100%;margin-top:12px;">❌ Rời phòng</button>
       </div>
     </section>
 
@@ -100,6 +168,8 @@
     </section>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script type="module" src="game.js"></script>
   <script>
     document.getElementById('help-btn-open')?.addEventListener('click', () => {

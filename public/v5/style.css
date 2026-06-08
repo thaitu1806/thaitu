@@ -303,6 +303,42 @@ body {
   color: var(--blue);
 }
 
+/* Online button */
+.btn-online {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  border: 2px solid var(--blue);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--blue);
+  font-family: var(--font);
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.2s;
+}
+
+.btn-online:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
+.online-input {
+  width: 100%;
+  min-height: 44px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 700;
+  background: var(--card-bg);
+}
+
+.hidden { display: none !important; }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 360px) {
   .setup-container {

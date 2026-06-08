@@ -347,6 +347,15 @@ body {
   display: flex;
   gap: 20px;
   perspective: 600px;
+  transition: gap 0.4s ease;
+}
+
+.center-dice-row.rolling {
+  gap: -8px;
+}
+
+.center-dice-row .dice-wrapper:last-child.rolling {
+  margin-left: -16px;
 }
 
 .dice-wrapper {
@@ -420,12 +429,14 @@ body {
 
 .dice-wrapper.bounce {
   animation: cubeBounce 0.5s ease-out;
+  animation-fill-mode: none;
 }
 
 @keyframes cubeBounce {
-  0% { transform: scale(1.2); }
-  40% { transform: scale(0.9); }
-  100% { transform: scale(1); }
+  0% { scale: 1.2; }
+  40% { scale: 0.9; }
+  70% { scale: 1.05; }
+  100% { scale: 1; }
 }
 
 .board-center .btn-dice {

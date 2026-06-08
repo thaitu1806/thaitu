@@ -42,6 +42,7 @@ app.use('/v5', express.static(join(__dirname, 'public/v5')));
 app.use('/v6', express.static(join(__dirname, 'public/v6')));
 app.use('/v7', express.static(join(__dirname, 'public/v7')));
 app.use('/v8', express.static(join(__dirname, 'public/v8')));
+app.use('/v12', express.static(join(__dirname, 'public/v12')));
 app.use('/v9', express.static(join(__dirname, 'public/v9')));
 app.use('/v10', express.static(join(__dirname, 'public/v10')));
 app.use('/v11', express.static(join(__dirname, 'public/v11')));

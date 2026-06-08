@@ -1999,4 +1999,368 @@ function showQuestionPopup(question) {
 // ===== INIT ON DOM LOAD =====
 document.addEventListener('DOMContentLoaded', () => {
   SetupManager.init();
+  initOnlineMode();
 });
+
+
+// ===== ONLINE MULTIPLAYER (Firebase) =====
+const firebaseConfig = {
+  apiKey: "AIzaSyAtaJOMc6E1Oq3QVXLX0b7ZXZwBSEnu_w8",
+  authDomain: "hocvui-online.firebaseapp.com",
+  databaseURL: "https://hocvui-online-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "hocvui-online",
+  storageBucket: "hocvui-online.firebasestorage.app",
+  messagingSenderId: "934232141607",
+  appId: "1:934232141607:web:0d112c31184595936fc302",
+};
+
+let fbApp = null;
+let fbDb = null;
+let v5RoomRef = null;
+let v5MyRole = null;
+let v5RoomCode = null;
+let v5OnlineName = '';
+let v5OnlineMode = false;
+
+function initFirebase() {
+  if (!fbApp && typeof firebase !== 'undefined') {
+    fbApp = firebase.initializeApp(firebaseConfig);
+    fbDb = firebase.database();
+  }
+}
+
+function initOnlineMode() {
+  // Online mode button
+  document.getElementById('btn-online-mode')?.addEventListener('click', () => {
+    showV5Screen('online-screen');
+  });
+
+  // Back button
+  document.getElementById('v5-back-setup')?.addEventListener('click', () => {
+    showV5Screen('setup-screen');
+  });
+
+  // Button groups
+  ['v5-online-count', 'v5-online-subject', 'v5-online-difficulty'].forEach(groupId => {
+    document.getElementById(groupId)?.addEventListener('click', e => {
+      const btn = e.target.closest('.btn-option');
+      if (!btn) return;
+      document.getElementById(groupId).querySelectorAll('.btn-option').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Create room
+  document.getElementById('v5-create-room')?.addEventListener('click', v5CreateRoom);
+  document.getElementById('v5-join-room')?.addEventListener('click', v5JoinRoom);
+  document.getElementById('v5-leave-room')?.addEventListener('click', v5LeaveRoom);
+  document.getElementById('v5-start-online')?.addEventListener('click', v5StartOnline);
+}
+
+function showV5Screen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+}
+
+async function v5CreateRoom() {
+  initFirebase();
+  v5OnlineName = document.getElementById('v5-online-name').value.trim() || 'Người chơi';
+  const maxPlayers = parseInt(document.querySelector('#v5-online-count .active')?.dataset.count) || 2;
+  const subject = document.querySelector('#v5-online-subject .active')?.dataset.subject || 'math';
+  const difficulty = document.querySelector('#v5-online-difficulty .active')?.dataset.difficulty || 'easy';
+
+  v5RoomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+  v5RoomRef = fbDb.ref('v5rooms/' + v5RoomCode);
+  v5MyRole = 'host';
+
+  await v5RoomRef.set({
+    host: v5OnlineName,
+    settings: { maxPlayers, subject, difficulty },
+    state: 'waiting',
+    players: [{ name: v5OnlineName, position: 0, color: 'red' }],
+    currentPlayerIdx: 0,
+    turnAction: 'roll',
+  });
+
+  v5RoomRef.onDisconnect().remove();
+  v5RoomRef.on('value', v5OnRoomUpdate);
+
+  showV5Screen('online-waiting-screen');
+  document.getElementById('v5-display-code').textContent = v5RoomCode;
+  document.getElementById('v5-waiting-status').textContent = `Đang đợi (1/${maxPlayers})...`;
+  document.getElementById('v5-start-online').classList.add('hidden');
+}
+
+async function v5JoinRoom() {
+  initFirebase();
+  v5OnlineName = document.getElementById('v5-online-name').value.trim() || 'Người chơi';
+  const code = document.getElementById('v5-room-code-input').value.trim().toUpperCase();
+  if (code.length !== 4) { document.getElementById('v5-room-code-input').focus(); return; }
+
+  v5RoomRef = fbDb.ref('v5rooms/' + code);
+  const snap = await v5RoomRef.once('value');
+  const room = snap.val();
+
+  if (!room || room.state !== 'waiting') { alert('Phòng không tồn tại hoặc đã bắt đầu!'); return; }
+
+  const maxPlayers = room.settings?.maxPlayers || 2;
+  const players = room.players || [];
+  if (players.length >= maxPlayers) { alert('Phòng đã đầy!'); return; }
+
+  v5RoomCode = code;
+  v5MyRole = 'guest';
+
+  const COLORS_LIST = ['red', 'blue', 'green', 'yellow'];
+  const updatedPlayers = [...players, { name: v5OnlineName, position: 0, color: COLORS_LIST[players.length] }];
+  await v5RoomRef.update({ players: updatedPlayers });
+
+  v5RoomRef.on('value', v5OnRoomUpdate);
+
+  showV5Screen('online-waiting-screen');
+  document.getElementById('v5-display-code').textContent = v5RoomCode;
+  document.getElementById('v5-waiting-status').textContent = `Đã vào phòng! (${updatedPlayers.length}/${maxPlayers})`;
+  document.getElementById('v5-start-online').classList.add('hidden');
+}
+
+function v5LeaveRoom() {
+  if (v5RoomRef) { v5RoomRef.off(); if (v5MyRole === 'host') v5RoomRef.remove(); }
+  v5RoomRef = null; v5RoomCode = null; v5MyRole = null;
+  showV5Screen('setup-screen');
+}
+
+async function v5StartOnline() {
+  if (!v5RoomRef || v5MyRole !== 'host') return;
+
+  const snap = await v5RoomRef.once('value');
+  const room = snap.val();
+  const { subject, difficulty } = room.settings;
+
+  // Fetch questions
+  let questions = [];
+  try {
+    const res = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=40`);
+    questions = await res.json();
+  } catch {}
+  if (!questions.length) questions = Array.from({length:30},(_,i)=>({id:i,question_text:`${Math.floor(Math.random()*50)+1}+${Math.floor(Math.random()*50)+1}=?`,option_a:'1',option_b:'2',option_c:'3',option_d:'4',correct_answer:'a'}));
+
+  // Shuffle and randomize tiles
+  const randomTiles = generateRandomTiles(5);
+
+  await v5RoomRef.update({
+    state: 'playing',
+    questions: questions.sort(() => Math.random() - 0.5),
+    questionIdx: 0,
+    starTiles: randomTiles.starTiles,
+    trapTiles: randomTiles.trapTiles,
+    currentPlayerIdx: 0,
+    turnAction: 'roll',
+  });
+}
+
+function v5OnRoomUpdate(snapshot) {
+  const data = snapshot.val();
+  if (!data) {
+    alert('Phòng đã bị đóng!');
+    v5RoomRef?.off(); v5RoomCode = null;
+    showV5Screen('setup-screen');
+    return;
+  }
+
+  const players = data.players || [];
+  const maxPlayers = data.settings?.maxPlayers || 2;
+
+  // Waiting room
+  if (data.state === 'waiting') {
+    document.getElementById('v5-waiting-status').textContent = `Đang đợi (${players.length}/${maxPlayers})...`;
+    const container = document.getElementById('v5-waiting-players');
+    container.innerHTML = players.map((p, i) => `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--card-bg);border-radius:10px;margin-bottom:6px;">
+        <span style="width:20px;height:20px;border-radius:50%;background:var(--${p.color});"></span>
+        <span style="font-weight:700;">${p.name}</span>
+        ${p.name === v5OnlineName ? '<span style="color:var(--green);font-size:0.8rem;">Bạn</span>' : ''}
+      </div>
+    `).join('');
+
+    if (v5MyRole === 'host' && players.length >= 2) {
+      document.getElementById('v5-start-online').classList.remove('hidden');
+    }
+  }
+
+  // Game started — init V5 board with online sync
+  if (data.state === 'playing' && !v5OnlineMode) {
+    v5OnlineMode = true;
+
+    // Set board config from room data
+    BOARD_CONFIG.starTiles = data.starTiles || [4, 13, 22, 31];
+    BOARD_CONFIG.trapTiles = data.trapTiles || [8, 17, 26];
+
+    // Create game state
+    const config = {
+      playerCount: players.length,
+      subject: data.settings.subject,
+      difficulty: data.settings.difficulty,
+      players: players.map((p, i) => ({ slot: i, name: p.name, type: 'human', color: p.color })),
+    };
+    gameState = initializeGame(config);
+
+    // Sync positions from Firebase
+    players.forEach((p, i) => { gameState.players[i].position = p.position || 0; });
+
+    showV5Screen('board-screen');
+    document.getElementById('board-screen').classList.add('active');
+    renderBoard();
+    v5SyncTurn(data);
+  }
+
+  // Ongoing sync
+  if (data.state === 'playing' && v5OnlineMode && gameState) {
+    // Sync positions
+    players.forEach((p, i) => {
+      if (gameState.players[i]) gameState.players[i].position = p.position || 0;
+    });
+    gameState.currentPlayerIndex = data.currentPlayerIdx || 0;
+    renderTokens();
+    updateTurnIndicator();
+    v5SyncTurn(data);
+  }
+}
+
+function v5SyncTurn(data) {
+  const myIdx = data.players.findIndex(p => p.name === v5OnlineName);
+  const isMyTurn = data.currentPlayerIdx === myIdx;
+  const btnRoll = document.getElementById('btn-roll');
+
+  if (data.turnAction === 'roll') {
+    if (isMyTurn) {
+      if (btnRoll) { btnRoll.disabled = false; btnRoll.textContent = '🎲 Tung xúc xắc'; }
+      gameState.state = 'waiting_roll';
+    } else {
+      if (btnRoll) { btnRoll.disabled = true; btnRoll.textContent = `⏳ Đợi ${data.players[data.currentPlayerIdx]?.name}...`; }
+    }
+  } else if (data.turnAction === 'question' && isMyTurn) {
+    // Show question from Firebase
+    v5ShowOnlineQuestion(data);
+  }
+
+  // Dice result display
+  if (data.lastDice) {
+    const die1El = document.getElementById('dice-1');
+    const die2El = document.getElementById('dice-2');
+    showDiceFace(die1El, data.lastDice.die1);
+    showDiceFace(die2El, data.lastDice.die2);
+  }
+}
+
+// Override dice roll for online mode
+const originalOnRollButtonClick = typeof onRollButtonClick === 'function' ? onRollButtonClick : null;
+
+function v5OnlineRollDice() {
+  if (!v5OnlineMode || !v5RoomRef) return;
+
+  const die1 = Math.floor(Math.random() * 6) + 1;
+  const die2 = Math.floor(Math.random() * 6) + 1;
+  const total = die1 + die2;
+  const myIdx = gameState.players.findIndex(p => p.name === v5OnlineName);
+  const player = gameState.players[myIdx];
+  const targetTile = calculateTargetTile(player.position, total);
+
+  v5RoomRef.update({
+    lastDice: { die1, die2, timestamp: Date.now() },
+    [`players/${myIdx}/targetTile`]: targetTile,
+    turnAction: 'question',
+  });
+
+  // Animate locally
+  const die1El = document.getElementById('dice-1');
+  const die2El = document.getElementById('dice-2');
+  const container = document.querySelector('.dice-container');
+  if (container) container.classList.add('rolling');
+  if (die1El) { die1El.style.setProperty('--rx-dir', Math.random()>0.5?'1':'-1'); die1El.style.setProperty('--ry-dir', Math.random()>0.5?'1':'-1'); die1El.style.setProperty('--rz-dir', Math.random()>0.5?'1':'-1'); die1El.classList.add('rolling'); }
+  if (die2El) { die2El.style.setProperty('--rx-dir', Math.random()>0.5?'1':'-1'); die2El.style.setProperty('--ry-dir', Math.random()>0.5?'1':'-1'); die2El.style.setProperty('--rz-dir', Math.random()>0.5?'1':'-1'); die2El.classList.add('rolling'); }
+
+  const btnRoll = document.getElementById('btn-roll');
+  if (btnRoll) btnRoll.disabled = true;
+
+  setTimeout(() => {
+    if (container) container.classList.remove('rolling');
+    if (die1El) { die1El.classList.remove('rolling'); die1El.classList.add('bounce'); showDiceFace(die1El, die1); }
+    if (die2El) { die2El.classList.remove('rolling'); die2El.classList.add('bounce'); showDiceFace(die2El, die2); }
+    setTimeout(() => { if(die1El) die1El.classList.remove('bounce'); if(die2El) die2El.classList.remove('bounce'); }, 500);
+  }, 1000);
+}
+
+function v5ShowOnlineQuestion(data) {
+  const myIdx = data.players.findIndex(p => p.name === v5OnlineName);
+  const qIdx = data.questionIdx || 0;
+  const q = data.questions?.[qIdx];
+  if (!q) { v5EndOnlineTurn(data, myIdx, false); return; }
+
+  // Show question popup
+  const overlay = document.querySelector('.question-overlay') || document.createElement('div');
+  overlay.className = 'question-overlay active';
+  overlay.innerHTML = `
+    <div class="question-card">
+      <p class="question-text">${q.question_text}</p>
+      <div class="answer-grid">
+        <button class="answer-btn" data-answer="a"><span class="answer-letter">A</span><span class="answer-text">${q.option_a}</span></button>
+        <button class="answer-btn" data-answer="b"><span class="answer-letter">B</span><span class="answer-text">${q.option_b}</span></button>
+        <button class="answer-btn" data-answer="c"><span class="answer-letter">C</span><span class="answer-text">${q.option_c}</span></button>
+        <button class="answer-btn" data-answer="d"><span class="answer-letter">D</span><span class="answer-text">${q.option_d}</span></button>
+      </div>
+    </div>
+  `;
+  if (!overlay.parentElement) document.body.appendChild(overlay);
+
+  overlay.querySelectorAll('.answer-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      overlay.querySelectorAll('.answer-btn').forEach(b => b.style.pointerEvents = 'none');
+      const selected = btn.dataset.answer;
+      const isCorrect = selected === q.correct_answer;
+      btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+      if (!isCorrect) {
+        overlay.querySelector(`.answer-btn[data-answer="${q.correct_answer}"]`)?.classList.add('correct');
+      }
+
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        v5EndOnlineTurn(data, myIdx, isCorrect);
+      }, 1000);
+    });
+  });
+}
+
+function v5EndOnlineTurn(data, myIdx, correct) {
+  const players = data.players;
+  const player = players[myIdx];
+  const targetTile = player.targetTile || player.position;
+  const newPosition = correct ? targetTile : player.position;
+
+  // Advance to next player
+  let nextIdx = (data.currentPlayerIdx + 1) % players.length;
+  const updates = {
+    [`players/${myIdx}/position`]: newPosition,
+    [`players/${myIdx}/targetTile`]: null,
+    questionIdx: (data.questionIdx || 0) + 1,
+    currentPlayerIdx: nextIdx,
+    turnAction: 'roll',
+  };
+
+  // Check win
+  if (newPosition >= BOARD_CONFIG.finishPosition) {
+    updates.state = 'finished';
+    updates.winner = myIdx;
+  }
+
+  v5RoomRef.update(updates);
+}
+
+// Hook into roll button for online mode
+document.addEventListener('click', (e) => {
+  if (!v5OnlineMode) return;
+  const btnRoll = document.getElementById('btn-roll');
+  if (e.target === btnRoll || btnRoll?.contains(e.target)) {
+    e.stopPropagation();
+    e.preventDefault();
+    v5OnlineRollDice();
+  }
+}, true);

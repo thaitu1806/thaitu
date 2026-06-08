@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🧩 Lật Hình Trí Tuệ - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- SETUP -->
+    <section id="setup-screen" class="screen active">
+      <div class="setup-container">
+        <h1 class="setup-title">🧩 Lật Hình Trí Tuệ</h1>
+        <p class="setup-subtitle">Ghép câu hỏi với đáp án!</p>
+
+        <div class="setup-section">
+          <label class="setup-label">🎮 Chế độ</label>
+          <div class="btn-group" id="mode-group">
+            <button class="btn-option active" data-mode="solo">Solo</button>
+            <button class="btn-option" data-mode="versus">Đối đầu</button>
+          </div>
+        </div>
+
+        <div class="setup-section versus-only hidden">
+          <label class="setup-label">👥 Số người</label>
+          <div class="btn-group" id="player-count-group">
+            <button class="btn-option active" data-count="2">2</button>
+            <button class="btn-option" data-count="3">3</button>
+            <button class="btn-option" data-count="4">4</button>
+          </div>
+        </div>
+
+        <div class="setup-section">
+          <label class="setup-label">📚 Môn học</label>
+          <div class="btn-group" id="subject-group">
+            <button class="btn-option active" data-subject="math">Toán</button>
+            <button class="btn-option" data-subject="vietnamese">Tiếng Việt</button>
+            <button class="btn-option" data-subject="english">English</button>
+            <button class="btn-option" data-subject="mix">Trộn</button>
+          </div>
+        </div>
+
+        <div class="setup-section">
+          <label class="setup-label">📊 Kích thước</label>
+          <div class="btn-group" id="size-group">
+            <button class="btn-option active" data-size="8">4×4</button>
+            <button class="btn-option" data-size="12">4×6</button>
+            <button class="btn-option" data-size="16">4×8</button>
+          </div>
+        </div>
+
+        <button class="btn-start" id="btn-start">🚀 Bắt đầu!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section id="game-screen" class="screen">
+      <div class="game-layout">
+        <div class="game-header">
+          <button class="btn-exit" id="btn-exit">✕</button>
+          <div class="game-info" id="game-info"></div>
+          <div class="timer" id="timer">⏱️ 0:00</div>
+        </div>
+        <div class="card-grid" id="card-grid"></div>
+        <div class="turn-bar" id="turn-bar"></div>
+      </div>
+      <div class="exit-overlay" id="exit-overlay">
+        <div class="exit-card"><p>🚪 Thoát?</p><div class="exit-btns"><button class="exit-btn cancel" id="exit-cancel">Tiếp</button><button class="exit-btn confirm" id="exit-confirm">Thoát</button></div></div>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="result-screen" class="screen">
+      <div class="result-container" id="result-container"></div>
+    </section>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>

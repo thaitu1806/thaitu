@@ -12,6 +12,9 @@ import { vietQuestionsEasy } from './questions/viet-easy.js';
 import { vietQuestionsMedium } from './questions/viet-medium.js';
 import { vietQuestionsHard } from './questions/viet-hard.js';
 import { extraMathEasy, extraMathMedium, extraMathHard, extraVietEasy, extraVietMedium, extraVietHard } from './questions/extra-questions.js';
+import { englishQuestionsEasy } from './questions/english-easy.js';
+import { englishQuestionsMedium } from './questions/english-medium.js';
+import { englishQuestionsHard } from './questions/english-hard.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -43,6 +46,9 @@ async function seed() {
     ...extraVietMedium.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'medium' })),
     ...vietQuestionsHard.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'hard' })),
     ...extraVietHard.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'hard' })),
+    ...englishQuestionsEasy.map(q => ({ ...q, subject: 'english', difficulty: 'easy' })),
+    ...englishQuestionsMedium.map(q => ({ ...q, subject: 'english', difficulty: 'medium' })),
+    ...englishQuestionsHard.map(q => ({ ...q, subject: 'english', difficulty: 'hard' })),
   ];
 
   // Use batch insert for better reliability
