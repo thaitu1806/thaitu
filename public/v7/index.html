@@ -102,6 +102,7 @@
           <div class="turn-badge" id="turn-badge">Lượt: ...</div>
           <div class="timer-bar-wrap"><div class="timer-bar" id="q-timer-bar"></div></div>
           <div class="question-text" id="question-text"></div>
+          <button class="btn-speak" id="btn-speak-v7" title="Đọc câu hỏi" style="margin:4px auto 8px;display:flex;">🔊</button>
           <div class="answer-buttons" id="answer-buttons">
             <button class="ans-btn" data-opt="a">A</button>
             <button class="ans-btn" data-opt="b">B</button>
@@ -134,6 +135,8 @@
     </section>
   </div>
 
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
   <script src="game.js"></script>
   <script>
     document.getElementById('help-btn-open')?.addEventListener('click', () => {

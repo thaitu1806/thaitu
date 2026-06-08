@@ -697,3 +697,11 @@ function showResult() {
 document.addEventListener('DOMContentLoaded', () => {
   initSetup();
 });
+
+// TTS speak button
+document.getElementById('btn-speak-v9')?.addEventListener('click', () => {
+  if (!State._currentQuestion) return;
+  const q = State._currentQuestion;
+  const text = `${q.question_text}. A: ${q.option_a}. B: ${q.option_b}. C: ${q.option_c}. D: ${q.option_d}.`;
+  window.ttsSpeak(text, 'vi');
+});

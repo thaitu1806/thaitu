@@ -91,6 +91,7 @@
         <div class="question-area">
           <div class="timer-wrap"><div class="timer-bar" id="timer-bar"></div></div>
           <div class="q-text" id="q-text"></div>
+          <button class="btn-speak" id="btn-speak-v8" title="Đọc câu hỏi" style="margin:4px auto 8px;display:flex;">🔊</button>
           <div class="answer-grid" id="answer-grid">
             <button class="ans-btn" data-opt="a">A</button>
             <button class="ans-btn" data-opt="b">B</button>
@@ -117,6 +118,8 @@
       <div class="result-container" id="result-container"></div>
     </section>
   </div>
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
   <script src="game.js"></script>
   <script>
     document.getElementById('help-btn-open')?.addEventListener('click', () => {

@@ -1953,6 +1953,7 @@ function showQuestionPopup(question) {
     overlay.innerHTML = `
       <div class="question-card">
         <p class="question-text">${question.question_text}</p>
+        <button class="btn-speak" onclick="window.ttsSpeak('${question.question_text.replace(/'/g,"\\'")}. A: ${question.option_a.replace(/'/g,"\\'")}. B: ${question.option_b.replace(/'/g,"\\'")}. C: ${question.option_c.replace(/'/g,"\\'")}. D: ${question.option_d.replace(/'/g,"\\'")}', 'vi')" style="margin:6px auto 10px;display:flex;width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:#fff;font-size:1.2rem;cursor:pointer;align-items:center;justify-content:center;">🔊</button>
         <div class="answer-grid">
           ${options.map(opt => `
             <button class="answer-btn" data-answer="${opt.key}">

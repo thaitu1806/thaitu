@@ -44,7 +44,10 @@
       <div class="taking-body">
         <div class="taking-question">
           <div class="tq-number" id="tq-number">Câu 1/10</div>
-          <div class="tq-text" id="tq-text"></div>
+          <div class="tq-text-row" style="display:flex;align-items:flex-start;gap:8px;">
+            <div class="tq-text" id="tq-text" style="flex:1;"></div>
+            <button class="btn-speak" id="btn-speak-exam" title="Đọc câu hỏi">🔊</button>
+          </div>
         </div>
         <div class="taking-options" id="taking-options">
           <button class="to-btn" data-opt="a"></button>
@@ -80,6 +83,8 @@
       </div>
     </div>
   </div>
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
   <script src="exam.js"></script>
 </body>
 </html>

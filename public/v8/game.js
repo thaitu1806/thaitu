@@ -399,3 +399,11 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
+
+// TTS speak button
+document.getElementById('btn-speak-v8')?.addEventListener('click', () => {
+  const q = State._q;
+  if (!q) return;
+  const text = `${q.question_text}. A: ${q.option_a}. B: ${q.option_b}. C: ${q.option_c}. D: ${q.option_d}.`;
+  window.ttsSpeak(text, 'vi');
+});

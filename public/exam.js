@@ -270,3 +270,11 @@ function formatTime(seconds) {
 
 // Init
 loadExams();
+
+// TTS speak button for exam
+document.getElementById('btn-speak-exam')?.addEventListener('click', () => {
+  if (!currentExam || currentQ >= currentExam.questions.length) return;
+  const q = currentExam.questions[currentQ];
+  const text = `${q.question_text}. A: ${q.option_a}. B: ${q.option_b}. C: ${q.option_c}. D: ${q.option_d}.`;
+  window.ttsSpeak(text, 'vi');
+});

@@ -707,61 +707,11 @@ function showComboEffect() {
 }
 
 // === TEXT-TO-SPEECH (Đọc câu hỏi) ===
-function speakText(text) {
-  if (!('speechSynthesis' in window)) return;
-
-  window.speechSynthesis.cancel();
-  const btn = document.getElementById('btn-speak');
-
-  setTimeout(() => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    const isEnglish = state.subject === 'english';
-    const voices = window.speechSynthesis.getVoices();
-
-    if (isEnglish) {
-      const enVoice = voices.find(v => v.lang.startsWith('en'));
-      if (enVoice) utterance.voice = enVoice;
-      utterance.lang = 'en-US';
-    } else {
-      // Tìm voice tiếng Việt
-      let viVoice = voices.find(v => v.lang.startsWith('vi'));
-      if (viVoice) {
-        utterance.voice = viVoice;
-        utterance.lang = viVoice.lang;
-      } else {
-        // Không có voice Việt → dùng voice Indonesia (phát âm gần giống tiếng Việt nhất)
-        let idVoice = voices.find(v => v.lang.startsWith('id'));
-        if (idVoice) {
-          utterance.voice = idVoice;
-          utterance.lang = 'id-ID';
-        } else {
-          utterance.lang = 'vi-VN';
-        }
-      }
-    }
-
-    utterance.rate = 0.85;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-
-    btn.classList.add('speaking');
-    utterance.onend = () => btn.classList.remove('speaking');
-    utterance.onerror = () => btn.classList.remove('speaking');
-
-    window.speechSynthesis.speak(utterance);
-  }, 100);
-}
-
-// Load voices sớm
-if ('speechSynthesis' in window) {
-  window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = () => {};
-}
-
-// Speak button click
+// Speak button click - uses shared tts.js
 document.getElementById('btn-speak').addEventListener('click', () => {
   if (state.currentIndex >= state.questions.length) return;
   const q = state.questions[state.currentIndex];
+  const lang = state.subject === 'english' ? 'en' : 'vi';
   const fullText = `${q.question_text}. A: ${q.option_a}. B: ${q.option_b}. C: ${q.option_c}. D: ${q.option_d}.`;
-  speakText(fullText);
+  window.ttsSpeak(fullText, lang);
 });

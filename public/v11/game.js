@@ -685,6 +685,7 @@ function showQuizForLand(player, cell) {
     <h3>🏘️ ${cell.name} (${cell.price}🪙)</h3>
     <p>Trả lời đúng = mua miễn phí!</p>
     <p style="margin-top:10px; font-size:1.05rem; font-weight:800;">${questionText}</p>
+    <button class="btn-speak" onclick="window.ttsSpeak('${q.question_text.replace(/'/g,"\\'")}. A: ${q.option_a.replace(/'/g,"\\'")}. B: ${q.option_b.replace(/'/g,"\\'")}. C: ${q.option_c.replace(/'/g,"\\'")}. D: ${q.option_d.replace(/'/g,"\\'")}', 'vi')" style="margin:8px auto;display:flex;">🔊</button>
     <div class="quiz-options">
       <button class="quiz-opt" data-ans="A">A. ${q.option_a}</button>
       <button class="quiz-opt" data-ans="B">B. ${q.option_b}</button>
@@ -774,6 +775,7 @@ function handleQuiz(player, isForLand) {
     <h3>❓ Câu hỏi</h3>
     <p>Đúng +100 🪙!</p>
     <p style="margin-top:10px; font-size:1.05rem; font-weight:800;">${q.question_text}</p>
+    <button class="btn-speak" onclick="window.ttsSpeak('${q.question_text.replace(/'/g,"\\'")}. A: ${q.option_a.replace(/'/g,"\\'")}. B: ${q.option_b.replace(/'/g,"\\'")}. C: ${q.option_c.replace(/'/g,"\\'")}. D: ${q.option_d.replace(/'/g,"\\'")}', 'vi')" style="margin:8px auto;display:flex;">🔊</button>
     <div class="quiz-options">
       <button class="quiz-opt" data-ans="A">A. ${q.option_a}</button>
       <button class="quiz-opt" data-ans="B">B. ${q.option_b}</button>

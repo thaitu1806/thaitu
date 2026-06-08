@@ -284,6 +284,8 @@
     questionIndex++;
 
     quizQuestion.textContent = q.question_text || q.question || '';
+    // Store current question for TTS
+    window._v10CurrentQ = q;
     quizFeedback.textContent = '';
     quizOptions.innerHTML = '';
 
@@ -543,3 +545,12 @@
   }
 
 })();
+
+
+// TTS speak button
+document.getElementById('btn-speak-v10')?.addEventListener('click', () => {
+  const q = window._v10CurrentQ;
+  if (!q) return;
+  const text = `${q.question_text}. A: ${q.option_a}. B: ${q.option_b}. C: ${q.option_c}. D: ${q.option_d}.`;
+  window.ttsSpeak(text, 'vi');
+});

@@ -109,6 +109,7 @@
             <div id="q-timer" class="q-timer"><div class="q-timer-fill"></div></div>
           </div>
           <div id="q-text" class="q-text"></div>
+          <button class="btn-speak" id="btn-speak-v2" title="Đọc câu hỏi">🔊</button>
           <div id="q-options" class="q-options">
             <button class="q-btn" data-opt="a"></button>
             <button class="q-btn" data-opt="b"></button>
@@ -167,6 +168,8 @@
     </div>
   </div>
 
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
   <script src="game.js"></script>
   <script>
     document.getElementById('help-btn-open')?.addEventListener('click', () => {
