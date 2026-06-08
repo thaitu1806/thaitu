@@ -1227,6 +1227,7 @@ async function startOnlineGame() {
     currentPlayerIdx: 0,
     round: 1,
     turnAction: 'roll',
+    board: BOARD.map(c => ({ owner: null })),
   });
 }
 
@@ -1265,7 +1266,7 @@ function onRoomUpdate(snapshot) {
     state.online = true;
     state.myIdx = players.findIndex(p => p.name === onlineName);
     state.players = players.map((p, i) => ({ ...p, id: i, isBot: false, color: PLAYER_COLORS[i] }));
-    state.board = BOARD.map((c, i) => ({ ...c, owner: data.board[i]?.owner ?? null }));
+    state.board = BOARD.map((c, i) => ({ ...c, owner: data.board ? (data.board[i]?.owner ?? null) : null }));
     state.currentPlayerIdx = data.currentPlayerIdx;
     state.round = data.round;
     state.gameOver = false;
@@ -1287,7 +1288,7 @@ function onRoomUpdate(snapshot) {
         }
       });
     }
-    if (data.board) data.board.forEach((c, i) => { state.board[i].owner = c.owner ?? null; });
+    if (data.board) data.board.forEach((c, i) => { if (c && state.board[i]) state.board[i].owner = c.owner ?? null; });
     state.currentPlayerIdx = data.currentPlayerIdx;
     state.round = data.round || state.round;
 
