@@ -2037,6 +2037,14 @@ function initOnlineMode() {
   // Online mode button
   document.getElementById('btn-online-mode')?.addEventListener('click', () => {
     showV5Screen('online-screen');
+    // Auto-fill profile name
+    try {
+      const profile = JSON.parse(localStorage.getItem('hocvui_profile'));
+      if (profile && profile.name) {
+        const nameInput = document.getElementById('v5-online-name');
+        if (nameInput && !nameInput.value) nameInput.value = profile.name;
+      }
+    } catch (e) {}
   });
 
   // Back button
@@ -2053,6 +2061,15 @@ function initOnlineMode() {
       btn.classList.add('active');
     });
   });
+
+  // Trap slider for online
+  const trapSlider = document.getElementById('v5-online-trap-slider');
+  const trapDisplay = document.getElementById('v5-online-trap-display');
+  if (trapSlider && trapDisplay) {
+    trapSlider.addEventListener('input', () => {
+      trapDisplay.textContent = trapSlider.value;
+    });
+  }
 
   // Create room
   document.getElementById('v5-create-room')?.addEventListener('click', v5CreateRoom);
@@ -2159,7 +2176,8 @@ async function v5StartOnline() {
   if (!questions.length) questions = Array.from({length:30},(_,i)=>{const a=Math.floor(Math.random()*20)+1,b=Math.floor(Math.random()*20)+1,ans=a+b,opts=[ans,ans+1,ans-1,ans+2].sort(()=>Math.random()-0.5);return{id:i,question_text:`${a}+${b}=?`,option_a:String(opts[0]),option_b:String(opts[1]),option_c:String(opts[2]),option_d:String(opts[3]),correct_answer:['a','b','c','d'][opts.indexOf(ans)]}});
 
   // Shuffle and randomize tiles
-  const randomTiles = generateRandomTiles(5);
+  const onlineTrapCount = parseInt(document.getElementById('v5-online-trap-slider')?.value) || 5;
+  const randomTiles = generateRandomTiles(onlineTrapCount);
 
   await v5RoomRef.update({
     state: 'playing',
