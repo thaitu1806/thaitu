@@ -173,6 +173,9 @@ async function startGame() {
 
 // SHOW QUESTION
 function showQuestion() {
+  // Stop any ongoing TTS when moving to next question
+  if (window.ttsStop) window.ttsStop();
+
   if (state.currentIndex >= state.questions.length) {
     endGame();
     return;
