@@ -51,8 +51,8 @@
   // Returns: [{text:'Hello', lang:'en'}, {text:' nghĩa là gì?', lang:'vi'}]
   function splitByQuotes(text) {
     const segments = [];
-    // Match text inside "" or ""
-    const regex = /["""]([^"""]+)["""]/g;
+    // Match text inside "" or "" or "" (straight + smart quotes)
+    const regex = /[""\u201C]([^""\u201D]+)[""\u201D]/g;
     let lastIdx = 0;
     let match;
 
@@ -81,7 +81,14 @@
   // Smart bilingual speak for quiz questions
   window.ttsSpeakQuestion = function(questionText, optA, optB, optC, optD, subject) {
     if (!('speechSynthesis' in window) || !questionText) return;
-    window.speechSynthesis.cancel();
+
+    // Toggle: if already speaking, stop
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      setSpeakingState(false);
+      return;
+    }
+
     setSpeakingState(true);
 
     setTimeout(async () => {
