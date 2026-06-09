@@ -2142,7 +2142,7 @@ async function v5StartOnline() {
     const res = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=40`);
     questions = await res.json();
   } catch {}
-  if (!questions.length) questions = Array.from({length:30},(_,i)=>({id:i,question_text:`${Math.floor(Math.random()*50)+1}+${Math.floor(Math.random()*50)+1}=?`,option_a:'1',option_b:'2',option_c:'3',option_d:'4',correct_answer:'a'}));
+  if (!questions.length) questions = Array.from({length:30},(_,i)=>{const a=Math.floor(Math.random()*20)+1,b=Math.floor(Math.random()*20)+1,ans=a+b,opts=[ans,ans+1,ans-1,ans+2].sort(()=>Math.random()-0.5);return{id:i,question_text:`${a}+${b}=?`,option_a:String(opts[0]),option_b:String(opts[1]),option_c:String(opts[2]),option_d:String(opts[3]),correct_answer:['a','b','c','d'][opts.indexOf(ans)]}});
 
   // Shuffle and randomize tiles
   const randomTiles = generateRandomTiles(5);
