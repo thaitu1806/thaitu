@@ -1,7 +1,5 @@
 // === TTS (Text-to-Speech) Module ===
-// Supports bilingual: Vietnamese question + English options
-// Call: window.ttsSpeak(text, lang) for single language
-// Call: window.ttsSpeakQuestion(question, options, subject) for smart bilingual
+// Bilingual: text in "quotes" → English voice, rest → Vietnamese voice
 
 (function() {
   'use strict';
@@ -21,45 +19,26 @@
     }
   }
 
-  // Pre-load voices
   if ('speechSynthesis' in window) {
     window.speechSynthesis.getVoices();
     window.speechSynthesis.onvoiceschanged = () => {};
   }
 
-  // Detect if text is mainly English (Latin chars with English words)
-  function isEnglishText(text) {
-    if (!text) return false;
-    // Count English-only characters vs Vietnamese/special
-    const englishChars = text.match(/[a-zA-Z0-9\s.,!?'"()-]/g) || [];
-    const ratio = englishChars.length / text.length;
-    // If >85% basic Latin → likely English content
-    return ratio > 0.85;
-  }
-
-  // Detect language of each text segment
-  function detectLang(text) {
-    if (!text) return 'vi';
-    // Vietnamese diacritics
-    if (/[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]/i.test(text)) {
-      return 'vi';
-    }
-    return isEnglishText(text) ? 'en' : 'vi';
-  }
-
   function setSpeakingState(active) {
-    const btns = document.querySelectorAll('.btn-speak');
-    btns.forEach(b => active ? b.classList.add('speaking') : b.classList.remove('speaking'));
+    document.querySelectorAll('.btn-speak').forEach(b =>
+      active ? b.classList.add('speaking') : b.classList.remove('speaking')
+    );
   }
 
-  // Speak a single utterance (returns Promise)
+  // Speak one segment, returns Promise
   function speakOne(text, lang) {
     return new Promise((resolve) => {
+      if (!text.trim()) { resolve(); return; }
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = lang === 'en' ? 'en-US' : 'vi-VN';
       const voice = getBestVoice(lang);
       if (voice) { utterance.voice = voice; utterance.lang = voice.lang; }
-      utterance.rate = lang === 'en' ? 0.85 : 0.9;
+      utterance.rate = 0.85;
       utterance.pitch = 1;
       utterance.volume = 1;
       utterance.onend = () => resolve();
@@ -68,8 +47,38 @@
     });
   }
 
+  // Split text by quoted segments: "Hello" nghĩa là gì?
+  // Returns: [{text:'Hello', lang:'en'}, {text:' nghĩa là gì?', lang:'vi'}]
+  function splitByQuotes(text) {
+    const segments = [];
+    // Match text inside "" or ""
+    const regex = /["""]([^"""]+)["""]/g;
+    let lastIdx = 0;
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+      // Vietnamese text before the quote
+      const before = text.slice(lastIdx, match.index);
+      if (before.trim()) segments.push({ text: before, lang: 'vi' });
+
+      // English text inside quotes
+      segments.push({ text: match[1], lang: 'en' });
+      lastIdx = match.index + match[0].length;
+    }
+
+    // Remaining text after last quote
+    const remaining = text.slice(lastIdx);
+    if (remaining.trim()) segments.push({ text: remaining, lang: 'vi' });
+
+    return segments;
+  }
+
+  // Check if text has Vietnamese diacritics
+  function hasVietnamese(text) {
+    return /[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]/i.test(text);
+  }
+
   // Smart bilingual speak for quiz questions
-  // Reads question in detected language, then options in their detected language
   window.ttsSpeakQuestion = function(questionText, optA, optB, optC, optD, subject) {
     if (!('speechSynthesis' in window) || !questionText) return;
     window.speechSynthesis.cancel();
@@ -77,26 +86,32 @@
 
     setTimeout(async () => {
       try {
-        // Detect question language
-        const qLang = detectLang(questionText);
-        // Detect options language (check first option as representative)
-        const optLang = detectLang(optA);
+        if (subject === 'english') {
+          // Split question by quoted English words
+          const segments = splitByQuotes(questionText);
 
-        // For English subject: question is often Vietnamese, options are English
-        // For others: both Vietnamese
-        const effectiveQlang = subject === 'english' ? (qLang === 'en' ? 'en' : 'vi') : 'vi';
-        const effectiveOptLang = subject === 'english' ? (optLang === 'en' ? 'en' : detectLang(optA)) : 'vi';
+          if (segments.length > 1) {
+            // Has mixed content → read each segment with correct voice
+            for (const seg of segments) {
+              await speakOne(seg.text, seg.lang);
+            }
+          } else {
+            // No quotes → read whole question as Vietnamese
+            await speakOne(questionText, 'vi');
+          }
 
-        // Read question
-        await speakOne(questionText, effectiveQlang);
+          // Pause before options
+          await new Promise(r => setTimeout(r, 250));
 
-        // Small pause between question and options
-        await new Promise(r => setTimeout(r, 300));
-
-        // Read options - if language differs from question, switch voice
-        const optionsText = `A: ${optA}. B: ${optB}. C: ${optC}. D: ${optD}`;
-        await speakOne(optionsText, effectiveOptLang);
-
+          // Options: detect language
+          const optText = `A: ${optA}. B: ${optB}. C: ${optC}. D: ${optD}`;
+          const optLang = hasVietnamese(optA) ? 'vi' : 'en';
+          await speakOne(optText, optLang);
+        } else {
+          // Math/Vietnamese: read everything in Vietnamese
+          const fullText = `${questionText}. A: ${optA}. B: ${optB}. C: ${optC}. D: ${optD}`;
+          await speakOne(fullText, 'vi');
+        }
       } catch(e) {}
       setSpeakingState(false);
     }, 100);
@@ -122,7 +137,6 @@
     }, 100);
   };
 
-  // Stop speech
   window.ttsStop = function() {
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     setSpeakingState(false);
