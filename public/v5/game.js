@@ -2139,8 +2139,19 @@ async function v5StartOnline() {
   // Fetch questions
   let questions = [];
   try {
-    const res = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=40`);
-    questions = await res.json();
+    if (subject === 'mix') {
+      const [mathRes, vietRes] = await Promise.all([
+        fetch(`/api/questions?subject=math&difficulty=${difficulty}&limit=20`),
+        fetch(`/api/questions?subject=vietnamese&difficulty=${difficulty}&limit=20`),
+      ]);
+      const math = await mathRes.json();
+      const viet = await vietRes.json();
+      questions = [...(Array.isArray(math) ? math : []), ...(Array.isArray(viet) ? viet : [])];
+    } else {
+      const res = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=40`);
+      const data = await res.json();
+      questions = Array.isArray(data) ? data : [];
+    }
   } catch {}
   if (!questions.length) questions = Array.from({length:30},(_,i)=>{const a=Math.floor(Math.random()*20)+1,b=Math.floor(Math.random()*20)+1,ans=a+b,opts=[ans,ans+1,ans-1,ans+2].sort(()=>Math.random()-0.5);return{id:i,question_text:`${a}+${b}=?`,option_a:String(opts[0]),option_b:String(opts[1]),option_c:String(opts[2]),option_d:String(opts[3]),correct_answer:['a','b','c','d'][opts.indexOf(ans)]}});
 
@@ -2258,10 +2269,12 @@ const originalOnRollButtonClick = typeof onRollButtonClick === 'function' ? onRo
 function v5OnlineRollDice() {
   if (!v5OnlineMode || !v5RoomRef) return;
 
+  const myIdx = gameState.players.findIndex(p => p.name === v5OnlineName);
+  if (myIdx < 0 || gameState.currentPlayerIndex !== myIdx) return;
+
   const die1 = Math.floor(Math.random() * 6) + 1;
   const die2 = Math.floor(Math.random() * 6) + 1;
   const total = die1 + die2;
-  const myIdx = gameState.players.findIndex(p => p.name === v5OnlineName);
   const player = gameState.players[myIdx];
   const targetTile = calculateTargetTile(player.position, total);
 
@@ -2292,9 +2305,14 @@ function v5OnlineRollDice() {
 
 function v5ShowOnlineQuestion(data) {
   const myIdx = data.players.findIndex(p => p.name === v5OnlineName);
+  if (myIdx < 0) return;
   const qIdx = data.questionIdx || 0;
   const q = data.questions?.[qIdx];
-  if (!q) { v5EndOnlineTurn(data, myIdx, false); return; }
+  if (!q) {
+    // No more questions - auto move (treat as correct)
+    v5EndOnlineTurn(data, myIdx, true);
+    return;
+  }
 
   // Show question popup
   const overlay = document.querySelector('.question-overlay') || document.createElement('div');
@@ -2331,6 +2349,7 @@ function v5ShowOnlineQuestion(data) {
 }
 
 function v5EndOnlineTurn(data, myIdx, correct) {
+  if (myIdx < 0 || !data.players[myIdx]) return;
   const players = data.players;
   const player = players[myIdx];
   const targetTile = player.targetTile || player.position;
