@@ -1104,6 +1104,24 @@ body {
   max-width: 420px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   animation: popIn 0.3s ease-out;
+  overflow: hidden;
+}
+
+.question-timer-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.question-timer-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #ff4444, #ffaa00, #44cc44);
+  border-radius: 3px;
+  transition: width 15s linear;
 }
 
 @keyframes popIn {

@@ -1953,8 +1953,11 @@ function showQuestionPopup(question) {
       { key: 'd', text: question.option_d },
     ];
 
+    const QUESTION_TIMEOUT = 15; // seconds
+
     overlay.innerHTML = `
       <div class="question-card">
+        <div class="question-timer-bar"><div class="question-timer-fill"></div></div>
         <p class="question-text">${question.question_text}</p>
         <button class="btn-speak" onclick="window.ttsSpeak('${question.question_text.replace(/'/g,"\\'")}. A: ${question.option_a.replace(/'/g,"\\'")}. B: ${question.option_b.replace(/'/g,"\\'")}. C: ${question.option_c.replace(/'/g,"\\'")}. D: ${question.option_d.replace(/'/g,"\\'")}', 'vi')" style="margin:6px auto 10px;display:flex;width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:#fff;font-size:1.2rem;cursor:pointer;align-items:center;justify-content:center;">🔊</button>
         <div class="answer-grid">
@@ -1970,10 +1973,37 @@ function showQuestionPopup(question) {
 
     overlay.classList.add('active');
 
+    // Start countdown timer
+    const timerFill = overlay.querySelector('.question-timer-fill');
+    if (timerFill) {
+      timerFill.style.transition = `width ${QUESTION_TIMEOUT}s linear`;
+      requestAnimationFrame(() => { timerFill.style.width = '0%'; });
+    }
+
+    let answered = false;
+    const timeoutId = setTimeout(() => {
+      if (answered) return;
+      answered = true;
+      // Time's up — treat as wrong answer
+      const correct = question.correct_answer;
+      const correctBtn = overlay.querySelector(`.answer-btn[data-answer="${correct}"]`);
+      if (correctBtn) correctBtn.classList.add('correct');
+      buttons.forEach(b => b.disabled = true);
+      showToast('⏰ Hết giờ!');
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        resolve({ selected: null, correct, isCorrect: false });
+      }, 1500);
+    }, QUESTION_TIMEOUT * 1000);
+
     // Bind answer button clicks
     const buttons = overlay.querySelectorAll('.answer-btn');
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
+        if (answered) return;
+        answered = true;
+        clearTimeout(timeoutId);
+
         const selected = btn.dataset.answer;
         const correct = question.correct_answer;
         const isCorrect = selected === correct;
@@ -2381,6 +2411,7 @@ function v5ShowOnlineQuestion(data) {
   overlay.className = 'question-overlay active';
   overlay.innerHTML = `
     <div class="question-card">
+      <div class="question-timer-bar"><div class="question-timer-fill"></div></div>
       <p class="question-text">${q.question_text}</p>
       <div class="answer-grid">
         <button class="answer-btn" data-answer="a"><span class="answer-letter">A</span><span class="answer-text">${q.option_a}</span></button>
@@ -2392,8 +2423,32 @@ function v5ShowOnlineQuestion(data) {
   `;
   if (!overlay.parentElement) document.body.appendChild(overlay);
 
+  const QUESTION_TIMEOUT = 15; // seconds
+  const timerFill = overlay.querySelector('.question-timer-fill');
+  if (timerFill) {
+    timerFill.style.transition = `width ${QUESTION_TIMEOUT}s linear`;
+    requestAnimationFrame(() => { timerFill.style.width = '0%'; });
+  }
+
+  let answered = false;
+  const timeoutId = setTimeout(() => {
+    if (answered) return;
+    answered = true;
+    overlay.querySelectorAll('.answer-btn').forEach(b => b.style.pointerEvents = 'none');
+    const correctBtn = overlay.querySelector(`.answer-btn[data-answer="${q.correct_answer}"]`);
+    if (correctBtn) correctBtn.classList.add('correct');
+    showToast('⏰ Hết giờ!');
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      v5EndOnlineTurn(data, myIdx, false);
+    }, 1500);
+  }, QUESTION_TIMEOUT * 1000);
+
   overlay.querySelectorAll('.answer-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (answered) return;
+      answered = true;
+      clearTimeout(timeoutId);
       overlay.querySelectorAll('.answer-btn').forEach(b => b.style.pointerEvents = 'none');
       const selected = btn.dataset.answer;
       const isCorrect = selected === q.correct_answer;
