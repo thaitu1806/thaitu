@@ -722,6 +722,7 @@ function updateRollButton() {
  * Handle the roll button click
  */
 function onRollButtonClick() {
+  if (v5OnlineMode) return; // Online mode uses v5OnlineRollDice
   if (!gameState || gameState.state !== 'waiting_roll') return;
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   if (currentPlayer.type !== 'human') return;
@@ -1048,6 +1049,7 @@ function onTileTapClick() {
  */
 async function handleTileTap() {
   if (!gameState || gameState.state !== 'waiting_tile_tap') return;
+  if (v5OnlineMode) return; // Online mode uses v5ShowOnlineQuestion instead
 
   // Remove highlight and tile click
   clearTileHighlight();
@@ -1310,6 +1312,7 @@ function animateTokenMovement(player, startPos, endPos) {
  * @returns {Promise<number>} new position after effect
  */
 async function handleSpecialTileEffect(player, tileType) {
+  if (v5OnlineMode) return player.position; // Online handles this via Firebase
   const currentPos = player.position;
 
   if (tileType === 'star') {
@@ -2237,19 +2240,23 @@ function v5OnRoomUpdate(snapshot) {
   }
 }
 
+let v5QuestionShowing = false;
+
 function v5SyncTurn(data) {
   const myIdx = data.players.findIndex(p => p.name === v5OnlineName);
   const isMyTurn = data.currentPlayerIdx === myIdx;
   const btnRoll = document.getElementById('btn-roll');
 
   if (data.turnAction === 'roll') {
+    v5QuestionShowing = false;
     if (isMyTurn) {
       if (btnRoll) { btnRoll.disabled = false; btnRoll.textContent = '🎲 Tung xúc xắc'; }
       gameState.state = 'waiting_roll';
     } else {
       if (btnRoll) { btnRoll.disabled = true; btnRoll.textContent = `⏳ Đợi ${data.players[data.currentPlayerIdx]?.name}...`; }
     }
-  } else if (data.turnAction === 'question' && isMyTurn) {
+  } else if (data.turnAction === 'question' && isMyTurn && !v5QuestionShowing) {
+    v5QuestionShowing = true;
     // Show question from Firebase
     v5ShowOnlineQuestion(data);
   }
