@@ -2249,14 +2249,31 @@ function v5SyncTurn(data) {
 
   if (data.turnAction === 'roll') {
     v5QuestionShowing = false;
+    clearTileHighlight();
     if (isMyTurn) {
       if (btnRoll) { btnRoll.disabled = false; btnRoll.textContent = '🎲 Tung xúc xắc'; }
       gameState.state = 'waiting_roll';
     } else {
       if (btnRoll) { btnRoll.disabled = true; btnRoll.textContent = `⏳ Đợi ${data.players[data.currentPlayerIdx]?.name}...`; }
     }
+  } else if (data.turnAction === 'waiting_tile_tap' && isMyTurn) {
+    // Highlight target tile and wait for player to click it (same as local mode)
+    const player = data.players[myIdx];
+    const targetTile = player.targetTile;
+    if (targetTile != null && gameState.state !== 'waiting_tile_tap') {
+      gameState.targetTile = targetTile;
+      gameState.state = 'waiting_tile_tap';
+      highlightTargetTile(targetTile);
+      if (btnRoll) { btnRoll.disabled = true; btnRoll.textContent = '👆 Bấm vào ô đích'; }
+      // Bind click on highlighted tile
+      v5BindOnlineTileTap();
+    }
+  } else if (data.turnAction === 'waiting_tile_tap' && !isMyTurn) {
+    // Other player is choosing their tile
+    if (btnRoll) { btnRoll.disabled = true; btnRoll.textContent = `⏳ Đợi ${data.players[data.currentPlayerIdx]?.name}...`; }
   } else if (data.turnAction === 'question' && isMyTurn && !v5QuestionShowing) {
     v5QuestionShowing = true;
+    clearTileHighlight();
     // Show question from Firebase
     v5ShowOnlineQuestion(data);
   }
@@ -2267,6 +2284,26 @@ function v5SyncTurn(data) {
     const die2El = document.getElementById('dice-2');
     showDiceFace(die1El, data.lastDice.die1);
     showDiceFace(die2El, data.lastDice.die2);
+  }
+}
+
+/**
+ * Bind click on highlighted tile for online mode (same UX as local)
+ */
+function v5BindOnlineTileTap() {
+  const grid = document.getElementById('board-grid');
+  if (!grid || !gameState || gameState.state !== 'waiting_tile_tap') return;
+
+  const highlightedTile = grid.querySelector('.tile-highlight');
+  if (highlightedTile) {
+    highlightedTile.style.cursor = 'pointer';
+    highlightedTile.addEventListener('click', function onOnlineTileTap() {
+      if (!gameState || gameState.state !== 'waiting_tile_tap') return;
+      highlightedTile.removeEventListener('click', onOnlineTileTap);
+      clearTileHighlight();
+      // Confirm tile tap — transition to question
+      v5RoomRef.update({ turnAction: 'question' });
+    }, { once: true });
   }
 }
 
@@ -2288,7 +2325,7 @@ function v5OnlineRollDice() {
   v5RoomRef.update({
     lastDice: { die1, die2, timestamp: Date.now() },
     [`players/${myIdx}/targetTile`]: targetTile,
-    turnAction: 'question',
+    turnAction: targetTile >= BOARD_CONFIG.finishPosition ? 'question' : 'waiting_tile_tap',
   });
 
   // Animate locally
