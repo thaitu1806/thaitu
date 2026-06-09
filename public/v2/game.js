@@ -923,7 +923,5 @@ document.getElementById('btn-exit-battle').addEventListener('click', () => {
 document.getElementById('btn-speak-v2')?.addEventListener('click', () => {
   if (!G.battle || G.battle.qIndex >= G.battle.questions.length) return;
   const q = G.battle.questions[G.battle.qIndex];
-  const lang = G.settings?.subject === 'english' ? 'en' : 'vi';
-  const text = `${q.question_text}. A: ${q.option_a}. B: ${q.option_b}. C: ${q.option_c}. D: ${q.option_d}.`;
-  window.ttsSpeak(text, lang);
+  window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, G.settings?.subject);
 });

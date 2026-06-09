@@ -707,11 +707,9 @@ function showComboEffect() {
 }
 
 // === TEXT-TO-SPEECH (Đọc câu hỏi) ===
-// Speak button click - uses shared tts.js
+// Speak button click - uses shared tts.js with bilingual support
 document.getElementById('btn-speak').addEventListener('click', () => {
   if (state.currentIndex >= state.questions.length) return;
   const q = state.questions[state.currentIndex];
-  const lang = state.subject === 'english' ? 'en' : 'vi';
-  const fullText = `${q.question_text}. A: ${q.option_a}. B: ${q.option_b}. C: ${q.option_c}. D: ${q.option_d}.`;
-  window.ttsSpeak(fullText, lang);
+  window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, state.subject);
 });

@@ -702,6 +702,5 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('btn-speak-v9')?.addEventListener('click', () => {
   if (!State._currentQuestion) return;
   const q = State._currentQuestion;
-  const text = `${q.question_text}. A: ${q.option_a}. B: ${q.option_b}. C: ${q.option_c}. D: ${q.option_d}.`;
-  window.ttsSpeak(text, 'vi');
+  window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, State.settings?.subject);
 });

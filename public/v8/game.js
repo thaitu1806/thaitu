@@ -404,6 +404,5 @@ function showScreen(id) {
 document.getElementById('btn-speak-v8')?.addEventListener('click', () => {
   const q = State._q;
   if (!q) return;
-  const text = `${q.question_text}. A: ${q.option_a}. B: ${q.option_b}. C: ${q.option_c}. D: ${q.option_d}.`;
-  window.ttsSpeak(text, 'vi');
+  window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, State.config?.subject);
 });
