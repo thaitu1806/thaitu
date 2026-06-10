@@ -58,6 +58,9 @@
           <p class="room-hint">Cho bạn nhập mã này để vào!</p>
         </div>
         <div class="room-settings">
+          <div class="rs-row"><label>🎮 Mode:</label>
+            <select id="rs-mode"><option value="duel">Đấu trí</option><option value="race">Đua xe 🏎️</option></select>
+          </div>
           <div class="rs-row"><label>📚 Môn:</label>
             <select id="rs-subject"><option value="mix">Mix</option><option value="math">Toán</option><option value="vietnamese">Tiếng Việt</option></select>
           </div>
@@ -67,8 +70,11 @@
           <div class="rs-row"><label>🔢 Số câu:</label>
             <select id="rs-rounds"><option value="5">5</option><option value="10" selected>10</option><option value="15">15</option></select>
           </div>
-          <div class="rs-row"><label>⏱️ Tốc độ:</label>
+          <div class="rs-row" id="rs-speed-row"><label>⏱️ Tốc độ:</label>
             <select id="rs-speed"><option value="slow">Chậm</option><option value="normal" selected>BT</option><option value="fast">Nhanh</option></select>
+          </div>
+          <div class="rs-row" id="rs-track-row" style="display:none;"><label>🏁 Đường đua:</label>
+            <select id="rs-track"><option value="8">Ngắn (8)</option><option value="12" selected>TB (12)</option><option value="16">Dài (16)</option></select>
           </div>
         </div>
         <div class="room-players">
@@ -131,6 +137,39 @@
       </div>
 
       <div class="ob-status" id="ob-status"></div>
+    </div>
+
+    <!-- RACE MODE -->
+    <div id="race-screen" class="screen">
+      <div class="race-header">
+        <span class="race-p1-name" id="race-p1-name">🌻 P1</span>
+        <span class="race-vs">🏁</span>
+        <span class="race-p2-name" id="race-p2-name">🧟 P2</span>
+      </div>
+      <div class="race-track">
+        <div class="race-lane" id="race-lane-host">
+          <div class="race-car" id="race-car-host">🌻</div>
+        </div>
+        <div class="race-lane" id="race-lane-guest">
+          <div class="race-car" id="race-car-guest">🧟</div>
+        </div>
+        <div class="race-finish" id="race-finish">🏁</div>
+      </div>
+      <div class="race-positions">
+        <span id="race-pos-host">0</span> / <span id="race-track-len">12</span>
+        <span style="margin-left:auto;" id="race-pos-guest">0</span> / <span id="race-track-len2">12</span>
+      </div>
+      <div class="race-question-area">
+        <div class="race-timer"><div id="race-timer-fill" class="race-timer-fill"></div></div>
+        <div class="race-q-text" id="race-q-text">Đang tải...</div>
+        <div class="race-options" id="race-options">
+          <button class="race-btn" data-opt="a">A</button>
+          <button class="race-btn" data-opt="b">B</button>
+          <button class="race-btn" data-opt="c">C</button>
+          <button class="race-btn" data-opt="d">D</button>
+        </div>
+        <div class="race-feedback" id="race-feedback"></div>
+      </div>
     </div>
 
     <!-- RESULT -->

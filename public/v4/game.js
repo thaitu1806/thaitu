@@ -67,10 +67,12 @@ function generateCode() {
 
 function getSettings() {
   return {
+    mode: document.getElementById('rs-mode')?.value || 'duel',
     subject: document.getElementById('rs-subject')?.value || 'mix',
     difficulty: document.getElementById('rs-difficulty')?.value || 'medium',
     rounds: parseInt(document.getElementById('rs-rounds')?.value || '10'),
     speed: document.getElementById('rs-speed')?.value || 'normal',
+    trackLength: parseInt(document.getElementById('rs-track')?.value || '12'),
   };
 }
 
@@ -156,24 +158,25 @@ document.getElementById('btn-start-match').addEventListener('click', async () =>
 
   // Fetch questions from API
   let questions = [];
+  const questionLimit = settings.mode === 'race' ? Math.max(30, settings.trackLength * 3) : settings.rounds;
   try {
-    const { subject, difficulty, rounds } = settings;
+    const { subject, difficulty } = settings;
     if (subject === 'mix') {
-      const half = Math.ceil(rounds / 2);
+      const half = Math.ceil(questionLimit / 2);
       const [mRes, vRes] = await Promise.all([
         fetch(`/api/questions?subject=math&difficulty=${difficulty}&limit=${half}`).then(r => r.json()),
-        fetch(`/api/questions?subject=vietnamese&difficulty=${difficulty}&limit=${rounds - half}`).then(r => r.json()),
+        fetch(`/api/questions?subject=vietnamese&difficulty=${difficulty}&limit=${questionLimit - half}`).then(r => r.json()),
       ]);
       questions = [...mRes, ...vRes].sort(() => Math.random() - 0.5);
     } else {
-      const res = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=${rounds}`);
+      const res = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=${questionLimit}`);
       questions = await res.json();
     }
   } catch (e) {
-    questions = generateFallback(settings.rounds || 10);
+    questions = generateFallback(questionLimit);
   }
 
-  if (questions.length === 0) questions = generateFallback(10);
+  if (questions.length === 0) questions = generateFallback(questionLimit);
 
   // Strip correct answers from being easily visible, but keep for scoring
   const questionsData = questions.map(q => ({
@@ -190,7 +193,7 @@ document.getElementById('btn-start-match').addEventListener('click', async () =>
     settings,
     questions: questionsData,
     state: 'playing',
-    currentRound: 0,
+    currentRound: settings.mode === 'race' ? -1 : 0,
     roundStart: Date.now(),
     hostAnswer: null,
     guestAnswer: null,
@@ -199,7 +202,16 @@ document.getElementById('btn-start-match').addEventListener('click', async () =>
     guestScore: 0,
     hostCorrect: 0,
     guestCorrect: 0,
+    hostPosition: 0,
+    guestPosition: 0,
   });
+
+  // If race mode, mark started for host (will be handled by handleUpdate listener)
+  if (settings.mode === 'race') {
+    raceState.started = true;
+    const snapshot = await roomRef.once('value');
+    startRaceMode(snapshot.val());
+  }
 });
 
 // === LISTEN FOR REALTIME UPDATES ===
@@ -209,8 +221,8 @@ function listenRoom() {
     if (!data) return;
     handleUpdate(data);
 
-    // Host: auto-resolve when both answers are in
-    if (myRole === 'host' && data.state === 'playing' && !data.roundResult) {
+    // Host: auto-resolve when both answers are in (duel mode only)
+    if (myRole === 'host' && data.state === 'playing' && !data.roundResult && data.settings?.mode !== 'race') {
       if (data.hostAnswer && data.guestAnswer) {
         resolveRound(data);
       }
@@ -232,7 +244,22 @@ function handleUpdate(data) {
     document.getElementById('btn-start-match').classList.remove('hidden');
   }
 
-  // Match playing
+  // Race mode updates
+  if (data.settings?.mode === 'race' && data.state === 'playing') {
+    // Start race mode when first detecting playing state
+    if (!raceState.started) {
+      raceState.started = true;
+      startRaceMode(data);
+    }
+    handleRaceUpdate(data);
+    return;
+  }
+  if (data.settings?.mode === 'race' && data.state === 'finished' && data.matchResult) {
+    handleRaceUpdate(data);
+    return;
+  }
+
+  // Match playing (duel mode)
   if (data.state === 'playing' && data.questions && data.currentRound >= 0) {
     const q = data.questions[data.currentRound];
     if (!q) return;
@@ -442,6 +469,11 @@ document.getElementById('btn-rematch').addEventListener('click', () => {
   currentRound = -1;
   resultShown = false;
   answeredThisRound = false;
+  raceState.started = false;
+  raceState.finished = false;
+  raceState.myPosition = 0;
+  raceState.opponentPosition = 0;
+  raceState.myIndex = 0;
   if (myRole === 'host') {
     showScreen('create-screen');
     listenRoom();
@@ -531,4 +563,225 @@ function playSound(type) {
         osc.start(); osc.stop(audioCtx.currentTime + 0.5); break;
     }
   } catch {}
+}
+
+// === MODE TOGGLE ===
+document.getElementById('rs-mode')?.addEventListener('change', (e) => {
+  const isRace = e.target.value === 'race';
+  document.getElementById('rs-speed-row').style.display = isRace ? 'none' : '';
+  document.getElementById('rs-track-row').style.display = isRace ? '' : 'none';
+});
+
+// === RACE MODE ===
+let raceState = {
+  questions: [],
+  myQuestionOrder: [],
+  myIndex: 0,
+  trackLength: 12,
+  myPosition: 0,
+  opponentPosition: 0,
+  timerInterval: null,
+  answered: false,
+  finished: false,
+  started: false,
+};
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startRaceMode(data) {
+  raceState.questions = data.questions;
+  raceState.trackLength = data.settings.trackLength || 12;
+  raceState.myPosition = 0;
+  raceState.opponentPosition = 0;
+  raceState.myIndex = 0;
+  raceState.finished = false;
+
+  // Each player gets the same questions but shuffled differently
+  // Use a deterministic seed based on role so both see different orders
+  raceState.myQuestionOrder = shuffleArray(data.questions);
+
+  // Update track UI
+  document.getElementById('race-p1-name').textContent = `🌻 ${data.host}`;
+  document.getElementById('race-p2-name').textContent = `🧟 ${data.guest}`;
+  document.getElementById('race-track-len').textContent = raceState.trackLength;
+  document.getElementById('race-track-len2').textContent = raceState.trackLength;
+  document.getElementById('race-pos-host').textContent = '0';
+  document.getElementById('race-pos-guest').textContent = '0';
+  updateRaceCars();
+
+  showScreen('race-screen');
+  showNextRaceQuestion();
+}
+
+function updateRaceCars() {
+  const hostPos = myRole === 'host' ? raceState.myPosition : raceState.opponentPosition;
+  const guestPos = myRole === 'guest' ? raceState.myPosition : raceState.opponentPosition;
+  const pct = (pos) => Math.min((pos / raceState.trackLength) * 85, 85);
+
+  document.getElementById('race-car-host').style.left = pct(hostPos) + '%';
+  document.getElementById('race-car-guest').style.left = pct(guestPos) + '%';
+  document.getElementById('race-pos-host').textContent = hostPos;
+  document.getElementById('race-pos-guest').textContent = guestPos;
+}
+
+function showNextRaceQuestion() {
+  if (raceState.finished) return;
+
+  // Get next question from my shuffled list (wrap around if needed)
+  if (raceState.myIndex >= raceState.myQuestionOrder.length) {
+    raceState.myQuestionOrder = shuffleArray(raceState.questions);
+    raceState.myIndex = 0;
+  }
+
+  const q = raceState.myQuestionOrder[raceState.myIndex];
+  raceState.answered = false;
+
+  document.getElementById('race-q-text').textContent = q.question_text;
+  const btns = document.querySelectorAll('.race-btn');
+  const opts = [q.option_a, q.option_b, q.option_c, q.option_d];
+  btns.forEach((btn, i) => {
+    btn.textContent = `${'ABCD'[i]}. ${opts[i]}`;
+    btn.className = 'race-btn';
+    btn.disabled = false;
+  });
+  document.getElementById('race-feedback').textContent = '';
+
+  // Start 15s timer
+  startRaceTimer();
+}
+
+function startRaceTimer() {
+  clearInterval(raceState.timerInterval);
+  const fill = document.getElementById('race-timer-fill');
+  fill.style.width = '100%';
+  fill.className = 'race-timer-fill';
+
+  let timeLeft = 100;
+  raceState.timerInterval = setInterval(() => {
+    timeLeft -= 0.67; // ~15 seconds (100 / 0.67 / 10 ≈ 15s at 100ms interval)
+    fill.style.width = Math.max(0, timeLeft) + '%';
+    if (timeLeft <= 20) fill.className = 'race-timer-fill danger';
+    else if (timeLeft <= 50) fill.className = 'race-timer-fill warn';
+
+    if (timeLeft <= 0) {
+      clearInterval(raceState.timerInterval);
+      if (!raceState.answered) {
+        raceState.answered = true;
+        document.querySelectorAll('.race-btn').forEach(b => b.disabled = true);
+        document.getElementById('race-feedback').textContent = '⏰ Hết giờ!';
+        const q = raceState.myQuestionOrder[raceState.myIndex];
+        // Highlight correct
+        const correctBtn = document.querySelector(`.race-btn[data-opt="${q.correct_answer}"]`);
+        if (correctBtn) correctBtn.classList.add('correct');
+        // Move to next question after delay
+        raceState.myIndex++;
+        setTimeout(() => showNextRaceQuestion(), 1200);
+      }
+    }
+  }, 100);
+}
+
+// Handle race answer clicks
+document.getElementById('race-options')?.addEventListener('click', (e) => {
+  const btn = e.target.closest('.race-btn');
+  if (!btn || btn.disabled || raceState.answered || raceState.finished) return;
+
+  raceState.answered = true;
+  clearInterval(raceState.timerInterval);
+  document.querySelectorAll('.race-btn').forEach(b => b.disabled = true);
+
+  const q = raceState.myQuestionOrder[raceState.myIndex];
+  const isCorrect = btn.dataset.opt === q.correct_answer;
+
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) {
+    const correctBtn = document.querySelector(`.race-btn[data-opt="${q.correct_answer}"]`);
+    if (correctBtn) correctBtn.classList.add('correct');
+  }
+
+  if (isCorrect) {
+    raceState.myPosition++;
+    document.getElementById('race-feedback').textContent = '✅ Đúng! Tiến lên!';
+    playSound('correct');
+
+    // Update Firebase with my new position
+    const posKey = myRole === 'host' ? 'hostPosition' : 'guestPosition';
+    roomRef.update({ [posKey]: raceState.myPosition });
+
+    updateRaceCars();
+
+    // Check if I won
+    if (raceState.myPosition >= raceState.trackLength) {
+      raceState.finished = true;
+      document.getElementById('race-feedback').textContent = '🏆 Bạn về đích!';
+      if (myRole === 'host') {
+        roomRef.update({
+          state: 'finished',
+          matchResult: {
+            winner: 'host',
+            hostScore: raceState.myPosition,
+            guestScore: raceState.opponentPosition,
+            hostCorrect: raceState.myPosition,
+            guestCorrect: raceState.opponentPosition,
+          },
+        });
+      }
+      return;
+    }
+  } else {
+    document.getElementById('race-feedback').textContent = '❌ Sai rồi!';
+    playSound('wrong');
+  }
+
+  raceState.myIndex++;
+  // Load next question after short delay
+  setTimeout(() => showNextRaceQuestion(), 800);
+});
+
+// Listen for opponent position updates in race mode
+function handleRaceUpdate(data) {
+  if (!data || data.settings?.mode !== 'race') return;
+
+  const opponentPosKey = myRole === 'host' ? 'guestPosition' : 'hostPosition';
+  const newOpPos = data[opponentPosKey] || 0;
+
+  if (newOpPos !== raceState.opponentPosition) {
+    raceState.opponentPosition = newOpPos;
+    updateRaceCars();
+  }
+
+  // Check if opponent won
+  if (newOpPos >= raceState.trackLength && !raceState.finished) {
+    raceState.finished = true;
+    clearInterval(raceState.timerInterval);
+    document.querySelectorAll('.race-btn').forEach(b => b.disabled = true);
+    document.getElementById('race-feedback').textContent = '😢 Đối thủ về đích trước!';
+
+    if (myRole === 'guest') {
+      roomRef.update({
+        state: 'finished',
+        matchResult: {
+          winner: 'guest',
+          hostScore: raceState.opponentPosition,
+          guestScore: raceState.myPosition,
+          hostCorrect: raceState.opponentPosition,
+          guestCorrect: raceState.myPosition,
+        },
+      });
+    }
+  }
+
+  // Match finished (via either player)
+  if (data.state === 'finished' && data.matchResult) {
+    raceState.finished = true;
+    clearInterval(raceState.timerInterval);
+    setTimeout(() => showMatchEnd(data), 1500);
+  }
 }
