@@ -16,6 +16,7 @@ body {
 .shop-container {
   max-width: 480px;
   margin: 0 auto;
+  overflow: visible;
 }
 
 /* Header */
@@ -91,10 +92,14 @@ body {
   display: flex;
   gap: 8px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding-bottom: 8px;
+  padding-right: 16px;
   margin-bottom: 16px;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  mask-image: none;
+  -webkit-mask-image: none;
 }
 
 .category-tabs::-webkit-scrollbar {
