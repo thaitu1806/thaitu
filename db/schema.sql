@@ -98,3 +98,92 @@ CREATE TABLE IF NOT EXISTS player_progress (
 );
 
 CREATE INDEX IF NOT EXISTS idx_progress_player ON player_progress(player_id, game_mode);
+
+-- Daily Quest & Reward Shop System Tables
+
+CREATE TABLE IF NOT EXISTS daily_quests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  player_id INTEGER NOT NULL,
+  quest_type TEXT NOT NULL,
+  quest_description TEXT NOT NULL,
+  target_value INTEGER NOT NULL,
+  current_value INTEGER DEFAULT 0,
+  diamond_reward INTEGER NOT NULL,
+  is_completed INTEGER DEFAULT 0,
+  quest_date TEXT NOT NULL,
+  completed_at DATETIME DEFAULT NULL,
+  FOREIGN KEY (player_id) REFERENCES players(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_daily_quests_player_date ON daily_quests(player_id, quest_date);
+
+CREATE TABLE IF NOT EXISTS shop_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  description TEXT DEFAULT '',
+  category TEXT NOT NULL CHECK(category IN ('avatar', 'frame', 'sticker', 'powerup', 'voucher')),
+  price_diamonds INTEGER NOT NULL,
+  min_level TEXT DEFAULT 'bronze' CHECK(min_level IN ('bronze', 'silver', 'gold', 'diamond', 'master')),
+  image_url TEXT DEFAULT NULL,
+  is_active INTEGER DEFAULT 1,
+  max_per_week INTEGER DEFAULT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_shop_items_category ON shop_items(category);
+
+CREATE TABLE IF NOT EXISTS player_inventory (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  player_id INTEGER NOT NULL,
+  item_id INTEGER NOT NULL,
+  purchased_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  is_equipped INTEGER DEFAULT 0,
+  FOREIGN KEY (player_id) REFERENCES players(id),
+  FOREIGN KEY (item_id) REFERENCES shop_items(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_inventory_player ON player_inventory(player_id);
+
+CREATE TABLE IF NOT EXISTS diamond_transactions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  player_id INTEGER NOT NULL,
+  amount INTEGER NOT NULL,
+  type TEXT NOT NULL CHECK(type IN ('earn', 'spend')),
+  source TEXT NOT NULL CHECK(source IN ('answer', 'quest', 'streak', 'level_up', 'shop', 'all_quests_bonus')),
+  reference_id INTEGER DEFAULT NULL,
+  description TEXT DEFAULT '',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (player_id) REFERENCES players(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_diamond_tx_player ON diamond_transactions(player_id);
+CREATE INDEX IF NOT EXISTS idx_diamond_tx_created ON diamond_transactions(created_at);
+
+CREATE TABLE IF NOT EXISTS reward_vouchers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  player_id INTEGER NOT NULL,
+  item_id INTEGER NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'approved', 'rejected')),
+  requested_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  resolved_at DATETIME DEFAULT NULL,
+  admin_note TEXT DEFAULT NULL,
+  FOREIGN KEY (player_id) REFERENCES players(id),
+  FOREIGN KEY (item_id) REFERENCES shop_items(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_vouchers_status ON reward_vouchers(status);
+CREATE INDEX IF NOT EXISTS idx_vouchers_player ON reward_vouchers(player_id);
+
+-- Multi-Grade & AI Integration Tables
+
+CREATE TABLE IF NOT EXISTS ai_usage_logs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  player_id INTEGER NOT NULL,
+  feature TEXT NOT NULL CHECK(feature IN ('explain', 'hint', 'chat', 'generate')),
+  tokens_used INTEGER DEFAULT 0,
+  prompt_hash TEXT DEFAULT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (player_id) REFERENCES players(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ai_usage_player_date ON ai_usage_logs(player_id, created_at);

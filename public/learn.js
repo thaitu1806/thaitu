@@ -763,3 +763,205 @@ function newMoneyPractice() {
   const { options, correctIdx } = makePracticeOptions(t.ans, t.wrongs);
   renderPractice('money', t.q, options, correctIdx);
 }
+
+// === AI TUTOR CHATBOT ===
+let aiEnabled = false;
+const chatHistory = []; // Session-scoped: [{role, content}]
+let chatMessagesRemaining = 20;
+const CHAT_DAILY_LIMIT = 20;
+
+/**
+ * Check AI status and show/hide AI features.
+ */
+async function checkAIStatus() {
+  try {
+    const res = await fetch('/api/ai/status');
+    const data = await res.json();
+    aiEnabled = data.enabled;
+  } catch {
+    aiEnabled = false;
+  }
+  document.querySelectorAll('.ai-feature').forEach(el => {
+    el.style.display = aiEnabled ? '' : 'none';
+  });
+}
+
+// Check AI status on page load
+checkAIStatus();
+
+/**
+ * Toggle the chat panel visibility.
+ */
+function toggleChatPanel() {
+  const panel = document.getElementById('ai-chat-panel');
+  panel.classList.toggle('hidden');
+  if (!panel.classList.contains('hidden')) {
+    document.getElementById('ai-chat-input').focus();
+  }
+}
+
+/**
+ * Get the player_id from localStorage.
+ */
+function getPlayerId() {
+  try {
+    const profile = JSON.parse(localStorage.getItem('hocvui_profile'));
+    return profile && profile.id ? profile.id : null;
+  } catch { return null; }
+}
+
+/**
+ * Get the player's grade from localStorage.
+ */
+function getPlayerGrade() {
+  try {
+    const profile = JSON.parse(localStorage.getItem('hocvui_profile'));
+    return profile && profile.grade ? profile.grade : 2;
+  } catch { return 2; }
+}
+
+/**
+ * Get the current lesson context (topic name being viewed).
+ */
+function getLessonContext() {
+  if (currentTopic && TOPIC_NAMES[currentTopic]) {
+    return TOPIC_NAMES[currentTopic];
+  }
+  return 'Góc Học Tập - Toán';
+}
+
+/**
+ * Add a message bubble to the chat UI.
+ */
+function addChatBubble(text, type) {
+  const container = document.getElementById('ai-chat-messages');
+  const bubble = document.createElement('div');
+  bubble.className = `ai-msg ${type}`;
+  bubble.textContent = text;
+  container.appendChild(bubble);
+  container.scrollTop = container.scrollHeight;
+  return bubble;
+}
+
+/**
+ * Update the remaining messages display.
+ */
+function updateRemainingDisplay() {
+  const el = document.getElementById('ai-chat-remaining');
+  if (chatMessagesRemaining <= 5) {
+    el.textContent = `Còn ${chatMessagesRemaining} lượt`;
+    el.style.background = 'rgba(255,100,100,0.3)';
+  } else {
+    el.textContent = `Còn ${chatMessagesRemaining} lượt`;
+    el.style.background = 'rgba(255,255,255,0.2)';
+  }
+}
+
+/**
+ * Disable the chat input when limit is reached.
+ */
+function disableChatInput() {
+  const input = document.getElementById('ai-chat-input');
+  const sendBtn = document.getElementById('ai-chat-send');
+  input.disabled = true;
+  input.placeholder = 'Hết lượt hỏi hôm nay rồi!';
+  sendBtn.disabled = true;
+  addChatBubble('Hết lượt hỏi hôm nay rồi! Mai hỏi tiếp nhé! 🌟', 'system');
+}
+
+/**
+ * Send a message to the AI tutor.
+ */
+async function sendChatMessage() {
+  const input = document.getElementById('ai-chat-input');
+  const message = input.value.trim();
+  if (!message) return;
+
+  // Check client-side limit
+  if (chatMessagesRemaining <= 0) {
+    disableChatInput();
+    return;
+  }
+
+  const playerId = getPlayerId();
+  if (!playerId) {
+    addChatBubble('Con cần đăng nhập trước nhé! 🙂', 'system');
+    return;
+  }
+
+  // Show user message
+  addChatBubble(message, 'user');
+  input.value = '';
+  input.disabled = true;
+  document.getElementById('ai-chat-send').disabled = true;
+
+  // Add to session history
+  chatHistory.push({ role: 'user', content: message });
+
+  // Show typing indicator
+  const typingBubble = addChatBubble('Thầy đang nghĩ... 🤔', 'typing');
+
+  try {
+    const res = await fetch('/api/ai/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        player_id: playerId,
+        messages: chatHistory,
+        lesson_context: getLessonContext(),
+        grade: getPlayerGrade()
+      })
+    });
+
+    // Remove typing indicator
+    typingBubble.remove();
+
+    if (res.status === 429) {
+      chatMessagesRemaining = 0;
+      updateRemainingDisplay();
+      disableChatInput();
+      return;
+    }
+
+    if (!res.ok) {
+      addChatBubble('Ối, thầy bị lỗi rồi. Thử lại sau nhé! 😅', 'bot');
+      // Remove the user message from history since it failed
+      chatHistory.pop();
+      input.disabled = false;
+      document.getElementById('ai-chat-send').disabled = false;
+      input.focus();
+      return;
+    }
+
+    const data = await res.json();
+    const reply = data.reply || 'Thầy không hiểu câu hỏi. Hỏi lại nhé! 🤔';
+
+    // Add bot reply to history and UI
+    chatHistory.push({ role: 'assistant', content: reply });
+    addChatBubble(reply, 'bot');
+
+    // Update remaining count from server
+    if (typeof data.messages_remaining === 'number') {
+      chatMessagesRemaining = data.messages_remaining;
+    } else {
+      chatMessagesRemaining--;
+    }
+    updateRemainingDisplay();
+
+    // Check if limit reached
+    if (chatMessagesRemaining <= 0) {
+      disableChatInput();
+      return;
+    }
+
+  } catch (err) {
+    typingBubble.remove();
+    addChatBubble('Ối, không kết nối được. Thử lại sau nhé! 😅', 'bot');
+    chatHistory.pop();
+  }
+
+  // Re-enable input
+  input.disabled = false;
+  document.getElementById('ai-chat-send').disabled = false;
+  input.focus();
+}

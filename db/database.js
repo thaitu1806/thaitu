@@ -78,5 +78,70 @@ export async function initDb() {
     // Column already exists - ignore
   }
 
+  // Daily Quest & Reward Shop: add new columns to players table
+  try {
+    await db.execute({ sql: `ALTER TABLE players ADD COLUMN total_diamonds INTEGER DEFAULT 0`, args: [] });
+  } catch (e) {
+    // Column already exists - ignore
+  }
+  try {
+    await db.execute({ sql: `ALTER TABLE players ADD COLUMN lifetime_diamonds INTEGER DEFAULT 0`, args: [] });
+  } catch (e) {
+    // Column already exists - ignore
+  }
+  try {
+    await db.execute({ sql: `ALTER TABLE players ADD COLUMN current_streak INTEGER DEFAULT 0`, args: [] });
+  } catch (e) {
+    // Column already exists - ignore
+  }
+  try {
+    await db.execute({ sql: `ALTER TABLE players ADD COLUMN longest_streak INTEGER DEFAULT 0`, args: [] });
+  } catch (e) {
+    // Column already exists - ignore
+  }
+  try {
+    await db.execute({ sql: `ALTER TABLE players ADD COLUMN last_active_date TEXT DEFAULT NULL`, args: [] });
+  } catch (e) {
+    // Column already exists - ignore
+  }
+  try {
+    await db.execute({ sql: `ALTER TABLE players ADD COLUMN equipped_avatar TEXT DEFAULT NULL`, args: [] });
+  } catch (e) {
+    // Column already exists - ignore
+  }
+  try {
+    await db.execute({ sql: `ALTER TABLE players ADD COLUMN equipped_frame TEXT DEFAULT NULL`, args: [] });
+  } catch (e) {
+    // Column already exists - ignore
+  }
+
+  // Multi-Grade & AI Integration: add grade column to players
+  try {
+    await db.execute({ sql: `ALTER TABLE players ADD COLUMN grade INTEGER DEFAULT 2`, args: [] });
+  } catch (e) {
+    // Column already exists - ignore
+  }
+
+  // Multi-Grade & AI Integration: add grade column to questions
+  try {
+    await db.execute({ sql: `ALTER TABLE questions ADD COLUMN grade INTEGER DEFAULT 2`, args: [] });
+  } catch (e) {
+    // Column already exists - ignore
+  }
+
+  // Multi-Grade & AI Integration: add source column to questions
+  try {
+    await db.execute({ sql: `ALTER TABLE questions ADD COLUMN source TEXT DEFAULT 'manual'`, args: [] });
+  } catch (e) {
+    // Column already exists - ignore
+  }
+
+  // Multi-Grade & AI Integration: add composite index for grade-filtered queries
+  try {
+    await db.execute({ sql: `CREATE INDEX IF NOT EXISTS idx_questions_grade ON questions(subject, difficulty, grade)`, args: [] });
+  } catch (e) {
+    // Index already exists - ignore
+  }
+
   return db;
 }

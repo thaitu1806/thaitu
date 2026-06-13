@@ -19,21 +19,21 @@ async function seed() {
   await db.execute('DELETE FROM questions');
 
   const allQuestions = [
-    ...mathQuestionsEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy' })),
-    ...extraMathEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy' })),
-    ...mathQuestionsMedium.map(q => ({ ...q, subject: 'math', difficulty: 'medium' })),
-    ...extraMathMedium.map(q => ({ ...q, subject: 'math', difficulty: 'medium' })),
-    ...mathQuestionsHard.map(q => ({ ...q, subject: 'math', difficulty: 'hard' })),
-    ...extraMathHard.map(q => ({ ...q, subject: 'math', difficulty: 'hard' })),
-    ...vietQuestionsEasy.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'easy' })),
-    ...extraVietEasy.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'easy' })),
-    ...vietQuestionsMedium.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'medium' })),
-    ...extraVietMedium.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'medium' })),
-    ...vietQuestionsHard.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'hard' })),
-    ...extraVietHard.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'hard' })),
-    ...englishQuestionsEasy.map(q => ({ ...q, subject: 'english', difficulty: 'easy' })),
-    ...englishQuestionsMedium.map(q => ({ ...q, subject: 'english', difficulty: 'medium' })),
-    ...englishQuestionsHard.map(q => ({ ...q, subject: 'english', difficulty: 'hard' })),
+    ...mathQuestionsEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
+    ...extraMathEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
+    ...mathQuestionsMedium.map(q => ({ ...q, subject: 'math', difficulty: 'medium', grade: 2 })),
+    ...extraMathMedium.map(q => ({ ...q, subject: 'math', difficulty: 'medium', grade: 2 })),
+    ...mathQuestionsHard.map(q => ({ ...q, subject: 'math', difficulty: 'hard', grade: 2 })),
+    ...extraMathHard.map(q => ({ ...q, subject: 'math', difficulty: 'hard', grade: 2 })),
+    ...vietQuestionsEasy.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'easy', grade: 2 })),
+    ...extraVietEasy.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'easy', grade: 2 })),
+    ...vietQuestionsMedium.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'medium', grade: 2 })),
+    ...extraVietMedium.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'medium', grade: 2 })),
+    ...vietQuestionsHard.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'hard', grade: 2 })),
+    ...extraVietHard.map(q => ({ ...q, subject: 'vietnamese', difficulty: 'hard', grade: 2 })),
+    ...englishQuestionsEasy.map(q => ({ ...q, subject: 'english', difficulty: 'easy', grade: 2 })),
+    ...englishQuestionsMedium.map(q => ({ ...q, subject: 'english', difficulty: 'medium', grade: 2 })),
+    ...englishQuestionsHard.map(q => ({ ...q, subject: 'english', difficulty: 'hard', grade: 2 })),
   ];
 
   console.log(`Seeding ${allQuestions.length} questions...`);
@@ -42,8 +42,8 @@ async function seed() {
   for (let i = 0; i < allQuestions.length; i += batchSize) {
     const batch = allQuestions.slice(i, i + batchSize);
     const statements = batch.map(q => ({
-      sql: `INSERT INTO questions (subject, difficulty, question_text, option_a, option_b, option_c, option_d, correct_answer, explanation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      args: [q.subject, q.difficulty, q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_answer, q.explanation || null],
+      sql: `INSERT INTO questions (subject, difficulty, question_text, option_a, option_b, option_c, option_d, correct_answer, explanation, grade) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [q.subject, q.difficulty, q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_answer, q.explanation || null, q.grade || 2],
     }));
     await db.batch(statements);
   }

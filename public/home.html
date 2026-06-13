@@ -58,6 +58,31 @@
       color: rgba(255,255,255,0.8); font-size: 0.9rem; text-decoration: none; font-weight: 600;
     }
 
+    #reward-bar {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 8px 16px;
+      margin-bottom: 14px;
+      font-size: 0.85rem;
+      color: white;
+      font-weight: 700;
+      flex-wrap: wrap;
+    }
+    #reward-bar a {
+      color: #ffe066;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    #reward-bar .separator {
+      opacity: 0.5;
+    }
+
     @media (min-width: 500px) {
       body { display: flex; align-items: center; justify-content: center; }
       .game-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -85,6 +110,16 @@
     <div class="home-header">
       <h1 class="home-title">🌻 Học Vui 🧟</h1>
       <p class="home-sub">Chọn cách chơi nào!</p>
+    </div>
+
+    <div id="reward-bar">
+      <span id="rb-streak">🔥 0 ngày</span>
+      <span class="separator">|</span>
+      <span id="rb-diamonds">💎 0</span>
+      <span class="separator">|</span>
+      <span id="rb-quests">📋 0/0 NV</span>
+      <span class="separator">|</span>
+      <a href="/shop.html">🛒 Shop</a>
     </div>
 
     <div class="game-modes">
@@ -213,6 +248,15 @@
       <h2 style="font-size:1.3rem; color:#333; margin-bottom:5px;">Chào con!</h2>
       <p style="color:#888; font-size:0.9rem; margin-bottom:18px;">Nhập tên để bắt đầu chơi nhé</p>
       <input type="text" id="gate-name" placeholder="Tên của con..." maxlength="15" style="width:100%; padding:14px; border:2px solid #e0e0e0; border-radius:12px; font-size:1.1rem; text-align:center; outline:none; font-family:inherit; margin-bottom:12px;">
+      <div class="grade-selector" style="margin-bottom:14px;">
+        <label style="display:block; font-weight:700; font-size:0.9rem; color:#555; margin-bottom:8px;">Lớp của con:</label>
+        <div class="grade-options" id="gate-grade-options" style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+          <button type="button" data-grade="2" class="grade-btn active" style="padding:10px 14px; border:2px solid #4facfe; border-radius:12px; background:#e3f2fd; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">📚 Lớp 2</button>
+          <button type="button" data-grade="3" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">📖 Lớp 3</button>
+          <button type="button" data-grade="4" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">📘 Lớp 4</button>
+          <button type="button" data-grade="5" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">📗 Lớp 5</button>
+        </div>
+      </div>
       <button id="gate-btn" style="width:100%; padding:14px; background:linear-gradient(135deg,#4facfe,#00f2fe); color:white; border:none; border-radius:12px; font-size:1.1rem; font-weight:700; cursor:pointer;">🎮 Vào chơi!</button>
       <p id="gate-msg" style="color:#f44336; font-size:0.85rem; margin-top:8px; min-height:18px;"></p>
     </div>
@@ -254,14 +298,61 @@
           // Valid - show welcome
           document.querySelector('.home-sub').textContent = `Xin chào ${data.name}! 🎉`;
           // Update local profile in case name changed
-          localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name }));
+          localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade || 2 }));
+          // Load reward bar data
+          loadRewardBar(data.id);
         } catch {
           // Network error - trust local profile
           document.querySelector('.home-sub').textContent = `Xin chào ${p.name}! 🎉`;
+          loadRewardBar(p.id);
+        }
+      }
+
+      async function loadRewardBar(playerId) {
+        const bar = document.getElementById('reward-bar');
+        bar.style.display = 'flex';
+        try {
+          const [streakRes, questsRes, diamondsRes] = await Promise.all([
+            fetch(`/api/players/${playerId}/streak`),
+            fetch(`/api/players/${playerId}/quests`),
+            fetch(`/api/players/${playerId}/diamonds`)
+          ]);
+          if (streakRes.ok) {
+            const streak = await streakRes.json();
+            document.getElementById('rb-streak').textContent = `🔥 ${streak.current_streak || 0} ngày`;
+          }
+          if (diamondsRes.ok) {
+            const diamonds = await diamondsRes.json();
+            document.getElementById('rb-diamonds').textContent = `💎 ${diamonds.total_diamonds || 0}`;
+          }
+          if (questsRes.ok) {
+            const quests = await questsRes.json();
+            const questList = Array.isArray(quests) ? quests : (quests.quests || []);
+            const completed = questList.filter(q => q.is_completed).length;
+            document.getElementById('rb-quests').textContent = `📋 ${completed}/${questList.length} NV`;
+          }
+        } catch {
+          // Silently keep default values on network error
         }
       }
 
       verifyProfile();
+
+      // Grade selector button handling
+      let selectedGrade = 2;
+      document.querySelectorAll('#gate-grade-options .grade-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#gate-grade-options .grade-btn').forEach(b => {
+            b.classList.remove('active');
+            b.style.borderColor = '#e0e0e0';
+            b.style.background = 'white';
+          });
+          btn.classList.add('active');
+          btn.style.borderColor = '#4facfe';
+          btn.style.background = '#e3f2fd';
+          selectedGrade = parseInt(btn.dataset.grade);
+        });
+      });
 
       document.getElementById('gate-btn').addEventListener('click', createProfile);
       document.getElementById('gate-name').addEventListener('keypress', (e) => { if (e.key === 'Enter') createProfile(); });
@@ -270,15 +361,16 @@
         const name = document.getElementById('gate-name').value.trim();
         if (!name) { document.getElementById('gate-msg').textContent = 'Nhập tên đi con!'; return; }
         try {
-          const res = await fetch('/api/players', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name}) });
+          const res = await fetch('/api/players', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name, grade: selectedGrade}) });
           const data = await res.json();
           if (data.error) {
             document.getElementById('gate-msg').textContent = data.error;
             return;
           }
-          localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name }));
+          localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade || selectedGrade }));
           gate.style.display = 'none';
           document.querySelector('.home-sub').textContent = `Xin chào ${data.name}! 🎉`;
+          loadRewardBar(data.id);
         } catch {
           document.getElementById('gate-msg').textContent = 'Lỗi kết nối!';
         }

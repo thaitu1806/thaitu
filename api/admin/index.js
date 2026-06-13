@@ -27,15 +27,35 @@ export default async function handler(req, res) {
   const db = getDb();
   const { resource, id, action } = req.query;
 
+  // === AI STATS ===
+  if (resource === 'ai-stats') {
+    if (req.method === 'GET') {
+      // Today's usage
+      const todayResult = await db.execute({
+        sql: `SELECT COUNT(*) as total_requests, COALESCE(SUM(tokens_used), 0) as total_tokens FROM ai_usage_logs WHERE date(created_at) = date('now')`,
+        args: [],
+      });
+      const today = todayResult.rows[0] || { total_requests: 0, total_tokens: 0 };
+      // Estimated cost (gpt-4o-mini: ~$0.15/1M input tokens, rough estimate)
+      const estimatedCost = (Number(today.total_tokens) / 1000000 * 0.15).toFixed(4);
+      return res.json({
+        total_requests: today.total_requests || 0,
+        total_tokens: Number(today.total_tokens) || 0,
+        estimated_cost: estimatedCost,
+      });
+    }
+  }
+
   // === QUESTIONS ===
   if (resource === 'questions') {
     if (req.method === 'GET') {
-      const { subject, difficulty, page = 1, limit = 20 } = req.query;
+      const { subject, difficulty, grade, page = 1, limit = 20 } = req.query;
       const offset = (parseInt(page) - 1) * parseInt(limit);
       let sql = `SELECT * FROM questions WHERE 1=1`;
       const args = [];
       if (subject) { sql += ` AND subject = ?`; args.push(subject); }
       if (difficulty) { sql += ` AND difficulty = ?`; args.push(difficulty); }
+      if (grade) { sql += ` AND grade = ?`; args.push(parseInt(grade)); }
       sql += ` ORDER BY id DESC LIMIT ? OFFSET ?`;
       args.push(parseInt(limit), offset);
       const result = await db.execute({ sql, args });
@@ -43,6 +63,7 @@ export default async function handler(req, res) {
       const countArgs = [];
       if (subject) { countSql += ` AND subject = ?`; countArgs.push(subject); }
       if (difficulty) { countSql += ` AND difficulty = ?`; countArgs.push(difficulty); }
+      if (grade) { countSql += ` AND grade = ?`; countArgs.push(parseInt(grade)); }
       const countResult = await db.execute({ sql: countSql, args: countArgs });
       return res.json({ questions: result.rows, total: countResult.rows[0]?.total || 0 });
     }
@@ -50,8 +71,8 @@ export default async function handler(req, res) {
       const { questions } = req.body;
       for (const q of questions) {
         await db.execute({
-          sql: `INSERT INTO questions (subject, difficulty, question_text, option_a, option_b, option_c, option_d, correct_answer, explanation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          args: [q.subject, q.difficulty, q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_answer, q.explanation || null],
+          sql: `INSERT INTO questions (subject, difficulty, grade, source, question_text, option_a, option_b, option_c, option_d, correct_answer, explanation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          args: [q.subject, q.difficulty, q.grade || 2, q.source || 'manual', q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_answer, q.explanation || null],
         });
       }
       return res.json({ inserted: questions.length });
@@ -59,8 +80,8 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
       const q = req.body;
       const result = await db.execute({
-        sql: `INSERT INTO questions (subject, difficulty, question_text, option_a, option_b, option_c, option_d, correct_answer, explanation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        args: [q.subject, q.difficulty, q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_answer, q.explanation || null],
+        sql: `INSERT INTO questions (subject, difficulty, grade, source, question_text, option_a, option_b, option_c, option_d, correct_answer, explanation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        args: [q.subject, q.difficulty, q.grade || 2, q.source || 'manual', q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_answer, q.explanation || null],
       });
       return res.json({ id: result.lastInsertRowid });
     }

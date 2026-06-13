@@ -95,6 +95,26 @@
       </div>
     </div>
   </div>
+  <!-- AI Tutor Chatbot -->
+  <button id="ai-tutor-btn" class="ai-feature ai-tutor-fab" onclick="toggleChatPanel()" style="display:none">
+    🤖 Hỏi Thầy AI
+  </button>
+
+  <div id="ai-chat-panel" class="ai-chat-panel hidden">
+    <div class="ai-chat-header">
+      <span>🤖 Thầy AI</span>
+      <span id="ai-chat-remaining" class="ai-chat-remaining"></span>
+      <button class="ai-chat-close" onclick="toggleChatPanel()">✕</button>
+    </div>
+    <div class="ai-chat-messages" id="ai-chat-messages">
+      <div class="ai-msg bot">Chào con! 👋 Thầy AI đây. Hỏi bài gì thầy giúp nhé! 📚</div>
+    </div>
+    <div class="ai-chat-input-wrap" id="ai-chat-input-wrap">
+      <input type="text" id="ai-chat-input" placeholder="Hỏi bài tại đây..." maxlength="200" onkeydown="if(event.key==='Enter')sendChatMessage()">
+      <button id="ai-chat-send" onclick="sendChatMessage()">📤</button>
+    </div>
+  </div>
+
   <script src="learn.js"></script>
 </body>
 </html>

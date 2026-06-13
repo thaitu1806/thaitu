@@ -5,6 +5,15 @@ import { setupWebSocket } from './ws-server.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
+// Import new reward system handlers
+import diamondsHandler from './api/diamonds.js';
+import questsHandler from './api/quests.js';
+import streakHandler from './api/streak.js';
+import shopHandler from './api/shop.js';
+import adminShopHandler from './api/admin/shop.js';
+import adminVouchersHandler from './api/admin/vouchers.js';
+import aiHandler from './api/ai.js';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const server = createServer(app);
@@ -34,6 +43,13 @@ app.all('/api/admin', async (req, res) => {
   await adminHandler(req, res);
 });
 
+// AI routes
+app.all('/api/ai/status', async (req, res) => { await aiHandler(req, res); });
+app.all('/api/ai/explain', async (req, res) => { await aiHandler(req, res); });
+app.all('/api/ai/hint', async (req, res) => { await aiHandler(req, res); });
+app.all('/api/ai/chat', async (req, res) => { await aiHandler(req, res); });
+app.all('/api/ai/generate', async (req, res) => { await aiHandler(req, res); });
+
 app.use(express.static(join(__dirname, 'public')));
 app.use('/v2', express.static(join(__dirname, 'public/v2')));
 app.use('/v3', express.static(join(__dirname, 'public/v3')));
@@ -56,14 +72,28 @@ await initDb();
 // Setup WebSocket for V4 online duel
 setupWebSocket(server);
 
-// Get random questions by subject and difficulty
+// Get random questions by subject, difficulty, and grade
 app.get('/api/questions', async (req, res) => {
-  const { subject, difficulty, limit = 10 } = req.query;
+  const { subject, difficulty, limit = 10, grade, player_id } = req.query;
   const db = getDb();
   try {
+    // Determine grade: explicit param > player's stored grade > default 2
+    let resolvedGrade = 2;
+    if (grade) {
+      resolvedGrade = parseInt(grade);
+    } else if (player_id) {
+      const playerResult = await db.execute({
+        sql: `SELECT grade FROM players WHERE id = ?`,
+        args: [parseInt(player_id)],
+      });
+      if (playerResult.rows.length > 0 && playerResult.rows[0].grade) {
+        resolvedGrade = playerResult.rows[0].grade;
+      }
+    }
+
     const result = await db.execute({
-      sql: `SELECT * FROM questions WHERE subject = ? AND difficulty = ? ORDER BY RANDOM() LIMIT ?`,
-      args: [subject, difficulty, parseInt(limit)],
+      sql: `SELECT * FROM questions WHERE subject = ? AND difficulty = ? AND grade = ? ORDER BY RANDOM() LIMIT ?`,
+      args: [subject, difficulty, resolvedGrade, parseInt(limit)],
     });
     res.json(result.rows);
   } catch (err) {
@@ -73,7 +103,7 @@ app.get('/api/questions', async (req, res) => {
 
 // Save game session
 app.post('/api/sessions', async (req, res) => {
-  const { player_id, subject, difficulty, score, total_questions, correct_answers, stars_earned, combo_max } = req.body;
+  const { player_id, subject, difficulty, score, total_questions, correct_answers, stars_earned, combo_max, mode, accuracy, is_learn_session } = req.body;
   const db = getDb();
   try {
     const result = await db.execute({
@@ -88,6 +118,41 @@ app.post('/api/sessions', async (req, res) => {
         await db.execute({ sql: `UPDATE players SET adventure_level = ? WHERE id = ?`, args: [parseInt(data.level), player_id] });
       }
     }
+
+    // After session save: trigger quest progress check and streak check
+    if (player_id) {
+      try {
+        // Call quest check to update daily quest progress
+        const questReq = {
+          method: 'POST',
+          params: { id: player_id },
+          query: { id: player_id, action: 'check' },
+          body: {
+            mode: mode || difficulty || subject,
+            combo_max: combo_max || 0,
+            accuracy: accuracy != null ? accuracy : (total_questions > 0 ? Math.round((correct_answers / total_questions) * 100) : 0),
+            is_learn_session: is_learn_session || false,
+            games_played: 1,
+          },
+        };
+        const questRes = { json: () => {}, status: () => ({ json: () => {} }) };
+        await questsHandler(questReq, questRes);
+
+        // Call streak check to update streak after quest progress
+        const streakReq = {
+          method: 'POST',
+          params: { id: player_id },
+          query: { id: player_id, action: 'check' },
+          body: {},
+        };
+        const streakRes = { json: () => {}, status: () => ({ json: () => {} }) };
+        await streakHandler(streakReq, streakRes);
+      } catch (hookErr) {
+        // Non-fatal: quest/streak check failure should not break session save
+        console.error('Quest/streak check after session save failed:', hookErr.message);
+      }
+    }
+
     res.json({ id: result.lastInsertRowid });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -96,15 +161,16 @@ app.post('/api/sessions', async (req, res) => {
 
 // Create or get player
 app.post('/api/players', async (req, res) => {
-  const { name } = req.body;
+  const { name, grade } = req.body;
   const db = getDb();
+  const playerGrade = grade ? parseInt(grade) : 2;
   try {
     const existing = await db.execute({ sql: `SELECT * FROM players WHERE name = ?`, args: [name] });
     if (existing.rows.length > 0) {
       return res.json(existing.rows[0]);
     }
-    const result = await db.execute({ sql: `INSERT INTO players (name) VALUES (?)`, args: [name] });
-    res.json({ id: result.lastInsertRowid, name, total_stars: 0 });
+    const result = await db.execute({ sql: `INSERT INTO players (name, grade) VALUES (?, ?)`, args: [name, playerGrade] });
+    res.json({ id: result.lastInsertRowid, name, total_stars: 0, grade: playerGrade });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -126,11 +192,22 @@ app.get('/api/players/:id/stats', async (req, res) => {
 
 // Update player profile
 app.put('/api/players/:id', async (req, res) => {
-  const { name } = req.body;
+  const { name, grade } = req.body;
   const db = getDb();
   try {
-    await db.execute({ sql: `UPDATE players SET name = ? WHERE id = ?`, args: [name, parseInt(req.params.id)] });
-    res.json({ ok: true });
+    if (grade !== undefined) {
+      const gradeValue = parseInt(grade);
+      if (gradeValue < 2 || gradeValue > 5) {
+        return res.status(400).json({ error: 'Grade must be between 2 and 5' });
+      }
+      await db.execute({ sql: `UPDATE players SET grade = ? WHERE id = ?`, args: [gradeValue, parseInt(req.params.id)] });
+    }
+    if (name) {
+      await db.execute({ sql: `UPDATE players SET name = ? WHERE id = ?`, args: [name, parseInt(req.params.id)] });
+    }
+    const result = await db.execute({ sql: `SELECT * FROM players WHERE id = ?`, args: [parseInt(req.params.id)] });
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Player not found' });
+    res.json(result.rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -155,6 +232,101 @@ app.put('/api/players/:id/progress/:mode', async (req, res) => {
     }
     res.json({ ok: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Diamond info endpoint
+app.get('/api/players/:id/diamonds', async (req, res) => {
+  req.query.id = req.params.id;
+  await diamondsHandler(req, res);
+});
+
+// === REWARD SYSTEM ROUTES ===
+
+// Quest routes
+app.get('/api/players/:id/quests', async (req, res) => {
+  req.query.id = req.params.id;
+  await questsHandler(req, res);
+});
+
+app.post('/api/players/:id/quests/check', async (req, res) => {
+  req.query.id = req.params.id;
+  req.query.action = 'check';
+  await questsHandler(req, res);
+});
+
+// Streak routes
+app.get('/api/players/:id/streak', async (req, res) => {
+  req.query.id = req.params.id;
+  await streakHandler(req, res);
+});
+
+app.post('/api/players/:id/streak/check', async (req, res) => {
+  req.query.id = req.params.id;
+  req.query.action = 'check';
+  await streakHandler(req, res);
+});
+
+// Shop routes
+app.get('/api/shop/items', async (req, res) => {
+  await shopHandler(req, res);
+});
+
+app.post('/api/shop/buy', async (req, res) => {
+  req.query.action = 'buy';
+  await shopHandler(req, res);
+});
+
+app.get('/api/players/:id/inventory', async (req, res) => {
+  req.query.action = 'inventory';
+  req.query.player_id = req.params.id;
+  await shopHandler(req, res);
+});
+
+app.put('/api/players/:id/equip', async (req, res) => {
+  req.query.action = 'equip';
+  req.query.player_id = req.params.id;
+  await shopHandler(req, res);
+});
+
+// Admin shop routes (already behind /api/admin auth middleware)
+app.get('/api/admin/shop/items', async (req, res) => {
+  req.query.action = 'items';
+  await adminShopHandler(req, res);
+});
+
+app.post('/api/admin/shop/items', async (req, res) => {
+  req.query.action = 'create';
+  await adminShopHandler(req, res);
+});
+
+app.put('/api/admin/shop/items/:id', async (req, res) => {
+  req.query.action = 'update';
+  req.query.item_id = req.params.id;
+  await adminShopHandler(req, res);
+});
+
+app.delete('/api/admin/shop/items/:id', async (req, res) => {
+  req.query.action = 'delete';
+  req.query.item_id = req.params.id;
+  await adminShopHandler(req, res);
+});
+
+app.get('/api/admin/diamond-stats', async (req, res) => {
+  req.query.action = 'stats';
+  await adminShopHandler(req, res);
+});
+
+// Admin voucher routes (already behind /api/admin auth middleware)
+app.get('/api/admin/vouchers', async (req, res) => {
+  await adminVouchersHandler(req, res);
+});
+
+app.put('/api/admin/vouchers/:id', async (req, res) => {
+  req.query.action = 'resolve';
+  if (!req.body.voucher_id) {
+    req.body.voucher_id = req.params.id;
+  }
+  await adminVouchersHandler(req, res);
 });
 
 // === ADMIN APIs ===

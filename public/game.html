@@ -23,6 +23,104 @@
     .btn-speak:active { transform: scale(0.95); }
     .btn-speak.speaking { background: #4CAF50; border-color: #4CAF50; animation: speakPulse 0.8s ease infinite; }
     @keyframes speakPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+    /* AI Feature: "Gợi ý" hint button */
+    .btn-hint {
+      display: none;
+      margin: 8px auto 0;
+      padding: 7px 16px;
+      background: linear-gradient(135deg, #81D4FA, #039BE5);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(3,155,229,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+      animation: fadeInUp 0.3s ease;
+    }
+    .btn-hint:hover { transform: scale(1.08); box-shadow: 0 5px 15px rgba(3,155,229,0.4); }
+    .btn-hint:active { transform: scale(0.95); }
+    .btn-hint:disabled { opacity: 0.6; cursor: wait; }
+    .btn-hint.hint-maxed { opacity: 0.5; cursor: not-allowed; background: #90A4AE; }
+
+    /* Hint tooltip popup */
+    .hint-tooltip {
+      display: none;
+      margin: 8px auto 0;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, #E1F5FE, #FFFFFF);
+      color: #01579B;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      max-width: 300px;
+      text-align: left;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      animation: fadeInUp 0.3s ease;
+    }
+    .hint-tooltip.active { display: block; }
+
+    /* AI Feature: "Tại sao?" button */
+    .btn-explain {
+      display: none;
+      margin: 10px auto 0;
+      padding: 8px 18px;
+      background: linear-gradient(135deg, #FFD54F, #FFB300);
+      color: #5D4037;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(255,179,0,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+      animation: fadeInUp 0.3s ease;
+    }
+    .btn-explain:hover { transform: scale(1.08); box-shadow: 0 5px 15px rgba(255,179,0,0.4); }
+    .btn-explain:active { transform: scale(0.95); }
+    .btn-explain:disabled { opacity: 0.6; cursor: wait; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* AI Explanation popup */
+    .explain-popup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+      animation: fadeIn 0.25s ease;
+    }
+    .explain-popup-overlay.active { display: flex; }
+    .explain-popup {
+      background: linear-gradient(135deg, #FFF9C4, #FFFFFF);
+      color: #333;
+      border-radius: 20px;
+      padding: 24px 20px;
+      max-width: 320px;
+      width: 88%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+      animation: popIn 0.3s ease;
+    }
+    .explain-popup .explain-icon { font-size: 2rem; margin-bottom: 8px; }
+    .explain-popup .explain-text { font-size: 0.95rem; line-height: 1.6; color: #4E342E; margin-bottom: 16px; text-align: left; }
+    .explain-popup .explain-close-btn {
+      padding: 10px 24px;
+      background: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
   </style>
 </head>
 <body>
@@ -153,6 +251,11 @@
             <button class="option-btn" data-option="c"></button>
             <button class="option-btn" data-option="d"></button>
           </div>
+          <!-- AI Feature: Hint button (shown on each question, hidden if AI disabled) -->
+          <button id="btn-hint" class="btn-hint ai-feature" style="display:none">💡 Gợi ý</button>
+          <div id="hint-tooltip" class="hint-tooltip"></div>
+          <!-- AI Feature: Explain button (shown after wrong answer) -->
+          <button id="btn-explain" class="btn-explain ai-feature" style="display:none">💡 Tại sao?</button>
         </div>
       </div>
 
@@ -180,6 +283,15 @@
     </div>
   </div>
 
+  <!-- AI Explanation Popup -->
+  <div id="explain-popup-overlay" class="explain-popup-overlay">
+    <div class="explain-popup">
+      <div class="explain-icon">💡</div>
+      <div id="explain-text" class="explain-text"></div>
+      <button class="explain-close-btn" id="explain-close-btn">Hiểu rồi! 👍</button>
+    </div>
+  </div>
+
   <script src="/tts.js"></script>
   <script src="game.js?v=2"></script>
   <script>
@@ -187,5 +299,7 @@
       document.getElementById('help-popup').classList.toggle('active');
     });
   </script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
 </body>
 </html>

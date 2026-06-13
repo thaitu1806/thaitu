@@ -81,7 +81,7 @@ function showScreen(name) {
       return;
     }
     document.getElementById('player-welcome').textContent = `Chào ${data.name}! 🎉`;
-    localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name }));
+    localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade || 2 }));
   } catch {
     // Network error - trust local
     document.getElementById('player-welcome').textContent = `Chào ${p.name}! 🎉`;
@@ -176,6 +176,10 @@ function showQuestion() {
   // Stop any ongoing TTS when moving to next question
   if (window.ttsStop) window.ttsStop();
 
+  // Hide explain button and hint tooltip from previous question
+  hideExplainButton();
+  hideHintButton();
+
   if (state.currentIndex >= state.questions.length) {
     endGame();
     return;
@@ -199,6 +203,9 @@ function showQuestion() {
     // Remove reset class after a frame to allow fresh interaction
     requestAnimationFrame(() => btn.classList.remove('reset'));
   });
+
+  // Show hint button for this question (only if AI enabled)
+  showHintButton();
 
   state.isAnswering = true;
   state.questionStartTime = Date.now();
@@ -262,13 +269,19 @@ function handleTimeout() {
     }
   });
 
+  // Show explain button on timeout (treated like wrong answer)
+  showExplainButton(q, null);
+  // Hide hint button on timeout
+  hideHintButton();
+
   playSound('wrong');
 
   setTimeout(() => {
+    hideExplainButton();
     state.currentIndex++;
     updateStats();
     showQuestion();
-  }, 1500);
+  }, 3000);
 }
 
 // HANDLE ANSWER
@@ -283,8 +296,9 @@ document.querySelectorAll('.option-btn').forEach(btn => {
     const isCorrect = selected === q.correct_answer;
     const timeSpent = Date.now() - state.questionStartTime;
 
-    // Log answer
-    logAnswer(q, selected, isCorrect, timeSpent);
+    // Log answer (include hint usage for diamond penalty)
+    const currentHintState = getHintState(state.currentIndex);
+    logAnswer(q, selected, isCorrect, timeSpent, currentHintState.hintUsed);
 
     // Disable all buttons
     document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
@@ -308,6 +322,10 @@ document.querySelectorAll('.option-btn').forEach(btn => {
 
       // Plant attacks zombie
       shootZombie();
+
+      // Hide explain button and hint on correct answer
+      hideExplainButton();
+      hideHintButton();
     } else {
       btn.classList.add('wrong');
       state.combo = 0;
@@ -322,6 +340,9 @@ document.querySelectorAll('.option-btn').forEach(btn => {
         if (b.dataset.option === q.correct_answer) b.classList.add('correct');
       });
 
+      // Show "Tại sao?" button for wrong answers
+      showExplainButton(q, selected);
+
       // Zombie moves forward
       moveZombieForward();
     }
@@ -329,9 +350,10 @@ document.querySelectorAll('.option-btn').forEach(btn => {
     updateStats();
 
     setTimeout(() => {
+      hideExplainButton();
       state.currentIndex++;
       showQuestion();
-    }, 1500);
+    }, 3000);
   });
 });
 
@@ -468,7 +490,7 @@ async function saveSession(stars) {
   }
 }
 
-async function logAnswer(question, selected, isCorrect, timeSpent) {
+async function logAnswer(question, selected, isCorrect, timeSpent, hintUsed) {
   if (!question.id || !state.player) return;
   try {
     await fetch('/api/answers', {
@@ -482,6 +504,9 @@ async function logAnswer(question, selected, isCorrect, timeSpent) {
         correct_answer: question.correct_answer,
         is_correct: isCorrect,
         time_spent_ms: timeSpent,
+        difficulty: state.difficulty,
+        combo_streak: state.combo,
+        hint_used: hintUsed || false,
       }),
     });
   } catch (e) { /* offline */ }
@@ -715,4 +740,287 @@ document.getElementById('btn-speak').addEventListener('click', () => {
   if (state.currentIndex >= state.questions.length) return;
   const q = state.questions[state.currentIndex];
   window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, state.subject);
+});
+
+
+// === AI FEATURES: Status Check & Answer Explainer & Hint Provider ===
+
+// AI state
+let aiEnabled = false;
+
+// Hint tracking per question index: { [questionIndex]: { hintsUsed: 0, hintUsed: false } }
+const hintState = {};
+
+/**
+ * Get or create hint state for current question.
+ */
+function getHintState(index) {
+  if (!hintState[index]) {
+    hintState[index] = { hintsUsed: 0, hintUsed: false };
+  }
+  return hintState[index];
+}
+
+/**
+ * Check AI status from server and show/hide AI feature elements.
+ * Called on page load and can be re-called to refresh status.
+ */
+async function checkAIStatus() {
+  try {
+    const res = await fetch('/api/ai/status');
+    const data = await res.json();
+    aiEnabled = data.enabled;
+  } catch {
+    aiEnabled = false;
+  }
+
+  // Show/hide all elements with .ai-feature class based on AI status
+  document.querySelectorAll('.ai-feature').forEach(el => {
+    el.style.display = aiEnabled ? '' : 'none';
+  });
+}
+
+// Check AI status on page load
+checkAIStatus();
+
+/**
+ * Show the "💡 Tại sao?" button after a wrong answer.
+ * @param {object} question - The current question object
+ * @param {string} selectedAnswer - The player's selected answer (a/b/c/d)
+ */
+function showExplainButton(question, selectedAnswer) {
+  const btn = document.getElementById('btn-explain');
+  if (!btn) return;
+
+  // Only show if AI is enabled OR question has a static explanation
+  if (!aiEnabled && !question.explanation) {
+    btn.style.display = 'none';
+    return;
+  }
+
+  btn.style.display = 'block';
+  btn.disabled = false;
+  btn.textContent = '💡 Tại sao?';
+
+  // Store context for the click handler
+  btn._question = question;
+  btn._selectedAnswer = selectedAnswer;
+}
+
+/**
+ * Hide the explain button (called when moving to next question).
+ */
+function hideExplainButton() {
+  const btn = document.getElementById('btn-explain');
+  if (btn) {
+    btn.style.display = 'none';
+  }
+}
+
+// === HINT BUTTON FUNCTIONS ===
+
+/**
+ * Show the hint button for the current question (only if AI enabled and player hasn't answered yet).
+ */
+function showHintButton() {
+  const btn = document.getElementById('btn-hint');
+  const tooltip = document.getElementById('hint-tooltip');
+  if (!btn) return;
+
+  // Only show if AI is enabled
+  if (!aiEnabled) {
+    btn.style.display = 'none';
+    return;
+  }
+
+  const hs = getHintState(state.currentIndex);
+
+  // If already used max hints, show disabled state
+  if (hs.hintsUsed >= 2) {
+    btn.style.display = 'block';
+    btn.disabled = true;
+    btn.classList.add('hint-maxed');
+    btn.textContent = '💡 Hết gợi ý';
+  } else {
+    btn.style.display = 'block';
+    btn.disabled = false;
+    btn.classList.remove('hint-maxed');
+    btn.textContent = hs.hintsUsed === 0 ? '💡 Gợi ý' : '💡 Gợi ý thêm';
+  }
+
+  // Hide tooltip from previous question
+  if (tooltip) {
+    tooltip.classList.remove('active');
+    tooltip.textContent = '';
+  }
+}
+
+/**
+ * Hide the hint button and tooltip.
+ */
+function hideHintButton() {
+  const btn = document.getElementById('btn-hint');
+  const tooltip = document.getElementById('hint-tooltip');
+  if (btn) {
+    btn.style.display = 'none';
+  }
+  if (tooltip) {
+    tooltip.classList.remove('active');
+    tooltip.textContent = '';
+  }
+}
+
+// "💡 Gợi ý" button click handler
+document.getElementById('btn-hint')?.addEventListener('click', async () => {
+  const btn = document.getElementById('btn-hint');
+  const tooltip = document.getElementById('hint-tooltip');
+  if (!btn || btn.disabled || !state.isAnswering) return;
+
+  const hs = getHintState(state.currentIndex);
+
+  // Max 2 hints per question
+  if (hs.hintsUsed >= 2) return;
+
+  const hintLevel = hs.hintsUsed + 1; // 1 or 2
+  const q = state.questions[state.currentIndex];
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Đang tải...';
+
+  let hintText = null;
+
+  if (aiEnabled && state.player) {
+    try {
+      const res = await fetch('/api/ai/hint', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          player_id: state.player.id,
+          question_text: q.question_text,
+          options: { a: q.option_a, b: q.option_b, c: q.option_c, d: q.option_d },
+          grade: state.player.grade || 2,
+          hint_level: hintLevel,
+        }),
+      });
+      const data = await res.json();
+      if (data.hint) {
+        hintText = data.hint;
+      }
+    } catch {
+      // AI call failed
+    }
+  }
+
+  // Fallback if no hint received
+  if (!hintText) {
+    hintText = hintLevel === 1
+      ? 'Hãy đọc kỹ câu hỏi và suy nghĩ thêm nhé! 🤔'
+      : 'Thử loại trừ các đáp án chắc chắn sai trước nhé! ✨';
+  }
+
+  // Update hint state
+  hs.hintsUsed = hintLevel;
+  hs.hintUsed = true;
+
+  // Show hint in tooltip
+  if (tooltip) {
+    tooltip.textContent = hintText;
+    tooltip.classList.add('active');
+  }
+
+  // Update button state
+  if (hs.hintsUsed >= 2) {
+    btn.disabled = true;
+    btn.classList.add('hint-maxed');
+    btn.textContent = '💡 Hết gợi ý';
+  } else {
+    btn.disabled = false;
+    btn.textContent = '💡 Gợi ý thêm';
+  }
+});
+
+/**
+ * Show the explanation popup with animation.
+ * @param {string} text - The explanation text to display
+ */
+function showExplainPopup(text) {
+  const overlay = document.getElementById('explain-popup-overlay');
+  const textEl = document.getElementById('explain-text');
+  if (!overlay || !textEl) return;
+
+  textEl.textContent = text;
+  overlay.classList.add('active');
+}
+
+/**
+ * Hide the explanation popup.
+ */
+function hideExplainPopup() {
+  const overlay = document.getElementById('explain-popup-overlay');
+  if (overlay) {
+    overlay.classList.remove('active');
+  }
+}
+
+// "💡 Tại sao?" button click handler
+document.getElementById('btn-explain')?.addEventListener('click', async () => {
+  const btn = document.getElementById('btn-explain');
+  if (!btn || btn.disabled) return;
+
+  const question = btn._question;
+  const selectedAnswer = btn._selectedAnswer;
+  if (!question) return;
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Đang giải thích...';
+
+  // Try AI explanation first, fallback to static
+  let explanation = null;
+
+  if (aiEnabled && state.player) {
+    try {
+      const res = await fetch('/api/ai/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          player_id: state.player.id,
+          question_text: question.question_text,
+          selected_answer: selectedAnswer,
+          correct_answer: question.correct_answer,
+          grade: state.player.grade || 2,
+        }),
+      });
+      const data = await res.json();
+      if (data.explanation) {
+        explanation = data.explanation;
+      } else if (data.fallback) {
+        explanation = data.fallback;
+      }
+    } catch {
+      // AI call failed, use fallback
+    }
+  }
+
+  // Fallback: use static explanation from question data
+  if (!explanation && question.explanation) {
+    explanation = question.explanation;
+  }
+
+  // Last resort fallback
+  if (!explanation) {
+    const correctLabel = { a: 'A', b: 'B', c: 'C', d: 'D' }[question.correct_answer] || '';
+    const correctText = question[`option_${question.correct_answer}`] || '';
+    explanation = `Đáp án đúng là ${correctLabel}: ${correctText}`;
+  }
+
+  btn.textContent = '💡 Tại sao?';
+  btn.disabled = false;
+
+  showExplainPopup(explanation);
+});
+
+// Close explanation popup
+document.getElementById('explain-close-btn')?.addEventListener('click', hideExplainPopup);
+document.getElementById('explain-popup-overlay')?.addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) hideExplainPopup();
 });

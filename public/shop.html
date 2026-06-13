@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🛍️ Cửa Hàng - Học Vui</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shop.css">
+</head>
+<body>
+  <div class="shop-container">
+    <!-- Header -->
+    <div class="shop-header">
+      <a href="/home.html" class="back-btn">⬅️</a>
+      <h1 class="shop-title">🛍️ Cửa Hàng</h1>
+      <div class="diamond-balance" id="diamond-balance">
+        <span class="diamond-icon">💎</span>
+        <span class="diamond-count" id="diamond-count">0</span>
+      </div>
+    </div>
+
+    <!-- Player level badge -->
+    <div class="level-badge" id="level-badge">
+      <span id="level-label">🥉 Đồng</span>
+    </div>
+
+    <!-- Category tabs -->
+    <div class="category-tabs" id="category-tabs">
+      <button class="tab-btn active" data-category="avatar">🧑 Hình Đại Diện</button>
+      <button class="tab-btn" data-category="frame">🖼️ Khung Avatar</button>
+      <button class="tab-btn" data-category="sticker">⭐ Nhãn Dán</button>
+      <button class="tab-btn" data-category="powerup">🧪 Vật Phẩm Hỗ Trợ</button>
+      <button class="tab-btn" data-category="voucher">🎁 Phần Thưởng Thực</button>
+    </div>
+
+    <!-- Items grid -->
+    <div class="items-grid" id="items-grid">
+      <div class="loading-state" id="loading-state">
+        <span class="loading-emoji">🔄</span>
+        <p>Đang tải...</p>
+      </div>
+      <div class="empty-state" id="empty-state" style="display:none;">
+        <span class="empty-emoji">📦</span>
+        <p>Chưa có vật phẩm nào!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Purchase confirmation modal -->
+  <div class="modal-overlay" id="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon" id="modal-icon">🛒</div>
+      <p class="modal-text" id="modal-text">Bạn muốn mua vật phẩm này?</p>
+      <div class="modal-price" id="modal-price">💎 0</div>
+      <div class="modal-btns">
+        <button class="modal-btn modal-btn-cancel" id="modal-cancel">Thôi</button>
+        <button class="modal-btn modal-btn-confirm" id="modal-confirm">Mua nào! 🎉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success/Error toast -->
+  <div class="toast" id="toast" style="display:none;">
+    <span id="toast-text"></span>
+  </div>
+
+  <script src="/shop.js"></script>
+</body>
+</html>

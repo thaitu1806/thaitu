@@ -301,3 +301,24 @@ body {
 .btn-login:hover { opacity: 0.9; }
 .login-error { color: #f44336; font-size: 0.9rem; margin-top: 10px; min-height: 20px; }
 .login-back { display: block; margin-top: 15px; color: #888; text-decoration: none; font-size: 0.85rem; }
+
+
+/* SHOP ADMIN */
+.shop-form.hidden { display: none; }
+.shop-stats { margin-bottom: 20px; }
+#shop-items-list .ea-item { border-bottom: 1px solid #f0f0f0; }
+#vouchers-list .ea-item { border-bottom: 1px solid #f0f0f0; }
+
+/* AI GENERATOR */
+.btn-ai-generate { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+.btn-ai-generate:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+.ai-status-badge { font-size: 0.9rem; }
+.ai-status-on { color: #2e7d32; font-weight: 600; }
+.ai-status-off { color: #c62828; font-weight: 600; }
+.ai-stats-panel { background: #f8f9ff; border-radius: 12px; padding: 20px; border: 1px solid #e3e8f0; }
+.ai-stats-panel h3 { margin-bottom: 10px; }
+.ai-status-info { margin-bottom: 5px; }
+
+/* Grade badge */
+.badge-grade { background: #e8eaf6; color: #3949ab; }
+.badge-ai { background: #ede7f6; color: #6a1b9a; }

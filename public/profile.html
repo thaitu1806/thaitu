@@ -8,78 +8,503 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Nunito', sans-serif; min-height: 100vh; background: linear-gradient(160deg, #4facfe, #00f2fe); display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .profile-box { background: white; border-radius: 24px; padding: 30px; max-width: 380px; width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.15); text-align: center; }
-    .profile-avatar { font-size: 4rem; margin-bottom: 10px; }
-    .profile-box h1 { font-size: 1.5rem; color: #333; margin-bottom: 5px; }
-    .profile-box p { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
-    .profile-form { display: flex; flex-direction: column; gap: 12px; text-align: left; }
-    .profile-form label { font-weight: 700; font-size: 0.9rem; color: #555; }
-    .profile-form input { padding: 14px 16px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 1.1rem; outline: none; font-family: inherit; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(160deg, #4facfe, #00f2fe);
+      padding: 16px;
+      padding-bottom: 40px;
+    }
+    .profile-container { max-width: 420px; margin: 0 auto; }
+
+    /* Header */
+    .profile-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .back-btn {
+      text-decoration: none; font-size: 1.4rem;
+      background: rgba(255,255,255,0.2); width: 40px; height: 40px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    }
+    .header-title { flex: 1; color: white; font-size: 1.4rem; font-weight: 900; }
+    .shop-link {
+      background: rgba(255,255,255,0.2); border-radius: 16px; padding: 8px 14px;
+      color: white; text-decoration: none; font-size: 0.85rem; font-weight: 700;
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    /* Avatar + Frame card */
+    .avatar-card {
+      background: white; border-radius: 24px; padding: 24px 20px; text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12); margin-bottom: 14px;
+    }
+    .avatar-display {
+      width: 90px; height: 90px; margin: 0 auto 10px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem; position: relative;
+    }
+    .avatar-frame {
+      position: absolute; inset: -6px; border-radius: 50%;
+      border: 4px solid #e0e0e0; pointer-events: none;
+    }
+    .avatar-frame.bronze { border-color: #cd7f32; }
+    .avatar-frame.silver { border-color: #c0c0c0; }
+    .avatar-frame.gold { border-color: #ffd700; }
+    .avatar-frame.diamond { border-color: #4facfe; }
+    .avatar-frame.master { border-color: #a855f7; }
+    .player-name { font-size: 1.3rem; font-weight: 900; color: #333; margin-bottom: 4px; }
+
+    /* Level badge */
+    .level-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .level-badge.bronze { background: #fef3e2; color: #b45309; }
+    .level-badge.silver { background: #f1f5f9; color: #64748b; }
+    .level-badge.gold { background: #fef9c3; color: #a16207; }
+    .level-badge.diamond { background: #dbeafe; color: #2563eb; }
+    .level-badge.master { background: #f3e8ff; color: #7c3aed; }
+
+    /* Level progress bar */
+    .level-progress { margin: 0 auto 12px; max-width: 240px; }
+    .level-bar-bg {
+      background: #e5e7eb; border-radius: 8px; height: 10px; overflow: hidden;
+    }
+    .level-bar-fill {
+      height: 100%; border-radius: 8px; transition: width 0.5s;
+      background: linear-gradient(90deg, #4facfe, #00f2fe);
+    }
+    .level-bar-fill.gold { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .level-bar-fill.diamond { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .level-bar-fill.master { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+    .level-text { font-size: 0.75rem; color: #888; margin-top: 4px; }
+
+    /* Stats row */
+    .stats-row {
+      display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
+    }
+    .stat-item {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.9rem; font-weight: 700; color: #555;
+    }
+    .stat-item .stat-val { color: #333; }
+
+    /* Profile form card */
+    .profile-box {
+      background: white; border-radius: 20px; padding: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1); margin-bottom: 14px;
+    }
+    .profile-form { display: flex; flex-direction: column; gap: 10px; }
+    .profile-form label { font-weight: 700; font-size: 0.85rem; color: #555; }
+    .profile-form input {
+      padding: 12px 14px; border: 2px solid #e0e0e0; border-radius: 12px;
+      font-size: 1rem; outline: none; font-family: inherit;
+    }
     .profile-form input:focus { border-color: #4facfe; }
-    .btn-save-profile { padding: 14px; background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 5px; }
+
+    /* Grade Selector */
+    .grade-selector { margin-bottom: 4px; }
+    .grade-options { display: flex; gap: 6px; flex-wrap: wrap; }
+    .grade-btn {
+      padding: 10px 14px; border: 2px solid #e0e0e0; border-radius: 12px;
+      background: white; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: all 0.2s; color: #333;
+    }
+    .grade-btn:hover { border-color: #90caf9; background: #f5faff; }
+    .grade-btn.active { border-color: #4facfe; background: #e3f2fd; color: #1976d2; }
+
+    .btn-save-profile {
+      padding: 12px; background: linear-gradient(135deg, #4facfe, #00f2fe);
+      color: white; border: none; border-radius: 12px; font-size: 1rem;
+      font-weight: 700; cursor: pointer;
+    }
     .btn-save-profile:hover { opacity: 0.9; }
-    .profile-msg { margin-top: 10px; font-size: 0.9rem; min-height: 20px; }
+    .profile-msg { margin-top: 8px; font-size: 0.85rem; min-height: 18px; }
     .profile-msg.ok { color: #4CAF50; }
     .profile-msg.err { color: #f44336; }
-    .profile-info { background: #f5f7fa; border-radius: 12px; padding: 15px; margin-top: 15px; text-align: left; }
-    .pi-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 0.9rem; }
+
+    /* Tabs */
+    .tabs-nav {
+      display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs-nav::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      flex-shrink: 0; padding: 10px 16px; border: none; border-radius: 14px;
+      background: rgba(255,255,255,0.3); color: white; font-size: 0.85rem;
+      font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: white; color: #4facfe; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+    /* Tab content */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Info section (existing stats) */
+    .profile-info {
+      background: white; border-radius: 16px; padding: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    .pi-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.9rem; border-bottom: 1px solid #f0f0f0; }
+    .pi-row:last-child { border-bottom: none; }
     .pi-row strong { color: #333; }
-    .profile-links { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
-    .profile-links a { color: #4facfe; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+
+    /* Inventory (Kho Đồ) */
+    .inventory-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .inv-card {
+      background: white; border-radius: 16px; padding: 14px; text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .inv-emoji { font-size: 2rem; margin-bottom: 6px; }
+    .inv-name { font-size: 0.8rem; font-weight: 700; color: #333; margin-bottom: 6px; }
+    .inv-category { font-size: 0.7rem; color: #888; margin-bottom: 8px; }
+    .equip-btn {
+      padding: 6px 12px; border: none; border-radius: 10px; font-size: 0.75rem;
+      font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s;
+    }
+    .equip-btn.can-equip { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+    .equip-btn.equipped { background: #d1fae5; color: #059669; cursor: default; }
+    .equip-btn:active:not(.equipped) { transform: scale(0.95); }
+
+    /* Transaction history */
+    .tx-list { display: flex; flex-direction: column; gap: 8px; }
+    .tx-item {
+      background: white; border-radius: 14px; padding: 12px 14px;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    }
+    .tx-icon { font-size: 1.3rem; }
+    .tx-info { flex: 1; }
+    .tx-desc { font-size: 0.8rem; font-weight: 700; color: #333; }
+    .tx-date { font-size: 0.7rem; color: #aaa; }
+    .tx-amount { font-size: 0.9rem; font-weight: 800; }
+    .tx-amount.earn { color: #22c55e; }
+    .tx-amount.spend { color: #f43f5e; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 30px 20px; color: rgba(255,255,255,0.8);
+    }
+    .empty-state .empty-emoji { font-size: 2.5rem; margin-bottom: 8px; }
+    .empty-state p { font-size: 0.9rem; font-weight: 700; }
+
+    /* Links row */
+    .profile-links {
+      display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap;
+    }
+    .profile-links a {
+      color: white; text-decoration: none; font-size: 0.85rem; font-weight: 700;
+      background: rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 12px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.85); color: white; padding: 10px 20px;
+      border-radius: 14px; font-size: 0.9rem; font-weight: 700; z-index: 9999;
+      animation: slideUp 0.3s;
+    }
+    @keyframes slideUp {
+      from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+      to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
   </style>
 </head>
 <body>
-  <div class="profile-box">
-    <div class="profile-avatar" id="avatar">🧒</div>
-    <h1 id="profile-title">Tạo hồ sơ</h1>
-    <p>Để lưu lại tiến trình học tập!</p>
-    <div class="profile-form">
-      <label>Tên con:</label>
-      <input type="text" id="pf-name" placeholder="Nhập tên..." maxlength="15">
-      <button class="btn-save-profile" id="btn-save-pf">💾 Lưu hồ sơ</button>
+  <div class="profile-container">
+    <!-- Header -->
+    <div class="profile-header">
+      <a href="/" class="back-btn">🏠</a>
+      <div class="header-title">Hồ Sơ</div>
+      <a href="/shop.html" class="shop-link">🛒 Shop</a>
     </div>
-    <div class="profile-msg" id="pf-msg"></div>
-    <div class="profile-info" id="pf-info" style="display:none">
-      <div class="pi-row"><span>⭐ Tổng sao:</span><strong id="pi-stars">0</strong></div>
-      <div class="pi-row"><span>🎮 Lượt chơi:</span><strong id="pi-games">0</strong></div>
-      <div class="pi-row"><span>🗺️ Level phiêu lưu:</span><strong id="pi-level">1</strong></div>
+
+    <!-- Avatar + Level card -->
+    <div class="avatar-card">
+      <div class="avatar-display" id="avatar-display">
+        <span id="avatar-emoji">🧒</span>
+        <div class="avatar-frame" id="avatar-frame"></div>
+      </div>
+      <div class="player-name" id="player-name">Tạo hồ sơ</div>
+      <div class="level-badge bronze" id="level-badge">⭐ Đồng</div>
+      <div class="level-progress">
+        <div class="level-bar-bg">
+          <div class="level-bar-fill" id="level-bar" style="width: 0%"></div>
+        </div>
+        <div class="level-text" id="level-text">0 / 100 💎</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-item">💎 <span class="stat-val" id="diamond-balance">0</span></div>
+        <div class="stat-item">🔥 <span class="stat-val" id="streak-display">0 ngày</span></div>
+      </div>
     </div>
+
+    <!-- Profile form (create/edit) -->
+    <div class="profile-box" id="profile-form-section">
+      <div class="profile-form">
+        <label>Tên con:</label>
+        <input type="text" id="pf-name" placeholder="Nhập tên..." maxlength="15">
+        <label>Lớp của con:</label>
+        <div class="grade-selector">
+          <div class="grade-options" id="pf-grade-options">
+            <button type="button" data-grade="2" class="grade-btn active">📚 Lớp 2</button>
+            <button type="button" data-grade="3" class="grade-btn">📖 Lớp 3</button>
+            <button type="button" data-grade="4" class="grade-btn">📘 Lớp 4</button>
+            <button type="button" data-grade="5" class="grade-btn">📗 Lớp 5</button>
+          </div>
+        </div>
+        <button class="btn-save-profile" id="btn-save-pf">💾 Lưu hồ sơ</button>
+      </div>
+      <div class="profile-msg" id="pf-msg"></div>
+    </div>
+
+    <!-- Tab navigation -->
+    <div class="tabs-nav" id="tabs-nav" style="display:none">
+      <button class="tab-btn active" data-tab="info">📊 Hồ Sơ</button>
+      <button class="tab-btn" data-tab="inventory">🎒 Kho Đồ</button>
+      <button class="tab-btn" data-tab="history">📜 Lịch Sử Thưởng</button>
+    </div>
+
+    <!-- Tab: Hồ Sơ (existing info) -->
+    <div class="tab-content active" id="tab-info" style="display:none">
+      <div class="profile-info">
+        <div class="pi-row"><span>⭐ Tổng sao:</span><strong id="pi-stars">0</strong></div>
+        <div class="pi-row"><span>🎮 Lượt chơi:</span><strong id="pi-games">0</strong></div>
+        <div class="pi-row"><span>🗺️ Level phiêu lưu:</span><strong id="pi-level">1</strong></div>
+        <div class="pi-row"><span>🔥 Streak dài nhất:</span><strong id="pi-longest-streak">0 ngày</strong></div>
+        <div class="pi-row"><span>💎 Tổng đã kiếm:</span><strong id="pi-lifetime">0</strong></div>
+      </div>
+    </div>
+
+    <!-- Tab: Kho Đồ -->
+    <div class="tab-content" id="tab-inventory" style="display:none">
+      <div class="inventory-grid" id="inventory-grid">
+        <div class="empty-state" style="grid-column: 1/-1;">
+          <div class="empty-emoji">🎒</div>
+          <p>Đang tải...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Lịch Sử Thưởng -->
+    <div class="tab-content" id="tab-history" style="display:none">
+      <div class="tx-list" id="tx-list">
+        <div class="empty-state">
+          <div class="empty-emoji">📜</div>
+          <p>Đang tải...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Links -->
     <div class="profile-links">
       <a href="/">🏠 Trang chủ</a>
+      <a href="/shop.html">🛒 Cửa hàng</a>
     </div>
   </div>
-  <script>
-    const saved = localStorage.getItem('hocvui_profile');
-    let profile = saved ? JSON.parse(saved) : null;
 
-    if (profile) {
-      document.getElementById('pf-name').value = profile.name;
-      document.getElementById('profile-title').textContent = `👤 ${profile.name}`;
-      document.getElementById('avatar').textContent = '🧒';
-      document.getElementById('btn-save-pf').textContent = '✏️ Cập nhật';
-      loadInfo();
+  <script>
+    // --- Constants (mirror server-side) ---
+    const PLAYER_LEVELS = [
+      { name: 'bronze', label: 'Đồng', min: 0, max: 99 },
+      { name: 'silver', label: 'Bạc', min: 100, max: 499 },
+      { name: 'gold', label: 'Vàng', min: 500, max: 1499 },
+      { name: 'diamond', label: 'Kim Cương', min: 1500, max: 4999 },
+      { name: 'master', label: 'Bậc Thầy', min: 5000, max: Infinity },
+    ];
+
+    function getPlayerLevel(lifetimeDiamonds) {
+      for (const level of PLAYER_LEVELS) {
+        if (lifetimeDiamonds >= level.min && lifetimeDiamonds <= level.max) return level;
+      }
+      return PLAYER_LEVELS[PLAYER_LEVELS.length - 1];
     }
 
+    function getLevelProgress(lifetimeDiamonds) {
+      const level = getPlayerLevel(lifetimeDiamonds);
+      if (level.max === Infinity) return { percent: 100, text: 'MAX 🏆' };
+      const range = level.max - level.min + 1;
+      const progress = lifetimeDiamonds - level.min;
+      const percent = Math.min(100, Math.round((progress / range) * 100));
+      return { percent, text: `${progress} / ${range} 💎` };
+    }
+
+    const SOURCE_LABELS = {
+      answer: '✅ Trả lời đúng',
+      quest: '📋 Nhiệm vụ',
+      streak: '🔥 Streak bonus',
+      level_up: '⬆️ Lên cấp',
+      shop: '🛒 Mua đồ',
+      all_quests_bonus: '🎯 Hoàn thành tất cả NV',
+    };
+
+    // --- State ---
+    const saved = localStorage.getItem('hocvui_profile');
+    let profile = saved ? JSON.parse(saved) : null;
+    let selectedGrade = (profile && profile.grade) ? profile.grade : 2;
+
+    // --- Grade selector logic ---
+    function initGradeSelector() {
+      const buttons = document.querySelectorAll('#pf-grade-options .grade-btn');
+      // Highlight current grade
+      buttons.forEach(btn => {
+        if (parseInt(btn.dataset.grade) === selectedGrade) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          selectedGrade = parseInt(btn.dataset.grade);
+        });
+      });
+    }
+    initGradeSelector();
+
+    // --- Init ---
+    if (profile) {
+      document.getElementById('pf-name').value = profile.name;
+      document.getElementById('player-name').textContent = profile.name;
+      document.getElementById('btn-save-pf').textContent = '✏️ Cập nhật';
+      document.getElementById('tabs-nav').style.display = 'flex';
+      document.getElementById('tab-info').style.display = 'block';
+      loadAllData();
+    }
+
+    // --- Save profile ---
     document.getElementById('btn-save-pf').addEventListener('click', async () => {
       const name = document.getElementById('pf-name').value.trim();
       if (!name) return;
       try {
-        const res = await fetch('/api/players', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({name}) });
-        const data = await res.json();
-        profile = { id: data.id, name: data.name };
-        localStorage.setItem('hocvui_profile', JSON.stringify(profile));
-        document.getElementById('pf-msg').textContent = '✅ Đã lưu!';
-        document.getElementById('pf-msg').className = 'profile-msg ok';
-        document.getElementById('profile-title').textContent = `👤 ${name}`;
-        document.getElementById('btn-save-pf').textContent = '✏️ Cập nhật';
-        loadInfo();
-      } catch { document.getElementById('pf-msg').textContent = '❌ Lỗi!'; document.getElementById('pf-msg').className = 'profile-msg err'; }
+        if (profile && profile.id) {
+          // Update existing player - update grade via PUT
+          const res = await fetch(`/api/players/${profile.id}`, {
+            method: 'PUT',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ grade: selectedGrade })
+          });
+          const data = await res.json();
+          if (data.error) {
+            document.getElementById('pf-msg').textContent = '❌ ' + data.error;
+            document.getElementById('pf-msg').className = 'profile-msg err';
+            return;
+          }
+          profile = { id: data.id, name: data.name, grade: data.grade || selectedGrade };
+          localStorage.setItem('hocvui_profile', JSON.stringify(profile));
+          document.getElementById('pf-msg').textContent = '✅ Đã cập nhật!';
+          document.getElementById('pf-msg').className = 'profile-msg ok';
+          document.getElementById('player-name').textContent = name;
+        } else {
+          // Create new player with grade
+          const res = await fetch('/api/players', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ name, grade: selectedGrade })
+          });
+          const data = await res.json();
+          profile = { id: data.id, name: data.name, grade: data.grade || selectedGrade };
+          localStorage.setItem('hocvui_profile', JSON.stringify(profile));
+          document.getElementById('pf-msg').textContent = '✅ Đã lưu!';
+          document.getElementById('pf-msg').className = 'profile-msg ok';
+          document.getElementById('player-name').textContent = name;
+          document.getElementById('btn-save-pf').textContent = '✏️ Cập nhật';
+          document.getElementById('tabs-nav').style.display = 'flex';
+          document.getElementById('tab-info').style.display = 'block';
+          loadAllData();
+        }
+      } catch {
+        document.getElementById('pf-msg').textContent = '❌ Lỗi!';
+        document.getElementById('pf-msg').className = 'profile-msg err';
+      }
     });
 
-    async function loadInfo() {
+    // --- Tab switching ---
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => { c.style.display = 'none'; c.classList.remove('active'); });
+        const tab = document.getElementById('tab-' + btn.dataset.tab);
+        tab.style.display = 'block';
+        tab.classList.add('active');
+      });
+    });
+
+    // --- Load all data ---
+    async function loadAllData() {
       if (!profile) return;
-      document.getElementById('pf-info').style.display = 'block';
+      // Fetch player to get latest grade
+      try {
+        const pRes = await fetch(`/api/players?id=${profile.id}`);
+        const pData = await pRes.json();
+        if (pData && pData.grade) {
+          selectedGrade = pData.grade;
+          profile.grade = pData.grade;
+          localStorage.setItem('hocvui_profile', JSON.stringify(profile));
+          // Update grade selector UI
+          document.querySelectorAll('#pf-grade-options .grade-btn').forEach(btn => {
+            if (parseInt(btn.dataset.grade) === selectedGrade) {
+              btn.classList.add('active');
+            } else {
+              btn.classList.remove('active');
+            }
+          });
+        }
+      } catch {}
+      await Promise.all([loadDiamonds(), loadStreak(), loadStats(), loadInventory()]);
+    }
+
+    // --- Load diamond info + level ---
+    async function loadDiamonds() {
+      try {
+        const res = await fetch(`/api/players/${profile.id}/diamonds`);
+        const data = await res.json();
+        const totalDiamonds = data.total_diamonds || 0;
+        const lifetime = data.lifetime_diamonds || 0;
+
+        document.getElementById('diamond-balance').textContent = totalDiamonds;
+        document.getElementById('pi-lifetime').textContent = lifetime;
+
+        // Level badge
+        const level = getPlayerLevel(lifetime);
+        const badgeEl = document.getElementById('level-badge');
+        badgeEl.textContent = `⭐ ${level.label}`;
+        badgeEl.className = `level-badge ${level.name}`;
+
+        // Level progress bar
+        const prog = getLevelProgress(lifetime);
+        const barEl = document.getElementById('level-bar');
+        barEl.style.width = prog.percent + '%';
+        barEl.className = `level-bar-fill ${level.name}`;
+        document.getElementById('level-text').textContent = prog.text;
+
+        // Avatar frame color
+        const frameEl = document.getElementById('avatar-frame');
+        frameEl.className = `avatar-frame ${level.name}`;
+
+        // Render transaction history
+        renderTransactions(data.transactions || []);
+      } catch {}
+    }
+
+    // --- Load streak ---
+    async function loadStreak() {
+      try {
+        const res = await fetch(`/api/players/${profile.id}/streak`);
+        const data = await res.json();
+        const streak = data.current_streak || 0;
+        document.getElementById('streak-display').textContent = streak + ' ngày';
+        document.getElementById('pi-longest-streak').textContent = (data.longest_streak || 0) + ' ngày';
+      } catch {}
+    }
+
+    // --- Load stats (existing) ---
+    async function loadStats() {
       try {
         const res = await fetch(`/api/players/${profile.id}/stats`);
         const stats = await res.json();
@@ -92,6 +517,108 @@
         const v2Data = await prog.json();
         document.getElementById('pi-level').textContent = v2Data?.level || 1;
       } catch {}
+    }
+
+    // --- Load inventory ---
+    async function loadInventory() {
+      const grid = document.getElementById('inventory-grid');
+      try {
+        const res = await fetch(`/api/players/${profile.id}/inventory`);
+        const data = await res.json();
+        const items = data.inventory || data || [];
+
+        if (!items.length) {
+          grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-emoji">🎒</div><p>Chưa có đồ nào. Ghé Shop mua nhé!</p></div>`;
+          return;
+        }
+
+        grid.innerHTML = items.map(item => {
+          const emoji = item.image_url || '🎁';
+          const isEquippable = item.category === 'avatar' || item.category === 'frame';
+          const isEquipped = item.is_equipped === 1;
+          let btnHtml = '';
+          if (isEquippable) {
+            if (isEquipped) {
+              btnHtml = `<button class="equip-btn equipped">✓ Đang dùng</button>`;
+            } else {
+              btnHtml = `<button class="equip-btn can-equip" onclick="equipItem(${item.inventory_id || item.id}, '${item.category}')">Trang bị</button>`;
+            }
+          }
+          return `<div class="inv-card">
+            <div class="inv-emoji">${emoji}</div>
+            <div class="inv-name">${item.name || item.item_name || ''}</div>
+            <div class="inv-category">${getCategoryLabel(item.category)}</div>
+            ${btnHtml}
+          </div>`;
+        }).join('');
+
+        // Update avatar display from equipped items
+        const equippedAvatar = items.find(i => i.category === 'avatar' && i.is_equipped === 1);
+        if (equippedAvatar) {
+          document.getElementById('avatar-emoji').textContent = equippedAvatar.image_url || '🧒';
+        }
+      } catch {
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-emoji">🎒</div><p>Chưa có đồ nào. Ghé Shop mua nhé!</p></div>`;
+      }
+    }
+
+    function getCategoryLabel(cat) {
+      const labels = { avatar: 'Avatar', frame: 'Khung', sticker: 'Sticker', powerup: 'Power-up', voucher: 'Phần thưởng' };
+      return labels[cat] || cat || '';
+    }
+
+    // --- Equip item ---
+    async function equipItem(inventoryId, category) {
+      try {
+        const res = await fetch(`/api/players/${profile.id}/equip`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ player_id: profile.id, inventory_id: inventoryId })
+        });
+        if (res.ok) {
+          showToast('✅ Đã trang bị!');
+          loadInventory();
+        } else {
+          const err = await res.json();
+          showToast('❌ ' + (err.error || 'Lỗi'));
+        }
+      } catch {
+        showToast('❌ Lỗi kết nối');
+      }
+    }
+
+    // --- Render transactions ---
+    function renderTransactions(transactions) {
+      const list = document.getElementById('tx-list');
+      if (!transactions.length) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-emoji">📜</div><p>Chưa có giao dịch nào</p></div>`;
+        return;
+      }
+      list.innerHTML = transactions.slice(0, 50).map(tx => {
+        const isEarn = tx.type === 'earn';
+        const icon = isEarn ? '💎' : '🛒';
+        const amountStr = isEarn ? `+${tx.amount}` : `-${tx.amount}`;
+        const cls = isEarn ? 'earn' : 'spend';
+        const desc = SOURCE_LABELS[tx.source] || tx.description || tx.source;
+        const date = tx.created_at ? new Date(tx.created_at).toLocaleDateString('vi-VN') : '';
+        return `<div class="tx-item">
+          <div class="tx-icon">${icon}</div>
+          <div class="tx-info">
+            <div class="tx-desc">${desc}</div>
+            <div class="tx-date">${date}</div>
+          </div>
+          <div class="tx-amount ${cls}">${amountStr} 💎</div>
+        </div>`;
+      }).join('');
+    }
+
+    // --- Toast ---
+    function showToast(msg) {
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2500);
     }
   </script>
 </body>

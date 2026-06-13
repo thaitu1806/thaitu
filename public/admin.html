@@ -31,11 +31,13 @@
 
     <div class="admin-tabs">
       <button class="tab active" data-tab="generator">🎲 Sinh tự động</button>
+      <button class="tab" data-tab="ai-generator">🤖 AI</button>
       <button class="tab" data-tab="manual">✏️ Thêm thủ công</button>
       <button class="tab" data-tab="list">📋 Danh sách</button>
       <button class="tab" data-tab="exams">📝 Bài thi</button>
       <button class="tab" data-tab="players">👤 Người chơi</button>
       <button class="tab" data-tab="stats">📊 Thống kê</button>
+      <button class="tab" data-tab="shop">🛒 Shop</button>
     </div>
 
     <!-- TAB: GENERATOR -->
@@ -82,6 +84,61 @@
       </div>
     </div>
 
+    <!-- TAB: AI GENERATOR -->
+    <div class="tab-content" id="tab-ai-generator">
+      <div class="generator-panel">
+        <h2>🤖 Tạo câu hỏi bằng AI</h2>
+        <p style="color:#666;margin-bottom:15px;">Dùng AI để tạo câu hỏi mới theo chương trình giáo dục Việt Nam.</p>
+        <div id="ai-gen-status" class="ai-status-badge" style="margin-bottom:15px;"></div>
+        <div class="gen-controls">
+          <div class="gen-row">
+            <label>Lớp:</label>
+            <select id="ai-gen-grade">
+              <option value="2">Lớp 2</option>
+              <option value="3">Lớp 3</option>
+              <option value="4">Lớp 4</option>
+              <option value="5">Lớp 5</option>
+            </select>
+          </div>
+          <div class="gen-row">
+            <label>Môn học:</label>
+            <select id="ai-gen-subject">
+              <option value="math">Toán</option>
+              <option value="vietnamese">Tiếng Việt</option>
+              <option value="english">Tiếng Anh</option>
+            </select>
+          </div>
+          <div class="gen-row">
+            <label>Mức độ:</label>
+            <select id="ai-gen-difficulty">
+              <option value="easy">Dễ</option>
+              <option value="medium">Trung bình</option>
+              <option value="hard">Khó</option>
+            </select>
+          </div>
+          <div class="gen-row">
+            <label>Số lượng:</label>
+            <input type="number" id="ai-gen-count" value="5" min="1" max="20">
+          </div>
+          <button class="btn btn-ai-generate" id="btn-ai-generate">🤖 Tạo câu hỏi bằng AI</button>
+        </div>
+
+        <div id="ai-gen-loading" class="hidden" style="text-align:center;padding:20px;">
+          <div style="font-size:2rem;">⏳</div>
+          <p>Đang tạo câu hỏi... vui lòng đợi</p>
+        </div>
+
+        <div id="ai-gen-preview" class="gen-preview hidden">
+          <h3>Câu hỏi AI (<span id="ai-gen-preview-count">0</span> câu)</h3>
+          <div id="ai-gen-preview-list" class="preview-list"></div>
+          <div class="preview-actions">
+            <button class="btn btn-save" id="btn-save-ai-generated">💾 Lưu tất cả vào ngân hàng</button>
+            <button class="btn btn-clear" id="btn-clear-ai-preview">🗑️ Xóa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- TAB: MANUAL -->
     <div class="tab-content" id="tab-manual">
       <h2>Thêm câu hỏi thủ công</h2>
@@ -99,6 +156,15 @@
             <option value="easy">Dễ</option>
             <option value="medium">Trung bình</option>
             <option value="hard">Khó</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Lớp:</label>
+          <select name="grade" required>
+            <option value="2">Lớp 2</option>
+            <option value="3">Lớp 3</option>
+            <option value="4">Lớp 4</option>
+            <option value="5">Lớp 5</option>
           </select>
         </div>
         <div class="form-row">
@@ -144,6 +210,13 @@
           <option value="medium">Trung bình</option>
           <option value="hard">Khó</option>
         </select>
+        <select id="filter-grade">
+          <option value="">Tất cả lớp</option>
+          <option value="2">Lớp 2</option>
+          <option value="3">Lớp 3</option>
+          <option value="4">Lớp 4</option>
+          <option value="5">Lớp 5</option>
+        </select>
         <button class="btn" id="btn-filter">Lọc</button>
       </div>
       <div id="questions-list" class="questions-list"></div>
@@ -153,6 +226,7 @@
     <!-- TAB: STATS -->
     <div class="tab-content" id="tab-stats">
       <h2>Thống kê</h2>
+      <div id="ai-stats-section" class="ai-stats-section" style="margin-bottom:25px;"></div>
       <div id="stats-content" class="stats-grid"></div>
     </div>
 
@@ -161,6 +235,67 @@
       <h2>👤 Quản lý người chơi</h2>
       <div id="players-content"></div>
       <div id="player-detail-modal" class="modal hidden"></div>
+    </div>
+
+    <!-- TAB: SHOP -->
+    <div class="tab-content" id="tab-shop">
+      <h2>🛒 Quản lý Shop & Phần thưởng</h2>
+
+      <!-- Diamond Economy Stats -->
+      <div class="shop-stats" id="shop-stats">
+        <div class="stats-overview">
+          <div class="stat-card"><div class="stat-number" id="stat-earned">0</div><div class="stat-label">💎 Tổng phát</div></div>
+          <div class="stat-card"><div class="stat-number" id="stat-spent">0</div><div class="stat-label">💎 Tổng tiêu</div></div>
+          <div class="stat-card"><div class="stat-number" id="stat-top">-</div><div class="stat-label">🏆 Top mua</div></div>
+        </div>
+      </div>
+
+      <!-- Shop Items CRUD -->
+      <div class="detail-section">
+        <h3>📦 Vật phẩm Shop</h3>
+        <button class="btn btn-save" id="btn-show-shop-form" onclick="toggleShopForm()">➕ Thêm vật phẩm</button>
+
+        <div id="shop-item-form" class="shop-form hidden" style="margin-top:15px;">
+          <input type="hidden" id="shop-edit-id">
+          <div class="ea-form">
+            <div class="ea-row"><label>Tên:</label><input type="text" id="shop-name" placeholder="Tên vật phẩm"></div>
+            <div class="ea-row"><label>Mô tả:</label><input type="text" id="shop-desc" placeholder="Mô tả ngắn"></div>
+            <div class="ea-row"><label>Danh mục:</label>
+              <select id="shop-category">
+                <option value="avatar">Avatar</option>
+                <option value="frame">Khung</option>
+                <option value="sticker">Sticker</option>
+                <option value="powerup">Power-up</option>
+                <option value="voucher">Phần thưởng thực</option>
+              </select>
+            </div>
+            <div class="ea-row"><label>Giá 💎:</label><input type="number" id="shop-price" value="10" min="1"></div>
+            <div class="ea-row"><label>Cấp tối thiểu:</label>
+              <select id="shop-level">
+                <option value="bronze">Bronze</option>
+                <option value="silver">Silver</option>
+                <option value="gold">Gold</option>
+                <option value="diamond">Diamond</option>
+                <option value="master">Master</option>
+              </select>
+            </div>
+            <div class="ea-row"><label>Hình/Emoji:</label><input type="text" id="shop-image" placeholder="🎁 hoặc URL hình"></div>
+            <div class="ea-row"><label>Giới hạn/tuần:</label><input type="number" id="shop-max-week" placeholder="Không giới hạn" min="0"></div>
+            <div style="display:flex;gap:10px;margin-top:10px;">
+              <button class="btn btn-save" onclick="saveShopItem()">💾 Lưu</button>
+              <button class="btn btn-clear" onclick="cancelShopForm()">Hủy</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="shop-items-list" style="margin-top:15px;"></div>
+      </div>
+
+      <!-- Voucher Approval -->
+      <div class="detail-section">
+        <h3>🎫 Phiếu thưởng chờ duyệt</h3>
+        <div id="vouchers-list"></div>
+      </div>
     </div>
 
     <!-- TAB: EXAMS -->

@@ -63,6 +63,8 @@ document.querySelectorAll('.tab').forEach(tab => {
     if (tab.dataset.tab === 'stats') loadStats();
     if (tab.dataset.tab === 'players') loadPlayers();
     if (tab.dataset.tab === 'exams') loadExamsList();
+    if (tab.dataset.tab === 'shop') loadShopTab();
+    if (tab.dataset.tab === 'ai-generator') loadAIGeneratorStatus();
   });
 });
 
@@ -614,9 +616,11 @@ function showMessage(id, text, type) {
 async function loadQuestionsList() {
   const subject = document.getElementById('filter-subject').value;
   const difficulty = document.getElementById('filter-difficulty').value;
+  const grade = document.getElementById('filter-grade').value;
   let url = adminUrl('questions') + `&limit=20`;
   if (subject) url += `&subject=${subject}`;
   if (difficulty) url += `&difficulty=${difficulty}`;
+  if (grade) url += `&grade=${grade}`;
 
   try {
     const res = await fetch(url);
@@ -630,6 +634,8 @@ async function loadQuestionsList() {
           <div class="q-meta">
             <span class="badge badge-${q.subject}">${q.subject === 'math' ? '🔢' : '📖'}</span>
             <span class="badge badge-${q.difficulty}">${q.difficulty}</span>
+            <span class="badge badge-grade">Lớp ${q.grade || 2}</span>
+            ${q.source === 'ai' ? '<span class="badge badge-ai">🤖 AI</span>' : ''}
           </div>
           <div class="q-text">${q.question_text}</div>
           <div class="q-options">
@@ -654,6 +660,9 @@ async function deleteQuestion(id) {
 
 // === STATS & PLAYER ANALYTICS ===
 async function loadStats() {
+  // Load AI stats first
+  await loadAIStats();
+  
   const content = document.getElementById('stats-content');
   try {
     const [statsRes, playersRes] = await Promise.all([
@@ -990,4 +999,385 @@ async function deleteExam(id) {
   if (!confirm('Xóa bài thi này?')) return;
   await adminFetch(adminUrl('exams', {id}), { method: 'DELETE' });
   loadExamsList();
+}
+
+
+// === SHOP MANAGEMENT ===
+async function loadShopTab() {
+  await Promise.all([loadDiamondStats(), loadShopItems(), loadVouchers()]);
+}
+
+async function loadDiamondStats() {
+  try {
+    const res = await adminFetch('/api/admin/diamond-stats');
+    const data = await res.json();
+    document.getElementById('stat-earned').textContent = data.total_earned || 0;
+    document.getElementById('stat-spent').textContent = data.total_spent || 0;
+    const topItems = data.top_items || [];
+    document.getElementById('stat-top').textContent = topItems.length > 0 ? topItems[0].name : '-';
+  } catch (e) {
+    console.error('Lỗi tải stats:', e);
+  }
+}
+
+async function loadShopItems() {
+  const list = document.getElementById('shop-items-list');
+  try {
+    const res = await adminFetch('/api/admin/shop/items');
+    const data = await res.json();
+    const items = data.items || [];
+
+    if (items.length === 0) {
+      list.innerHTML = '<p>Chưa có vật phẩm nào. Hãy thêm mới!</p>';
+      return;
+    }
+
+    const catLabels = { avatar: '🧑 Avatar', frame: '🖼️ Khung', sticker: '✨ Sticker', powerup: '⚡ Power-up', voucher: '🎁 Voucher' };
+    const levelLabels = { bronze: '🥉', silver: '🥈', gold: '🥇', diamond: '💎', master: '👑' };
+
+    list.innerHTML = items.map(item => `
+      <div class="ea-item">
+        <div class="ea-item-info">
+          <strong>${item.image_url || '📦'} ${item.name}</strong>
+          <span class="ea-meta">
+            ${catLabels[item.category] || item.category} • ${item.price_diamonds}💎 • ${levelLabels[item.min_level] || ''} ${item.min_level}
+            ${item.max_per_week ? '• Max ' + item.max_per_week + '/tuần' : ''}
+            • ${item.is_active ? '🟢 Active' : '🔴 Ẩn'}
+          </span>
+        </div>
+        <div class="ea-item-actions">
+          <button onclick="editShopItem(${item.id})" class="btn-sm">✏️ Sửa</button>
+          <button onclick="toggleShopItem(${item.id}, ${item.is_active ? 0 : 1})" class="btn-sm">${item.is_active ? '🙈 Ẩn' : '👁️ Hiện'}</button>
+          <button onclick="deleteShopItem(${item.id})" class="btn-sm btn-sm-danger">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    list.innerHTML = '<p>Lỗi tải vật phẩm</p>';
+  }
+}
+
+let shopItemsCache = [];
+
+function toggleShopForm() {
+  const form = document.getElementById('shop-item-form');
+  form.classList.toggle('hidden');
+  if (!form.classList.contains('hidden')) {
+    document.getElementById('shop-edit-id').value = '';
+    document.getElementById('shop-name').value = '';
+    document.getElementById('shop-desc').value = '';
+    document.getElementById('shop-category').value = 'avatar';
+    document.getElementById('shop-price').value = '10';
+    document.getElementById('shop-level').value = 'bronze';
+    document.getElementById('shop-image').value = '';
+    document.getElementById('shop-max-week').value = '';
+  }
+}
+
+function cancelShopForm() {
+  document.getElementById('shop-item-form').classList.add('hidden');
+}
+
+async function saveShopItem() {
+  const editId = document.getElementById('shop-edit-id').value;
+  const name = document.getElementById('shop-name').value.trim();
+  const description = document.getElementById('shop-desc').value.trim();
+  const category = document.getElementById('shop-category').value;
+  const price_diamonds = parseInt(document.getElementById('shop-price').value);
+  const min_level = document.getElementById('shop-level').value;
+  const image_url = document.getElementById('shop-image').value.trim() || null;
+  const maxWeekVal = document.getElementById('shop-max-week').value;
+  const max_per_week = maxWeekVal ? parseInt(maxWeekVal) : null;
+
+  if (!name) { showPopup('⚠️', 'Nhập tên vật phẩm!'); return; }
+  if (!price_diamonds || price_diamonds < 1) { showPopup('⚠️', 'Giá phải >= 1!'); return; }
+
+  const body = { name, description, category, price_diamonds, min_level, image_url, max_per_week };
+
+  try {
+    let res;
+    if (editId) {
+      body.item_id = parseInt(editId);
+      res = await adminFetch(`/api/admin/shop/items/${editId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+    } else {
+      res = await adminFetch('/api/admin/shop/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+    }
+    const result = await res.json();
+    if (result.ok || result.id) {
+      showPopup('✅', editId ? 'Đã cập nhật vật phẩm!' : 'Đã tạo vật phẩm mới!');
+      cancelShopForm();
+      loadShopItems();
+    } else {
+      showPopup('❌', result.error || 'Lỗi lưu vật phẩm');
+    }
+  } catch (e) {
+    showPopup('❌', 'Lỗi: ' + e.message);
+  }
+}
+
+async function editShopItem(id) {
+  try {
+    const res = await adminFetch('/api/admin/shop/items');
+    const data = await res.json();
+    const item = (data.items || []).find(i => i.id === id);
+    if (!item) return;
+
+    document.getElementById('shop-item-form').classList.remove('hidden');
+    document.getElementById('shop-edit-id').value = item.id;
+    document.getElementById('shop-name').value = item.name || '';
+    document.getElementById('shop-desc').value = item.description || '';
+    document.getElementById('shop-category').value = item.category || 'avatar';
+    document.getElementById('shop-price').value = item.price_diamonds || 10;
+    document.getElementById('shop-level').value = item.min_level || 'bronze';
+    document.getElementById('shop-image').value = item.image_url || '';
+    document.getElementById('shop-max-week').value = item.max_per_week || '';
+  } catch (e) {
+    showPopup('❌', 'Lỗi: ' + e.message);
+  }
+}
+
+async function toggleShopItem(id, newActive) {
+  try {
+    const res = await adminFetch(`/api/admin/shop/items/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item_id: id, is_active: newActive }),
+    });
+    const result = await res.json();
+    if (result.ok) {
+      loadShopItems();
+    } else {
+      showPopup('❌', result.error || 'Lỗi');
+    }
+  } catch (e) {
+    showPopup('❌', 'Lỗi: ' + e.message);
+  }
+}
+
+async function deleteShopItem(id) {
+  if (!confirm('Xóa vật phẩm này?')) return;
+  try {
+    const res = await adminFetch(`/api/admin/shop/items/${id}`, { method: 'DELETE' });
+    const result = await res.json();
+    if (result.ok) {
+      showPopup('✅', 'Đã xóa!');
+      loadShopItems();
+    } else {
+      showPopup('❌', result.error || 'Lỗi xóa');
+    }
+  } catch (e) {
+    showPopup('❌', 'Lỗi: ' + e.message);
+  }
+}
+
+// === VOUCHER APPROVAL ===
+async function loadVouchers() {
+  const list = document.getElementById('vouchers-list');
+  try {
+    const res = await adminFetch('/api/admin/vouchers?status=pending');
+    const data = await res.json();
+    const vouchers = data.vouchers || [];
+
+    if (vouchers.length === 0) {
+      list.innerHTML = '<p>✅ Không có phiếu thưởng nào đang chờ duyệt.</p>';
+      return;
+    }
+
+    list.innerHTML = vouchers.map(v => `
+      <div class="ea-item">
+        <div class="ea-item-info">
+          <strong>🎫 ${v.item_name}</strong> — ${v.player_name}
+          <span class="ea-meta">
+            ${v.category} • ${v.price_diamonds}💎 • Yêu cầu lúc: ${new Date(v.requested_at).toLocaleString('vi')}
+          </span>
+        </div>
+        <div class="ea-item-actions">
+          <button onclick="resolveVoucher(${v.id}, 'approved')" class="btn-sm" style="background:#c8e6c9;">✅ Duyệt</button>
+          <button onclick="resolveVoucher(${v.id}, 'rejected')" class="btn-sm btn-sm-danger">❌ Từ chối</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    list.innerHTML = '<p>Lỗi tải phiếu thưởng</p>';
+  }
+}
+
+async function resolveVoucher(id, status) {
+  const admin_note = status === 'rejected' ? prompt('Lý do từ chối (tùy chọn):') : '';
+  try {
+    const res = await adminFetch(`/api/admin/vouchers/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ voucher_id: id, status, admin_note: admin_note || '' }),
+    });
+    const result = await res.json();
+    if (result.ok) {
+      showPopup('✅', status === 'approved' ? 'Đã duyệt phiếu thưởng!' : 'Đã từ chối phiếu thưởng.');
+      loadVouchers();
+    } else {
+      showPopup('❌', result.error || 'Lỗi');
+    }
+  } catch (e) {
+    showPopup('❌', 'Lỗi: ' + e.message);
+  }
+}
+
+// === AI QUESTION GENERATOR ===
+let aiGeneratedQuestions = [];
+
+async function loadAIGeneratorStatus() {
+  const statusEl = document.getElementById('ai-gen-status');
+  try {
+    const res = await adminFetch('/api/ai/status');
+    const data = await res.json();
+    if (data.enabled) {
+      statusEl.innerHTML = `<span class="ai-status-on">🟢 AI đang hoạt động — ${data.provider} (${data.model})</span>`;
+      document.getElementById('btn-ai-generate').disabled = false;
+    } else {
+      statusEl.innerHTML = `<span class="ai-status-off">🔴 AI chưa được kích hoạt (thiếu API key)</span>`;
+      document.getElementById('btn-ai-generate').disabled = true;
+    }
+  } catch (e) {
+    statusEl.innerHTML = `<span class="ai-status-off">🔴 Không thể kết nối AI service</span>`;
+    document.getElementById('btn-ai-generate').disabled = true;
+  }
+}
+
+document.getElementById('btn-ai-generate').addEventListener('click', async () => {
+  const grade = parseInt(document.getElementById('ai-gen-grade').value);
+  const subject = document.getElementById('ai-gen-subject').value;
+  const difficulty = document.getElementById('ai-gen-difficulty').value;
+  const quantity = parseInt(document.getElementById('ai-gen-count').value);
+
+  if (quantity < 1 || quantity > 20) {
+    showPopup('⚠️', 'Số lượng phải từ 1 đến 20!');
+    return;
+  }
+
+  document.getElementById('ai-gen-loading').classList.remove('hidden');
+  document.getElementById('ai-gen-preview').classList.add('hidden');
+
+  try {
+    const res = await adminFetch('/api/ai/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subject, difficulty, grade, quantity }),
+    });
+    const data = await res.json();
+
+    if (data.error) {
+      showPopup('❌', data.error);
+      return;
+    }
+
+    const questions = (data.questions || []).map(q => ({
+      ...q,
+      subject,
+      difficulty,
+      grade,
+      source: 'ai',
+    }));
+
+    displayAIPreview(questions);
+  } catch (e) {
+    showPopup('❌', 'Lỗi kết nối: ' + e.message);
+  } finally {
+    document.getElementById('ai-gen-loading').classList.add('hidden');
+  }
+});
+
+function displayAIPreview(questions) {
+  aiGeneratedQuestions = questions;
+  const preview = document.getElementById('ai-gen-preview');
+  const list = document.getElementById('ai-gen-preview-list');
+  document.getElementById('ai-gen-preview-count').textContent = questions.length;
+  preview.classList.remove('hidden');
+
+  list.innerHTML = questions.map((q, i) => `
+    <div class="preview-item">
+      <span class="preview-num">#${i + 1}</span>
+      <span class="preview-q">${q.question_text}</span>
+      <span class="preview-ans">
+        A:${q.option_a} B:${q.option_b} C:${q.option_c} D:${q.option_d}
+        ✓ ${q.correct_answer.toUpperCase()}
+        ${q.explanation ? '💡 ' + q.explanation : ''}
+      </span>
+      <button class="btn-remove" onclick="removeAIPreview(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function removeAIPreview(idx) {
+  aiGeneratedQuestions.splice(idx, 1);
+  displayAIPreview(aiGeneratedQuestions);
+}
+
+document.getElementById('btn-save-ai-generated').addEventListener('click', async () => {
+  if (aiGeneratedQuestions.length === 0) return;
+  try {
+    const res = await adminFetch('/api/admin?resource=questions&action=batch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ questions: aiGeneratedQuestions }),
+    });
+    const data = await res.json();
+    showPopup('✅', `Đã lưu ${data.inserted} câu hỏi AI!`);
+    aiGeneratedQuestions = [];
+    document.getElementById('ai-gen-preview').classList.add('hidden');
+  } catch (e) {
+    showPopup('❌', 'Lỗi: ' + e.message);
+  }
+});
+
+document.getElementById('btn-clear-ai-preview').addEventListener('click', () => {
+  aiGeneratedQuestions = [];
+  document.getElementById('ai-gen-preview').classList.add('hidden');
+});
+
+// === AI USAGE STATS (in Stats tab) ===
+async function loadAIStats() {
+  const section = document.getElementById('ai-stats-section');
+  try {
+    const [statsRes, statusRes] = await Promise.all([
+      adminFetch(adminUrl('ai-stats')),
+      adminFetch('/api/ai/status'),
+    ]);
+    const stats = await statsRes.json();
+    const status = await statusRes.json();
+
+    section.innerHTML = `
+      <div class="ai-stats-panel">
+        <h3>🤖 AI Usage</h3>
+        <div class="ai-status-info">
+          ${status.enabled
+            ? `<span class="ai-status-on">🟢 Đang hoạt động — ${status.provider} (${status.model})</span>`
+            : '<span class="ai-status-off">🔴 AI chưa kích hoạt</span>'}
+        </div>
+        <div class="stats-overview" style="margin-top:12px;">
+          <div class="stat-card" style="background:linear-gradient(135deg,#43a047,#66bb6a);">
+            <div class="stat-number">${stats.total_requests || 0}</div>
+            <div class="stat-label">Requests hôm nay</div>
+          </div>
+          <div class="stat-card" style="background:linear-gradient(135deg,#1e88e5,#42a5f5);">
+            <div class="stat-number">${stats.total_tokens || 0}</div>
+            <div class="stat-label">Tokens hôm nay</div>
+          </div>
+          <div class="stat-card" style="background:linear-gradient(135deg,#f4511e,#ff7043);">
+            <div class="stat-number">$${stats.estimated_cost || '0.0000'}</div>
+            <div class="stat-label">Chi phí ước tính</div>
+          </div>
+        </div>
+      </div>
+    `;
+  } catch (e) {
+    section.innerHTML = '<p style="color:#999;">Không thể tải thống kê AI</p>';
+  }
 }

@@ -18,8 +18,10 @@ export default async function handler(req, res) {
 
   // POST - create or login player (unique name)
   if (req.method === 'POST') {
-    const { name } = req.body;
+    const { name, grade } = req.body;
     if (!name || !name.trim()) return res.status(400).json({ error: 'Nhập tên đi con!' });
+
+    const playerGrade = grade ? parseInt(grade) : 2;
 
     try {
       const existing = await db.execute({ sql: `SELECT * FROM players WHERE name = ?`, args: [name.trim()] });
@@ -27,9 +29,37 @@ export default async function handler(req, res) {
         // Name exists - return existing player (login behavior)
         return res.json(existing.rows[0]);
       }
-      // Create new player with unique name
-      const result = await db.execute({ sql: `INSERT INTO players (name) VALUES (?)`, args: [name.trim()] });
-      return res.json({ id: Number(result.lastInsertRowid), name: name.trim(), total_stars: 0 });
+      // Create new player with unique name and grade
+      const result = await db.execute({
+        sql: `INSERT INTO players (name, grade) VALUES (?, ?)`,
+        args: [name.trim(), playerGrade],
+      });
+      return res.json({ id: Number(result.lastInsertRowid), name: name.trim(), total_stars: 0, grade: playerGrade });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // PUT - update player grade
+  if (req.method === 'PUT') {
+    const { id: bodyId, grade } = req.body;
+    const id = req.query.id || bodyId;
+    if (!id) return res.status(400).json({ error: 'Missing id' });
+    if (!grade) return res.status(400).json({ error: 'Missing grade' });
+
+    const gradeValue = parseInt(grade);
+    if (gradeValue < 2 || gradeValue > 5) {
+      return res.status(400).json({ error: 'Grade must be between 2 and 5' });
+    }
+
+    try {
+      await db.execute({
+        sql: `UPDATE players SET grade = ? WHERE id = ?`,
+        args: [gradeValue, parseInt(id)],
+      });
+      const result = await db.execute({ sql: `SELECT * FROM players WHERE id = ?`, args: [parseInt(id)] });
+      if (result.rows.length === 0) return res.status(404).json({ error: 'Player not found' });
+      return res.json(result.rows[0]);
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
