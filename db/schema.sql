@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS questions (
   option_d TEXT NOT NULL,
   correct_answer TEXT NOT NULL CHECK(correct_answer IN ('a', 'b', 'c', 'd')),
   explanation TEXT,
+  grade INTEGER DEFAULT 2,
+  source TEXT DEFAULT 'manual',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -19,6 +21,14 @@ CREATE TABLE IF NOT EXISTS players (
   current_level_math INTEGER DEFAULT 1,
   current_level_viet INTEGER DEFAULT 1,
   adventure_level INTEGER DEFAULT 1,
+  grade INTEGER DEFAULT 2,
+  total_diamonds INTEGER DEFAULT 0,
+  lifetime_diamonds INTEGER DEFAULT 0,
+  current_streak INTEGER DEFAULT 0,
+  longest_streak INTEGER DEFAULT 0,
+  last_active_date TEXT,
+  equipped_avatar TEXT,
+  equipped_frame TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
