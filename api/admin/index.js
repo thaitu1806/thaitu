@@ -24,6 +24,15 @@ export default async function handler(req, res) {
     }
   }
 
+  try {
+    return await handleRequest(req, res);
+  } catch (err) {
+    console.error('Admin handler error:', err);
+    return res.status(500).json({ error: err.message || 'Internal server error' });
+  }
+}
+
+async function handleRequest(req, res) {
   const db = getDb();
   
   // Parse resource from query param OR from URL path (e.g. /api/admin/shop/items → shop-items)
