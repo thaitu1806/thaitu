@@ -87,48 +87,35 @@ body {
   font-weight: 700;
 }
 
-/* Category tabs */
-.category-tabs {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 8px;
-  padding-right: 16px;
+/* Category selector (dropdown) */
+.category-select-wrap {
   margin-bottom: 16px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  mask-image: none;
-  -webkit-mask-image: none;
 }
 
-.category-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.tab-btn {
-  flex-shrink: 0;
-  padding: 10px 14px;
+.category-select {
+  width: 100%;
+  padding: 12px 16px;
   border: none;
   border-radius: 14px;
   background: rgba(255,255,255,0.2);
   color: white;
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
   font-family: inherit;
-  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  backdrop-filter: blur(4px);
 }
 
-.tab-btn:active {
-  transform: scale(0.95);
-}
-
-.tab-btn.active {
-  background: white;
-  color: #6366f1;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+.category-select option {
+  background: #4338ca;
+  color: white;
+  font-weight: 700;
+  padding: 8px;
 }
 
 /* Items grid */
@@ -414,10 +401,6 @@ body {
 }
 
 @media (max-width: 360px) {
-  .tab-btn {
-    font-size: 0.75rem;
-    padding: 8px 10px;
-  }
   .item-card {
     padding: 10px;
   }

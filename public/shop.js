@@ -51,15 +51,13 @@
 
   // Setup category tabs
   function setupTabs() {
-    const tabs = document.querySelectorAll('.tab-btn');
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        currentCategory = tab.dataset.category;
+    const select = document.getElementById('category-select');
+    if (select) {
+      select.addEventListener('change', () => {
+        currentCategory = select.value;
         loadItems(currentCategory);
       });
-    });
+    }
   }
 
   // Setup modal events
