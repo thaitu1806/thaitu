@@ -180,5 +180,74 @@ export default async function handler(req, res) {
     }
   }
 
+  // === SHOP ITEMS (admin) ===
+  if (resource === 'shop-items') {
+    if (req.method === 'GET') {
+      const result = await db.execute({ sql: `SELECT * FROM shop_items ORDER BY created_at DESC`, args: [] });
+      return res.json({ items: result.rows || [] });
+    }
+    if (req.method === 'POST') {
+      const { name, description, category, price_diamonds, min_level, image_url, is_active, max_per_week } = req.body || {};
+      if (!name || !category || price_diamonds == null) return res.status(400).json({ error: 'Thiếu thông tin bắt buộc' });
+      const VALID_CATEGORIES = ['avatar', 'frame', 'sticker', 'powerup', 'voucher'];
+      const VALID_LEVELS = ['bronze', 'silver', 'gold', 'diamond', 'master'];
+      if (!VALID_CATEGORIES.includes(category)) return res.status(400).json({ error: `Danh mục không hợp lệ` });
+      if (min_level && !VALID_LEVELS.includes(min_level)) return res.status(400).json({ error: `Cấp độ không hợp lệ` });
+      const result = await db.execute({ sql: `INSERT INTO shop_items (name, description, category, price_diamonds, min_level, image_url, is_active, max_per_week) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, args: [name, description || '', category, parseInt(price_diamonds), min_level || 'bronze', image_url || null, is_active != null ? (is_active ? 1 : 0) : 1, max_per_week != null ? parseInt(max_per_week) : null] });
+      return res.json({ ok: true, id: Number(result.lastInsertRowid) });
+    }
+    if (req.method === 'PUT' && id) {
+      const allowedFields = ['name', 'description', 'category', 'price_diamonds', 'min_level', 'image_url', 'is_active', 'max_per_week'];
+      const updates = []; const args = [];
+      for (const field of allowedFields) {
+        if (req.body[field] !== undefined) {
+          let value = req.body[field];
+          if (field === 'is_active') value = value ? 1 : 0;
+          if (field === 'price_diamonds' || field === 'max_per_week') value = value != null ? parseInt(value) : null;
+          updates.push(`${field} = ?`); args.push(value);
+        }
+      }
+      if (updates.length === 0) return res.status(400).json({ error: 'Không có trường nào để cập nhật' });
+      args.push(parseInt(id));
+      await db.execute({ sql: `UPDATE shop_items SET ${updates.join(', ')} WHERE id = ?`, args });
+      return res.json({ ok: true });
+    }
+    if (req.method === 'DELETE' && id) {
+      await db.execute({ sql: `DELETE FROM shop_items WHERE id = ?`, args: [parseInt(id)] });
+      return res.json({ ok: true });
+    }
+  }
+
+  // === DIAMOND STATS ===
+  if (resource === 'diamond-stats') {
+    const earnedResult = await db.execute({ sql: `SELECT SUM(amount) as total_earned FROM diamond_transactions WHERE type = 'earn'`, args: [] });
+    const spentResult = await db.execute({ sql: `SELECT SUM(amount) as total_spent FROM diamond_transactions WHERE type = 'spend'`, args: [] });
+    const topItemsResult = await db.execute({ sql: `SELECT si.name, si.category, COUNT(*) as purchase_count FROM player_inventory pi JOIN shop_items si ON pi.item_id = si.id GROUP BY pi.item_id ORDER BY purchase_count DESC LIMIT 10`, args: [] });
+    return res.json({ total_earned: earnedResult.rows[0]?.total_earned || 0, total_spent: spentResult.rows[0]?.total_spent || 0, top_items: topItemsResult.rows || [] });
+  }
+
+  // === VOUCHERS ===
+  if (resource === 'vouchers') {
+    if (req.method === 'GET') {
+      const status = req.query?.status;
+      let sql = `SELECT rv.*, p.name as player_name, si.name as item_name, si.category, si.price_diamonds FROM reward_vouchers rv JOIN players p ON rv.player_id = p.id JOIN shop_items si ON rv.item_id = si.id`;
+      const args = [];
+      if (status) { sql += ` WHERE rv.status = ?`; args.push(status); }
+      sql += ` ORDER BY rv.requested_at DESC`;
+      const result = await db.execute({ sql, args });
+      return res.json({ vouchers: result.rows || [] });
+    }
+    if (req.method === 'PUT') {
+      const { voucher_id, status, admin_note } = req.body || {};
+      if (!voucher_id || !status) return res.status(400).json({ error: 'Thiếu thông tin bắt buộc' });
+      if (!['approved', 'rejected'].includes(status)) return res.status(400).json({ error: 'Trạng thái không hợp lệ' });
+      const existing = await db.execute({ sql: `SELECT id, status FROM reward_vouchers WHERE id = ?`, args: [parseInt(voucher_id)] });
+      if (!existing.rows || existing.rows.length === 0) return res.status(404).json({ error: 'Phiếu thưởng không tồn tại' });
+      if (existing.rows[0].status !== 'pending') return res.status(400).json({ error: 'Phiếu thưởng không ở trạng thái chờ' });
+      await db.execute({ sql: `UPDATE reward_vouchers SET status = ?, resolved_at = ?, admin_note = ? WHERE id = ?`, args: [status, new Date().toISOString(), admin_note || null, parseInt(voucher_id)] });
+      return res.json({ ok: true });
+    }
+  }
+
   res.status(404).json({ error: 'Not found' });
 }
