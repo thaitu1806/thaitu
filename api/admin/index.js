@@ -25,7 +25,28 @@ export default async function handler(req, res) {
   }
 
   const db = getDb();
-  const { resource, id, action } = req.query;
+  
+  // Parse resource from query param OR from URL path (e.g. /api/admin/shop/items → shop-items)
+  let { resource, id, action } = req.query;
+  const urlPath = req.url?.split('?')[0] || '';
+  if (!resource) {
+    if (urlPath.includes('/admin/shop/items')) {
+      resource = 'shop-items';
+      // Extract item ID from path like /admin/shop/items/123
+      const itemMatch = urlPath.match(/\/admin\/shop\/items\/(\d+)/);
+      if (itemMatch) id = itemMatch[1];
+      // POST without id = create, PUT with id = update, DELETE with id = delete
+      if (req.method === 'POST' && !id) action = 'create';
+      else if (req.method === 'PUT' && id) action = 'update';
+      else if (req.method === 'DELETE' && id) action = 'delete';
+    } else if (urlPath.includes('/admin/diamond-stats')) {
+      resource = 'diamond-stats';
+    } else if (urlPath.includes('/admin/vouchers')) {
+      resource = 'vouchers';
+      const voucherMatch = urlPath.match(/\/admin\/vouchers\/(\d+)/);
+      if (voucherMatch) id = voucherMatch[1];
+    }
+  }
 
   // === AI STATS ===
   if (resource === 'ai-stats') {
