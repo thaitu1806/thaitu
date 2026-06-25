@@ -1,14 +1,34 @@
-// Combined handler for: diamonds, quests, streak, shop
+// Combined handler for: diamonds, quests, streak, shop, link, parent, progress
 // Merged to stay within Vercel Hobby 12-function limit
 import { getDb } from './db.js';
 import { getPlayerLevel, checkStreakMilestone, STREAK_MILESTONES, PLAYER_LEVELS } from '../lib/diamond-calc.js';
 import { generateDailyQuests, getVietnamDateStr } from '../lib/quest-generator.js';
+import { validateLinkCodeFormat } from '../lib/link-code.js';
 
 const LEVEL_ORDER = ['bronze', 'silver', 'gold', 'diamond', 'master'];
 
 function meetsLevelRequirement(playerLevel, requiredLevel) {
   return LEVEL_ORDER.indexOf(playerLevel) >= LEVEL_ORDER.indexOf(requiredLevel);
 }
+
+// --- Rate Limiting for parent link-by-code (in-memory) ---
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW = 10 * 60 * 1000;
+const RATE_LIMIT_MAX = 5;
+
+export function checkRateLimit(ip) {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || (now - entry.firstAttempt > RATE_LIMIT_WINDOW)) {
+    rateLimitMap.set(ip, { count: 1, firstAttempt: now });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT_MAX) return false;
+  entry.count++;
+  return true;
+}
+
+export { rateLimitMap, RATE_LIMIT_WINDOW, RATE_LIMIT_MAX };
 
 export default async function handler(req, res) {
   const feature = req.query?.feature;
@@ -21,6 +41,9 @@ export default async function handler(req, res) {
       case 'inventory': return await handleInventory(req, res);
       case 'equip': return await handleEquip(req, res);
       case 'buy': return await handleBuy(req, res);
+      case 'link': return await handleLink(req, res);
+      case 'parent': return await handleParent(req, res);
+      case 'progress': return await handleProgress(req, res);
       default: return res.status(404).json({ error: 'Unknown feature' });
     }
   } catch (err) {
@@ -249,4 +272,157 @@ async function handleEquip(req, res) {
   const field = category === 'avatar' ? 'equipped_avatar' : 'equipped_frame';
   await db.execute({ sql: `UPDATE players SET ${field} = ? WHERE id = ?`, args: [invItem.item_id.toString(), playerId] });
   return res.json({ ok: true, equipped: category, inventory_id: invId });
+}
+
+// === LINK STATUS ===
+async function handleLink(req, res) {
+  const db = getDb();
+  const id = req.query?.id;
+  if (!id) return res.status(400).json({ error: 'Missing player id' });
+  const playerId = parseInt(id);
+
+  if (req.method === 'GET') {
+    const playerResult = await db.execute({ sql: `SELECT link_code, link_status, last_prompt_date, current_streak FROM players WHERE id = ?`, args: [playerId] });
+    if (playerResult.rows.length === 0) return res.status(404).json({ error: 'Không tìm thấy người chơi' });
+    const player = playerResult.rows[0];
+    const sessionResult = await db.execute({ sql: `SELECT COUNT(*) as session_count FROM game_sessions WHERE player_id = ?`, args: [playerId] });
+    const sessionCount = sessionResult.rows[0].session_count;
+    let parents = [];
+    if (player.link_status === 'linked') {
+      const parentsResult = await db.execute({ sql: `SELECT p.id, p.display_name FROM parents p JOIN parent_children pc ON pc.parent_id = p.id WHERE pc.player_id = ?`, args: [playerId] });
+      parents = parentsResult.rows.map(row => ({ id: row.id, display_name: row.display_name }));
+    }
+    return res.json({ status: player.link_status, code: player.link_code, session_count: sessionCount, current_streak: player.current_streak || 0, last_prompt_date: player.last_prompt_date || null, parents });
+  }
+
+  if (req.method === 'POST') {
+    const { action } = req.body || {};
+    if (action === 'dismiss') {
+      const today = new Date().toISOString().split('T')[0];
+      await db.execute({ sql: `UPDATE players SET link_status = 'prompted', last_prompt_date = ? WHERE id = ? AND link_status != 'linked'`, args: [today, playerId] });
+      return res.json({ ok: true });
+    }
+    return res.status(400).json({ error: 'Invalid action' });
+  }
+
+  return res.status(405).json({ error: 'Method not allowed' });
+}
+
+// === PARENT ===
+async function handleParent(req, res) {
+  const db = getDb();
+  const action = req.query?.action || '';
+
+  if (req.method === 'POST' && action === 'register') {
+    const { username, pin, display_name } = req.body;
+    if (!username || !pin) return res.status(400).json({ error: 'Cần nhập tên đăng nhập và mã PIN' });
+    if (pin.length < 4) return res.status(400).json({ error: 'Mã PIN cần ít nhất 4 ký tự' });
+    const existing = await db.execute({ sql: `SELECT id FROM parents WHERE username = ?`, args: [username.trim()] });
+    if (existing.rows.length > 0) return res.status(409).json({ error: 'Tên đăng nhập đã tồn tại' });
+    const result = await db.execute({ sql: `INSERT INTO parents (username, pin, display_name) VALUES (?, ?, ?)`, args: [username.trim(), pin, display_name || username.trim()] });
+    return res.json({ id: Number(result.lastInsertRowid), username: username.trim() });
+  }
+
+  if (req.method === 'POST' && action === 'login') {
+    const { username, pin } = req.body;
+    if (!username || !pin) return res.status(400).json({ error: 'Cần nhập tên đăng nhập và mã PIN' });
+    const result = await db.execute({ sql: `SELECT id, username, display_name FROM parents WHERE username = ? AND pin = ?`, args: [username.trim(), pin] });
+    if (result.rows.length === 0) return res.status(401).json({ error: 'Sai tên đăng nhập hoặc mã PIN' });
+    return res.json(result.rows[0]);
+  }
+
+  if (req.method === 'POST' && action === 'link-child') {
+    const { parent_id, player_name } = req.body;
+    if (!parent_id || !player_name) return res.status(400).json({ error: 'Thiếu thông tin' });
+    const player = await db.execute({ sql: `SELECT id, name FROM players WHERE name = ?`, args: [player_name.trim()] });
+    if (player.rows.length === 0) return res.status(404).json({ error: 'Không tìm thấy học sinh với tên này' });
+    const playerId = player.rows[0].id;
+    const existing = await db.execute({ sql: `SELECT id FROM parent_children WHERE parent_id = ? AND player_id = ?`, args: [parent_id, playerId] });
+    if (existing.rows.length > 0) return res.status(409).json({ error: 'Đã liên kết con này rồi' });
+    await db.execute({ sql: `INSERT INTO parent_children (parent_id, player_id) VALUES (?, ?)`, args: [parent_id, playerId] });
+    return res.json({ ok: true, player: player.rows[0] });
+  }
+
+  if (req.method === 'POST' && action === 'link-by-code') {
+    const { parent_id, link_code } = req.body;
+    if (!parent_id || !link_code) return res.status(400).json({ error: 'Thiếu thông tin bắt buộc' });
+    const parentCheck = await db.execute({ sql: `SELECT id FROM parents WHERE id = ?`, args: [parent_id] });
+    if (parentCheck.rows.length === 0) return res.status(401).json({ error: 'Cần đăng nhập trước' });
+    if (!validateLinkCodeFormat(link_code)) return res.status(400).json({ error: 'Mã liên kết phải gồm 6 ký tự chữ và số' });
+    const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
+    if (!checkRateLimit(ip)) return res.status(429).json({ error: 'Thử lại sau 30 phút' });
+    const playerResult = await db.execute({ sql: `SELECT id, name FROM players WHERE link_code = ?`, args: [link_code] });
+    if (playerResult.rows.length === 0) return res.status(404).json({ error: 'Không tìm thấy mã liên kết này' });
+    const player = playerResult.rows[0];
+    const existingLink = await db.execute({ sql: `SELECT id FROM parent_children WHERE parent_id = ? AND player_id = ?`, args: [parent_id, player.id] });
+    if (existingLink.rows.length > 0) return res.status(409).json({ error: 'Đã liên kết con này rồi' });
+    await db.batch([
+      { sql: `INSERT INTO parent_children (parent_id, player_id) VALUES (?, ?)`, args: [parent_id, player.id] },
+      { sql: `UPDATE players SET link_status = 'linked' WHERE id = ?`, args: [player.id] },
+    ]);
+    return res.json({ ok: true, player: { id: player.id, name: player.name } });
+  }
+
+  if (req.method === 'DELETE' && action === 'unlink-child') {
+    const { parent_id, player_id } = req.query;
+    if (!parent_id || !player_id) return res.status(400).json({ error: 'Thiếu thông tin' });
+    await db.execute({ sql: `DELETE FROM parent_children WHERE parent_id = ? AND player_id = ?`, args: [parseInt(parent_id), parseInt(player_id)] });
+    return res.json({ ok: true });
+  }
+
+  if (req.method === 'GET' && action === 'children') {
+    const { parent_id } = req.query;
+    if (!parent_id) return res.status(400).json({ error: 'Thiếu parent_id' });
+    const result = await db.execute({ sql: `SELECT p.id, p.name, p.total_stars, p.grade, p.total_diamonds, p.lifetime_diamonds, p.current_streak, p.longest_streak, p.last_active_date, p.adventure_level, p.equipped_avatar, p.equipped_frame, (SELECT COUNT(*) FROM game_sessions WHERE player_id = p.id) as total_games, (SELECT MAX(played_at) FROM game_sessions WHERE player_id = p.id) as last_played FROM players p JOIN parent_children pc ON pc.player_id = p.id WHERE pc.parent_id = ? ORDER BY p.name`, args: [parseInt(parent_id)] });
+    return res.json(result.rows);
+  }
+
+  if (req.method === 'GET' && action === 'child-stats') {
+    const { parent_id, player_id } = req.query;
+    if (!parent_id || !player_id) return res.status(400).json({ error: 'Thiếu thông tin' });
+    const link = await db.execute({ sql: `SELECT id FROM parent_children WHERE parent_id = ? AND player_id = ?`, args: [parseInt(parent_id), parseInt(player_id)] });
+    if (link.rows.length === 0) return res.status(403).json({ error: 'Không có quyền xem' });
+    const bySubject = await db.execute({ sql: `SELECT q.subject, q.difficulty, COUNT(*) as total, SUM(CASE WHEN a.is_correct = 1 THEN 1 ELSE 0 END) as correct, ROUND(100.0 * SUM(CASE WHEN a.is_correct = 1 THEN 1 ELSE 0 END) / COUNT(*), 1) as accuracy FROM answer_logs a JOIN questions q ON a.question_id = q.id WHERE a.player_id = ? GROUP BY q.subject, q.difficulty ORDER BY q.subject, q.difficulty`, args: [parseInt(player_id)] });
+    const sessions = await db.execute({ sql: `SELECT subject, difficulty, correct_answers, total_questions, stars_earned, combo_max, played_at, ROUND(100.0 * correct_answers / total_questions, 1) as accuracy FROM game_sessions WHERE player_id = ? AND total_questions > 0 ORDER BY played_at DESC LIMIT 20`, args: [parseInt(player_id)] });
+    const exams = await db.execute({ sql: `SELECT er.score, er.grade, er.correct_answers, er.total_questions, er.time_spent_seconds, er.taken_at, e.title, e.subject FROM exam_results er JOIN exams e ON er.exam_id = e.id WHERE er.player_name = (SELECT name FROM players WHERE id = ?) ORDER BY er.taken_at DESC LIMIT 10`, args: [parseInt(player_id)] });
+    const vouchers = await db.execute({ sql: `SELECT rv.id, rv.status, rv.requested_at, si.name as item_name, si.category, si.price_diamonds FROM reward_vouchers rv JOIN shop_items si ON rv.item_id = si.id WHERE rv.player_id = ? ORDER BY rv.requested_at DESC LIMIT 10`, args: [parseInt(player_id)] });
+    return res.json({ bySubject: bySubject.rows, sessions: sessions.rows, exams: exams.rows, vouchers: vouchers.rows });
+  }
+
+  if (req.method === 'PUT' && action === 'approve-voucher') {
+    const { parent_id, voucher_id, status } = req.body;
+    if (!parent_id || !voucher_id || !status) return res.status(400).json({ error: 'Thiếu thông tin' });
+    if (!['approved', 'rejected'].includes(status)) return res.status(400).json({ error: 'Status không hợp lệ' });
+    const voucher = await db.execute({ sql: `SELECT rv.player_id FROM reward_vouchers rv JOIN parent_children pc ON pc.player_id = rv.player_id WHERE rv.id = ? AND pc.parent_id = ?`, args: [parseInt(voucher_id), parseInt(parent_id)] });
+    if (voucher.rows.length === 0) return res.status(403).json({ error: 'Không có quyền' });
+    await db.execute({ sql: `UPDATE reward_vouchers SET status = ?, resolved_at = CURRENT_TIMESTAMP WHERE id = ?`, args: [status, parseInt(voucher_id)] });
+    return res.json({ ok: true });
+  }
+
+  res.status(404).json({ error: 'Action không hợp lệ' });
+}
+
+// === PROGRESS ===
+async function handleProgress(req, res) {
+  const db = getDb();
+  const playerId = parseInt(req.query.id);
+  const mode = req.query.mode || 'v2';
+  if (!playerId || isNaN(playerId)) return res.status(400).json({ error: 'Invalid player id' });
+
+  if (req.method === 'GET') {
+    const result = await db.execute({ sql: `SELECT progress_data FROM player_progress WHERE player_id = ? AND game_mode = ?`, args: [playerId, mode] });
+    if (result.rows.length > 0) return res.json(JSON.parse(result.rows[0].progress_data));
+    return res.json(null);
+  }
+
+  if (req.method === 'PUT') {
+    const data = JSON.stringify(req.body);
+    await db.execute({ sql: `INSERT INTO player_progress (player_id, game_mode, progress_data) VALUES (?, ?, ?) ON CONFLICT(player_id, game_mode) DO UPDATE SET progress_data = ?, updated_at = CURRENT_TIMESTAMP`, args: [playerId, mode, data, data] });
+    if (mode === 'v2' && req.body.level) {
+      await db.execute({ sql: `UPDATE players SET adventure_level = ? WHERE id = ?`, args: [parseInt(req.body.level), playerId] });
+    }
+    return res.json({ ok: true });
+  }
+
+  res.status(405).json({ error: 'Method not allowed' });
 }

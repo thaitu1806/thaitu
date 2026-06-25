@@ -10,7 +10,7 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import * as fc from 'fast-check';
-import { checkRateLimit, rateLimitMap, RATE_LIMIT_WINDOW, RATE_LIMIT_MAX } from '../api/parent.js';
+import { checkRateLimit, rateLimitMap, RATE_LIMIT_WINDOW, RATE_LIMIT_MAX } from '../api/features.js';
 
 // Arbitrary for IP addresses
 const ipArb = fc.tuple(

@@ -16,7 +16,12 @@ vi.mock('../lib/quest-generator.js', () => ({
   getVietnamDateStr: () => '2024-06-15',
 }));
 
-const { default: handler } = await import('../api/quests.js');
+const { default: featuresHandler } = await import('../api/features.js');
+// Wrap features handler to simulate quests feature routing
+const handler = (req, res) => {
+  req.query = { ...req.query, feature: 'quests', id: req.params?.id || req.query?.id };
+  return featuresHandler(req, res);
+};
 
 function createReq(method, body = {}, params = {}, query = {}) {
   return { method, body, params, query };

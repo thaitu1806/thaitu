@@ -1,7 +1,15 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/**/*.js", "use": "@vercel/node" },
+    { "src": "api/ai.js", "use": "@vercel/node" },
+    { "src": "api/answers.js", "use": "@vercel/node" },
+    { "src": "api/exams.js", "use": "@vercel/node" },
+    { "src": "api/features.js", "use": "@vercel/node" },
+    { "src": "api/players.js", "use": "@vercel/node" },
+    { "src": "api/questions.js", "use": "@vercel/node" },
+    { "src": "api/room.js", "use": "@vercel/node" },
+    { "src": "api/sessions.js", "use": "@vercel/node" },
+    { "src": "api/admin/index.js", "use": "@vercel/node" },
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
@@ -19,11 +27,12 @@
     { "src": "/api/players/(?<id>[^/]+)/streak", "dest": "/api/features.js?feature=streak&id=$id" },
     { "src": "/api/players/(?<id>[^/]+)/inventory", "dest": "/api/features.js?feature=inventory&player_id=$id" },
     { "src": "/api/players/(?<id>[^/]+)/equip", "dest": "/api/features.js?feature=equip&player_id=$id" },
-    { "src": "/api/players/(?<id>[^/]+)/link-status", "dest": "/api/link.js?id=$id" },
-    { "src": "/api/players/(?<id>[^/]+)/progress/(?<mode>[^/]*)", "dest": "/api/progress.js?id=$id&mode=$mode" },
+    { "src": "/api/players/(?<id>[^/]+)/link-status", "dest": "/api/features.js?feature=link&id=$id" },
+    { "src": "/api/players/(?<id>[^/]+)/progress/(?<mode>[^/]*)", "dest": "/api/features.js?feature=progress&id=$id&mode=$mode" },
     { "src": "/api/players/(?<id>[^/]+)/stats", "dest": "/api/players.js?action=stats&id=$id" },
     { "src": "/api/players/(?<id>\\d+)", "dest": "/api/players.js?id=$id" },
     { "src": "/api/players", "dest": "/api/players.js" },
+    { "src": "/api/parent", "dest": "/api/features.js?feature=parent" },
     { "src": "/api/shop/items", "dest": "/api/features.js?feature=shop" },
     { "src": "/api/shop/buy", "dest": "/api/features.js?feature=buy" },
     { "src": "/api/sessions", "dest": "/api/sessions.js" },

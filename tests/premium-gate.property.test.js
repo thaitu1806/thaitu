@@ -37,9 +37,15 @@ vi.mock('../lib/ai-cache.js', () => ({
   setCache: vi.fn(),
 }));
 
-import shopHandler from '../api/shop.js';
+import featuresHandler from '../api/features.js';
 import aiHandler from '../api/ai.js';
 import { getDb } from '../api/db.js';
+
+// Wrap features handler as shopHandler with feature=buy preset
+const shopHandler = async (req, res) => {
+  req.query = { ...req.query, feature: 'buy' };
+  return featuresHandler(req, res);
+};
 
 /**
  * Helper: create a mock request object

@@ -16,9 +16,18 @@ vi.mock('../api/db.js', () => ({
   getDb: vi.fn()
 }));
 
-import handler from '../api/link.js';
-import parentHandler, { rateLimitMap } from '../api/parent.js';
+import featuresHandler, { rateLimitMap } from '../api/features.js';
 import { getDb } from '../api/db.js';
+
+// Use features handler for both link and parent actions
+const handler = async (req, res) => {
+  req.query = { ...req.query, feature: 'link' };
+  return featuresHandler(req, res);
+};
+const parentHandler = async (req, res) => {
+  req.query = { ...req.query, feature: 'parent' };
+  return featuresHandler(req, res);
+};
 
 /**
  * Helper: create a mock request object
