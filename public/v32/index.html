@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🔬 Nhà Khoa Học Nhí - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- START SCREEN -->
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <h1 class="main-title">🔬 Nhà Khoa Học Nhí</h1>
+        <p class="subtitle">Trả lời đúng để tạo thí nghiệm!</p>
+        <div class="collection-box">
+          <span>🧪 Bộ sưu tập: </span><span id="collection-count">0</span> phát minh
+        </div>
+        <div class="subject-selector">
+          <label>Môn học:</label>
+          <div class="subject-btns">
+            <button class="subj-btn active" data-subject="math">🔢 Toán</button>
+            <button class="subj-btn" data-subject="vietnamese">📖 Tiếng Việt</button>
+            <button class="subj-btn" data-subject="english">🔤 English</button>
+          </div>
+        </div>
+        <button class="btn-primary" id="btn-start">🧪 Bắt Đầu Thí Nghiệm!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- GAME SCREEN -->
+    <section id="game-screen" class="screen">
+      <div class="game-container">
+        <div class="game-header">
+          <span class="ingredient-count" id="ingredient-count">🧫 0/5</span>
+          <span class="experiment-num" id="experiment-num">Thí nghiệm 1</span>
+          <span class="game-score" id="game-score">⭐ 0</span>
+        </div>
+
+        <!-- TEST TUBE -->
+        <div class="lab-area">
+          <div class="test-tube-wrapper">
+            <div class="test-tube" id="test-tube">
+              <div class="tube-liquid" id="tube-liquid"></div>
+              <div class="tube-bubble bubble-1"></div>
+              <div class="tube-bubble bubble-2"></div>
+              <div class="tube-bubble bubble-3"></div>
+            </div>
+            <div class="tube-label" id="tube-label">Thêm nguyên liệu...</div>
+          </div>
+          <div class="ingredient-slots" id="ingredient-slots">
+            <div class="slot" data-slot="1"></div>
+            <div class="slot" data-slot="2"></div>
+            <div class="slot" data-slot="3"></div>
+            <div class="slot" data-slot="4"></div>
+            <div class="slot" data-slot="5"></div>
+          </div>
+        </div>
+
+        <!-- QUESTION AREA -->
+        <div class="question-area" id="question-area">
+          <div class="q-text" id="q-text">Đang tải câu hỏi...</div>
+          <div class="timer-bar">
+            <div class="timer-fill" id="timer-fill"></div>
+          </div>
+          <div class="q-options" id="q-options"></div>
+          <div class="q-feedback" id="q-feedback"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REACTION SCREEN -->
+    <section id="reaction-screen" class="screen">
+      <div class="reaction-container">
+        <h2 class="reaction-title">🧪 Phản Ứng Thành Công!</h2>
+        <div class="reaction-result" id="reaction-result">🧪</div>
+        <div class="reaction-name" id="reaction-name">Đang phản ứng...</div>
+        <button class="btn-secondary" id="btn-next-experiment">🔬 Thí Nghiệm Tiếp!</button>
+      </div>
+    </section>
+
+    <!-- RESULT SCREEN -->
+    <section id="result-screen" class="screen">
+      <div class="result-container">
+        <div class="confetti" id="confetti"></div>
+        <h2 class="result-title" id="result-title">🔬 Kết Quả Phòng Thí Nghiệm!</h2>
+        <div class="result-score" id="result-score">0</div>
+        <div class="result-label">điểm</div>
+        <div class="result-detail" id="result-detail"></div>
+        <div class="result-collection" id="result-collection"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Thí Nghiệm Mới!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

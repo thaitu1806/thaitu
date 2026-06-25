@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🏝️ Đảo Hoang Sinh Tồn - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- ISLAND SCREEN -->
+    <section id="island-screen" class="screen active">
+      <div class="container">
+        <h1 class="main-title">🏝️ Đảo Hoang Sinh Tồn</h1>
+        <p class="subtitle">Kiếm tài nguyên, chế tạo bè thoát đảo!</p>
+
+        <div class="resource-bar">
+          <div class="resource"><span class="res-icon">🌲</span><span class="res-count" id="wood-count">0</span></div>
+          <div class="resource"><span class="res-icon">🧱</span><span class="res-count" id="stone-count">0</span></div>
+          <div class="resource"><span class="res-icon">🎀</span><span class="res-count" id="rope-count">0</span></div>
+        </div>
+
+        <div class="island-grid" id="island-grid"></div>
+
+        <div class="action-buttons">
+          <button class="btn-primary" id="btn-gather">🔍 Thu Thập Tài Nguyên</button>
+          <button class="btn-secondary" id="btn-craft">🔨 Chế Tạo</button>
+        </div>
+
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- GATHER SCREEN (Quiz) -->
+    <section id="gather-screen" class="screen">
+      <div class="gather-container">
+        <div class="gather-header">
+          <span class="gather-progress" id="gather-progress">Câu 1/10</span>
+          <span class="gather-score" id="gather-score">🌲0 🧱0 🎀0</span>
+        </div>
+        <div class="timer-bar">
+          <div class="timer-fill" id="timer-fill"></div>
+        </div>
+        <div class="question-box" id="question-box"></div>
+        <div class="options-grid" id="options-grid"></div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+    </section>
+
+    <!-- CRAFT SCREEN -->
+    <section id="craft-screen" class="screen">
+      <div class="craft-container">
+        <h2 class="craft-title">🔨 Bàn Chế Tạo</h2>
+        <div class="resource-bar">
+          <div class="resource"><span class="res-icon">🌲</span><span class="res-count" id="craft-wood">0</span></div>
+          <div class="resource"><span class="res-icon">🧱</span><span class="res-count" id="craft-stone">0</span></div>
+          <div class="resource"><span class="res-icon">🎀</span><span class="res-count" id="craft-rope">0</span></div>
+        </div>
+        <div class="craft-list" id="craft-list"></div>
+        <button class="btn-back" id="btn-craft-back">← Quay lại đảo</button>
+      </div>
+    </section>
+
+    <!-- VICTORY SCREEN -->
+    <section id="victory-screen" class="screen">
+      <div class="victory-container">
+        <div class="victory-emoji">🚣</div>
+        <h2 class="victory-title">🎉 Thoát Đảo Thành Công!</h2>
+        <p class="victory-msg">Con đã chế tạo bè và thoát khỏi đảo hoang!</p>
+        <div class="victory-stats" id="victory-stats"></div>
+        <button class="btn-primary" id="btn-play-again">🔄 Chơi lại</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

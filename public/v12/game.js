@@ -284,6 +284,12 @@ function endGame() {
       <button class="result-btn home" onclick="location.href='/'">🏠 Về trang chủ</button>
     </div>
   `;
+
+  // Check and show parent linking prompt after game ends
+  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+  if (window.checkAndShowPrompt && profile?.id) {
+    window.checkAndShowPrompt(profile.id);
+  }
 }
 
 // ===== EXIT =====

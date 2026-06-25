@@ -294,6 +294,12 @@ function endDuel() {
     showCelebration(`🏆 ${name} thắng!`);
   }
   showScreen('result-screen');
+
+  // Check and show parent linking prompt after game ends
+  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+  if (window.checkAndShowPrompt && profile?.id) {
+    window.checkAndShowPrompt(profile.id);
+  }
 }
 
 // Navigation

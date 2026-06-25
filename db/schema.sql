@@ -29,6 +29,9 @@ CREATE TABLE IF NOT EXISTS players (
   last_active_date TEXT,
   equipped_avatar TEXT,
   equipped_frame TEXT,
+  link_code TEXT DEFAULT NULL,
+  link_status TEXT DEFAULT 'unlinked' CHECK(link_status IN ('unlinked', 'prompted', 'linked')),
+  last_prompt_date TEXT DEFAULT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -66,6 +69,7 @@ CREATE INDEX IF NOT EXISTS idx_sessions_player ON game_sessions(player_id);
 CREATE INDEX IF NOT EXISTS idx_answer_logs_player ON answer_logs(player_id);
 CREATE INDEX IF NOT EXISTS idx_answer_logs_question ON answer_logs(question_id);
 CREATE INDEX IF NOT EXISTS idx_answer_logs_session ON answer_logs(session_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_players_link_code ON players(link_code);
 
 CREATE TABLE IF NOT EXISTS exams (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -183,6 +187,29 @@ CREATE TABLE IF NOT EXISTS reward_vouchers (
 
 CREATE INDEX IF NOT EXISTS idx_vouchers_status ON reward_vouchers(status);
 CREATE INDEX IF NOT EXISTS idx_vouchers_player ON reward_vouchers(player_id);
+
+-- Parent Dashboard Tables
+
+CREATE TABLE IF NOT EXISTS parents (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT NOT NULL UNIQUE,
+  pin TEXT NOT NULL,
+  display_name TEXT DEFAULT '',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS parent_children (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  parent_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  linked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (parent_id) REFERENCES parents(id),
+  FOREIGN KEY (player_id) REFERENCES players(id),
+  UNIQUE(parent_id, player_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_parent_children_parent ON parent_children(parent_id);
+CREATE INDEX IF NOT EXISTS idx_parent_children_player ON parent_children(player_id);
 
 -- Multi-Grade & AI Integration Tables
 

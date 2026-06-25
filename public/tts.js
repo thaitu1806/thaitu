@@ -149,3 +149,103 @@
     setSpeakingState(false);
   };
 })();
+
+// === AUTO TTS BUTTON INJECTION ===
+// Automatically adds a 🔊 speak button near question text elements
+// Works for V13-V30 and any page with common question class names
+(function() {
+  'use strict';
+  if (!('speechSynthesis' in window)) return;
+
+  // Known question text selectors across all game versions
+  const Q_SELECTORS = [
+    '#q-text', '#qp-text', '#pq-text', '#bq-text',
+    '.q-text', '.qp-text', '.pq-text', '.bq-text',
+    '#quiz-question', '.quiz-question', '#question-text', '.question-text',
+    '#question-box', '.question-box', '#scroll-text', '.scroll-text'
+  ];
+
+  let ttsBtn = null;
+  let lastSpokenText = '';
+
+  function createTTSButton() {
+    if (ttsBtn) return ttsBtn;
+    ttsBtn = document.createElement('button');
+    ttsBtn.className = 'btn-speak tts-auto-btn';
+    ttsBtn.textContent = '🔊';
+    ttsBtn.title = 'Đọc câu hỏi';
+    ttsBtn.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:none;background:rgba(0,0,0,0.08);font-size:1.2rem;cursor:pointer;margin:4px auto;transition:all 0.2s;';
+    ttsBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      speakCurrentQuestion();
+    });
+    return ttsBtn;
+  }
+
+  function speakCurrentQuestion() {
+    const el = findQuestionElement();
+    if (!el) return;
+    const text = el.textContent.trim();
+    if (!text) return;
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      setSpeakingStateTTS(false);
+      return;
+    }
+    setSpeakingStateTTS(true);
+    window.ttsSpeak(text, 'vi');
+  }
+
+  function setSpeakingStateTTS(active) {
+    if (ttsBtn) {
+      ttsBtn.style.background = active ? 'rgba(79,172,254,0.3)' : 'rgba(0,0,0,0.08)';
+      ttsBtn.style.transform = active ? 'scale(1.1)' : 'scale(1)';
+    }
+  }
+
+  function findQuestionElement() {
+    for (const sel of Q_SELECTORS) {
+      const el = document.querySelector(sel);
+      if (el && el.textContent.trim() && el.offsetParent !== null) return el;
+    }
+    return null;
+  }
+
+  function injectButton() {
+    const el = findQuestionElement();
+    if (!el) return;
+    const text = el.textContent.trim();
+    if (!text || text === lastSpokenText) return;
+    lastSpokenText = text;
+
+    const btn = createTTSButton();
+    // Don't add if already present near this element
+    if (el.parentNode.querySelector('.tts-auto-btn')) return;
+
+    // Insert after the question element
+    if (el.nextSibling) {
+      el.parentNode.insertBefore(btn, el.nextSibling);
+    } else {
+      el.parentNode.appendChild(btn);
+    }
+  }
+
+  // Observe DOM changes to inject button when question appears
+  const observer = new MutationObserver(() => {
+    requestAnimationFrame(injectButton);
+  });
+
+  // Start observing once DOM is ready
+  function startObserving() {
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    // Initial check
+    setTimeout(injectButton, 500);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startObserving);
+  } else {
+    startObserving();
+  }
+})();

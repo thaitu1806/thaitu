@@ -18,7 +18,7 @@ const PLANTS = [
   { id: 'cactus', emoji: '🌵', name: 'Xương Rồng', unlockLevel: 20, damage: 1, special: 'slow' },
   { id: 'mushroom', emoji: '🍄', name: 'Nấm', unlockLevel: 30, damage: 1, special: 'freeze' },
   { id: 'tree', emoji: '🌳', name: 'Cây Cổ Thụ', unlockLevel: 40, damage: 3 },
-  { id: 'coral', emoji: '🪸', name: 'San Hô', unlockLevel: 50, damage: 2, special: 'slow' },
+  { id: 'coral', emoji: '🐚', name: 'San Hô', unlockLevel: 50, damage: 2, special: 'slow' },
   { id: 'palm', emoji: '🌴', name: 'Cây Dừa', unlockLevel: 60, damage: 2 },
   { id: 'crystal', emoji: '💎', name: 'Pha Lê', unlockLevel: 70, damage: 1, special: 'freeze' },
   { id: 'rocket', emoji: '🚀', name: 'Tên Lửa', unlockLevel: 80, damage: 4 },
@@ -35,7 +35,7 @@ const ZOMBIE_TYPES = [
 
 // Random emoji sets for visual variety each game
 const ZOMBIE_SET = ['💀', '🧟', '👻', '👹', '👺', '🤖', '👾', '🦇', '🐛', '🦠','🎃', '☠️', '🕷️', '🦂', '🐍', '🦎', '🐲', '🐉', '🦖', '🦕','🐊', '🦈', '🐙', '🦑', '🐜', '🦗', '🕸️', '🦟','🐺', '🦁', '🐗', '🦍', '🐏', '🦏', '🐻', '🧛', '🧙'];
-const BULLET_SET = ['☄️', '🔥', '⚡', '💫', '🌟', '🚀', '🎯', '💣', '🌊','🏹', '🗡️', '🛡️', '⚔️', '🔱', '💎', '🧨', '🎱', '🪓','🌩️', '❄️', '🌪️', '☀️', '🌶️', '🍉', '🥊', '🎾', '⚾', '🏈','🪁', '🎳', '🧊', '💧',  '🌀', '⭐', '🔔', '🎵', '🍳'];
+const BULLET_SET = ['☄️', '🔥', '⚡', '💫', '🌟', '🚀', '🎯', '💣', '🌊','🏹', '🗡️', '🛡️', '⚔️', '🔱', '💎', '🧨', '🎱', '🪓','🌩️', '❄️', '🌪️', '☀️', '🌶️', '🍉', '🥊', '🎾', '⚾', '🏈','🪁', '🎳', '❄️', '💧',  '🌀', '⭐', '🔔', '🎵', '🍳'];
 const EXPLOSION_SET = ['💥', '🔥', '✨', '⭐', '🌟', '💫', '🎆', '🎇', '☀️', '🌈','🎊', '🎉', '🎀', '🌸', '🌺', '🏵️', '🌼', '💐', '🌻','⚡', '💢', '❗', '🔆', '🔅', '✳️', '❇️', '🌠', '☄️', '💨', '💦', '🌀', '🎭', '🧧', '🎪', '🎠'];
 const PLANT_SET = ['🌻', '🌹', '🌵', '🍄', '🌲', '🎋', '🌸', '🌿', '🏵️','🌷', '🌺', '🌼', '💐', '🍀', '☘️', '🌱', '🎍','🌾', '🎄', '🌳', '🍁', '🍂', '🍃',  '🐚', '🥀','🍇', '🍊', '🍋', '🍓', '🥝', '🥥', '🌽', '🥕', '🥦'];
 
@@ -186,7 +186,7 @@ document.getElementById('player-name').addEventListener('keypress', e => { if (e
 function enterMap() {
   showScreen('map-screen');
   document.getElementById('player-display').textContent = `👤 ${G.save.name}`;
-  document.getElementById('coins-display').textContent = `🪙 ${G.save.coins}`;
+  document.getElementById('coins-display').textContent = `💰 ${G.save.coins}`;
   const totalStars = Object.values(G.save.stars).reduce((a, b) => a + b, 0);
   document.getElementById('stars-total').textContent = `⭐ ${totalStars}`;
   renderMap();
@@ -481,7 +481,7 @@ document.querySelectorAll('.q-btn').forEach(btn => {
 
     const q = G.battle.questions[G.battle.qIndex];
     const selected = btn.dataset.opt;
-    const isCorrect = selected === q.correct_answer;
+    const isCorrect = selected.toLowerCase() === q.correct_answer.toLowerCase();
 
     document.querySelectorAll('.q-btn').forEach(b => b.disabled = true);
 
@@ -491,7 +491,7 @@ document.querySelectorAll('.q-btn').forEach(btn => {
     } else {
       btn.classList.add('wrong');
       document.querySelectorAll('.q-btn').forEach(b => {
-        if (b.dataset.opt === q.correct_answer) b.classList.add('correct');
+        if (b.dataset.opt.toLowerCase() === q.correct_answer.toLowerCase()) b.classList.add('correct');
       });
       handleWrong(selected);
     }
@@ -651,6 +651,11 @@ function winLevel() {
           stars_earned: stars,
           combo_max: G.battle.maxCombo,
         }),
+      }).then(() => {
+        // Check and show parent linking prompt after session save
+        if (window.checkAndShowPrompt && profile?.id) {
+          window.checkAndShowPrompt(profile.id);
+        }
       }).catch(() => {});
     }
   });
@@ -661,7 +666,7 @@ function winLevel() {
   document.getElementById('complete-stars').textContent = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
   document.getElementById('cs-correct').textContent = `${G.battle.correct}/${G.battle.total}`;
   document.getElementById('cs-combo').textContent = G.battle.maxCombo;
-  document.getElementById('cs-coins').textContent = `+${coins} 🪙`;
+  document.getElementById('cs-coins').textContent = `+${coins} 💰`;
 
   const unlockEl = document.getElementById('complete-unlock');
   if (unlockMsg) { unlockEl.textContent = unlockMsg; unlockEl.classList.remove('hidden'); }
@@ -701,7 +706,7 @@ document.getElementById('pu-eliminate').addEventListener('click', () => {
   if (G.save.powerups.eliminate <= 0) return;
   const q = G.battle.questions[G.battle.qIndex];
   const btns = [...document.querySelectorAll('.q-btn')];
-  const wrongBtns = btns.filter(b => b.dataset.opt !== q.correct_answer && !b.classList.contains('eliminated'));
+  const wrongBtns = btns.filter(b => b.dataset.opt.toLowerCase() !== q.correct_answer.toLowerCase() && !b.classList.contains('eliminated'));
   if (wrongBtns.length > 0) {
     wrongBtns[Math.floor(Math.random() * wrongBtns.length)].classList.add('eliminated');
     G.save.powerups.eliminate--;

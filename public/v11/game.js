@@ -496,7 +496,7 @@ function renderPlayersBar() {
       <div class="player-badge ${activeClass} ${bankruptClass}" style="border-color:${isActive ? p.color : 'transparent'}">
         <div class="badge-dot" style="background:${p.color}"></div>
         <span>${p.name}${p.isBot ? '🤖' : ''}</span>
-        <span class="badge-money">${p.bankrupt ? '💀' : p.money + '🪙'}</span>
+        <span class="badge-money">${p.bankrupt ? '💀' : p.money + '💰'}</span>
       </div>
     `;
   });
@@ -608,7 +608,7 @@ function movePlayer(steps) {
   // Check if passed START
   if (newPos < oldPos || (oldPos + steps >= BOARD_SIZE)) {
     player.money += 200;
-    $actionInfo.textContent = `${player.name} đi qua Xuất phát! +200 🪙`;
+    $actionInfo.textContent = `${player.name} đi qua Xuất phát! +200 💰`;
   }
 
   player.position = newPos;
@@ -662,7 +662,7 @@ function handleLand(player, cell) {
     sfxRent();
     player.money -= rent;
     owner.money += rent;
-    $actionInfo.textContent = `${player.name} trả ${rent}🪙 thuê cho ${owner.name}`;
+    $actionInfo.textContent = `${player.name} trả ${rent}💰 thuê cho ${owner.name}`;
     renderPlayersBar();
 
     if (player.money <= 0) {
@@ -682,7 +682,7 @@ function showQuizForLand(player, cell) {
   const questionText = q.question_text;
 
   let html = `
-    <h3>🏘️ ${cell.name} (${cell.price}🪙)</h3>
+    <h3>🏘️ ${cell.name} (${cell.price}💰)</h3>
     <p>Trả lời đúng = mua miễn phí!</p>
     <p style="margin-top:10px; font-size:1.05rem; font-weight:800;">${questionText}</p>
     <button class="btn-speak" onclick="window.ttsSpeak('${q.question_text.replace(/'/g,"\\'")}. A: ${q.option_a.replace(/'/g,"\\'")}. B: ${q.option_b.replace(/'/g,"\\'")}. C: ${q.option_c.replace(/'/g,"\\'")}. D: ${q.option_d.replace(/'/g,"\\'")}', 'vi')" style="margin:8px auto;display:flex;">🔊</button>
@@ -733,10 +733,10 @@ function showBuyOrSkipPopup(player, cell) {
   const canAfford = player.money >= cell.price;
   let html = `
     <h3>❌ Sai rồi!</h3>
-    <p>Mua ${cell.name} với giá ${cell.price}🪙?</p>
-    <p style="font-size:0.85rem; opacity:0.7;">Tiền hiện tại: ${player.money}🪙</p>
+    <p>Mua ${cell.name} với giá ${cell.price}💰?</p>
+    <p style="font-size:0.85rem; opacity:0.7;">Tiền hiện tại: ${player.money}💰</p>
     <div style="margin-top:14px;">
-      ${canAfford ? `<button class="popup-btn btn-yes" id="popup-buy">Mua (${cell.price}🪙)</button>` : ''}
+      ${canAfford ? `<button class="popup-btn btn-yes" id="popup-buy">Mua (${cell.price}💰)</button>` : ''}
       <button class="popup-btn btn-no" id="popup-skip">Bỏ qua</button>
     </div>
   `;
@@ -773,7 +773,7 @@ function handleQuiz(player, isForLand) {
   const q = getNextQuestion();
   let html = `
     <h3>❓ Câu hỏi</h3>
-    <p>Đúng +100 🪙!</p>
+    <p>Đúng +100 💰!</p>
     <p style="margin-top:10px; font-size:1.05rem; font-weight:800;">${q.question_text}</p>
     <button class="btn-speak" onclick="window.ttsSpeak('${q.question_text.replace(/'/g,"\\'")}. A: ${q.option_a.replace(/'/g,"\\'")}. B: ${q.option_b.replace(/'/g,"\\'")}. C: ${q.option_c.replace(/'/g,"\\'")}. D: ${q.option_d.replace(/'/g,"\\'")}', 'vi')" style="margin:8px auto;display:flex;">🔊</button>
     <div class="quiz-options">
@@ -802,7 +802,7 @@ function handleQuiz(player, isForLand) {
         player.money += 100;
         setTimeout(() => {
           hidePopup();
-          $actionInfo.textContent = `✅ Đúng! ${player.name} +100🪙!`;
+          $actionInfo.textContent = `✅ Đúng! ${player.name} +100💰!`;
           renderPlayersBar();
           endTurn();
         }, 1000);
@@ -836,7 +836,7 @@ function handleLucky(player) {
       player.properties.push(land.id);
       message += ` → ${land.name}`;
     } else {
-      message = '🎁 Không còn đất trống! +100🪙';
+      message = '🎁 Không còn đất trống! +100💰';
       player.money += 100;
     }
   } else if (event.type === 'lose_land') {
@@ -888,7 +888,7 @@ function handleLucky(player) {
 // --- Tax cell logic ---
 function handleTax(player, cell) {
   player.money -= cell.rent;
-  $actionInfo.textContent = `${player.name} nộp thuế -${cell.rent}🪙`;
+  $actionInfo.textContent = `${player.name} nộp thuế -${cell.rent}💰`;
   renderPlayersBar();
 
   if (player.money <= 0) {
@@ -952,7 +952,7 @@ function botHandleLand(player, cell) {
         cell.owner = player.id;
         player.properties.push(cell.id);
         sfxBuy();
-        $actionInfo.textContent = `❌ ${player.name} sai, mua ${cell.name} (${cell.price}🪙)`;
+        $actionInfo.textContent = `❌ ${player.name} sai, mua ${cell.name} (${cell.price}💰)`;
       } else {
         $actionInfo.textContent = `❌ ${player.name} sai, không đủ tiền. Bỏ qua!`;
       }
@@ -971,7 +971,7 @@ function botHandleQuiz(player) {
     if (isCorrect) {
       sfxCorrect();
       player.money += 100;
-      $actionInfo.textContent = `✅ ${player.name} trả lời đúng! +100🪙`;
+      $actionInfo.textContent = `✅ ${player.name} trả lời đúng! +100💰`;
     } else {
       sfxWrong();
       $actionInfo.textContent = `❌ ${player.name} trả lời sai!`;
@@ -1052,7 +1052,7 @@ function endGame() {
         <div class="rank-pos">${medals[i] || ''}</div>
         <div class="rank-info">
           <div class="rank-name">${p.name}${p.isBot ? ' 🤖' : ''}</div>
-          <div class="rank-money">${p.bankrupt ? '💀 Phá sản' : p.money + ' 🪙'}</div>
+          <div class="rank-money">${p.bankrupt ? '💀 Phá sản' : p.money + ' 💰'}</div>
           <div class="rank-props">${p.properties.length} tỉnh thành</div>
         </div>
       </div>
@@ -1062,6 +1062,12 @@ function endGame() {
   $resultRankings.innerHTML = html;
   $resultTitle.textContent = `🏆 ${ranked[0].name} thắng!`;
   showScreen('result');
+
+  // Check and show parent linking prompt after game ends
+  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+  if (window.checkAndShowPrompt && profile?.id) {
+    window.checkAndShowPrompt(profile.id);
+  }
 }
 
 // --- Popup helpers ---
@@ -1389,7 +1395,7 @@ function handleOnlineLanding(cellIdx) {
     roomRef.update({
       [`players/${state.myIdx}/money`]: player.money - rent,
       [`players/${cell.owner}/money`]: state.players[cell.owner].money + rent,
-      actionText: `💰 ${player.name} trả ${rent}🪙 tiền thuê cho ${state.players[cell.owner].name}`,
+      actionText: `💰 ${player.name} trả ${rent}💰 tiền thuê cho ${state.players[cell.owner].name}`,
       turnAction: 'done',
     });
     sfxRent();
@@ -1405,7 +1411,7 @@ function handleOnlineLanding(cellIdx) {
   } else if (cell.type === 'tax') {
     roomRef.update({
       [`players/${state.myIdx}/money`]: player.money - cell.rent,
-      actionText: `💰 ${player.name} nộp thuế ${cell.rent}🪙`,
+      actionText: `💰 ${player.name} nộp thuế ${cell.rent}💰`,
       turnAction: 'done',
     });
   } else {
@@ -1438,8 +1444,8 @@ function showOnlineQuiz(player, cell) {
     roomRef.update({ questionIdx: idx + 1 });
 
     const isLand = cell.type === 'land';
-    const title = isLand ? `🏘️ ${cell.name} (${cell.price}🪙)` : '❓ Câu hỏi';
-    const desc = isLand ? 'Đúng = mua miễn phí!' : 'Đúng +100🪙!';
+    const title = isLand ? `🏘️ ${cell.name} (${cell.price}💰)` : '❓ Câu hỏi';
+    const desc = isLand ? 'Đúng = mua miễn phí!' : 'Đúng +100💰!';
 
     showPopup(`
       <h3>${title}</h3><p>${desc}</p>
@@ -1455,7 +1461,7 @@ function showOnlineQuiz(player, cell) {
     $popupContent.querySelectorAll('.quiz-opt').forEach(btn => {
       btn.addEventListener('click', () => {
         $popupContent.querySelectorAll('.quiz-opt').forEach(b => b.style.pointerEvents = 'none');
-        const correct = btn.dataset.ans === q.correct_answer;
+        const correct = btn.dataset.ans.toLowerCase() === q.correct_answer.toLowerCase();
         btn.classList.add(correct ? 'correct' : 'wrong');
         if (!correct) {
           const cb = $popupContent.querySelector(`.quiz-opt[data-ans="${q.correct_answer}"]`);
@@ -1476,7 +1482,7 @@ function showOnlineQuiz(player, cell) {
             } else {
               roomRef.update({
                 [`players/${state.myIdx}/money`]: player.money + 100,
-                actionText: `✅ ${player.name} đúng! +100🪙`,
+                actionText: `✅ ${player.name} đúng! +100💰`,
                 turnAction: 'done',
               });
             }
@@ -1506,7 +1512,7 @@ function handleOnlineGameOver(data) {
   const medals = ['🥇', '🥈', '🥉', '4️⃣'];
   let html = '';
   ranked.forEach((p, i) => {
-    html += `<div class="rank-item ${i===0?'winner':''}"><div class="rank-pos">${medals[i]||''}</div><div class="rank-info"><div class="rank-name">${p.name}</div><div class="rank-money">${p.bankrupt?'💀 Phá sản':p.money+' 🪙'}</div></div></div>`;
+    html += `<div class="rank-item ${i===0?'winner':''}"><div class="rank-pos">${medals[i]||''}</div><div class="rank-info"><div class="rank-name">${p.name}</div><div class="rank-money">${p.bankrupt?'💀 Phá sản':p.money+' 💰'}</div></div></div>`;
   });
 
   $resultRankings.innerHTML = html;

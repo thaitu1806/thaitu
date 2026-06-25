@@ -95,6 +95,13 @@ async function handleExplain(req, res) {
     return errorResponse(res, 400, 'Thiếu thông tin câu hỏi', 'INVALID_INPUT');
   }
 
+  // Premium gate: require parent linking
+  const db = getDb();
+  const linkCheck = await db.execute({ sql: 'SELECT link_status FROM players WHERE id = ?', args: [player_id] });
+  if (linkCheck.rows[0]?.link_status !== 'linked') {
+    return res.status(403).json({ error: 'Cần liên kết phụ huynh để sử dụng tính năng này', require_link: true });
+  }
+
   if (!isAIEnabled()) {
     // Fallback: try to find static explanation from DB
     const fallback = await getStaticExplanation(question_text);
@@ -159,6 +166,13 @@ async function handleHint(req, res) {
     return errorResponse(res, 400, 'hint_level phải là 1 hoặc 2', 'INVALID_INPUT');
   }
 
+  // Premium gate: require parent linking
+  const db = getDb();
+  const linkCheck = await db.execute({ sql: 'SELECT link_status FROM players WHERE id = ?', args: [player_id] });
+  if (linkCheck.rows[0]?.link_status !== 'linked') {
+    return res.status(403).json({ error: 'Cần liên kết phụ huynh để sử dụng tính năng này', require_link: true });
+  }
+
   if (!isAIEnabled()) {
     return errorResponse(res, 503, 'AI không khả dụng', 'AI_UNAVAILABLE');
   }
@@ -203,12 +217,18 @@ async function handleChat(req, res) {
     return errorResponse(res, 400, 'Thiếu messages hoặc messages không hợp lệ', 'INVALID_INPUT');
   }
 
+  // Premium gate: require parent linking
+  const db = getDb();
+  const linkCheck = await db.execute({ sql: 'SELECT link_status FROM players WHERE id = ?', args: [player_id] });
+  if (linkCheck.rows[0]?.link_status !== 'linked') {
+    return res.status(403).json({ error: 'Cần liên kết phụ huynh để sử dụng tính năng này', require_link: true });
+  }
+
   if (!isAIEnabled()) {
     return errorResponse(res, 503, 'AI không khả dụng', 'AI_UNAVAILABLE');
   }
 
   // Chat-specific daily limit (20 messages/day)
-  const db = getDb();
   const chatCountResult = await db.execute({
     sql: `SELECT COUNT(*) as count FROM ai_usage_logs WHERE player_id = ? AND feature = 'chat' AND date(created_at) = date('now')`,
     args: [player_id],

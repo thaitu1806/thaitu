@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🚁 Đội Cứu Hộ - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- START SCREEN -->
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <h1 class="main-title">🚁 Đội Cứu Hộ</h1>
+        <p class="subtitle">Cứu 10 con vật mắc kẹt!</p>
+        <div class="collection-preview" id="collection-preview">
+          <span class="collection-label">🏆 Đã cứu:</span>
+          <span id="rescued-count">0</span>/10
+        </div>
+        <div class="rescued-grid" id="rescued-grid"></div>
+        <button class="btn-primary" id="btn-start">🚁 Bắt Đầu Nhiệm Vụ!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- MISSION SCREEN -->
+    <section id="mission-screen" class="screen">
+      <div class="mission-container">
+        <div class="mission-header">
+          <span class="mission-num" id="mission-num">Nhiệm vụ 1/10</span>
+          <span class="mission-fails" id="mission-fails">❌ 0/2</span>
+        </div>
+        <div class="mission-scene" id="mission-scene">
+          <div class="location-emoji" id="location-emoji"></div>
+          <div class="animal-emoji" id="animal-emoji"></div>
+          <div class="mission-text" id="mission-text"></div>
+        </div>
+        <div class="rescue-steps">
+          <div class="step" id="step-1"><span class="step-dot"></span></div>
+          <div class="step" id="step-2"><span class="step-dot"></span></div>
+          <div class="step" id="step-3"><span class="step-dot"></span></div>
+        </div>
+        <div class="timer-bar">
+          <div class="timer-fill" id="timer-fill"></div>
+        </div>
+        <div class="q-text" id="q-text"></div>
+        <div class="q-options" id="q-options"></div>
+        <div class="q-feedback" id="q-feedback"></div>
+      </div>
+    </section>
+
+    <!-- RESCUE SUCCESS -->
+    <section id="rescue-screen" class="screen">
+      <div class="rescue-success-container">
+        <div class="rescue-anim" id="rescue-anim"></div>
+        <h2 class="rescue-msg" id="rescue-msg">🎉 Cứu thành công!</h2>
+        <button class="btn-primary" id="btn-next-mission">➡️ Nhiệm vụ tiếp</button>
+      </div>
+    </section>
+
+    <!-- RESULT SCREEN -->
+    <section id="result-screen" class="screen">
+      <div class="result-container">
+        <h2 class="result-title" id="result-title">🏆 Kết Quả Cứu Hộ!</h2>
+        <div class="result-score" id="result-score">0</div>
+        <div class="result-label">con vật được cứu</div>
+        <div class="result-collection" id="result-collection"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Chơi lại</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

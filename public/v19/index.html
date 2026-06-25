@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🔍 Thám Tử Nhí - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- SETUP SCREEN -->
+    <section id="setup-screen" class="screen active">
+      <div class="setup-container">
+        <div class="setup-icon">🔍🕵️</div>
+        <h1 class="setup-title">Thám Tử Nhí</h1>
+        <p class="setup-subtitle">Giải mã manh mối, phá án!</p>
+        <div class="setup-section">
+          <label class="setup-label">📚 Môn học</label>
+          <div class="btn-group" id="subject-group">
+            <button class="btn-option active" data-subject="math">Toán</button>
+            <button class="btn-option" data-subject="vietnamese">Tiếng Việt</button>
+            <button class="btn-option" data-subject="english">English</button>
+            <button class="btn-option" data-subject="mix">Trộn</button>
+          </div>
+        </div>
+        <div class="setup-section">
+          <label class="setup-label">📊 Mức độ</label>
+          <div class="btn-group" id="difficulty-group">
+            <button class="btn-option active" data-difficulty="easy">Dễ</button>
+            <button class="btn-option" data-difficulty="medium">Trung bình</button>
+            <button class="btn-option" data-difficulty="hard">Khó</button>
+          </div>
+        </div>
+        <div class="setup-stats">
+          <div class="stat-item">🏆 Vụ án đã phá: <strong id="cases-solved">0</strong>/6</div>
+        </div>
+        <button class="btn-start" id="btn-start">🔍 Bắt đầu điều tra!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- CASE SELECT SCREEN -->
+    <section id="case-screen" class="screen">
+      <div class="case-container">
+        <h2 class="case-title">📁 Hồ Sơ Vụ Án</h2>
+        <p class="case-subtitle">Chọn vụ án để điều tra</p>
+        <div class="case-grid" id="case-grid"></div>
+        <button class="btn-back" id="btn-back-setup">🔙 Quay lại</button>
+      </div>
+    </section>
+
+    <!-- INVESTIGATION SCREEN -->
+    <section id="investigation-screen" class="screen">
+      <div class="investigation-container">
+        <!-- Case header -->
+        <div class="case-header">
+          <div class="case-badge" id="case-badge">Vụ án #1</div>
+          <h2 class="case-question" id="case-story"></h2>
+        </div>
+
+        <!-- Clue Board -->
+        <div class="clue-board" id="clue-board">
+          <div class="clue-pin" data-clue="0"><span class="pin-icon">📌</span><span class="clue-text">???</span></div>
+          <div class="clue-pin" data-clue="1"><span class="pin-icon">📌</span><span class="clue-text">???</span></div>
+          <div class="clue-pin" data-clue="2"><span class="pin-icon">📌</span><span class="clue-text">???</span></div>
+          <div class="clue-pin" data-clue="3"><span class="pin-icon">📌</span><span class="clue-text">???</span></div>
+          <div class="clue-pin" data-clue="4"><span class="pin-icon">📌</span><span class="clue-text">???</span></div>
+        </div>
+
+        <!-- Quiz area (shown when answering) -->
+        <div class="quiz-area" id="quiz-area" style="display:none;">
+          <div class="quiz-prompt">🔍 Trả lời đúng để mở manh mối!</div>
+          <div class="timer-bar">
+            <div class="timer-fill" id="timer-fill"></div>
+          </div>
+          <div class="quiz-question" id="quiz-question"></div>
+          <div class="quiz-answers" id="quiz-answers">
+            <button class="ans-btn" data-opt="a"></button>
+            <button class="ans-btn" data-opt="b"></button>
+            <button class="ans-btn" data-opt="c"></button>
+            <button class="ans-btn" data-opt="d"></button>
+          </div>
+        </div>
+
+        <!-- Action area -->
+        <div class="action-area" id="action-area">
+          <button class="btn-investigate" id="btn-investigate">🔍 Tìm manh mối tiếp</button>
+          <button class="btn-deduce" id="btn-deduce" style="display:none;">🧠 Phán đoán thủ phạm!</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEDUCTION SCREEN -->
+    <section id="deduction-screen" class="screen">
+      <div class="deduction-container">
+        <h2 class="deduction-title">🧠 Ai là thủ phạm?</h2>
+        <p class="deduction-subtitle" id="deduction-story"></p>
+        <div class="suspect-lineup" id="suspect-lineup"></div>
+        <button class="btn-back" id="btn-back-investigation">🔙 Xem lại manh mối</button>
+      </div>
+    </section>
+
+    <!-- RESULT SCREEN -->
+    <section id="result-screen" class="screen">
+      <div class="result-container" id="result-container"></div>
+    </section>
+  </div>
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

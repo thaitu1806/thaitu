@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🧙 Lớp Học Phép Thuật - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- MAIN MENU -->
+    <section id="menu-screen" class="screen active">
+      <div class="container">
+        <h1 class="title">🧙 Lớp Học Phép Thuật</h1>
+        <p class="subtitle">Học thần chú, chiến đấu bóng tối!</p>
+        <div class="menu-stats">
+          <div class="stat-item"><span class="stat-icon">📖</span><span id="stat-spells">0/20</span><span class="stat-label">Phép thuật</span></div>
+          <div class="stat-item"><span class="stat-icon">👹</span><span id="stat-bosses">0/5</span><span class="stat-label">Boss hạ</span></div>
+        </div>
+        <div class="menu-actions">
+          <button class="btn-magic btn-study" id="btn-study">📝 Học Phép (Quiz)</button>
+          <button class="btn-magic btn-book" id="btn-book">📖 Sách Phép Thuật</button>
+          <button class="btn-magic btn-boss" id="btn-boss">⚔️ Đấu Boss</button>
+        </div>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- QUIZ SCREEN -->
+    <section id="quiz-screen" class="screen">
+      <div class="container">
+        <div class="quiz-header">
+          <div class="wand-display">🪄</div>
+          <div class="fragment-progress">
+            <span id="fragment-count">0/3</span> mảnh ghép
+            <div class="fragment-bar"><div class="fragment-fill" id="fragment-fill"></div></div>
+          </div>
+        </div>
+        <div class="quiz-card" id="quiz-card">
+          <p class="quiz-question" id="quiz-question">Đang tải câu hỏi...</p>
+          <div class="quiz-options" id="quiz-options"></div>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+        <button class="btn-magic btn-back" id="btn-back-quiz">🔙 Quay lại</button>
+      </div>
+    </section>
+
+    <!-- SPELL BOOK SCREEN -->
+    <section id="book-screen" class="screen">
+      <div class="container">
+        <h2 class="book-title">📖 Sách Phép Thuật</h2>
+        <div class="element-tabs">
+          <button class="tab-btn active" data-element="fire">🔥 Lửa</button>
+          <button class="tab-btn" data-element="water">💧 Nước</button>
+          <button class="tab-btn" data-element="earth">🌿 Đất</button>
+          <button class="tab-btn" data-element="wind">💨 Gió</button>
+        </div>
+        <div class="spell-grid" id="spell-grid"></div>
+        <button class="btn-magic btn-back" id="btn-back-book">🔙 Quay lại</button>
+      </div>
+    </section>
+
+    <!-- BOSS SCREEN -->
+    <section id="boss-screen" class="screen">
+      <div class="container">
+        <h2 class="boss-title" id="boss-title">⚔️ Chọn Boss</h2>
+        <div class="boss-list" id="boss-list"></div>
+        <div class="boss-arena" id="boss-arena" style="display:none">
+          <div class="boss-info">
+            <div class="boss-emoji" id="boss-emoji">👹</div>
+            <div class="boss-name" id="boss-name">Boss</div>
+            <div class="boss-hp-bar"><div class="boss-hp-fill" id="boss-hp-fill"></div></div>
+            <div class="boss-hp-text" id="boss-hp-text">HP: 3/3</div>
+          </div>
+          <div class="player-spells" id="player-spells"></div>
+          <div class="battle-log" id="battle-log"></div>
+        </div>
+        <button class="btn-magic btn-back" id="btn-back-boss">🔙 Quay lại</button>
+      </div>
+    </section>
+
+    <!-- VICTORY SCREEN -->
+    <section id="victory-screen" class="screen">
+      <div class="container">
+        <div class="victory-content">
+          <div class="victory-emoji">🏆</div>
+          <h2 class="victory-title" id="victory-title">Chiến Thắng!</h2>
+          <p class="victory-desc" id="victory-desc">Bạn đã đánh bại boss!</p>
+          <button class="btn-magic" id="btn-victory-back">🔙 Quay lại</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Sparkle effects container -->
+  <div class="sparkles" id="sparkles"></div>
+
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

@@ -542,6 +542,10 @@
         })
       });
     } catch (e) { /* non-critical */ }
+    // Check and show parent linking prompt after session save
+    if (window.checkAndShowPrompt && player?.id) {
+      window.checkAndShowPrompt(player.id);
+    }
   }
 
 })();

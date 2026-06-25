@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>👗 Thời Trang Show - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- START SCREEN -->
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <h1 class="main-title">👗 Thời Trang Show</h1>
+        <p class="subtitle">Thiết kế outfit, trình diễn catwalk!</p>
+        <div class="stats-box">
+          <span>🧵 Vải: <span id="start-fabric">0</span></span>
+          <span>👕 Đã mở: <span id="start-unlocked">0</span>/15</span>
+        </div>
+        <button class="btn-primary" id="btn-start">🧵 Kiếm Vải!</button>
+        <button class="btn-secondary" id="btn-wardrobe">👗 Tủ Đồ</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- QUIZ SCREEN -->
+    <section id="quiz-screen" class="screen">
+      <div class="game-container">
+        <div class="game-header">
+          <span class="fabric-count">🧵 <span id="fabric">0</span></span>
+          <span class="progress-count">❓ <span id="q-num">1</span>/10</span>
+          <span class="timer-count">⏱️ <span id="timer-text">10</span></span>
+        </div>
+        <div class="timer-bar">
+          <div class="timer-fill" id="timer-fill"></div>
+        </div>
+        <div class="question-box">
+          <p class="q-text" id="q-text"></p>
+          <div class="q-options" id="q-options"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WARDROBE SCREEN -->
+    <section id="wardrobe-screen" class="screen">
+      <div class="wardrobe-container">
+        <div class="wardrobe-header">
+          <h2>👗 Tủ Đồ</h2>
+          <span class="fabric-badge">🧵 <span id="wardrobe-fabric">0</span></span>
+        </div>
+
+        <div class="character-display">
+          <div class="character" id="character">
+            <div class="char-body">🧍</div>
+            <div class="equipped-items" id="equipped-items"></div>
+          </div>
+        </div>
+
+        <div class="category-tabs" id="category-tabs"></div>
+        <div class="items-grid" id="items-grid"></div>
+
+        <div class="wardrobe-actions">
+          <button class="btn-catwalk" id="btn-catwalk">✨ Catwalk!</button>
+          <button class="btn-back" id="btn-back-start">🔙 Về</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATWALK SCREEN -->
+    <section id="catwalk-screen" class="screen">
+      <div class="catwalk-container">
+        <div class="sparkles" id="sparkles"></div>
+        <h2 class="catwalk-title">✨ Trình Diễn! ✨</h2>
+        <div class="runway">
+          <div class="model" id="model-display"></div>
+        </div>
+        <div class="judges" id="judges"></div>
+        <div class="score-display">
+          <span class="score-label">Điểm Catwalk</span>
+          <span class="score-value" id="catwalk-score">0</span>
+          <span class="score-max">/100</span>
+        </div>
+        <div class="result-detail" id="catwalk-detail"></div>
+        <button class="btn-primary" id="btn-back-wardrobe">👗 Về Tủ Đồ</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

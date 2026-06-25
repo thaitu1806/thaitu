@@ -15,9 +15,9 @@ import {
 describe('game-logic.js module import', () => {
   it('exports BOARD_CONFIG with required fields', () => {
     expect(BOARD_CONFIG.totalTiles).toBe(36);
-    expect(BOARD_CONFIG.finishPosition).toBe(36);
+    expect(BOARD_CONFIG.finishPosition).toBe(35);
     expect(BOARD_CONFIG.starTiles).toEqual([4, 13, 22, 31]);
-    expect(BOARD_CONFIG.trapTiles).toEqual([8, 17, 26, 35]);
+    expect(BOARD_CONFIG.trapTiles).toEqual([8, 17, 26]);
   });
 
   it('exports all pure logic functions', () => {
@@ -34,7 +34,7 @@ describe('game-logic.js module import', () => {
 
   it('calculateTargetTile clamps to finish', () => {
     expect(calculateTargetTile(10, 5)).toBe(15);
-    expect(calculateTargetTile(33, 5)).toBe(36);
+    expect(calculateTargetTile(33, 5)).toBe(35);
   });
 
   it('getNextPlayer wraps around', () => {
@@ -44,7 +44,7 @@ describe('game-logic.js module import', () => {
 
   it('applySpecialTileEffect handles star, trap, normal', () => {
     expect(applySpecialTileEffect(30, 'star')).toBe(32);
-    expect(applySpecialTileEffect(35, 'star')).toBe(36);
+    expect(applySpecialTileEffect(35, 'star')).toBe(35);
     expect(applySpecialTileEffect(10, 'trap')).toBe(7);
     expect(applySpecialTileEffect(2, 'trap')).toBe(0);
     expect(applySpecialTileEffect(10, 'normal')).toBe(10);

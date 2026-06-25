@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🚀 Giải Cứu Hành Tinh - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- SETUP -->
+    <section id="setup-screen" class="screen active">
+      <div class="setup-container">
+        <div class="setup-icon">🚀🌍🦠</div>
+        <h1 class="setup-title">Giải Cứu Hành Tinh</h1>
+        <p class="setup-subtitle">Tiêu diệt virus, cứu cư dân!</p>
+        <div class="setup-section">
+          <label class="setup-label">📚 Môn học</label>
+          <div class="btn-group" id="subject-group">
+            <button class="btn-option active" data-subject="math">Toán</button>
+            <button class="btn-option" data-subject="vietnamese">Tiếng Việt</button>
+            <button class="btn-option" data-subject="english">English</button>
+            <button class="btn-option" data-subject="mix">Trộn</button>
+          </div>
+        </div>
+        <div class="setup-section">
+          <label class="setup-label">📊 Mức độ</label>
+          <div class="btn-group" id="difficulty-group">
+            <button class="btn-option active" data-difficulty="easy">Dễ</button>
+            <button class="btn-option" data-difficulty="medium">Trung bình</button>
+            <button class="btn-option" data-difficulty="hard">Khó</button>
+          </div>
+        </div>
+        <div class="rescued-preview">🐰 Cư dân đã cứu: <strong id="total-rescued">0</strong></div>
+        <button class="btn-start" id="btn-start">🚀 Xuất phát!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- MAP -->
+    <section id="map-screen" class="screen">
+      <div class="map-header">
+        <h2>🗺️ Bản đồ hành tinh</h2>
+        <div class="map-stats"><span id="map-rescued">0</span> 🐰 đã cứu</div>
+      </div>
+      <div class="map-zones" id="map-zones"></div>
+      <div class="map-story" id="map-story"></div>
+    </section>
+
+    <!-- BATTLE -->
+    <section id="battle-screen" class="screen">
+      <div class="battle-bg" id="battle-bg"></div>
+      <div class="battle-hud">
+        <div class="hud-zone" id="hud-zone">🌲 Rừng Xanh</div>
+        <div class="hud-progress" id="hud-progress">1/5</div>
+        <div class="hud-shield" id="hud-shield"></div>
+      </div>
+      <div class="battle-arena">
+        <div class="enemy-area" id="enemy-area">
+          <div class="enemy-glow"></div>
+          <div class="enemy" id="enemy">🦠</div>
+          <div class="enemy-hp-bar"><div class="enemy-hp-fill" id="enemy-hp-fill"></div></div>
+          <div class="enemy-label" id="enemy-label">Virus</div>
+        </div>
+        <div class="hero-area">
+          <div class="hero" id="hero">🚀</div>
+          <div class="hero-effect" id="hero-effect"></div>
+        </div>
+      </div>
+      <div class="battle-question" id="battle-question">
+        <div class="bq-timer"><div class="bq-timer-fill" id="bq-timer-fill"></div></div>
+        <div class="bq-text" id="bq-text"></div>
+        <div class="bq-answers" id="bq-answers">
+          <button class="bq-btn" data-opt="a"></button>
+          <button class="bq-btn" data-opt="b"></button>
+          <button class="bq-btn" data-opt="c"></button>
+          <button class="bq-btn" data-opt="d"></button>
+        </div>
+        <div class="bq-status" id="bq-status"></div>
+      </div>
+    </section>
+
+    <!-- BOSS -->
+    <section id="boss-screen" class="screen">
+      <div class="boss-bg" id="boss-bg"></div>
+      <div class="boss-intro" id="boss-intro">
+        <div class="boss-emoji" id="boss-emoji">👾</div>
+        <div class="boss-name" id="boss-name">Boss Virus!</div>
+        <div class="boss-desc">Hạ boss bằng 3 câu đúng liên tiếp!</div>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="result-screen" class="screen">
+      <div class="result-container" id="result-container"></div>
+    </section>
+  </div>
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

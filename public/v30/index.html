@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🎪 Giải Đố Vui - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- START SCREEN -->
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <h1 class="main-title">🎪 Giải Đố Vui</h1>
+        <p class="subtitle">10 vòng, mỗi vòng 1 thể loại khác nhau!</p>
+        <div class="high-score-box">
+          <span>🏆 Kỷ lục: </span><span id="high-score">0</span> điểm
+        </div>
+        <button class="btn-primary" id="btn-start">🎮 Bắt Đầu!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- WHEEL SCREEN -->
+    <section id="wheel-screen" class="screen">
+      <div class="wheel-container">
+        <h2 class="wheel-title">Vòng <span id="wheel-round">1</span>/10</h2>
+        <p class="wheel-subtitle">Quay xem thể loại nào!</p>
+        <div class="wheel-wrapper">
+          <div class="wheel" id="wheel">
+            <div class="wheel-segment seg-1">Bình thường</div>
+            <div class="wheel-segment seg-2">Đúng/Sai</div>
+            <div class="wheel-segment seg-3">Tốc Độ</div>
+            <div class="wheel-segment seg-4">Vàng</div>
+            <div class="wheel-segment seg-5">Ngược</div>
+          </div>
+          <div class="wheel-pointer">▼</div>
+        </div>
+        <div class="round-result" id="round-result"></div>
+      </div>
+    </section>
+
+    <!-- QUESTION SCREEN -->
+    <section id="question-screen" class="screen">
+      <div class="question-container">
+        <div class="q-header">
+          <span class="q-round" id="q-round">Vòng 1/10</span>
+          <span class="q-type-badge" id="q-type-badge">Bình thường</span>
+          <span class="q-score" id="q-score">0 điểm</span>
+        </div>
+        <div class="timer-bar">
+          <div class="timer-fill" id="timer-fill"></div>
+        </div>
+        <div class="timer-text" id="timer-text"></div>
+        <div class="q-text" id="q-text"></div>
+        <div class="q-options" id="q-options"></div>
+        <div class="q-feedback" id="q-feedback"></div>
+      </div>
+    </section>
+
+    <!-- RESULT SCREEN -->
+    <section id="result-screen" class="screen">
+      <div class="result-container">
+        <div class="confetti" id="confetti"></div>
+        <h2 class="result-title" id="result-title">🎉 Kết Quả!</h2>
+        <div class="result-score" id="result-score">0</div>
+        <div class="result-label">điểm</div>
+        <div class="result-detail" id="result-detail"></div>
+        <div class="result-highscore" id="result-highscore"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Chơi lại</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

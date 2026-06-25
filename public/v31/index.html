@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>📮 Bưu Điện Vui - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- START SCREEN -->
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <h1 class="main-title">📮 Bưu Điện Vui</h1>
+        <p class="subtitle">Giao thư đúng địa chỉ trong 60 giây!</p>
+        <div class="stats-box">
+          <span>📬 Tổng thư đã giao: </span><span id="total-deliveries">0</span>
+        </div>
+        <div class="subject-selector">
+          <label>Môn học:</label>
+          <div class="subject-btns">
+            <button class="subj-btn active" data-subject="math">🔢 Toán</button>
+            <button class="subj-btn" data-subject="vietnamese">📖 Tiếng Việt</button>
+            <button class="subj-btn" data-subject="english">🔤 English</button>
+          </div>
+        </div>
+        <button class="btn-primary" id="btn-start">🚗 Bắt Đầu Giao Thư!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- GAME SCREEN -->
+    <section id="game-screen" class="screen">
+      <div class="game-container">
+        <div class="game-header">
+          <span class="delivery-count" id="delivery-count">📬 0/8</span>
+          <span class="round-timer" id="round-timer">⏱️ 60s</span>
+          <span class="game-score" id="game-score">⭐ 0</span>
+        </div>
+
+        <!-- CITY MAP -->
+        <div class="city-map" id="city-map">
+          <div class="truck" id="truck">🚗</div>
+          <div class="house" data-house="1"><span class="house-num">1</span><span class="house-icon">🏠</span></div>
+          <div class="house" data-house="2"><span class="house-num">2</span><span class="house-icon">🏡</span></div>
+          <div class="house" data-house="3"><span class="house-num">3</span><span class="house-icon">🏠</span></div>
+          <div class="house" data-house="4"><span class="house-num">4</span><span class="house-icon">🏡</span></div>
+          <div class="house" data-house="5"><span class="house-num">5</span><span class="house-icon">🏠</span></div>
+          <div class="house" data-house="6"><span class="house-num">6</span><span class="house-icon">🏡</span></div>
+          <div class="house" data-house="7"><span class="house-num">7</span><span class="house-icon">🏠</span></div>
+          <div class="house" data-house="8"><span class="house-num">8</span><span class="house-icon">🏡</span></div>
+        </div>
+
+        <!-- QUESTION AREA -->
+        <div class="question-area" id="question-area">
+          <div class="q-text" id="q-text">Đang tải câu hỏi...</div>
+          <div class="timer-bar">
+            <div class="timer-fill" id="timer-fill"></div>
+          </div>
+          <div class="q-options" id="q-options"></div>
+          <div class="q-feedback" id="q-feedback"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULT SCREEN -->
+    <section id="result-screen" class="screen">
+      <div class="result-container">
+        <div class="confetti" id="confetti"></div>
+        <h2 class="result-title" id="result-title">📮 Kết Quả Giao Thư!</h2>
+        <div class="result-score" id="result-score">0</div>
+        <div class="result-label">điểm</div>
+        <div class="result-detail" id="result-detail"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Giao Tiếp!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

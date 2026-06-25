@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🚀 Phi Hành Gia Nhí - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- SETUP -->
+    <section id="setup-screen" class="screen active">
+      <div class="setup-container">
+        <div class="setup-icon">🚀🌍✨</div>
+        <h1 class="setup-title">Phi Hành Gia Nhí</h1>
+        <p class="setup-subtitle">Khám phá Hệ Mặt Trời!</p>
+        <div class="setup-section">
+          <label class="setup-label">📚 Môn học</label>
+          <div class="btn-group" id="subject-group">
+            <button class="btn-option active" data-subject="math">Toán</button>
+            <button class="btn-option" data-subject="vietnamese">Tiếng Việt</button>
+            <button class="btn-option" data-subject="english">English</button>
+            <button class="btn-option" data-subject="mix">Trộn</button>
+          </div>
+        </div>
+        <div class="setup-section">
+          <label class="setup-label">📊 Mức độ</label>
+          <div class="btn-group" id="difficulty-group">
+            <button class="btn-option active" data-difficulty="easy">Dễ</button>
+            <button class="btn-option" data-difficulty="medium">Trung bình</button>
+            <button class="btn-option" data-difficulty="hard">Khó</button>
+          </div>
+        </div>
+        <div class="setup-stats">🏆 Hành tinh đã khám phá: <strong id="planets-explored">0</strong>/8</div>
+        <button class="btn-start" id="btn-start">🚀 Cất cánh!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- MAP -->
+    <section id="map-screen" class="screen">
+      <div class="space-bg" id="space-bg"></div>
+      <div class="map-header">
+        <h2>🗺️ Hệ Mặt Trời</h2>
+        <div class="map-fuel">⛽ Nhiên liệu: <span id="map-fuel-display">100%</span></div>
+      </div>
+      <div class="planet-path" id="planet-path"></div>
+      <div class="map-fact" id="map-fact"></div>
+    </section>
+
+    <!-- FLYING (transition animation) -->
+    <section id="fly-screen" class="screen">
+      <div class="fly-bg">
+        <div class="stars-layer"></div>
+      </div>
+      <div class="fly-ship">🚀</div>
+      <div class="fly-text" id="fly-text">Đang bay đến...</div>
+    </section>
+
+    <!-- PLANET (quiz on planet) -->
+    <section id="planet-screen" class="screen">
+      <div class="planet-bg" id="planet-bg"></div>
+      <div class="planet-hud">
+        <div class="ph-planet" id="ph-planet">🔴 Sao Hỏa</div>
+        <div class="ph-fuel">⛽ <span id="ph-fuel">100</span>%</div>
+        <div class="ph-progress" id="ph-progress">1/5</div>
+      </div>
+      <div class="planet-visual">
+        <div class="planet-emoji" id="planet-emoji">🔴</div>
+        <div class="planet-sample" id="planet-sample"></div>
+      </div>
+      <div class="planet-question" id="planet-question">
+        <div class="pq-timer"><div class="pq-timer-fill" id="pq-timer-fill"></div></div>
+        <div class="pq-text" id="pq-text"></div>
+        <div class="pq-answers" id="pq-answers">
+          <button class="pq-btn" data-opt="a"></button>
+          <button class="pq-btn" data-opt="b"></button>
+          <button class="pq-btn" data-opt="c"></button>
+          <button class="pq-btn" data-opt="d"></button>
+        </div>
+        <div class="pq-status" id="pq-status"></div>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="result-screen" class="screen">
+      <div class="result-container" id="result-container"></div>
+    </section>
+  </div>
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

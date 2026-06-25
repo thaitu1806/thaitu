@@ -226,7 +226,7 @@ document.getElementById('answer-grid').addEventListener('click', e => {
   clearInterval(timerId);
 
   const q = State._q;
-  const isCorrect = btn.dataset.opt === q.correct_answer;
+  const isCorrect = btn.dataset.opt.toLowerCase() === q.correct_answer.toLowerCase();
   document.querySelectorAll('#answer-grid .ans-btn').forEach(b => b.disabled = true);
   btn.classList.add(isCorrect ? 'correct' : 'wrong');
   if (!isCorrect) {
@@ -387,6 +387,12 @@ function endGame() {
       <button class="result-btn home" onclick="location.href='/'">🏠 Về trang chủ</button>
     </div>
   `;
+
+  // Check and show parent linking prompt after game ends
+  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+  if (window.checkAndShowPrompt && profile?.id) {
+    window.checkAndShowPrompt(profile.id);
+  }
 }
 
 // ===== EXIT =====

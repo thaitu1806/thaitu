@@ -105,16 +105,16 @@ describe('Property 3: Target Tile Calculation', () => {
   /**
    * Validates: Requirements 4.1, 4.6
    * For any player at position P with dice total D,
-   * the calculated target tile SHALL equal min(P + D, 36).
+   * the calculated target tile SHALL equal min(P + D, 35).
    */
-  it('target tile equals min(position + diceTotal, 36)', () => {
+  it('target tile equals min(position + diceTotal, 35)', () => {
     fc.assert(
       fc.property(
-        fc.integer({ min: 0, max: 35 }),
+        fc.integer({ min: 0, max: 34 }),
         fc.integer({ min: 2, max: 12 }),
         (position, diceTotal) => {
           const target = calculateTargetTile(position, diceTotal);
-          return target === Math.min(position + diceTotal, 36);
+          return target === Math.min(position + diceTotal, 35);
         }
       ),
       { numRuns: 100 }
@@ -236,11 +236,11 @@ describe('Property 7: Special Tile Effects With Boundary Clamping', () => {
    * Star tile: final position = min(P + 2, 36)
    * Trap tile: final position = max(P - 3, 0)
    */
-  it('star tile advances +2 clamped to 36', () => {
+  it('star tile advances +2 clamped to 35', () => {
     fc.assert(
-      fc.property(fc.integer({ min: 0, max: 36 }), (position) => {
+      fc.property(fc.integer({ min: 0, max: 35 }), (position) => {
         const result = applySpecialTileEffect(position, 'star');
-        return result === Math.min(position + 2, 36);
+        return result === Math.min(position + 2, 35);
       }),
       { numRuns: 100 }
     );
@@ -309,15 +309,15 @@ describe('Property 9: Win Condition', () => {
     );
   });
 
-  it('checkWinCondition returns -1 when no player at 36', () => {
+  it('checkWinCondition returns -1 when no player at 35', () => {
     fc.assert(
       fc.property(
         fc.integer({ min: 2, max: 4 }),
-        fc.array(fc.integer({ min: 0, max: 35 }), { minLength: 2, maxLength: 4 }),
+        fc.array(fc.integer({ min: 0, max: 34 }), { minLength: 2, maxLength: 4 }),
         (playerCount, positions) => {
           const validPositions = positions.slice(0, playerCount);
-          // Ensure no one is at 36
-          const noWinner = validPositions.every((p) => p < 36);
+          // Ensure no one is at 35 (finish)
+          const noWinner = validPositions.every((p) => p < 35);
           if (!noWinner) return true; // skip this case
           return checkWinCondition(validPositions) === -1;
         }

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🏙️ Xây Thành Phố - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- CITY SCREEN -->
+    <section id="city-screen" class="screen active">
+      <div class="city-container">
+        <h1 class="city-title">🏙️ Thành Phố Của Em</h1>
+        <div class="city-hud">
+          <div class="hud-item"><span class="hud-icon">🧱</span><span id="hud-brick">0</span></div>
+          <div class="hud-item"><span class="hud-icon">🌲</span><span id="hud-wood">0</span></div>
+          <div class="hud-item"><span class="hud-icon">🔷</span><span id="hud-glass">0</span></div>
+          <div class="hud-item"><span class="hud-icon">👥</span><span id="hud-pop">0</span></div>
+        </div>
+        <div class="city-grid" id="city-grid"></div>
+        <div class="city-actions">
+          <button class="btn-action btn-quiz" id="btn-quiz">📝 Làm Quiz kiếm vật liệu</button>
+          <button class="btn-action btn-build" id="btn-build">🔨 Xây dựng</button>
+        </div>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- BUILD SCREEN -->
+    <section id="build-screen" class="screen">
+      <div class="build-container">
+        <h2 class="build-title">🔨 Chọn công trình</h2>
+        <div class="build-list" id="build-list"></div>
+        <p class="build-hint">Chọn công trình rồi chạm ô trống trên bản đồ!</p>
+        <div class="city-grid build-mode" id="build-grid"></div>
+        <button class="btn-action btn-back" id="btn-back-city">↩️ Quay lại</button>
+      </div>
+    </section>
+
+    <!-- QUIZ SCREEN -->
+    <section id="quiz-screen" class="screen">
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <span class="quiz-progress" id="quiz-progress">Câu 1/10</span>
+          <span class="quiz-score" id="quiz-score">✅ 0</span>
+        </div>
+        <div class="quiz-question" id="quiz-question"></div>
+        <div class="quiz-answers" id="quiz-answers">
+          <button class="quiz-ans" data-opt="a"></button>
+          <button class="quiz-ans" data-opt="b"></button>
+          <button class="quiz-ans" data-opt="c"></button>
+          <button class="quiz-ans" data-opt="d"></button>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+      </div>
+    </section>
+
+    <!-- QUIZ RESULT SCREEN -->
+    <section id="result-screen" class="screen">
+      <div class="result-container">
+        <h2 class="result-title">📦 Vật liệu kiếm được!</h2>
+        <div class="result-score" id="result-score"></div>
+        <div class="result-materials" id="result-materials"></div>
+        <button class="btn-action btn-quiz" id="btn-back-result">🏙️ Về thành phố</button>
+      </div>
+    </section>
+
+    <!-- SUBJECT SELECT -->
+    <section id="subject-screen" class="screen">
+      <div class="subject-container">
+        <h2 class="subject-title">📝 Chọn môn học</h2>
+        <div class="subject-options">
+          <button class="subject-btn" data-subject="math">🔢 Toán</button>
+          <button class="subject-btn" data-subject="vietnamese">📖 Tiếng Việt</button>
+          <button class="subject-btn" data-subject="english">🔤 English</button>
+        </div>
+        <div class="difficulty-options">
+          <button class="diff-btn active" data-diff="easy">Dễ</button>
+          <button class="diff-btn" data-diff="medium">Vừa</button>
+          <button class="diff-btn" data-diff="hard">Khó</button>
+        </div>
+        <button class="btn-action btn-quiz" id="btn-start-quiz">🚀 Bắt đầu!</button>
+        <button class="btn-action btn-back" id="btn-back-subject">↩️ Quay lại</button>
+      </div>
+    </section>
+  </div>
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

@@ -192,6 +192,39 @@
     .empty-state .empty-emoji { font-size: 2.5rem; margin-bottom: 8px; }
     .empty-state p { font-size: 0.9rem; font-weight: 700; }
 
+    /* Link status section */
+    .link-status-card {
+      background: white; border-radius: 20px; padding: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1); margin-bottom: 14px;
+      text-align: center;
+    }
+    .link-status-card h3 {
+      font-size: 1rem; font-weight: 800; color: #333; margin-bottom: 12px;
+    }
+    .link-code-display {
+      font-size: 1.8rem; font-weight: 900; letter-spacing: 4px;
+      color: #4facfe; background: #f0f8ff; border: 2px dashed #4facfe;
+      border-radius: 14px; padding: 14px 20px; margin: 10px auto;
+      display: inline-block;
+    }
+    .link-code-instruction {
+      font-size: 0.85rem; color: #666; margin: 10px 0 12px; font-weight: 700;
+    }
+    .btn-copy-code {
+      padding: 10px 20px; background: linear-gradient(135deg, #4facfe, #00f2fe);
+      color: white; border: none; border-radius: 12px; font-size: 0.9rem;
+      font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: opacity 0.2s;
+    }
+    .btn-copy-code:hover { opacity: 0.9; }
+    .btn-copy-code:active { transform: scale(0.97); }
+    .link-status-linked {
+      font-size: 1rem; font-weight: 800; color: #22c55e;
+    }
+    .linked-parents {
+      font-size: 0.9rem; color: #555; margin-top: 6px; font-weight: 700;
+    }
+
     /* Links row */
     .profile-links {
       display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap;
@@ -240,6 +273,22 @@
       <div class="stats-row">
         <div class="stat-item">💎 <span class="stat-val" id="diamond-balance">0</span></div>
         <div class="stat-item">🔥 <span class="stat-val" id="streak-display">0 ngày</span></div>
+      </div>
+    </div>
+
+    <!-- Link status section -->
+    <div class="link-status-card" id="link-status-section" style="display:none">
+      <!-- Unlinked / prompted state -->
+      <div id="link-unlinked">
+        <h3>🔗 Mã liên kết phụ huynh</h3>
+        <div class="link-code-display" id="link-code-text">------</div>
+        <div class="link-code-instruction">Đưa mã này cho ba mẹ để liên kết nhé!</div>
+        <button class="btn-copy-code" id="btn-copy-code">📋 Sao chép mã</button>
+      </div>
+      <!-- Linked state -->
+      <div id="link-linked" style="display:none">
+        <div class="link-status-linked">✅ Đã liên kết ba mẹ</div>
+        <div class="linked-parents" id="linked-parents"></div>
       </div>
     </div>
 
@@ -456,7 +505,7 @@
           });
         }
       } catch {}
-      await Promise.all([loadDiamonds(), loadStreak(), loadStats(), loadInventory()]);
+      await Promise.all([loadDiamonds(), loadStreak(), loadStats(), loadInventory(), loadLinkStatus()]);
     }
 
     // --- Load diamond info + level ---
@@ -620,6 +669,43 @@
       document.body.appendChild(el);
       setTimeout(() => el.remove(), 2500);
     }
+    // --- Link Status Section ---
+    async function loadLinkStatus() {
+      if (!profile || !profile.id) return;
+      const section = document.getElementById('link-status-section');
+      try {
+        const res = await fetch(`/api/players/${profile.id}/link-status`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        section.style.display = 'block';
+
+        if (data.status === 'linked') {
+          document.getElementById('link-unlinked').style.display = 'none';
+          document.getElementById('link-linked').style.display = 'block';
+          const parentNames = (data.parents || []).map(p => p.display_name).join(', ');
+          document.getElementById('linked-parents').textContent = parentNames || '';
+        } else {
+          document.getElementById('link-unlinked').style.display = 'block';
+          document.getElementById('link-linked').style.display = 'none';
+          document.getElementById('link-code-text').textContent = data.code || '------';
+        }
+      } catch {
+        // Silently fail — section stays hidden
+      }
+    }
+
+    // Copy link code button
+    document.getElementById('btn-copy-code').addEventListener('click', () => {
+      const code = document.getElementById('link-code-text').textContent;
+      if (code && code !== '------') {
+        navigator.clipboard.writeText(code).then(() => {
+          showToast('✅ Đã sao chép mã: ' + code);
+        }).catch(() => {
+          showToast('📋 Mã: ' + code);
+        });
+      }
+    });
   </script>
 </body>
 </html>

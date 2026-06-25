@@ -502,14 +502,14 @@ function botAnswer(question) {
 function handleAnswer(chosen) {
   const question = State._currentQuestion;
   const correct = question.correct_answer;
-  const isCorrect = chosen === correct;
+  const isCorrect = chosen.toLowerCase() === correct.toLowerCase();
 
   // Disable all buttons
   const buttons = $('quiz-answers').querySelectorAll('.quiz-btn');
   buttons.forEach(btn => {
     btn.disabled = true;
     btn.classList.add('disabled');
-    if (btn.dataset.opt === correct) btn.classList.add('correct');
+    if (btn.dataset.opt.toLowerCase() === correct.toLowerCase()) btn.classList.add('correct');
     if (btn.dataset.opt === chosen && !isCorrect) btn.classList.add('wrong');
   });
 
@@ -691,6 +691,12 @@ function showResult() {
   };
 
   showScreen('result-screen');
+
+  // Check and show parent linking prompt after game ends
+  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+  if (window.checkAndShowPrompt && profile?.id) {
+    window.checkAndShowPrompt(profile.id);
+  }
 }
 
 // ===== INIT =====

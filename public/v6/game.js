@@ -352,7 +352,7 @@ function handleAnswer(player, opt, btn) {
 
   // Use each player's own question
   const q = player === 'p1' ? State.round.p1Question : State.round.p2Question;
-  const isCorrect = opt === q.correct_answer;
+  const isCorrect = opt.toLowerCase() === q.correct_answer.toLowerCase();
 
   // Lock buttons for this player
   const buttons = document.querySelectorAll(`#${player}-buttons .ans-btn`);
@@ -523,6 +523,12 @@ function showResult(winner) {
 
   // Confetti
   showConfetti();
+
+  // Check and show parent linking prompt after game ends
+  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+  if (window.checkAndShowPrompt && profile?.id) {
+    window.checkAndShowPrompt(profile.id);
+  }
 }
 
 // Play Again
@@ -823,7 +829,7 @@ function showObstacleChallenge(player, obstaclePos) {
     if (!btn) return;
 
     const selected = btn.dataset.opt;
-    const isCorrect = selected === q.correct_answer;
+    const isCorrect = selected.toLowerCase() === q.correct_answer.toLowerCase();
 
     // Disable all buttons
     popup.querySelectorAll('.obstacle-challenge-btn').forEach(b => b.disabled = true);

@@ -13,6 +13,8 @@ import shopHandler from './api/shop.js';
 import adminShopHandler from './api/admin/shop.js';
 import adminVouchersHandler from './api/admin/vouchers.js';
 import aiHandler from './api/ai.js';
+import { generateUniqueLinkCode } from './lib/link-code.js';
+import linkHandler from './api/link.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -62,6 +64,34 @@ app.use('/v12', express.static(join(__dirname, 'public/v12')));
 app.use('/v9', express.static(join(__dirname, 'public/v9')));
 app.use('/v10', express.static(join(__dirname, 'public/v10')));
 app.use('/v11', express.static(join(__dirname, 'public/v11')));
+app.use('/v13', express.static(join(__dirname, 'public/v13')));
+app.use('/v14', express.static(join(__dirname, 'public/v14')));
+app.use('/v15', express.static(join(__dirname, 'public/v15')));
+app.use('/v16', express.static(join(__dirname, 'public/v16')));
+app.use('/v17', express.static(join(__dirname, 'public/v17')));
+app.use('/v18', express.static(join(__dirname, 'public/v18')));
+app.use('/v19', express.static(join(__dirname, 'public/v19')));
+app.use('/v20', express.static(join(__dirname, 'public/v20')));
+app.use('/v21', express.static(join(__dirname, 'public/v21')));
+app.use('/v22', express.static(join(__dirname, 'public/v22')));
+app.use('/v23', express.static(join(__dirname, 'public/v23')));
+app.use('/v24', express.static(join(__dirname, 'public/v24')));
+app.use('/v25', express.static(join(__dirname, 'public/v25')));
+app.use('/v26', express.static(join(__dirname, 'public/v26')));
+app.use('/v27', express.static(join(__dirname, 'public/v27')));
+app.use('/v28', express.static(join(__dirname, 'public/v28')));
+app.use('/v29', express.static(join(__dirname, 'public/v29')));
+app.use('/v30', express.static(join(__dirname, 'public/v30')));
+app.use('/v31', express.static(join(__dirname, 'public/v31')));
+app.use('/v32', express.static(join(__dirname, 'public/v32')));
+app.use('/v33', express.static(join(__dirname, 'public/v33')));
+app.use('/v34', express.static(join(__dirname, 'public/v34')));
+app.use('/v35', express.static(join(__dirname, 'public/v35')));
+app.use('/v36', express.static(join(__dirname, 'public/v36')));
+app.use('/v37', express.static(join(__dirname, 'public/v37')));
+app.use('/v38', express.static(join(__dirname, 'public/v38')));
+app.use('/v39', express.static(join(__dirname, 'public/v39')));
+app.use('/v40', express.static(join(__dirname, 'public/v40')));
 
 // Home page -> game selector
 app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/home.html')));
@@ -169,8 +199,9 @@ app.post('/api/players', async (req, res) => {
     if (existing.rows.length > 0) {
       return res.json(existing.rows[0]);
     }
-    const result = await db.execute({ sql: `INSERT INTO players (name, grade) VALUES (?, ?)`, args: [name, playerGrade] });
-    res.json({ id: result.lastInsertRowid, name, total_stars: 0, grade: playerGrade });
+    const linkCode = await generateUniqueLinkCode(db);
+    const result = await db.execute({ sql: `INSERT INTO players (name, grade, link_code) VALUES (?, ?, ?)`, args: [name, playerGrade, linkCode] });
+    res.json({ id: result.lastInsertRowid, name, total_stars: 0, grade: playerGrade, link_code: linkCode, link_status: 'unlinked' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -238,6 +269,17 @@ app.put('/api/players/:id/progress/:mode', async (req, res) => {
 app.get('/api/players/:id/diamonds', async (req, res) => {
   req.query.id = req.params.id;
   await diamondsHandler(req, res);
+});
+
+// Link status routes
+app.get('/api/players/:id/link-status', (req, res) => {
+  req.query.id = req.params.id;
+  return linkHandler(req, res);
+});
+
+app.post('/api/players/:id/link-status', (req, res) => {
+  req.query.id = req.params.id;
+  return linkHandler(req, res);
 });
 
 // === REWARD SYSTEM ROUTES ===

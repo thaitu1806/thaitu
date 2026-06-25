@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phụ huynh - Học Vui</title>
+  <link rel="stylesheet" href="/parent.css">
+  <link rel="icon" href="/favicon.svg">
+</head>
+<body>
+  <!-- Login/Register Screen -->
+  <div id="auth-screen" class="screen active">
+    <div class="auth-container">
+      <h1>👨‍👩‍👧‍👦 Phụ Huynh</h1>
+      <p class="subtitle">Theo dõi học tập của con</p>
+      
+      <div id="login-form" class="auth-form">
+        <input type="text" id="login-username" placeholder="Tên đăng nhập" autocomplete="username">
+        <input type="password" id="login-pin" placeholder="Mã PIN" maxlength="8" autocomplete="current-password">
+        <button id="btn-login" class="btn-primary">Đăng nhập</button>
+        <p class="switch-text">Chưa có tài khoản? <a href="#" id="show-register">Đăng ký</a></p>
+      </div>
+
+      <div id="register-form" class="auth-form hidden">
+        <input type="text" id="reg-username" placeholder="Tên đăng nhập" autocomplete="username">
+        <input type="text" id="reg-display" placeholder="Tên hiển thị (VD: Ba Minh)">
+        <input type="password" id="reg-pin" placeholder="Mã PIN (ít nhất 4 ký tự)" maxlength="8" autocomplete="new-password">
+        <button id="btn-register" class="btn-primary">Đăng ký</button>
+        <p class="switch-text">Đã có tài khoản? <a href="#" id="show-login">Đăng nhập</a></p>
+      </div>
+
+      <div id="auth-error" class="error-msg hidden"></div>
+    </div>
+  </div>
+
+  <!-- Dashboard Screen -->
+  <div id="dashboard-screen" class="screen">
+    <header class="dashboard-header">
+      <h1 id="parent-greeting">Xin chào!</h1>
+      <button id="btn-logout" class="btn-small">Đăng xuất</button>
+    </header>
+
+    <section class="children-section">
+      <div class="section-header">
+        <h2>🧒 Con của bạn</h2>
+        <button id="btn-add-child" class="btn-small btn-accent">+ Thêm con</button>
+      </div>
+
+      <!-- Link by code section -->
+      <div id="link-by-code-section" class="link-by-code-section hidden">
+        <h3>🔗 Liên kết bằng mã</h3>
+        <p class="link-code-desc">Nhập mã 6 ký tự từ trang game của con</p>
+        <div class="link-code-form">
+          <input type="text" id="link-code-input" placeholder="VD: ABC123" maxlength="6" autocomplete="off" spellcheck="false">
+          <button id="btn-link-by-code" class="btn-primary btn-link-code">Liên kết</button>
+        </div>
+        <div id="link-code-message" class="link-code-message hidden"></div>
+      </div>
+
+      <!-- Existing link by name form -->
+      <div id="add-child-form" class="hidden">
+        <p class="link-name-label">Hoặc liên kết bằng tên:</p>
+        <input type="text" id="child-name-input" placeholder="Nhập tên con (tên trong game)">
+        <button id="btn-confirm-add" class="btn-small">Liên kết</button>
+        <button id="btn-cancel-add" class="btn-small">Huỷ</button>
+        <span id="add-child-error" class="error-msg"></span>
+      </div>
+
+      <div id="children-list" class="children-grid">
+        <!-- Filled by JS -->
+      </div>
+    </section>
+
+    <!-- Child Detail -->
+    <div id="child-detail" class="hidden">
+      <button id="btn-back-list" class="btn-small">← Quay lại</button>
+      <h2 id="child-detail-name"></h2>
+
+      <div class="stats-overview" id="child-overview"></div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="tab-performance">Kết quả học</button>
+        <button class="tab" data-tab="tab-sessions">Lịch sử chơi</button>
+        <button class="tab" data-tab="tab-exams">Bài thi</button>
+        <button class="tab" data-tab="tab-vouchers">Đổi thưởng</button>
+      </div>
+
+      <div id="tab-performance" class="tab-content active"></div>
+      <div id="tab-sessions" class="tab-content"></div>
+      <div id="tab-exams" class="tab-content"></div>
+      <div id="tab-vouchers" class="tab-content"></div>
+    </div>
+  </div>
+
+  <script src="/parent.js"></script>
+</body>
+</html>

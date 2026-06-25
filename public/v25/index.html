@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🎈 Pháo Đài Bóng Bay - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- START SCREEN -->
+    <section id="start-screen" class="screen active">
+      <div class="start-container">
+        <h1 class="start-title">🎈 Pháo Đài Bóng Bay</h1>
+        <p class="start-desc">Bắn hạ bóng bay, bảo vệ pháo đài!</p>
+        <div class="start-fort">🏰</div>
+        <div class="subject-options">
+          <button class="subject-btn active" data-subject="math">🔢 Toán</button>
+          <button class="subject-btn" data-subject="vietnamese">📖 Tiếng Việt</button>
+          <button class="subject-btn" data-subject="english">🔤 English</button>
+        </div>
+        <div class="difficulty-options">
+          <button class="diff-btn active" data-diff="easy">Dễ</button>
+          <button class="diff-btn" data-diff="medium">Vừa</button>
+          <button class="diff-btn" data-diff="hard">Khó</button>
+        </div>
+        <button class="btn-start" id="btn-start">🚀 Bắt đầu!</button>
+        <div class="best-wave" id="best-wave"></div>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- GAME SCREEN -->
+    <section id="game-screen" class="screen">
+      <div class="game-container">
+        <div class="game-hud">
+          <div class="hud-item"><span class="hud-label">🌊 Đợt</span><span class="hud-value" id="hud-wave">1</span></div>
+          <div class="hud-item"><span class="hud-label">💥 Bắn hạ</span><span class="hud-value" id="hud-score">0</span></div>
+          <div class="hud-item"><span class="hud-label">🔥 Combo</span><span class="hud-value" id="hud-combo">0</span></div>
+          <div class="hud-item"><span class="hud-label">❤️ Mạng</span><span class="hud-value" id="hud-lives">10</span></div>
+        </div>
+        <div class="sky-field" id="sky-field">
+          <div class="fort-zone">
+            <span class="fort-emoji">🏰</span>
+          </div>
+        </div>
+        <div class="quiz-panel" id="quiz-panel">
+          <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+          <div class="question-text" id="question-text"></div>
+          <div class="answer-grid" id="answer-grid">
+            <button class="ans-btn" data-opt="a"></button>
+            <button class="ans-btn" data-opt="b"></button>
+            <button class="ans-btn" data-opt="c"></button>
+            <button class="ans-btn" data-opt="d"></button>
+          </div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME OVER SCREEN -->
+    <section id="gameover-screen" class="screen">
+      <div class="gameover-container">
+        <h2 class="gameover-title">💥 Pháo Đài Sụp Đổ!</h2>
+        <div class="gameover-stats">
+          <div class="stat-row"><span>🌊 Đợt đạt được:</span><span id="go-wave">0</span></div>
+          <div class="stat-row"><span>🎈 Bóng bay bắn hạ:</span><span id="go-score">0</span></div>
+          <div class="stat-row"><span>🔥 Combo cao nhất:</span><span id="go-combo">0</span></div>
+          <div class="stat-row"><span>✅ Đúng:</span><span id="go-correct">0</span></div>
+          <div class="stat-row"><span>❌ Sai:</span><span id="go-wrong">0</span></div>
+        </div>
+        <div class="gameover-best" id="go-best"></div>
+        <button class="btn-start" id="btn-retry">🔄 Chơi lại</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

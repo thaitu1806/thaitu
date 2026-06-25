@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🛒 Siêu Thị Mini - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- START SCREEN -->
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <h1 class="main-title">🛒 Siêu Thị Mini</h1>
+        <p class="subtitle">Tính tiền, phục vụ khách hàng!</p>
+        <div class="shop-display" id="shop-display">
+          <span class="shop-emoji" id="shop-emoji">🛒</span>
+          <span class="shop-level" id="shop-level">Xe Đẩy</span>
+        </div>
+        <div class="stats-box">
+          <span>💰 Lợi nhuận: <span id="start-profit">0</span></span>
+          <span>⭐ Ca: <span id="start-shifts">0</span></span>
+        </div>
+        <button class="btn-primary" id="btn-start">🧑‍💼 Mở Ca!</button>
+        <button class="btn-secondary" id="btn-upgrade">🏗️ Nâng Cấp</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- GAME SCREEN -->
+    <section id="game-screen" class="screen">
+      <div class="game-container">
+        <div class="game-header">
+          <span class="profit-display">💰 <span id="profit">0</span></span>
+          <span class="customer-count">🧑 <span id="cust-num">1</span>/8</span>
+          <span class="timer-count">⏱️ <span id="timer-text">10</span></span>
+        </div>
+
+        <div class="timer-bar">
+          <div class="timer-fill" id="timer-fill"></div>
+        </div>
+
+        <!-- Customer Display -->
+        <div class="customer-area">
+          <div class="customer-avatar" id="customer-avatar">🧑</div>
+          <div class="customer-cart" id="customer-cart"></div>
+        </div>
+
+        <!-- Question -->
+        <div class="question-box">
+          <p class="q-text" id="q-text"></p>
+          <div class="q-options" id="q-options"></div>
+        </div>
+
+        <!-- Feedback -->
+        <div class="feedback" id="feedback" style="display:none;"></div>
+      </div>
+    </section>
+
+    <!-- UPGRADE SCREEN -->
+    <section id="upgrade-screen" class="screen">
+      <div class="upgrade-container">
+        <h2 class="upgrade-title">🏗️ Nâng Cấp Shop</h2>
+        <div class="current-shop">
+          <span class="big-shop-emoji" id="upgrade-shop-emoji">🛒</span>
+          <span class="shop-name" id="upgrade-shop-name">Xe Đẩy</span>
+          <span class="shop-items-count" id="upgrade-items-count">5 mặt hàng</span>
+        </div>
+        <div class="upgrade-list" id="upgrade-list"></div>
+        <div class="upgrade-profit">💰 Lợi nhuận: <span id="upgrade-profit">0</span></div>
+        <button class="btn-back" id="btn-back-upgrade">🔙 Về</button>
+      </div>
+    </section>
+
+    <!-- RESULT SCREEN -->
+    <section id="result-screen" class="screen">
+      <div class="result-container">
+        <h2 class="result-title" id="result-title">🧾 Kết Ca!</h2>
+        <div class="result-score" id="result-score">0</div>
+        <div class="result-label">đ lợi nhuận</div>
+        <div class="result-detail" id="result-detail"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Ca Mới!</button>
+        <button class="btn-secondary" id="btn-to-upgrade">🏗️ Nâng Cấp</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

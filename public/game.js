@@ -488,6 +488,10 @@ async function saveSession(stars) {
   } catch (e) {
     // Offline mode - no save
   }
+  // Check and show parent linking prompt after session save
+  if (window.checkAndShowPrompt && state.player?.id) {
+    window.checkAndShowPrompt(state.player.id);
+  }
 }
 
 async function logAnswer(question, selected, isCorrect, timeSpent, hintUsed) {

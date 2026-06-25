@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🏃 Vận Động Viên - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- START SCREEN -->
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <h1 class="main-title">🏃 Vận Động Viên</h1>
+        <p class="subtitle">Olympic mini, giành huy chương!</p>
+        <div class="medal-box">
+          <span>🏅 Huy chương: </span><span id="high-medals">0</span>
+        </div>
+        <button class="btn-primary" id="btn-start">🏟️ Vào Thi Đấu!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- GAME SCREEN -->
+    <section id="game-screen" class="screen">
+      <div class="game-container">
+        <div class="game-header">
+          <span class="event-label" id="event-label">🏃 Chạy 100m</span>
+          <span class="event-progress">Môn <span id="event-num">1</span>/5</span>
+        </div>
+
+        <!-- Scoreboard -->
+        <div class="scoreboard" id="scoreboard">
+          <div class="athlete" id="ath-vn"><span class="flag">🇻🇳</span><span class="ath-name">Bạn</span><span class="ath-bar"><span class="bar-fill" id="bar-vn"></span></span></div>
+          <div class="athlete" id="ath-jp"><span class="flag">🇯🇵</span><span class="ath-name">JP</span><span class="ath-bar"><span class="bar-fill" id="bar-jp"></span></span></div>
+          <div class="athlete" id="ath-us"><span class="flag">🇺🇸</span><span class="ath-name">US</span><span class="ath-bar"><span class="bar-fill" id="bar-us"></span></span></div>
+          <div class="athlete" id="ath-kr"><span class="flag">🇰🇷</span><span class="ath-name">KR</span><span class="ath-bar"><span class="bar-fill" id="bar-kr"></span></span></div>
+        </div>
+
+        <!-- Question counter -->
+        <div class="q-counter">Câu <span id="q-num">1</span>/5</div>
+
+        <!-- Timer -->
+        <div class="timer-bar">
+          <div class="timer-fill" id="timer-fill"></div>
+        </div>
+
+        <!-- Question Area -->
+        <div class="question-box" id="question-box">
+          <p class="q-text" id="q-text"></p>
+          <div class="q-options" id="q-options"></div>
+        </div>
+
+        <!-- Event result popup -->
+        <div class="event-result" id="event-result" style="display:none;">
+          <div class="event-result-icon" id="event-result-icon">🥇</div>
+          <div class="event-result-text" id="event-result-text">Huy chương vàng!</div>
+          <button class="btn-next" id="btn-next-event">Môn tiếp theo ➡️</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULT SCREEN -->
+    <section id="result-screen" class="screen">
+      <div class="result-container">
+        <div class="confetti" id="confetti"></div>
+        <h2 class="result-title" id="result-title">🏆 Bảng Xếp Hạng!</h2>
+
+        <!-- Podium -->
+        <div class="podium" id="podium"></div>
+
+        <!-- Medal tally -->
+        <div class="medal-tally" id="medal-tally"></div>
+
+        <div class="result-detail" id="result-detail"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Thi Đấu Lại!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

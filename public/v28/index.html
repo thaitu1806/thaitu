@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>📖 Truyện Cổ Tích - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- TALE SELECT SCREEN -->
+    <section id="tale-select" class="screen active">
+      <div class="container">
+        <h1 class="main-title">📖 Truyện Cổ Tích</h1>
+        <p class="subtitle">Chọn truyện để đọc nào!</p>
+        <div class="badge-bar" id="badge-bar"></div>
+        <div class="tale-grid" id="tale-grid"></div>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- STORY READING SCREEN -->
+    <section id="story-screen" class="screen">
+      <div class="book-container">
+        <div class="book-header">
+          <button class="btn-back" id="btn-back">← Quay lại</button>
+          <span class="tale-title" id="tale-title"></span>
+        </div>
+        <div class="page-progress" id="page-progress"></div>
+        <div class="book-page" id="book-page">
+          <div class="page-illustration" id="page-illustration"></div>
+          <div class="page-text" id="page-text"></div>
+        </div>
+        <div class="page-nav">
+          <button class="btn-nav" id="btn-prev" disabled>◀ Trước</button>
+          <span class="page-number" id="page-number"></span>
+          <button class="btn-nav" id="btn-next">Tiếp ▶</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ SCREEN -->
+    <section id="quiz-screen" class="screen">
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <span class="quiz-title">🔓 Trả lời để mở trang mới!</span>
+          <div class="timer-bar">
+            <div class="timer-fill" id="timer-fill"></div>
+          </div>
+          <span class="timer-text" id="timer-text">15</span>
+        </div>
+        <div class="quiz-question" id="quiz-question"></div>
+        <div class="quiz-options" id="quiz-options"></div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+      </div>
+    </section>
+
+    <!-- TALE COMPLETE SCREEN -->
+    <section id="complete-screen" class="screen">
+      <div class="complete-container">
+        <div class="complete-badge" id="complete-badge"></div>
+        <h2 class="complete-title">🎉 Hoàn thành truyện!</h2>
+        <p class="complete-tale" id="complete-tale-name"></p>
+        <p class="complete-msg">Con đã đọc xong truyện và nhận được huy hiệu!</p>
+        <button class="btn-primary" id="btn-to-tales">📖 Đọc truyện khác</button>
+      </div>
+    </section>
+  </div>
+
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

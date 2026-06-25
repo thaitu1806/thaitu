@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🚒 Siêu Nhân Cứu Hỏa - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- SETUP SCREEN -->
+    <section id="setup-screen" class="screen active">
+      <div class="setup-container">
+        <div class="setup-hero">🚒</div>
+        <h1 class="setup-title">Siêu Nhân Cứu Hỏa</h1>
+        <p class="setup-desc">Trả lời đúng để dập lửa, cứu người khỏi tòa nhà cháy!</p>
+
+        <div class="setup-section">
+          <label class="setup-label">Môn học</label>
+          <div class="btn-group" id="subject-group">
+            <button class="btn-option active" data-subject="math">Toán</button>
+            <button class="btn-option" data-subject="vietnamese">Tiếng Việt</button>
+            <button class="btn-option" data-subject="english">English</button>
+          </div>
+        </div>
+
+        <div class="setup-section">
+          <label class="setup-label">Độ khó</label>
+          <div class="btn-group" id="difficulty-group">
+            <button class="btn-option active" data-difficulty="easy">Dễ</button>
+            <button class="btn-option" data-difficulty="medium">Vừa</button>
+            <button class="btn-option" data-difficulty="hard">Khó</button>
+          </div>
+        </div>
+
+        <button class="btn-start" id="btn-start">🧑‍🚒 Xuất phát cứu hỏa!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- GAME SCREEN -->
+    <section id="game-screen" class="screen">
+      <div class="game-container">
+        <!-- HUD -->
+        <div class="game-hud">
+          <div class="hud-item fire-counter">
+            <span class="hud-icon">🔥</span>
+            <span id="fire-count">15</span>/<span id="fire-max">20</span>
+          </div>
+          <div class="hud-item rescued-counter">
+            <span class="hud-icon">👨‍👩‍👧‍👦</span>
+            <span id="rescued-count">0</span>/5
+          </div>
+          <div class="hud-item timer-display">
+            <span class="hud-icon">⏱️</span>
+            <span id="timer-text">10</span>s
+          </div>
+        </div>
+
+        <!-- BUILDING VISUAL -->
+        <div class="building-area">
+          <div class="building" id="building">
+            <div class="floor" data-floor="5">
+              <span class="floor-label">5F</span>
+              <div class="floor-fires" id="fires-5"></div>
+              <div class="floor-person" id="person-5">👤</div>
+            </div>
+            <div class="floor" data-floor="4">
+              <span class="floor-label">4F</span>
+              <div class="floor-fires" id="fires-4"></div>
+              <div class="floor-person" id="person-4">👤</div>
+            </div>
+            <div class="floor" data-floor="3">
+              <span class="floor-label">3F</span>
+              <div class="floor-fires" id="fires-3"></div>
+              <div class="floor-person" id="person-3">👤</div>
+            </div>
+            <div class="floor" data-floor="2">
+              <span class="floor-label">2F</span>
+              <div class="floor-fires" id="fires-2"></div>
+              <div class="floor-person" id="person-2">👤</div>
+            </div>
+            <div class="floor" data-floor="1">
+              <span class="floor-label">1F</span>
+              <div class="floor-fires" id="fires-1"></div>
+              <div class="floor-person" id="person-1">👤</div>
+            </div>
+          </div>
+          <div class="firefighter" id="firefighter">🧑‍🚒</div>
+        </div>
+
+        <!-- QUESTION AREA -->
+        <div class="question-area">
+          <div class="question-box">
+            <p class="question-text" id="question-text">Loading...</p>
+          </div>
+          <div class="answer-grid" id="answer-grid">
+            <button class="ans-btn" data-opt="a"></button>
+            <button class="ans-btn" data-opt="b"></button>
+            <button class="ans-btn" data-opt="c"></button>
+            <button class="ans-btn" data-opt="d"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULT SCREEN -->
+    <section id="result-screen" class="screen">
+      <div class="result-container" id="result-container"></div>
+    </section>
+  </div>
+
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

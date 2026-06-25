@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🎡 Vòng Quay May Mắn - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- MAIN HUB SCREEN -->
+    <section id="hub-screen" class="screen active">
+      <div class="hub-container">
+        <h1 class="hub-title">🎡 Vòng Quay May Mắn</h1>
+        <div class="hub-stats">
+          <div class="stat-item"><span class="stat-icon">🎟️</span><span class="stat-val" id="stat-tokens">0</span><span class="stat-label">Lượt quay</span></div>
+          <div class="stat-item"><span class="stat-icon">💰</span><span class="stat-val" id="stat-coins">0</span><span class="stat-label">Xu</span></div>
+          <div class="stat-item"><span class="stat-icon">⭐</span><span class="stat-val" id="stat-stars">0</span><span class="stat-label">Sao</span></div>
+          <div class="stat-item"><span class="stat-icon">💎</span><span class="stat-val" id="stat-diamonds">0</span><span class="stat-label">Kim cương</span></div>
+        </div>
+
+        <div class="wheel-section">
+          <div class="wheel-wrapper">
+            <div class="wheel-pointer">▼</div>
+            <div class="wheel" id="wheel">
+              <div class="wheel-segment seg-0"><span>💰+10</span></div>
+              <div class="wheel-segment seg-1"><span>💰+20</span></div>
+              <div class="wheel-segment seg-2"><span>💰+50</span></div>
+              <div class="wheel-segment seg-3"><span>⭐+1</span></div>
+              <div class="wheel-segment seg-4"><span>🎯x2</span></div>
+              <div class="wheel-segment seg-5"><span>💎+5</span></div>
+              <div class="wheel-segment seg-6"><span>🍀Free</span></div>
+              <div class="wheel-segment seg-7"><span>😢</span></div>
+            </div>
+            <button class="spin-btn" id="btn-spin">QUAY!</button>
+          </div>
+        </div>
+
+        <div class="hub-actions">
+          <button class="btn-action btn-quiz" id="btn-start-quiz">📝 Làm Quiz (3 đúng = 1 lượt)</button>
+        </div>
+
+        <div class="reward-history" id="reward-history">
+          <h3>🏆 Phần thưởng gần đây</h3>
+          <div class="history-list" id="history-list"></div>
+        </div>
+
+        <div class="hub-footer">
+          <span>🎡 Tổng lượt quay: <b id="stat-total-spins">0</b></span>
+        </div>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- QUIZ SCREEN -->
+    <section id="quiz-screen" class="screen">
+      <div class="quiz-container">
+        <div class="quiz-header">
+          <h2 class="quiz-title">📝 Trả Lời Để Nhận Lượt Quay</h2>
+          <div class="quiz-progress">
+            <span id="quiz-correct">0</span>/3 đúng = 1 🎟️
+            <span class="quiz-qnum">Câu <span id="quiz-current">1</span>/10</span>
+          </div>
+        </div>
+        <div class="quiz-question" id="quiz-question">Đang tải câu hỏi...</div>
+        <div class="quiz-options" id="quiz-options"></div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+        <button class="btn-action btn-next" id="btn-next" style="display:none">Câu tiếp →</button>
+        <button class="btn-action btn-back" id="btn-back-hub" style="display:none">🎡 Quay ngay!</button>
+      </div>
+    </section>
+
+    <!-- RESULT POPUP -->
+    <div class="result-overlay" id="result-overlay">
+      <div class="result-popup" id="result-popup">
+        <div class="result-icon" id="result-icon">🎉</div>
+        <div class="result-text" id="result-text">Bạn nhận được...</div>
+        <div class="result-prize" id="result-prize">💰 +10 xu</div>
+        <button class="btn-action btn-close-result" id="btn-close-result">OK!</button>
+      </div>
+    </div>
+
+    <!-- SPARKLE EFFECTS -->
+    <div class="sparkles" id="sparkles"></div>
+  </div>
+
+  <link rel="stylesheet" href="/tts.css">
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

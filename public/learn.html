@@ -15,39 +15,16 @@
       <div class="learn-header">
         <a href="/" class="back-link">← Về trang chủ</a>
         <h1>📚 Góc Học Tập</h1>
-        <p>Toán lớp 2 - Học qua hình ảnh!</p>
+        <p id="learn-subtitle">Toán lớp 2 - Học qua hình ảnh!</p>
       </div>
-      <div class="topics-grid">
-        <div class="topic-card" onclick="openTopic('clock')">
-          <span class="topic-icon">🕐</span>
-          <span class="topic-name">Đồng Hồ</span>
-          <span class="topic-desc">Đọc giờ, phút, kéo kim</span>
-        </div>
-        <div class="topic-card" onclick="openTopic('units')">
-          <span class="topic-icon">📏</span>
-          <span class="topic-name">Đo Lường</span>
-          <span class="topic-desc">cm, m, kg, lít</span>
-        </div>
-        <div class="topic-card" onclick="openTopic('multiply')">
-          <span class="topic-icon">✖️</span>
-          <span class="topic-name">Bảng Nhân</span>
-          <span class="topic-desc">Nhân 2, 3, 4, 5</span>
-        </div>
-        <div class="topic-card" onclick="openTopic('carry')">
-          <span class="topic-icon">➕</span>
-          <span class="topic-name">Cộng Có Nhớ</span>
-          <span class="topic-desc">Cộng trừ qua 10</span>
-        </div>
-        <div class="topic-card" onclick="openTopic('shapes')">
-          <span class="topic-icon">🔷</span>
-          <span class="topic-name">Hình Học</span>
-          <span class="topic-desc">Hình, cạnh, chu vi</span>
-        </div>
-        <div class="topic-card" onclick="openTopic('money')">
-          <span class="topic-icon">💰</span>
-          <span class="topic-name">Tiền Việt Nam</span>
-          <span class="topic-desc">Đếm, trả tiền</span>
-        </div>
+      <div class="grade-tabs" id="grade-tabs">
+        <button class="grade-tab active" data-grade="2" onclick="switchGrade(2)">Lớp 2</button>
+        <button class="grade-tab" data-grade="3" onclick="switchGrade(3)">Lớp 3</button>
+        <button class="grade-tab" data-grade="4" onclick="switchGrade(4)">Lớp 4</button>
+        <button class="grade-tab" data-grade="5" onclick="switchGrade(5)">Lớp 5</button>
+      </div>
+      <div class="topics-grid" id="topics-grid">
+        <!-- Filled by JS based on grade -->
       </div>
     </div>
 

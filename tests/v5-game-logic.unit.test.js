@@ -13,16 +13,16 @@ import {
 
 // ===== Boundary Position Tests =====
 describe('Boundary Position Tests', () => {
-  it('calculateTargetTile at position 35 with max dice (12) → clamped to 36', () => {
-    expect(calculateTargetTile(35, 12)).toBe(36);
+  it('calculateTargetTile at position 35 with max dice (12) → clamped to 35', () => {
+    expect(calculateTargetTile(35, 12)).toBe(35);
   });
 
   it('calculateTargetTile at position 0 with min dice (2) → returns 2', () => {
     expect(calculateTargetTile(0, 2)).toBe(2);
   });
 
-  it('calculateTargetTile at position 34 with dice 2 → exact finish 36', () => {
-    expect(calculateTargetTile(34, 2)).toBe(36);
+  it('calculateTargetTile at position 34 with dice 2 → clamped to 35', () => {
+    expect(calculateTargetTile(34, 2)).toBe(35);
   });
 
   it('applySpecialTileEffect at position 0 with trap → returns 0 (can\'t go below 0)', () => {
@@ -37,12 +37,12 @@ describe('Boundary Position Tests', () => {
     expect(applySpecialTileEffect(2, 'trap')).toBe(0);
   });
 
-  it('applySpecialTileEffect at position 35 with star → returns 36 (clamp to finish)', () => {
-    expect(applySpecialTileEffect(35, 'star')).toBe(36);
+  it('applySpecialTileEffect at position 35 with star → returns 35 (already at finish)', () => {
+    expect(applySpecialTileEffect(35, 'star')).toBe(35);
   });
 
-  it('applySpecialTileEffect at position 36 with star → returns 36 (already at finish)', () => {
-    expect(applySpecialTileEffect(36, 'star')).toBe(36);
+  it('applySpecialTileEffect at position 36 with star → returns 35 (clamped)', () => {
+    expect(applySpecialTileEffect(36, 'star')).toBe(35);
   });
 
   it('checkKick at position 0 (start tile) → returns -1 (no kick at start)', () => {
@@ -53,8 +53,8 @@ describe('Boundary Position Tests', () => {
     expect(checkWinCondition([0, 0, 0, 0])).toBe(-1);
   });
 
-  it('checkWinCondition with multiple players at 36 → returns first one found', () => {
-    expect(checkWinCondition([0, 36, 36, 0])).toBe(1);
+  it('checkWinCondition with multiple players at 35 → returns first one found', () => {
+    expect(checkWinCondition([0, 35, 35, 0])).toBe(1);
   });
 });
 
@@ -203,8 +203,8 @@ describe('Board Layout Edge Cases', () => {
     expect(BOARD_CONFIG.starTiles).toEqual([4, 13, 22, 31]);
   });
 
-  it('trap tiles are at expected positions [8, 17, 26, 35]', () => {
-    expect(BOARD_CONFIG.trapTiles).toEqual([8, 17, 26, 35]);
+  it('trap tiles are at expected positions [8, 17, 26]', () => {
+    expect(BOARD_CONFIG.trapTiles).toEqual([8, 17, 26]);
   });
 
   it('getTileType for each star position returns "star"', () => {
@@ -214,7 +214,7 @@ describe('Board Layout Edge Cases', () => {
   });
 
   it('getTileType for each trap position returns "trap"', () => {
-    for (const pos of [8, 17, 26, 35]) {
+    for (const pos of [8, 17, 26]) {
       expect(getTileType(pos)).toBe('trap');
     }
   });
@@ -223,7 +223,7 @@ describe('Board Layout Edge Cases', () => {
     expect(getTileType(0)).toBe('normal');
   });
 
-  it('getTileType for position 35 (last trap) returns "trap"', () => {
-    expect(getTileType(35)).toBe('trap');
+  it('getTileType for position 35 (finish) returns "finish"', () => {
+    expect(getTileType(35)).toBe('finish');
   });
 });

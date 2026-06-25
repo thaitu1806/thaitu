@@ -1116,7 +1116,7 @@ async function handleBotAnswer(question) {
 
   const difficulty = gameState.config.difficulty;
   const selected = botAnswer(question, difficulty);
-  const isCorrect = selected === question.correct_answer;
+  const isCorrect = selected.toLowerCase() === question.correct_answer.toLowerCase();
 
   // Show the question popup for the bot (display briefly)
   const result = await showBotQuestionPopup(question, selected);
@@ -1166,7 +1166,7 @@ function showBotQuestionPopup(question, botSelectedAnswer) {
     // After 1.5s, reveal bot's answer
     setTimeout(() => {
       const correct = question.correct_answer;
-      const isCorrect = botSelectedAnswer === correct;
+      const isCorrect = botSelectedAnswer.toLowerCase() === correct.toLowerCase();
 
       const selectedBtn = overlay.querySelector(`.answer-btn[data-answer="${botSelectedAnswer}"]`);
       if (selectedBtn) {
@@ -1489,6 +1489,12 @@ async function handleGameEnd() {
 
   // Save progress for human players
   await saveProgress();
+
+  // Check and show parent linking prompt after session save
+  const _promptPlayerId = SetupManager.loadProfileId();
+  if (window.checkAndShowPrompt && _promptPlayerId) {
+    window.checkAndShowPrompt(_promptPlayerId);
+  }
 
   // Brief delay then show victory screen
   await wait(1500);
@@ -2006,7 +2012,7 @@ function showQuestionPopup(question) {
 
         const selected = btn.dataset.answer;
         const correct = question.correct_answer;
-        const isCorrect = selected === correct;
+        const isCorrect = selected.toLowerCase() === correct.toLowerCase();
 
         // Highlight selected button
         btn.classList.add(isCorrect ? 'correct' : 'incorrect');
@@ -2451,7 +2457,7 @@ function v5ShowOnlineQuestion(data) {
       clearTimeout(timeoutId);
       overlay.querySelectorAll('.answer-btn').forEach(b => b.style.pointerEvents = 'none');
       const selected = btn.dataset.answer;
-      const isCorrect = selected === q.correct_answer;
+      const isCorrect = selected.toLowerCase() === q.correct_answer.toLowerCase();
       btn.classList.add(isCorrect ? 'correct' : 'incorrect');
       if (!isCorrect) {
         overlay.querySelector(`.answer-btn[data-answer="${q.correct_answer}"]`)?.classList.add('correct');

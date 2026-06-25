@@ -1,4 +1,5 @@
 import { getDb } from './db.js';
+import { generateUniqueLinkCode } from '../lib/link-code.js';
 
 export default async function handler(req, res) {
   const db = getDb();
@@ -29,12 +30,13 @@ export default async function handler(req, res) {
         // Name exists - return existing player (login behavior)
         return res.json(existing.rows[0]);
       }
-      // Create new player with unique name and grade
+      // Create new player with unique name, grade, and link code
+      const linkCode = await generateUniqueLinkCode(db);
       const result = await db.execute({
-        sql: `INSERT INTO players (name, grade) VALUES (?, ?)`,
-        args: [name.trim(), playerGrade],
+        sql: `INSERT INTO players (name, grade, link_code) VALUES (?, ?, ?)`,
+        args: [name.trim(), playerGrade, linkCode],
       });
-      return res.json({ id: Number(result.lastInsertRowid), name: name.trim(), total_stars: 0, grade: playerGrade });
+      return res.json({ id: Number(result.lastInsertRowid), name: name.trim(), total_stars: 0, grade: playerGrade, link_code: linkCode, link_status: 'unlinked' });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }

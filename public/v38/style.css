@@ -1,0 +1,182 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #e0f2fe 0%, #7dd3fc 40%, #0ea5e9 100%);
+  overflow-x: hidden;
+}
+
+.screen { display: none; min-height: 100vh; padding: 20px 16px; }
+.screen.active { display: flex; align-items: center; justify-content: center; }
+
+/* START SCREEN */
+.container { text-align: center; max-width: 400px; width: 100%; }
+.main-title { font-size: 2.5rem; color: #0c4a6e; text-shadow: 2px 2px 0 rgba(255,255,255,0.4); margin-bottom: 8px; }
+.subtitle { color: #164e63; font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
+.smile-box {
+  background: rgba(255,255,255,0.6); border-radius: 12px; padding: 10px 20px;
+  display: inline-block; font-weight: 700; color: #0c4a6e;
+  border: 1px solid rgba(255,255,255,0.8); margin-bottom: 24px;
+}
+.btn-primary {
+  display: block; width: 100%; max-width: 260px; margin: 0 auto 16px;
+  padding: 16px 24px; background: linear-gradient(135deg, #06b6d4, #0891b2);
+  color: white; border: none; border-radius: 16px;
+  font-size: 1.2rem; font-weight: 800; cursor: pointer;
+  box-shadow: 0 4px 15px rgba(6,182,212,0.4);
+  transition: transform 0.2s; font-family: inherit;
+}
+.btn-primary:active { transform: scale(0.96); }
+.home-link { display: block; margin-top: 12px; color: #164e63; text-decoration: none; font-weight: 600; opacity: 0.7; }
+
+/* GAME SCREEN */
+.game-container { max-width: 420px; width: 100%; margin: 0 auto; }
+.game-header {
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(255,255,255,0.7); border-radius: 14px; padding: 10px 16px;
+  border: 1px solid rgba(255,255,255,0.9); margin-bottom: 12px;
+  font-weight: 700; font-size: 0.95rem; color: #0c4a6e;
+}
+
+/* Mouth Area */
+.mouth-area {
+  background: rgba(255,255,255,0.85); border-radius: 20px; padding: 20px;
+  text-align: center; margin-bottom: 12px;
+  border: 2px solid rgba(6,182,212,0.3);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.mouth-emoji {
+  font-size: 4rem; margin-bottom: 8px;
+  transition: all 0.5s ease;
+}
+.teeth-row {
+  display: flex; justify-content: center; gap: 8px;
+  margin-bottom: 10px;
+}
+.tooth {
+  font-size: 1.8rem; transition: all 0.4s ease;
+  filter: none;
+}
+.tooth.dirty {
+  filter: sepia(0.8) saturate(1.5);
+  opacity: 0.7;
+}
+.tooth.clean {
+  filter: none;
+  opacity: 1;
+  animation: sparkle 0.5s ease;
+}
+@keyframes sparkle {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3) rotate(10deg); }
+  100% { transform: scale(1); }
+}
+.patient-status {
+  font-size: 0.9rem; font-weight: 700; color: #0c4a6e;
+}
+
+/* Step Progress */
+.step-progress {
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(255,255,255,0.7); border-radius: 14px; padding: 10px 16px;
+  margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.9);
+}
+.step-dot {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  opacity: 0.4; transition: all 0.3s;
+}
+.step-dot span { font-size: 1.4rem; }
+.step-dot small { font-size: 0.7rem; font-weight: 700; color: #0c4a6e; }
+.step-dot.active { opacity: 1; transform: scale(1.1); }
+.step-dot.done { opacity: 1; }
+.step-dot.done span::after { content: ' ✅'; font-size: 0.7rem; }
+
+/* Timer */
+.timer-bar {
+  width: 100%; height: 8px; background: rgba(255,255,255,0.4);
+  border-radius: 4px; overflow: hidden; margin-bottom: 12px;
+}
+.timer-fill {
+  height: 100%; width: 100%; background: linear-gradient(90deg, #06b6d4, #67e8f9);
+  border-radius: 4px; transition: width 0.1s linear;
+}
+.timer-fill.warning { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+/* Question Box */
+.question-box {
+  background: rgba(255,255,255,0.95); border-radius: 18px; padding: 18px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.q-text {
+  font-size: 1.05rem; font-weight: 700; color: #333;
+  text-align: center; margin-bottom: 14px;
+  min-height: 44px; display: flex; align-items: center; justify-content: center;
+}
+.q-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.option-btn {
+  padding: 12px 10px; border: 2px solid #e0e8f0;
+  border-radius: 14px; background: #f8fafc;
+  font-size: 0.95rem; font-weight: 700; color: #444;
+  cursor: pointer; transition: all 0.2s; font-family: inherit;
+  text-align: center; word-break: break-word;
+}
+.option-btn:active { transform: scale(0.96); }
+.option-btn.correct {
+  border-color: #22c55e; background: #dcfce7; color: #166534;
+  animation: pulse 0.3s;
+}
+.option-btn.wrong {
+  border-color: #ef4444; background: #fef2f2; color: #991b1b;
+}
+.option-btn.disabled { pointer-events: none; opacity: 0.7; }
+@keyframes pulse { 50% { transform: scale(1.05); } }
+
+/* RESULT SCREEN */
+.result-container { text-align: center; max-width: 400px; width: 100%; }
+.result-title { font-size: 1.8rem; color: #0c4a6e; margin-bottom: 16px; }
+.result-score { font-size: 4rem; font-weight: 900; color: #0891b2; }
+.result-label { font-size: 1.2rem; color: #164e63; font-weight: 700; margin-bottom: 16px; }
+
+.smile-collection {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+  margin-bottom: 16px;
+}
+.smile-item {
+  font-size: 2rem;
+  animation: smilePopIn 0.3s ease backwards;
+}
+@keyframes smilePopIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.result-detail {
+  background: rgba(255,255,255,0.7); border-radius: 14px; padding: 16px;
+  border: 1px solid rgba(255,255,255,0.9);
+  font-size: 1rem; color: #0c4a6e; line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+/* Confetti */
+.confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+.confetti-piece {
+  position: absolute; top: -10px; width: 10px; height: 10px;
+  border-radius: 50%; animation: confettiFall 3s ease-in forwards;
+}
+@keyframes confettiFall {
+  to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* Floating teeth decoration */
+.float-tooth {
+  position: fixed;
+  font-size: 1.5rem;
+  opacity: 0.15;
+  animation: floatTooth linear infinite;
+  pointer-events: none;
+}
+@keyframes floatTooth {
+  from { transform: translateY(100vh) rotate(0deg); }
+  to { transform: translateY(-10vh) rotate(360deg); }
+}

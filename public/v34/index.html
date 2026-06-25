@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🎵 Nhạc Sĩ Nhí - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- START SCREEN -->
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <h1 class="main-title">🎵 Nhạc Sĩ Nhí</h1>
+        <p class="subtitle">Trả lời đúng để tạo bài hát!</p>
+        <div class="songs-info">
+          <span>🎼 Bài hát đã hoàn thành:</span>
+          <span id="songs-count">0</span>/5
+        </div>
+        <div class="songs-grid" id="songs-grid"></div>
+        <button class="btn-primary" id="btn-start">🎶 Bắt Đầu Sáng Tác!</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <!-- PLAY SCREEN -->
+    <section id="play-screen" class="screen">
+      <div class="play-container">
+        <div class="play-header">
+          <span class="song-name" id="song-name">🎵 Twinkle Star</span>
+          <span class="combo-display" id="combo-display">🔥 0/8</span>
+        </div>
+
+        <!-- Music Staff -->
+        <div class="staff-container" id="staff-container">
+          <div class="staff-lines">
+            <div class="staff-line"></div>
+            <div class="staff-line"></div>
+            <div class="staff-line"></div>
+            <div class="staff-line"></div>
+            <div class="staff-line"></div>
+          </div>
+          <div class="notes-row" id="notes-row"></div>
+        </div>
+
+        <div class="timer-bar">
+          <div class="timer-fill" id="timer-fill"></div>
+        </div>
+
+        <div class="q-text" id="q-text"></div>
+        <div class="q-options" id="q-options"></div>
+        <div class="q-feedback" id="q-feedback"></div>
+      </div>
+    </section>
+
+    <!-- SONG COMPLETE SCREEN -->
+    <section id="song-screen" class="screen">
+      <div class="song-complete-container">
+        <div class="song-anim" id="song-anim">🎵</div>
+        <h2 class="song-msg" id="song-msg">🎉 Hoàn thành bài hát!</h2>
+        <p class="song-detail" id="song-detail"></p>
+        <button class="btn-primary" id="btn-next-song">🎶 Bài tiếp theo</button>
+      </div>
+    </section>
+
+    <!-- RESULT SCREEN -->
+    <section id="result-screen" class="screen">
+      <div class="result-container">
+        <h2 class="result-title" id="result-title">🏆 Nhạc Sĩ Nhí Tài Năng!</h2>
+        <div class="result-score" id="result-score">0</div>
+        <div class="result-label">bài hát hoàn thành</div>
+        <div class="result-songs" id="result-songs"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Chơi lại</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

@@ -372,8 +372,8 @@ async function resolveRound(data) {
 
   const q = latest.questions[latest.currentRound];
   const correct = q.correct_answer;
-  const hOk = latest.hostAnswer.answer === correct;
-  const gOk = latest.guestAnswer.answer === correct;
+  const hOk = latest.hostAnswer.answer.toLowerCase() === correct.toLowerCase();
+  const gOk = latest.guestAnswer.answer.toLowerCase() === correct.toLowerCase();
 
   let hp = 0, gp = 0;
   if (hOk) { hp = 10; if (!gOk || latest.hostAnswer.time < latest.guestAnswer.time) hp += 5; }
@@ -432,7 +432,7 @@ function showRoundResult(data) {
 
   document.querySelectorAll('.ob-btn').forEach(btn => {
     btn.disabled = true;
-    if (btn.dataset.opt === r.correct_answer) btn.classList.add('correct');
+    if (btn.dataset.opt.toLowerCase() === r.correct_answer.toLowerCase()) btn.classList.add('correct');
   });
 
   document.getElementById('ob-p1-score').textContent = data.hostScore || 0;
@@ -462,6 +462,12 @@ function showMatchEnd(data) {
 
   playSound(iWon || tie ? 'win' : 'lose');
   showScreen('result-screen');
+
+  // Check and show parent linking prompt after game ends
+  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+  if (window.checkAndShowPrompt && profile?.id) {
+    window.checkAndShowPrompt(profile.id);
+  }
 }
 
 // === REMATCH & NAVIGATION ===
@@ -698,7 +704,7 @@ document.getElementById('race-options')?.addEventListener('click', (e) => {
   document.querySelectorAll('.race-btn').forEach(b => b.disabled = true);
 
   const q = raceState.myQuestionOrder[raceState.myIndex];
-  const isCorrect = btn.dataset.opt === q.correct_answer;
+  const isCorrect = btn.dataset.opt.toLowerCase() === q.correct_answer.toLowerCase();
 
   btn.classList.add(isCorrect ? 'correct' : 'wrong');
   if (!isCorrect) {

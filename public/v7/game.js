@@ -15,7 +15,7 @@ const WEATHER_EVENTS = [
 const ITEMS = [
   { emoji: '🛡️', name: 'Khiên', desc: 'Chống trượt 1 lần' },
   { emoji: '⚡', name: 'Tia sét', desc: 'Đẩy đối thủ lùi 2 ô' },
-  { emoji: '🪜', name: 'Thang', desc: 'Nhảy +3 ô' },
+  { emoji: '🔼', name: 'Thang', desc: 'Nhảy +3 ô' },
 ];
 
 // ===== STATE =====
@@ -441,7 +441,7 @@ document.getElementById('answer-buttons').addEventListener('click', e => {
   const player = State.players[State.currentPlayerIndex];
   const q = State._currentQuestion;
   const selected = btn.dataset.opt;
-  const isCorrect = selected === q.correct_answer;
+  const isCorrect = selected.toLowerCase() === q.correct_answer.toLowerCase();
 
   // Disable all
   document.querySelectorAll('#answer-buttons .ans-btn').forEach(b => b.disabled = true);
@@ -570,6 +570,12 @@ function showVictory(winner) {
       <button class="victory-btn go-home" onclick="location.href='/'">🏠 Về trang chủ</button>
     </div>
   `;
+
+  // Check and show parent linking prompt after game ends
+  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
+  if (window.checkAndShowPrompt && profile?.id) {
+    window.checkAndShowPrompt(profile.id);
+  }
 }
 
 // ===== EXIT =====

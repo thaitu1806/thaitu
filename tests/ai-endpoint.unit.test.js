@@ -39,7 +39,13 @@ vi.mock('../lib/ai-cache.js', () => ({
 }));
 
 // Create a controllable mock DB
-const mockDbExecute = vi.fn(async () => ({ rows: [] }));
+const mockDbExecute = vi.fn(async ({ sql }) => {
+  // Default: return link_status 'linked' for premium gate checks
+  if (sql && sql.includes('link_status') && sql.includes('players')) {
+    return { rows: [{ link_status: 'linked' }] };
+  }
+  return { rows: [] };
+});
 const mockDb = { execute: mockDbExecute };
 
 vi.mock('../api/db.js', () => ({
@@ -119,7 +125,12 @@ describe('api/ai.js - POST /api/ai/explain', () => {
     generateExplanation.mockResolvedValue('Giải thích mẫu');
     recordUsage.mockResolvedValue(undefined);
     mockDbExecute.mockReset();
-    mockDbExecute.mockResolvedValue({ rows: [] });
+    mockDbExecute.mockImplementation(async ({ sql }) => {
+      if (sql && sql.includes('link_status') && sql.includes('players')) {
+        return { rows: [{ link_status: 'linked' }] };
+      }
+      return { rows: [] };
+    });
   });
 
   test('returns explanation on success', async () => {
@@ -203,7 +214,12 @@ describe('api/ai.js - POST /api/ai/explain', () => {
   test('returns static explanation as fallback when AI is disabled and DB has explanation', async () => {
     isAIEnabled.mockReturnValue(false);
     mockDbExecute.mockReset();
-    mockDbExecute.mockResolvedValue({ rows: [{ explanation: 'Static fallback' }] });
+    mockDbExecute.mockImplementation(async ({ sql }) => {
+      if (sql && sql.includes('link_status') && sql.includes('players')) {
+        return { rows: [{ link_status: 'linked' }] };
+      }
+      return { rows: [{ explanation: 'Static fallback' }] };
+    });
     const req = createMockReq('POST', { action: 'explain' }, {
       player_id: 1,
       question_text: '2 + 2 = ?',
@@ -243,6 +259,13 @@ describe('api/ai.js - POST /api/ai/hint', () => {
     getCached.mockReturnValue(null);
     generateHint.mockResolvedValue('Gợi ý mẫu');
     recordUsage.mockResolvedValue(undefined);
+    mockDbExecute.mockReset();
+    mockDbExecute.mockImplementation(async ({ sql }) => {
+      if (sql && sql.includes('link_status') && sql.includes('players')) {
+        return { rows: [{ link_status: 'linked' }] };
+      }
+      return { rows: [] };
+    });
   });
 
   test('returns hint on success', async () => {
@@ -291,7 +314,12 @@ describe('api/ai.js - POST /api/ai/chat', () => {
     chatWithTutor.mockResolvedValue('Trả lời mẫu');
     recordUsage.mockResolvedValue(undefined);
     mockDbExecute.mockReset();
-    mockDbExecute.mockResolvedValue({ rows: [{ count: 5 }] });
+    mockDbExecute.mockImplementation(async ({ sql }) => {
+      if (sql && sql.includes('link_status') && sql.includes('players')) {
+        return { rows: [{ link_status: 'linked' }] };
+      }
+      return { rows: [{ count: 5 }] };
+    });
   });
 
   test('returns reply and messages_remaining', async () => {
@@ -321,7 +349,12 @@ describe('api/ai.js - POST /api/ai/chat', () => {
 
   test('returns 429 when chat daily limit reached', async () => {
     mockDbExecute.mockReset();
-    mockDbExecute.mockResolvedValue({ rows: [{ count: 20 }] });
+    mockDbExecute.mockImplementation(async ({ sql }) => {
+      if (sql && sql.includes('link_status') && sql.includes('players')) {
+        return { rows: [{ link_status: 'linked' }] };
+      }
+      return { rows: [{ count: 20 }] };
+    });
     const req = createMockReq('POST', { action: 'chat' }, {
       player_id: 1,
       messages: [{ role: 'user', content: 'Hi' }],

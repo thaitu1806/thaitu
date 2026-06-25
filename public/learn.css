@@ -11,6 +11,19 @@ body { font-family: 'Nunito', 'Segoe UI', sans-serif; min-height: 100vh; backgro
 .back-link { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem; }
 
 .topics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 450px; margin: 0 auto; }
+
+/* Grade tabs */
+.grade-tabs {
+  display: flex; justify-content: center; gap: 6px; margin-bottom: 18px;
+  max-width: 450px; margin-left: auto; margin-right: auto;
+}
+.grade-tab {
+  padding: 8px 16px; border: 2px solid rgba(255,255,255,0.4); border-radius: 20px;
+  background: rgba(255,255,255,0.15); color: white; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; font-family: inherit;
+}
+.grade-tab:hover { background: rgba(255,255,255,0.25); }
+.grade-tab.active { background: white; color: #6c5ce7; border-color: white; }
 .topic-card {
   background: white; border-radius: 16px; padding: 20px 12px; text-align: center;
   cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 6px;

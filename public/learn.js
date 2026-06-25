@@ -36,6 +36,27 @@ const TOPIC_NAMES = {
   carry: '➕ Cộng Có Nhớ',
   shapes: '🔷 Hình Học',
   money: '💰 Tiền Việt Nam',
+  // Grade 3
+  mul3: '✖️ Bảng Nhân 6-9',
+  div3: '➗ Phép Chia',
+  fractions3: '🍕 Phân Số',
+  perimeter3: '📐 Chu Vi & Diện Tích',
+  time3: '📅 Thời Gian',
+  calc3: '🧮 Tính Nhẩm',
+  // Grade 4
+  bignum4: '🔢 Số Lớn',
+  fractions4: '🍕 Phân Số',
+  angle4: '📐 Góc & Hình',
+  area4: '⬜ Diện Tích',
+  average4: '📊 Trung Bình Cộng',
+  expr4: '🧮 Biểu Thức',
+  // Grade 5
+  decimal5: '🔢 Số Thập Phân',
+  percent5: '💯 Phần Trăm',
+  area5: '📐 Diện Tích',
+  volume5: '📦 Thể Tích',
+  speed5: '🚗 Chuyển Động',
+  ratio5: '⚖️ Tỉ Lệ',
 };
 
 // SVG Clock generator
@@ -488,7 +509,1072 @@ money: [
   <script>newMoneyPractice()</script>`,
 ],
 
+
+// ==================== LỚP 3 ====================
+mul3: [
+  `<h2>✖️ Bảng nhân 6, 7, 8, 9</h2>
+  <div class="visual-lg">✖️</div>
+  <p>Lớp 3, chúng ta học tiếp bảng nhân <strong>6, 7, 8, 9</strong>!</p>
+  <div class="formula" style="text-align:left; display:inline-block;">
+    6 × 1 = 6 &nbsp;&nbsp; 7 × 1 = 7<br>
+    6 × 2 = 12 &nbsp; 7 × 2 = 14<br>
+    6 × 3 = 18 &nbsp; 7 × 3 = 21<br>
+    6 × 4 = 24 &nbsp; 7 × 4 = 28<br>
+    6 × 5 = 30 &nbsp; 7 × 5 = 35
+  </div>
+  <p class="tip">🎵 Đọc to như hát: "Sáu một sáu, sáu hai mười hai..."</p>`,
+
+  `<h2>Bảng nhân 8 và 9</h2>
+  <div class="formula" style="text-align:left; display:inline-block;">
+    <strong>Nhân 8:</strong> 8, 16, 24, 32, 40, 48, 56, 64, 72, 80<br><br>
+    <strong>Nhân 9:</strong> 9, 18, 27, 36, 45, 54, 63, 72, 81, 90
+  </div>
+  <div class="highlight">Mẹo nhân 9: Hàng chục tăng 1, hàng đơn vị giảm 1!<br>09, 18, 27, 36, 45, 54, 63, 72, 81, 90</div>
+  <p class="tip">Tổng 2 chữ số của kết quả nhân 9 luôn = 9!<br>Ví dụ: 9×4=36 → 3+6=9 ✓</p>`,
+
+  `<h2>🖐️ Mẹo nhân 9 bằng ngón tay</h2>
+  <p>Xòe 10 ngón tay ra, gập ngón thứ N:</p>
+  <div class="example">
+    <strong>9 × 3:</strong> Gập ngón thứ 3<br>
+    → Bên trái: 2 ngón = hàng chục<br>
+    → Bên phải: 7 ngón = hàng đơn vị<br>
+    → Kết quả: <strong>27</strong> ✓
+  </div>
+  <div class="example">
+    <strong>9 × 7:</strong> Gập ngón thứ 7<br>
+    → Bên trái: 6, bên phải: 3 → <strong>63</strong> ✓
+  </div>
+  <p class="tip">Thử với mọi số từ 1-10 nhé! 🖐️🖐️</p>`,
+
+  `<h2>Quy tắc giao hoán & kết hợp</h2>
+  <div class="formula">a × b = b × a (giao hoán)<br>(a × b) × c = a × (b × c) (kết hợp)</div>
+  <div class="example">
+    <strong>6 × 7 = 7 × 6 = 42</strong><br>
+    Học 1 phép tính = biết 2 phép tính!<br><br>
+    <strong>(2 × 3) × 4 = 2 × (3 × 4) = 24</strong>
+  </div>
+  <p class="tip">Biết nhân 2-5 rồi → dùng giao hoán để tính nhân 6-9!<br>7 × 4 = 4 × 7 = 28 (dùng bảng nhân 4)</p>`,
+
+  `<h2>🎯 Luyện nhớ bảng nhân lớn</h2>
+  <div class="highlight">
+    📝 Mỗi ngày học 1 bảng, đọc 5 lần<br>
+    🎵 Hát theo nhịp cho dễ nhớ<br>
+    🖐️ Dùng ngón tay kiểm tra nhân 9<br>
+    🔄 Dùng giao hoán để giảm số cần nhớ
+  </div>
+  <div class="example">
+    <strong>Các tích hay quên:</strong><br>
+    6 × 7 = 42 | 6 × 8 = 48 | 6 × 9 = 54<br>
+    7 × 8 = 56 | 7 × 9 = 63 | 8 × 9 = 72
+  </div>
+  <p class="tip">Chỉ cần nhớ 6 tích này là xong toàn bộ bảng nhân! 💪</p>`,
+],
+
+div3: [
+  `<h2>➗ Phép chia là gì?</h2>
+  <div class="visual-lg">➗</div>
+  <p>Phép chia = <strong>chia đều</strong> thành nhiều phần!</p>
+  <div class="formula">12 ÷ 3 = 4<br>(12 quả chia đều cho 3 bạn, mỗi bạn 4 quả)</div>
+  <div class="example">
+    🍎🍎🍎🍎 | 🍎🍎🍎🍎 | 🍎🍎🍎🍎<br>
+    12 quả ÷ 3 phần = 4 quả mỗi phần
+  </div>
+  <p class="tip">Phép chia là phép tính ngược của nhân!<br>3 × 4 = 12 → 12 ÷ 3 = 4</p>`,
+
+  `<h2>Chia hết và chia có dư</h2>
+  <div class="highlight">
+    <strong>Chia hết:</strong> Chia vừa đúng, không thừa<br>
+    <strong>Chia có dư:</strong> Chia xong vẫn còn thừa
+  </div>
+  <div class="example">
+    <strong>Chia hết:</strong> 15 ÷ 3 = 5 (không dư)<br>
+    <strong>Chia có dư:</strong> 17 ÷ 3 = 5 (dư 2)<br>
+    Vì 3 × 5 = 15, còn thừa 17 - 15 = 2
+  </div>
+  <div class="formula">17 = 3 × 5 + 2<br>Số bị chia = Số chia × Thương + Số dư</div>
+  <p class="tip">Số dư luôn nhỏ hơn số chia!</p>`,
+
+  `<h2>Cách thực hiện phép chia</h2>
+  <div class="formula">Bước 1: Nhẩm bảng nhân tìm thương<br>Bước 2: Nhân ngược lại kiểm tra<br>Bước 3: Trừ để tìm số dư</div>
+  <div class="example">
+    <strong>23 ÷ 4 = ?</strong><br>
+    → 4 × 5 = 20 (gần nhất mà ≤ 23)<br>
+    → 4 × 6 = 24 (quá lớn!)<br>
+    → Thương = 5, dư = 23 - 20 = <strong>3</strong><br>
+    → 23 ÷ 4 = 5 (dư 3) ✓
+  </div>
+  <p class="tip">Luôn thử nhân ngược để kiểm tra kết quả!</p>`,
+
+  `<h2>Mối quan hệ Nhân - Chia</h2>
+  <div class="formula">Nếu a × b = c<br>thì c ÷ a = b<br>và c ÷ b = a</div>
+  <div class="example">
+    <strong>6 × 7 = 42</strong><br>
+    → 42 ÷ 6 = 7 ✓<br>
+    → 42 ÷ 7 = 6 ✓<br><br>
+    <strong>8 × 9 = 72</strong><br>
+    → 72 ÷ 8 = 9 ✓<br>
+    → 72 ÷ 9 = 8 ✓
+  </div>
+  <p class="tip">Thuộc bảng nhân → làm phép chia dễ dàng! 💡</p>`,
+],
+
+fractions3: [
+  `<h2>🍕 Phân số là gì?</h2>
+  <div class="visual-lg">🍕</div>
+  <p>Phân số = chia 1 cái thành nhiều phần <strong>bằng nhau</strong>!</p>
+  <div class="formula" style="font-size:1.5rem">
+    <sup>1</sup>&frasl;<sub>2</sub> &nbsp; <sup>1</sup>&frasl;<sub>3</sub> &nbsp; <sup>1</sup>&frasl;<sub>4</sub>
+  </div>
+  <div class="example">
+    🍕 Cắt pizza làm 2 → mỗi miếng = <strong>1/2</strong><br>
+    🍕 Cắt pizza làm 4 → mỗi miếng = <strong>1/4</strong><br>
+    🍫 Thanh socola 3 phần → mỗi phần = <strong>1/3</strong>
+  </div>
+  <p class="tip">Số trên = Tử số (phần lấy)<br>Số dưới = Mẫu số (tổng phần chia)</p>`,
+
+  `<h2>Đọc và viết phân số</h2>
+  <div class="formula">
+    <sup>Tử số</sup>&frasl;<sub>Mẫu số</sub> = "Tử số phần Mẫu số"
+  </div>
+  <div class="example">
+    <strong>1/2</strong> → đọc: "một phần hai"<br>
+    <strong>1/3</strong> → đọc: "một phần ba"<br>
+    <strong>2/5</strong> → đọc: "hai phần năm"<br>
+    <strong>3/4</strong> → đọc: "ba phần tư"
+  </div>
+  <div class="highlight">
+    Mẫu số cho biết: chia thành bao nhiêu phần<br>
+    Tử số cho biết: lấy bao nhiêu phần
+  </div>`,
+
+  `<h2>So sánh phân số cùng mẫu</h2>
+  <div class="formula">Cùng mẫu số → so sánh tử số!<br>Tử số lớn hơn → phân số lớn hơn</div>
+  <div class="example">
+    <strong>2/5 và 3/5:</strong> Cùng mẫu 5<br>
+    → 2 < 3 nên 2/5 < 3/5 ✓<br><br>
+    <strong>1/4 và 3/4:</strong> Cùng mẫu 4<br>
+    → 1 < 3 nên 1/4 < 3/4 ✓
+  </div>
+  <p class="tip">Tưởng tượng: cùng 1 chiếc pizza cắt 5, lấy 3 miếng nhiều hơn lấy 2 miếng! 🍕</p>`,
+
+  `<h2>So sánh phân số cùng tử</h2>
+  <div class="formula">Cùng tử số → mẫu số lớn hơn → phân số NHỎ hơn!</div>
+  <div class="example">
+    <strong>1/2 và 1/4:</strong> Cùng tử 1<br>
+    → Mẫu 2 < mẫu 4, nên 1/2 > 1/4 ✓<br><br>
+    <strong>1/3 và 1/5:</strong> Cùng tử 1<br>
+    → 1/3 > 1/5 ✓
+  </div>
+  <p class="tip">Chia càng nhiều phần → mỗi phần càng nhỏ!<br>🍕 cắt 2 > 🍕 cắt 4 (mỗi miếng to hơn)</p>`,
+
+  `<h2>🎯 Phân số trong đời sống</h2>
+  <div class="example">
+    🕐 <strong>Nửa giờ</strong> = 1/2 giờ = 30 phút<br>
+    🕐 <strong>Một phần tư giờ</strong> = 1/4 giờ = 15 phút<br>
+    🍰 Chia bánh cho <strong>4 bạn</strong> → mỗi bạn 1/4<br>
+    📏 <strong>Nửa mét</strong> = 1/2 m = 50 cm
+  </div>
+  <div class="highlight">
+    1/2 = một nửa (chia 2)<br>
+    1/3 = một phần ba (chia 3)<br>
+    1/4 = một phần tư (chia 4)
+  </div>
+  <p class="tip">Nhìn xung quanh: con thấy phân số ở đâu? 👀</p>`,
+],
+
+perimeter3: [
+  `<h2>📐 Chu vi là gì?</h2>
+  <div class="visual-lg">📐</div>
+  <p><strong>Chu vi</strong> = độ dài đường bao quanh hình</p>
+  <div class="formula">Chu vi = Tổng tất cả các cạnh</div>
+  <div class="example">
+    🐜 Con kiến bò quanh hình 1 vòng<br>
+    → Quãng đường kiến bò = <strong>chu vi</strong>!
+  </div>
+  <p class="tip">Tưởng tượng dùng sợi dây quấn quanh hình → đo sợi dây = chu vi!</p>`,
+
+  `<h2>Chu vi hình vuông & chữ nhật</h2>
+  <div class="formula">
+    ⬜ Chu vi hình vuông = cạnh × 4<br><br>
+    ▬ Chu vi hình chữ nhật = (dài + rộng) × 2
+  </div>
+  <div class="example">
+    <strong>Hình vuông</strong> cạnh 6cm:<br>
+    P = 6 × 4 = <strong>24 cm</strong><br><br>
+    <strong>Hình chữ nhật</strong> dài 8cm, rộng 5cm:<br>
+    P = (8 + 5) × 2 = 13 × 2 = <strong>26 cm</strong>
+  </div>`,
+
+  `<h2>⬜ Diện tích là gì?</h2>
+  <p><strong>Diện tích</strong> = phần mặt phẳng bên trong hình</p>
+  <div class="formula">Đơn vị: cm², m² (xen-ti-mét vuông, mét vuông)</div>
+  <div class="example">
+    Tưởng tượng lát gạch vuông 1cm × 1cm<br>
+    → Đếm số viên gạch = diện tích!<br><br>
+    ⬜⬜⬜<br>
+    ⬜⬜⬜<br>
+    → 3 × 2 = 6 ô = <strong>6 cm²</strong>
+  </div>
+  <p class="tip">Chu vi = đo "đường viền", Diện tích = đo "phần bên trong"</p>`,
+
+  `<h2>Công thức diện tích</h2>
+  <div class="formula">
+    ⬜ Diện tích hình vuông = cạnh × cạnh<br><br>
+    ▬ Diện tích hình chữ nhật = dài × rộng
+  </div>
+  <div class="example">
+    <strong>Hình vuông</strong> cạnh 5cm:<br>
+    S = 5 × 5 = <strong>25 cm²</strong><br><br>
+    <strong>Hình chữ nhật</strong> dài 7cm, rộng 4cm:<br>
+    S = 7 × 4 = <strong>28 cm²</strong>
+  </div>
+  <p class="tip">Nhớ: Chu vi đo bằng cm/m, Diện tích đo bằng cm²/m²!</p>`,
+
+  `<h2>🎯 Bài tập thực tế</h2>
+  <div class="example">
+    <strong>Bài 1:</strong> Sân trường hình chữ nhật dài 30m, rộng 20m.<br>
+    Chu vi = (30 + 20) × 2 = <strong>100 m</strong><br>
+    Diện tích = 30 × 20 = <strong>600 m²</strong><br><br>
+    <strong>Bài 2:</strong> Viên gạch hình vuông cạnh 30cm.<br>
+    Chu vi = 30 × 4 = <strong>120 cm</strong><br>
+    Diện tích = 30 × 30 = <strong>900 cm²</strong>
+  </div>
+  <p class="tip">Thực hành: Đo phòng ngủ của con và tính chu vi, diện tích! 📏</p>`,
+],
+
+time3: [
+  `<h2>📅 Ngày, tháng, năm</h2>
+  <div class="visual-lg">📅</div>
+  <div class="formula">
+    1 năm = 12 tháng<br>
+    1 tháng = 28, 29, 30 hoặc 31 ngày<br>
+    1 tuần = 7 ngày
+  </div>
+  <div class="example">
+    <strong>Tháng 31 ngày:</strong> 1, 3, 5, 7, 8, 10, 12<br>
+    <strong>Tháng 30 ngày:</strong> 4, 6, 9, 11<br>
+    <strong>Tháng 2:</strong> 28 ngày (năm nhuận: 29 ngày)
+  </div>
+  <p class="tip">🎵 Mẹo nhớ: "Một-ba-năm-bảy-tám-mười-chạp, ba mốt ngày không thiếu một ngày"</p>`,
+
+  `<h2>⏰ Đổi giờ - phút</h2>
+  <div class="formula">1 giờ = 60 phút<br>1 phút = 60 giây</div>
+  <div class="example">
+    <strong>2 giờ = ? phút</strong><br>
+    → 2 × 60 = <strong>120 phút</strong><br><br>
+    <strong>90 phút = ? giờ ? phút</strong><br>
+    → 90 ÷ 60 = 1 (dư 30)<br>
+    → <strong>1 giờ 30 phút</strong>
+  </div>
+  <p class="tip">Nhớ: 1 giờ = 60 phút, nửa giờ = 30 phút, 1/4 giờ = 15 phút</p>`,
+
+  `<h2>Tính khoảng thời gian</h2>
+  <div class="formula">Thời gian = Giờ kết thúc - Giờ bắt đầu</div>
+  <div class="example">
+    <strong>Học từ 7 giờ 30 đến 10 giờ 30:</strong><br>
+    → 10 giờ 30 - 7 giờ 30 = <strong>3 giờ</strong><br><br>
+    <strong>Đi từ 8 giờ 15 đến 9 giờ 45:</strong><br>
+    → 9 giờ 45 - 8 giờ 15 = <strong>1 giờ 30 phút</strong>
+  </div>
+  <p class="tip">Trừ giờ riêng, trừ phút riêng. Nếu phút không đủ trừ → mượn 1 giờ = 60 phút!</p>`,
+
+  `<h2>📆 Ngày trong tuần & lịch</h2>
+  <div class="highlight">
+    Thứ 2 → Thứ 3 → ... → Thứ 7 → Chủ nhật<br>
+    (7 ngày = 1 tuần)
+  </div>
+  <div class="example">
+    <strong>Hôm nay thứ 4, sau 5 ngày là thứ mấy?</strong><br>
+    → Thứ 4 + 5 ngày: 5, 6, 7, CN, Thứ 2<br>
+    → Đáp án: <strong>Thứ 2</strong><br><br>
+    <strong>Từ 15/3 đến 20/3 là mấy ngày?</strong><br>
+    → 20 - 15 = <strong>5 ngày</strong>
+  </div>
+  <p class="tip">Dùng lịch để đếm ngày chính xác nhé! 📅</p>`,
+],
+
+calc3: [
+  `<h2>🧮 Tính nhẩm nhân nhanh</h2>
+  <div class="visual-lg">🧮</div>
+  <p>Các mẹo nhân nhẩm giúp tính nhanh hơn!</p>
+  <div class="formula">Nhân 10: thêm số 0 vào cuối<br>Nhân 100: thêm 2 số 0 vào cuối<br>Nhân 5: nhân 10 rồi chia 2</div>
+  <div class="example">
+    <strong>13 × 10 = 130</strong> (thêm 0)<br>
+    <strong>25 × 100 = 2500</strong> (thêm 00)<br>
+    <strong>14 × 5 = 14 × 10 ÷ 2 = 140 ÷ 2 = 70</strong>
+  </div>`,
+
+  `<h2>Mẹo nhân với 9, 11</h2>
+  <div class="formula">Nhân 9 = Nhân 10 rồi trừ đi chính nó<br>Nhân 11 = Nhân 10 rồi cộng chính nó</div>
+  <div class="example">
+    <strong>7 × 9:</strong> 7 × 10 - 7 = 70 - 7 = <strong>63</strong> ✓<br>
+    <strong>12 × 9:</strong> 12 × 10 - 12 = 120 - 12 = <strong>108</strong> ✓<br><br>
+    <strong>7 × 11:</strong> 7 × 10 + 7 = 70 + 7 = <strong>77</strong> ✓<br>
+    <strong>15 × 11:</strong> 15 × 10 + 15 = 150 + 15 = <strong>165</strong> ✓
+  </div>
+  <p class="tip">Nhân 9: trừ đi | Nhân 11: cộng thêm | Dễ nhớ! 💡</p>`,
+
+  `<h2>Tính nhẩm chia nhanh</h2>
+  <div class="formula">Chia 10: bỏ số 0 cuối<br>Chia 2: tìm một nửa<br>Chia 5: chia 10 rồi nhân 2</div>
+  <div class="example">
+    <strong>250 ÷ 10 = 25</strong> (bỏ 0)<br>
+    <strong>48 ÷ 2 = 24</strong> (một nửa)<br>
+    <strong>60 ÷ 5 = 60 ÷ 10 × 2 = 6 × 2 = 12</strong>
+  </div>
+  <p class="tip">Chia cho 5: dễ hơn nếu chia 10 trước rồi nhân 2!</p>`,
+
+  `<h2>Tách số để tính nhanh</h2>
+  <div class="formula">Tách số thành các phần dễ tính!</div>
+  <div class="example">
+    <strong>13 × 4:</strong><br>
+    = (10 + 3) × 4 = 10×4 + 3×4 = 40 + 12 = <strong>52</strong><br><br>
+    <strong>25 × 8:</strong><br>
+    = 25 × 4 × 2 = 100 × 2 = <strong>200</strong><br><br>
+    <strong>99 × 6:</strong><br>
+    = (100 - 1) × 6 = 600 - 6 = <strong>594</strong>
+  </div>
+  <p class="tip">Tìm số tròn gần nhất để tính dễ hơn! 🎯</p>`,
+],
+
+
+// ==================== LỚP 4 ====================
+bignum4: [
+  `<h2>🔢 Số lớn: Hàng triệu, hàng tỉ</h2>
+  <div class="visual-lg">🔢</div>
+  <p>Lớp 4 ta học các số rất lớn!</p>
+  <div class="formula">
+    Hàng đơn vị → Hàng chục → Hàng trăm → Hàng nghìn<br>
+    → Hàng chục nghìn → Hàng trăm nghìn<br>
+    → Hàng triệu → Hàng chục triệu → Hàng trăm triệu → Hàng tỉ
+  </div>
+  <div class="example">
+    <strong>1.000.000</strong> = một triệu<br>
+    <strong>10.000.000</strong> = mười triệu<br>
+    <strong>1.000.000.000</strong> = một tỉ
+  </div>
+  <p class="tip">Đếm số chữ số 0: triệu có 6 số 0, tỉ có 9 số 0!</p>`,
+
+  `<h2>Đọc và viết số lớn</h2>
+  <div class="formula">Tách thành từng lớp 3 chữ số (từ phải sang trái)</div>
+  <div class="example">
+    <strong>5.432.168</strong><br>
+    → 5 triệu 432 nghìn 168<br>
+    → Đọc: "Năm triệu bốn trăm ba mươi hai nghìn một trăm sáu mươi tám"<br><br>
+    <strong>21.056.007</strong><br>
+    → Đọc: "Hai mươi mốt triệu không trăm năm mươi sáu nghìn không trăm linh bảy"
+  </div>
+  <p class="tip">Dùng dấu chấm ngăn cách mỗi 3 chữ số cho dễ đọc!</p>`,
+
+  `<h2>So sánh số lớn</h2>
+  <div class="formula">Bước 1: Đếm số chữ số (nhiều hơn → lớn hơn)<br>Bước 2: Nếu bằng nhau → so từ trái sang phải</div>
+  <div class="example">
+    <strong>5.432.168 và 843.219:</strong><br>
+    → 7 chữ số > 6 chữ số<br>
+    → 5.432.168 > 843.219 ✓<br><br>
+    <strong>3.456.789 và 3.465.789:</strong><br>
+    → Cùng 7 chữ số, so từ trái: 3=3, 4=4, 5<6<br>
+    → 3.456.789 < 3.465.789 ✓
+  </div>
+  <p class="tip">Nhiều chữ số hơn = số lớn hơn! Đơn giản vậy thôi 😊</p>`,
+
+  `<h2>Làm tròn số</h2>
+  <div class="formula">Làm tròn = thay bằng số tròn gần nhất</div>
+  <div class="example">
+    <strong>Làm tròn đến hàng nghìn:</strong><br>
+    4.368 → <strong>4.000</strong> (vì 3 < 5, làm tròn xuống)<br>
+    4.682 → <strong>5.000</strong> (vì 6 ≥ 5, làm tròn lên)<br><br>
+    <strong>Làm tròn đến hàng triệu:</strong><br>
+    2.345.678 → <strong>2.000.000</strong><br>
+    7.891.234 → <strong>8.000.000</strong>
+  </div>
+  <p class="tip">Chữ số ngay sau vị trí làm tròn: ≥ 5 thì tăng lên, < 5 giữ nguyên!</p>`,
+],
+
+fractions4: [
+  `<h2>🍕 Phân số nâng cao</h2>
+  <div class="visual-lg">🍕</div>
+  <p>Lớp 4: Rút gọn, quy đồng, cộng trừ phân số!</p>
+  <div class="formula">Rút gọn = chia cả tử và mẫu cho cùng 1 số</div>
+  <div class="example">
+    <strong>4/8:</strong> chia cả 2 cho 4<br>
+    → 4÷4 / 8÷4 = <strong>1/2</strong> ✓<br><br>
+    <strong>6/9:</strong> chia cả 2 cho 3<br>
+    → 6÷3 / 9÷3 = <strong>2/3</strong> ✓
+  </div>
+  <p class="tip">Tìm số lớn nhất chia hết cả tử và mẫu (ƯCLN)!</p>`,
+
+  `<h2>Quy đồng mẫu số</h2>
+  <div class="formula">Quy đồng = làm cho 2 phân số có cùng mẫu số</div>
+  <div class="example">
+    <strong>So sánh 2/3 và 3/4:</strong><br>
+    → Mẫu chung: 3 × 4 = 12<br>
+    → 2/3 = (2×4)/(3×4) = 8/12<br>
+    → 3/4 = (3×3)/(4×3) = 9/12<br>
+    → 8/12 < 9/12 nên <strong>2/3 < 3/4</strong> ✓
+  </div>
+  <p class="tip">Nhân chéo: tử nhân mẫu kia, mẫu nhân mẫu kia!</p>`,
+
+  `<h2>Cộng trừ phân số cùng mẫu</h2>
+  <div class="formula">Cùng mẫu: Cộng/trừ tử số, giữ nguyên mẫu số</div>
+  <div class="example">
+    <strong>2/7 + 3/7 = 5/7</strong> (cộng tử: 2+3=5)<br>
+    <strong>5/9 - 2/9 = 3/9 = 1/3</strong> (trừ tử, rút gọn)<br><br>
+    <strong>1/5 + 3/5 = 4/5</strong><br>
+    <strong>7/8 - 3/8 = 4/8 = 1/2</strong>
+  </div>
+  <p class="tip">Sau khi cộng/trừ xong → nhớ rút gọn nếu được!</p>`,
+
+  `<h2>Cộng trừ phân số khác mẫu</h2>
+  <div class="formula">Bước 1: Quy đồng mẫu số<br>Bước 2: Cộng/trừ tử số<br>Bước 3: Rút gọn kết quả</div>
+  <div class="example">
+    <strong>1/2 + 1/3 = ?</strong><br>
+    → Quy đồng (mẫu chung = 6):<br>
+    → 1/2 = 3/6, &nbsp; 1/3 = 2/6<br>
+    → 3/6 + 2/6 = <strong>5/6</strong> ✓<br><br>
+    <strong>3/4 - 1/3 = ?</strong><br>
+    → 3/4 = 9/12, &nbsp; 1/3 = 4/12<br>
+    → 9/12 - 4/12 = <strong>5/12</strong> ✓
+  </div>`,
+
+  `<h2>🎯 Mẹo nhớ về phân số</h2>
+  <div class="highlight">
+    📝 Rút gọn: chia cùng 1 số<br>
+    🔄 Quy đồng: nhân chéo<br>
+    ➕ Cộng/trừ: quy đồng rồi tính tử<br>
+    ✅ Luôn rút gọn kết quả cuối!
+  </div>
+  <div class="example">
+    <strong>Phân số tối giản:</strong> tử và mẫu không chia được cho số nào nữa<br>
+    1/2, 2/3, 3/4, 1/5, 3/7... đều là tối giản ✓
+  </div>
+  <p class="tip">Kiểm tra: nếu tử và mẫu cùng chẵn → chia cho 2, cùng chia hết cho 3 → chia cho 3!</p>`,
+],
+
+angle4: [
+  `<h2>📐 Các loại góc</h2>
+  <div class="visual-lg">📐</div>
+  <p>Góc được đo bằng <strong>độ</strong> (kí hiệu: °)</p>
+  <div class="formula">
+    Góc vuông = 90°<br>
+    Góc nhọn < 90°<br>
+    Góc tù > 90° (và < 180°)<br>
+    Góc bẹt = 180°
+  </div>
+  <div class="example">
+    📐 <strong>Góc vuông:</strong> góc quyển vở, góc bàn<br>
+    📌 <strong>Góc nhọn:</strong> mũi bút chì, kim đồng hồ lúc 2 giờ<br>
+    📎 <strong>Góc tù:</strong> quạt mở rộng, kim lúc 10 giờ 10
+  </div>`,
+
+  `<h2>Đo góc bằng thước đo góc</h2>
+  <div class="formula">Bước 1: Đặt tâm thước vào đỉnh góc<br>Bước 2: Đặt cạnh gốc trùng vạch 0°<br>Bước 3: Đọc số ở cạnh còn lại</div>
+  <div class="example">
+    <strong>45°</strong> → góc nhọn ✓ (nhỏ hơn 90°)<br>
+    <strong>90°</strong> → góc vuông ✓<br>
+    <strong>120°</strong> → góc tù ✓ (lớn hơn 90°)<br>
+    <strong>180°</strong> → góc bẹt ✓ (thẳng hàng)
+  </div>
+  <p class="tip">Góc nhọn "nhọn" như mũi kim, góc tù "tù" tức mở rộng ra!</p>`,
+
+  `<h2>Hình bình hành</h2>
+  <div class="formula">Hình bình hành: 2 cặp cạnh đối song song và bằng nhau</div>
+  <div class="example">
+    <strong>Tính chất:</strong><br>
+    ✓ Cạnh đối bằng nhau<br>
+    ✓ Góc đối bằng nhau<br>
+    ✓ 2 đường chéo cắt nhau tại trung điểm<br><br>
+    <strong>Chu vi</strong> = (cạnh a + cạnh b) × 2<br>
+    <strong>Diện tích</strong> = đáy × chiều cao
+  </div>
+  <p class="tip">Hình chữ nhật là hình bình hành đặc biệt (có góc vuông)!</p>`,
+
+  `<h2>Hình thoi</h2>
+  <div class="formula">Hình thoi: 4 cạnh bằng nhau, cạnh đối song song</div>
+  <div class="example">
+    <strong>Tính chất:</strong><br>
+    ✓ 4 cạnh bằng nhau<br>
+    ✓ Góc đối bằng nhau<br>
+    ✓ 2 đường chéo vuông góc với nhau<br><br>
+    <strong>Chu vi</strong> = cạnh × 4<br>
+    <strong>Diện tích</strong> = (đường chéo 1 × đường chéo 2) ÷ 2
+  </div>
+  <p class="tip">Hình vuông là hình thoi đặc biệt (có góc vuông)! ◆</p>`,
+
+  `<h2>🎯 Phân biệt các hình</h2>
+  <div class="highlight">
+    ⬜ <strong>Hình vuông:</strong> 4 cạnh bằng, 4 góc vuông<br>
+    ▬ <strong>Hình chữ nhật:</strong> cạnh đối bằng, 4 góc vuông<br>
+    ◇ <strong>Hình thoi:</strong> 4 cạnh bằng, góc đối bằng<br>
+    ▱ <strong>Hình bình hành:</strong> cạnh đối bằng và song song
+  </div>
+  <div class="example">
+    Hình vuông = Hình chữ nhật + Hình thoi<br>
+    (vừa 4 góc vuông, vừa 4 cạnh bằng)
+  </div>
+  <p class="tip">Hình vuông là "vua" vì nó có TẤT CẢ tính chất! 👑</p>`,
+],
+
+area4: [
+  `<h2>⬜ Diện tích hình vuông</h2>
+  <div class="visual-lg">⬜</div>
+  <div class="formula">S = cạnh × cạnh = a × a = a²</div>
+  <div class="example">
+    <strong>Hình vuông cạnh 7cm:</strong><br>
+    S = 7 × 7 = <strong>49 cm²</strong><br><br>
+    <strong>Hình vuông cạnh 12m:</strong><br>
+    S = 12 × 12 = <strong>144 m²</strong>
+  </div>
+  <div class="highlight">
+    Đơn vị diện tích: cm², dm², m², km²<br>
+    1 m² = 10.000 cm²<br>
+    1 dm² = 100 cm²
+  </div>`,
+
+  `<h2>▬ Diện tích hình chữ nhật</h2>
+  <div class="formula">S = dài × rộng = a × b</div>
+  <div class="example">
+    <strong>Hình chữ nhật dài 9cm, rộng 5cm:</strong><br>
+    S = 9 × 5 = <strong>45 cm²</strong><br><br>
+    <strong>Sân bóng dài 100m, rộng 60m:</strong><br>
+    S = 100 × 60 = <strong>6.000 m²</strong>
+  </div>
+  <p class="tip">Nhớ: dài và rộng phải cùng đơn vị trước khi nhân!</p>`,
+
+  `<h2>Đổi đơn vị diện tích</h2>
+  <div class="formula">
+    1 m² = 100 dm² = 10.000 cm²<br>
+    1 dm² = 100 cm²<br>
+    1 km² = 1.000.000 m²
+  </div>
+  <div class="example">
+    <strong>3 m² = ? dm²</strong> → 3 × 100 = <strong>300 dm²</strong><br>
+    <strong>5 dm² = ? cm²</strong> → 5 × 100 = <strong>500 cm²</strong><br>
+    <strong>20.000 cm² = ? m²</strong> → 20.000 ÷ 10.000 = <strong>2 m²</strong>
+  </div>
+  <p class="tip">Mỗi đơn vị diện tích liền kề hơn/kém nhau 100 lần!</p>`,
+
+  `<h2>🎯 Bài toán thực tế</h2>
+  <div class="example">
+    <strong>Bài 1:</strong> Phòng hình chữ nhật dài 5m, rộng 4m. Lát gạch vuông cạnh 50cm. Cần bao nhiêu viên?<br>
+    → S phòng = 5 × 4 = 20 m² = 200.000 cm²<br>
+    → S gạch = 50 × 50 = 2.500 cm²<br>
+    → Số viên = 200.000 ÷ 2.500 = <strong>80 viên</strong><br><br>
+    <strong>Bài 2:</strong> Vườn hình vuông cạnh 15m. Tính diện tích?<br>
+    → S = 15 × 15 = <strong>225 m²</strong>
+  </div>
+  <p class="tip">Đọc kỹ đề → vẽ hình → áp công thức → đổi đơn vị nếu cần!</p>`,
+],
+
+average4: [
+  `<h2>📊 Trung bình cộng là gì?</h2>
+  <div class="visual-lg">📊</div>
+  <p><strong>Trung bình cộng</strong> = giá trị "ở giữa" của nhóm số</p>
+  <div class="formula">Trung bình cộng = Tổng các số ÷ Số lượng các số</div>
+  <div class="example">
+    <strong>Tìm trung bình cộng của 4, 6, 8:</strong><br>
+    → Tổng = 4 + 6 + 8 = 18<br>
+    → Số lượng = 3<br>
+    → TB = 18 ÷ 3 = <strong>6</strong>
+  </div>
+  <p class="tip">Tưởng tượng: san bằng tất cả cho đều nhau = trung bình!</p>`,
+
+  `<h2>Cách tính trung bình cộng</h2>
+  <div class="formula">TB = (a + b + c + ...) ÷ n<br>(n = số lượng các số)</div>
+  <div class="example">
+    <strong>Điểm 4 bài kiểm tra: 7, 8, 9, 10</strong><br>
+    → TB = (7 + 8 + 9 + 10) ÷ 4<br>
+    → TB = 34 ÷ 4 = <strong>8,5 điểm</strong><br><br>
+    <strong>Chiều cao 5 bạn: 120, 125, 118, 130, 127 cm</strong><br>
+    → TB = (120+125+118+130+127) ÷ 5<br>
+    → TB = 620 ÷ 5 = <strong>124 cm</strong>
+  </div>`,
+
+  `<h2>Tìm tổng biết trung bình cộng</h2>
+  <div class="formula">Tổng = Trung bình cộng × Số lượng</div>
+  <div class="example">
+    <strong>Trung bình 3 số là 25. Tổng 3 số = ?</strong><br>
+    → Tổng = 25 × 3 = <strong>75</strong><br><br>
+    <strong>Trung bình cộng 5 bài kiểm tra là 8 điểm. Tổng điểm?</strong><br>
+    → Tổng = 8 × 5 = <strong>40 điểm</strong>
+  </div>
+  <p class="tip">Biết TB và số lượng → tìm tổng: nhân lên!<br>Biết tổng và số lượng → tìm TB: chia ra!</p>`,
+
+  `<h2>🎯 Bài toán thực tế</h2>
+  <div class="example">
+    <strong>Bài 1:</strong> Ba bạn cân nặng 28kg, 32kg, 30kg. TB cân nặng?<br>
+    → (28+32+30) ÷ 3 = 90 ÷ 3 = <strong>30 kg</strong><br><br>
+    <strong>Bài 2:</strong> TB 4 số là 15. Ba số đầu: 12, 14, 18. Số thứ tư?<br>
+    → Tổng 4 số = 15 × 4 = 60<br>
+    → Số thứ tư = 60 - 12 - 14 - 18 = <strong>16</strong><br><br>
+    <strong>Bài 3:</strong> Lớp có 20 bạn nam TB 35kg, 15 bạn nữ TB 30kg. TB cả lớp?<br>
+    → Tổng = 20×35 + 15×30 = 700 + 450 = 1150<br>
+    → TB = 1150 ÷ 35 = <strong>32,9 kg</strong>
+  </div>`,
+],
+
+expr4: [
+  `<h2>🧮 Thứ tự thực hiện phép tính</h2>
+  <div class="visual-lg">🧮</div>
+  <p>Biểu thức có nhiều phép tính → phải tính theo <strong>thứ tự</strong>!</p>
+  <div class="formula">
+    1️⃣ Ngoặc ( ) trước<br>
+    2️⃣ Nhân × Chia ÷ trước<br>
+    3️⃣ Cộng + Trừ − sau<br>
+    4️⃣ Từ trái sang phải
+  </div>
+  <div class="example">
+    <strong>3 + 2 × 4 = ?</strong><br>
+    → Nhân trước: 2 × 4 = 8<br>
+    → Cộng sau: 3 + 8 = <strong>11</strong> (không phải 20!)
+  </div>`,
+
+  `<h2>Dấu ngoặc ( ) thay đổi thứ tự</h2>
+  <div class="formula">Trong ngoặc LUÔN tính trước!</div>
+  <div class="example">
+    <strong>Không ngoặc:</strong> 3 + 2 × 4 = 3 + 8 = <strong>11</strong><br>
+    <strong>Có ngoặc:</strong> (3 + 2) × 4 = 5 × 4 = <strong>20</strong><br><br>
+    <strong>20 − (3 + 5) × 2:</strong><br>
+    → Ngoặc: 3 + 5 = 8<br>
+    → Nhân: 8 × 2 = 16<br>
+    → Trừ: 20 − 16 = <strong>4</strong>
+  </div>
+  <p class="tip">Thấy ngoặc → tính trong ngoặc trước mọi thứ!</p>`,
+
+  `<h2>Nhiều ngoặc lồng nhau</h2>
+  <div class="formula">Ngoặc trong tính trước, ngoặc ngoài tính sau<br>{ [ ( ) ] }</div>
+  <div class="example">
+    <strong>100 − [20 + (5 × 3)]:</strong><br>
+    → Ngoặc tròn: 5 × 3 = 15<br>
+    → Ngoặc vuông: 20 + 15 = 35<br>
+    → Kết quả: 100 − 35 = <strong>65</strong><br><br>
+    <strong>2 × [30 − (4 + 6)]:</strong><br>
+    → (4 + 6) = 10<br>
+    → [30 − 10] = 20<br>
+    → 2 × 20 = <strong>40</strong>
+  </div>`,
+
+  `<h2>🎯 Luyện tập biểu thức</h2>
+  <div class="example">
+    <strong>Tính:</strong><br>
+    a) 15 + 6 × 3 = 15 + 18 = <strong>33</strong><br>
+    b) (15 + 6) × 3 = 21 × 3 = <strong>63</strong><br>
+    c) 48 ÷ 4 − 2 × 3 = 12 − 6 = <strong>6</strong><br>
+    d) 48 ÷ (4 − 2) × 3 = 48 ÷ 2 × 3 = 24 × 3 = <strong>72</strong>
+  </div>
+  <div class="highlight">
+    Nhớ quy tắc: Ngoặc → Nhân Chia → Cộng Trừ → Trái sang Phải<br>
+    Viết tắt: <strong>N-NC-CT-TP</strong>
+  </div>
+  <p class="tip">Gạch chân phần tính trước để không bị nhầm! ✏️</p>`,
+],
+
+
+// ==================== LỚP 5 ====================
+decimal5: [
+  `<h2>🔢 Số thập phân</h2>
+  <div class="visual-lg">🔢</div>
+  <p>Số thập phân có phần nguyên và phần thập phân, ngăn cách bởi <strong>dấu phẩy</strong></p>
+  <div class="formula">
+    3,14 → phần nguyên: 3, phần thập phân: 14<br>
+    0,5 = 5/10 = 1/2<br>
+    0,25 = 25/100 = 1/4
+  </div>
+  <div class="example">
+    <strong>Đọc số thập phân:</strong><br>
+    3,7 → "ba phẩy bảy"<br>
+    12,05 → "mười hai phẩy không năm"<br>
+    0,125 → "không phẩy một trăm hai mươi lăm"
+  </div>
+  <p class="tip">Phần thập phân: hàng phần mười, phần trăm, phần nghìn...</p>`,
+
+  `<h2>So sánh số thập phân</h2>
+  <div class="formula">Bước 1: So phần nguyên<br>Bước 2: Nếu bằng → so phần thập phân từ trái sang phải</div>
+  <div class="example">
+    <strong>3,14 và 3,2:</strong><br>
+    → Phần nguyên: 3 = 3<br>
+    → Phần thập phân: 1 < 2 (hàng phần mười)<br>
+    → 3,14 < 3,2 ✓<br><br>
+    <strong>5,08 và 5,1:</strong><br>
+    → 5 = 5, so tiếp: 0 < 1<br>
+    → 5,08 < 5,1 ✓
+  </div>
+  <p class="tip">Thêm số 0 vào cuối cho dễ so sánh: 3,2 = 3,20 > 3,14!</p>`,
+
+  `<h2>Cộng trừ số thập phân</h2>
+  <div class="formula">Đặt thẳng cột dấu phẩy → cộng/trừ như số tự nhiên!</div>
+  <div class="example">
+    <strong>3,25 + 1,4:</strong><br>
+    &nbsp;&nbsp;3,25<br>
+    + 1,40<br>
+    ------<br>
+    &nbsp;&nbsp;<strong>4,65</strong><br><br>
+    <strong>5,7 − 2,35:</strong><br>
+    &nbsp;&nbsp;5,70<br>
+    − 2,35<br>
+    ------<br>
+    &nbsp;&nbsp;<strong>3,35</strong>
+  </div>
+  <p class="tip">Luôn thẳng hàng dấu phẩy! Thêm số 0 cho đủ chữ số.</p>`,
+
+  `<h2>Nhân chia số thập phân</h2>
+  <div class="formula">
+    Nhân: đếm tổng chữ số thập phân → đặt phẩy<br>
+    Chia: dời phẩy rồi chia như bình thường
+  </div>
+  <div class="example">
+    <strong>1,5 × 0,3:</strong><br>
+    → 15 × 3 = 45, tổng 2 chữ số thập phân<br>
+    → Kết quả: <strong>0,45</strong><br><br>
+    <strong>7,2 ÷ 0,4:</strong><br>
+    → Dời phẩy: 72 ÷ 4 = <strong>18</strong><br><br>
+    <strong>Nhân/chia 10, 100:</strong><br>
+    3,14 × 10 = 31,4 (dời phẩy phải 1)<br>
+    3,14 ÷ 10 = 0,314 (dời phẩy trái 1)
+  </div>`,
+
+  `<h2>🎯 Số thập phân trong đời sống</h2>
+  <div class="example">
+    💰 <strong>Giá:</strong> 15.500đ = 15,5 nghìn đồng<br>
+    📏 <strong>Chiều cao:</strong> 1,45 m = 1 mét 45 cm<br>
+    ⚖️ <strong>Cân nặng:</strong> 32,5 kg<br>
+    🌡️ <strong>Nhiệt độ:</strong> 36,5°C
+  </div>
+  <div class="highlight">
+    0,1 = 1/10 &nbsp;|&nbsp; 0,01 = 1/100<br>
+    0,5 = 1/2 &nbsp;|&nbsp; 0,25 = 1/4<br>
+    0,75 = 3/4 &nbsp;|&nbsp; 0,2 = 1/5
+  </div>
+  <p class="tip">Số thập phân có mặt ở khắp nơi: tiền, đo lường, nhiệt độ! 🌍</p>`,
+],
+
+percent5: [
+  `<h2>💯 Phần trăm là gì?</h2>
+  <div class="visual-lg">💯</div>
+  <p><strong>Phần trăm (%)</strong> = phần trên tổng 100 phần</p>
+  <div class="formula">
+    1% = 1/100 = 0,01<br>
+    50% = 50/100 = 1/2<br>
+    100% = toàn bộ
+  </div>
+  <div class="example">
+    🍕 Ăn 25% pizza = ăn 1/4 pizza<br>
+    📊 Đúng 80% bài = đúng 80 trên 100 câu<br>
+    🏷️ Giảm giá 30% = giảm 30 phần trên mỗi 100
+  </div>
+  <p class="tip">% chính là phân số có mẫu là 100!</p>`,
+
+  `<h2>Tìm phần trăm của một số</h2>
+  <div class="formula">a% của b = b × a ÷ 100</div>
+  <div class="example">
+    <strong>25% của 80 = ?</strong><br>
+    → 80 × 25 ÷ 100 = 2000 ÷ 100 = <strong>20</strong><br><br>
+    <strong>15% của 200 = ?</strong><br>
+    → 200 × 15 ÷ 100 = 3000 ÷ 100 = <strong>30</strong><br><br>
+    <strong>Mẹo nhanh:</strong><br>
+    50% = chia 2 | 25% = chia 4 | 10% = chia 10
+  </div>
+  <p class="tip">10% dễ tính nhất: bỏ 1 số 0 cuối (hoặc chia 10)!</p>`,
+
+  `<h2>Tìm tỉ số phần trăm</h2>
+  <div class="formula">Tỉ số % = (phần ÷ toàn bộ) × 100%</div>
+  <div class="example">
+    <strong>Lớp 40 bạn, 32 bạn giỏi. Tỉ lệ % giỏi?</strong><br>
+    → (32 ÷ 40) × 100% = 0,8 × 100% = <strong>80%</strong><br><br>
+    <strong>Mua 50.000đ, được giảm 10.000đ. Giảm bao nhiêu %?</strong><br>
+    → (10.000 ÷ 50.000) × 100% = 0,2 × 100% = <strong>20%</strong>
+  </div>
+  <p class="tip">Phần ÷ Tổng × 100 = phần trăm! Đơn giản vậy thôi 😊</p>`,
+
+  `<h2>🎯 Bài toán phần trăm thực tế</h2>
+  <div class="example">
+    <strong>Bài 1:</strong> Áo giá 200.000đ, giảm 15%. Giá mới?<br>
+    → Giảm: 200.000 × 15 ÷ 100 = 30.000đ<br>
+    → Giá mới: 200.000 − 30.000 = <strong>170.000đ</strong><br><br>
+    <strong>Bài 2:</strong> Gửi 1.000.000đ, lãi suất 5%/năm. Sau 1 năm có?<br>
+    → Lãi: 1.000.000 × 5 ÷ 100 = 50.000đ<br>
+    → Tổng: 1.000.000 + 50.000 = <strong>1.050.000đ</strong>
+  </div>
+  <p class="tip">Phần trăm xuất hiện nhiều trong mua sắm, ngân hàng, điểm số! 🛒🏦</p>`,
+],
+
+area5: [
+  `<h2>📐 Diện tích tam giác</h2>
+  <div class="visual-lg">🔺</div>
+  <div class="formula">S = (đáy × chiều cao) ÷ 2<br>S = a × h ÷ 2</div>
+  <div class="example">
+    <strong>Tam giác đáy 8cm, cao 5cm:</strong><br>
+    S = 8 × 5 ÷ 2 = 40 ÷ 2 = <strong>20 cm²</strong><br><br>
+    <strong>Tam giác đáy 12m, cao 7m:</strong><br>
+    S = 12 × 7 ÷ 2 = 84 ÷ 2 = <strong>42 m²</strong>
+  </div>
+  <p class="tip">Diện tích tam giác = một nửa hình chữ nhật bao quanh nó!</p>`,
+
+  `<h2>Diện tích hình thang</h2>
+  <div class="formula">S = (đáy lớn + đáy bé) × chiều cao ÷ 2<br>S = (a + b) × h ÷ 2</div>
+  <div class="example">
+    <strong>Hình thang: đáy lớn 10cm, đáy bé 6cm, cao 4cm:</strong><br>
+    S = (10 + 6) × 4 ÷ 2<br>
+    S = 16 × 4 ÷ 2 = 64 ÷ 2 = <strong>32 cm²</strong>
+  </div>
+  <div class="highlight">Mẹo nhớ: Trung bình 2 đáy × chiều cao ÷ 2<br>Hoặc: (tổng 2 đáy) × cao ÷ 2</div>`,
+
+  `<h2>⭕ Diện tích hình tròn</h2>
+  <div class="formula">S = r × r × 3,14<br>S = r² × π (π ≈ 3,14)</div>
+  <div class="example">
+    <strong>Hình tròn bán kính 5cm:</strong><br>
+    S = 5 × 5 × 3,14 = 25 × 3,14 = <strong>78,5 cm²</strong><br><br>
+    <strong>Hình tròn bán kính 10m:</strong><br>
+    S = 10 × 10 × 3,14 = <strong>314 m²</strong>
+  </div>
+  <div class="highlight">
+    Chu vi hình tròn: C = d × 3,14 (d = đường kính)<br>
+    Bán kính r = d ÷ 2
+  </div>`,
+
+  `<h2>🎯 So sánh công thức diện tích</h2>
+  <div class="highlight">
+    ⬜ Hình vuông: S = a × a<br>
+    ▬ Hình chữ nhật: S = a × b<br>
+    🔺 Tam giác: S = a × h ÷ 2<br>
+    ▱ Hình thang: S = (a + b) × h ÷ 2<br>
+    ⭕ Hình tròn: S = r × r × 3,14
+  </div>
+  <div class="example">
+    <strong>Đất hình thang:</strong> đáy 20m, 14m, cao 10m<br>
+    → S = (20+14) × 10 ÷ 2 = 34 × 10 ÷ 2 = <strong>170 m²</strong>
+  </div>
+  <p class="tip">Mỗi hình 1 công thức, học thuộc rồi áp dụng! 📝</p>`,
+],
+
+volume5: [
+  `<h2>📦 Thể tích là gì?</h2>
+  <div class="visual-lg">📦</div>
+  <p><strong>Thể tích</strong> = không gian mà vật chiếm chỗ (3 chiều!)</p>
+  <div class="formula">
+    Đơn vị: cm³, dm³, m³<br>
+    1 dm³ = 1.000 cm³ = 1 lít<br>
+    1 m³ = 1.000 dm³ = 1.000 lít
+  </div>
+  <div class="example">
+    📦 Hộp sữa 1 lít = 1 dm³<br>
+    🧊 Viên đá nhỏ ≈ 1 cm³<br>
+    🏠 Phòng 3×4×3m = 36 m³
+  </div>
+  <p class="tip">Diện tích = 2 chiều (mặt phẳng), Thể tích = 3 chiều (không gian)!</p>`,
+
+  `<h2>Thể tích hình lập phương</h2>
+  <div class="formula">V = cạnh × cạnh × cạnh = a³</div>
+  <div class="example">
+    <strong>Hình lập phương cạnh 4cm:</strong><br>
+    V = 4 × 4 × 4 = <strong>64 cm³</strong><br><br>
+    <strong>Hình lập phương cạnh 10cm:</strong><br>
+    V = 10 × 10 × 10 = <strong>1.000 cm³ = 1 dm³ = 1 lít</strong>
+  </div>
+  <div class="highlight">Diện tích toàn phần hình lập phương:<br>S = cạnh × cạnh × 6 = a² × 6</div>`,
+
+  `<h2>Thể tích hình hộp chữ nhật</h2>
+  <div class="formula">V = dài × rộng × cao = a × b × c</div>
+  <div class="example">
+    <strong>Hình hộp dài 5cm, rộng 3cm, cao 4cm:</strong><br>
+    V = 5 × 3 × 4 = <strong>60 cm³</strong><br><br>
+    <strong>Bể cá dài 50cm, rộng 30cm, cao 40cm:</strong><br>
+    V = 50 × 30 × 40 = <strong>60.000 cm³ = 60 dm³ = 60 lít</strong>
+  </div>
+  <div class="highlight">Diện tích toàn phần hình hộp chữ nhật:<br>S = 2 × (ab + bc + ac)</div>`,
+
+  `<h2>🎯 Bài toán thể tích thực tế</h2>
+  <div class="example">
+    <strong>Bài 1:</strong> Bể nước hình hộp dài 1,5m, rộng 1m, cao 0,8m. Chứa được bao nhiêu lít?<br>
+    → V = 1,5 × 1 × 0,8 = 1,2 m³<br>
+    → 1,2 m³ = 1.200 dm³ = <strong>1.200 lít</strong><br><br>
+    <strong>Bài 2:</strong> Khối rubik cạnh 6cm. Thể tích?<br>
+    → V = 6 × 6 × 6 = <strong>216 cm³</strong><br><br>
+    <strong>Bài 3:</strong> Đổ đầy bể 80 lít, mỗi phút đổ 5 lít. Cần mấy phút?<br>
+    → 80 ÷ 5 = <strong>16 phút</strong>
+  </div>`,
+],
+
+speed5: [
+  `<h2>🚗 Chuyển động đều</h2>
+  <div class="visual-lg">🚗</div>
+  <p><strong>Chuyển động đều</strong> = đi với vận tốc không đổi</p>
+  <div class="formula">
+    v = s ÷ t (vận tốc = quãng đường ÷ thời gian)<br>
+    s = v × t (quãng đường = vận tốc × thời gian)<br>
+    t = s ÷ v (thời gian = quãng đường ÷ vận tốc)
+  </div>
+  <div class="example">
+    <strong>v</strong> = velocity (vận tốc) - nhanh cỡ nào<br>
+    <strong>s</strong> = distance (quãng đường) - đi xa cỡ nào<br>
+    <strong>t</strong> = time (thời gian) - đi lâu cỡ nào
+  </div>`,
+
+  `<h2>Đơn vị vận tốc</h2>
+  <div class="formula">km/giờ (km/h) → ô tô, xe máy<br>m/phút (m/min) → người đi bộ<br>m/giây (m/s) → chạy, rơi</div>
+  <div class="example">
+    🚗 Ô tô: 60 km/giờ (mỗi giờ đi 60km)<br>
+    🚶 Đi bộ: 60 m/phút (mỗi phút đi 60m)<br>
+    🏃 Chạy: 5 m/giây (mỗi giây đi 5m)
+  </div>
+  <div class="highlight">
+    Đổi đơn vị:<br>
+    1 km = 1000 m | 1 giờ = 60 phút = 3600 giây
+  </div>`,
+
+  `<h2>Giải bài toán chuyển động</h2>
+  <div class="example">
+    <strong>Bài 1:</strong> Xe đi 150km trong 3 giờ. Vận tốc?<br>
+    → v = 150 ÷ 3 = <strong>50 km/giờ</strong><br><br>
+    <strong>Bài 2:</strong> Đi bộ vận tốc 4km/giờ, đi 2 giờ. Quãng đường?<br>
+    → s = 4 × 2 = <strong>8 km</strong><br><br>
+    <strong>Bài 3:</strong> Đi 120km với vận tốc 40km/giờ. Thời gian?<br>
+    → t = 120 ÷ 40 = <strong>3 giờ</strong>
+  </div>
+  <p class="tip">Tam giác v-s-t: che cái cần tìm, 2 cái còn lại chỉ cách tính!</p>`,
+
+  `<h2>Hai xe chuyển động</h2>
+  <div class="formula">
+    Đi ngược chiều: v tổng = v₁ + v₂<br>
+    Đi cùng chiều: v hiệu = v₁ − v₂
+  </div>
+  <div class="example">
+    <strong>Hai xe ngược chiều:</strong> cách 200km, xe A: 60km/h, xe B: 40km/h<br>
+    → v tổng = 60 + 40 = 100 km/h<br>
+    → Gặp nhau sau: 200 ÷ 100 = <strong>2 giờ</strong><br><br>
+    <strong>Hai xe cùng chiều:</strong> cách 50km, xe trước: 40km/h, xe sau: 60km/h<br>
+    → v hiệu = 60 − 40 = 20 km/h<br>
+    → Đuổi kịp sau: 50 ÷ 20 = <strong>2,5 giờ</strong>
+  </div>
+  <p class="tip">Ngược chiều = cộng vận tốc, Cùng chiều = trừ vận tốc! 🚗↔️🚙</p>`,
+],
+
+ratio5: [
+  `<h2>⚖️ Tỉ số là gì?</h2>
+  <div class="visual-lg">⚖️</div>
+  <p><strong>Tỉ số</strong> = so sánh 2 đại lượng bằng phép chia</p>
+  <div class="formula">Tỉ số của a và b = a : b = a/b</div>
+  <div class="example">
+    <strong>Lớp có 20 nam, 15 nữ:</strong><br>
+    → Tỉ số nam và nữ = 20 : 15 = 4 : 3<br>
+    → Cứ 4 bạn nam thì có 3 bạn nữ<br><br>
+    <strong>Pha nước cam: 1 phần cam, 4 phần nước:</strong><br>
+    → Tỉ số cam : nước = 1 : 4
+  </div>
+  <p class="tip">Rút gọn tỉ số giống rút gọn phân số: chia cùng 1 số!</p>`,
+
+  `<h2>Tỉ lệ thuận</h2>
+  <div class="formula">Tỉ lệ thuận: đại lượng này tăng → đại lượng kia cũng tăng<br>(theo cùng tỉ số)</div>
+  <div class="example">
+    <strong>1 quyển vở 5.000đ:</strong><br>
+    → 2 quyển = 10.000đ<br>
+    → 5 quyển = 25.000đ<br>
+    → Số vở tăng bao nhiêu lần, tiền tăng bấy nhiêu lần!<br><br>
+    <strong>Xe đi 50km/h:</strong><br>
+    → 1 giờ = 50km, 2 giờ = 100km, 3 giờ = 150km
+  </div>
+  <p class="tip">Mua nhiều hơn → trả nhiều hơn = tỉ lệ thuận! 📈</p>`,
+
+  `<h2>Tỉ lệ nghịch</h2>
+  <div class="formula">Tỉ lệ nghịch: đại lượng này tăng → đại lượng kia GIẢM<br>(tích không đổi)</div>
+  <div class="example">
+    <strong>12 cái kẹo chia cho các bạn:</strong><br>
+    → 2 bạn: mỗi bạn 6 cái<br>
+    → 3 bạn: mỗi bạn 4 cái<br>
+    → 6 bạn: mỗi bạn 2 cái<br>
+    → Nhiều bạn hơn = ít kẹo hơn!<br><br>
+    <strong>Đi 120km:</strong> v=40 → t=3h, v=60 → t=2h<br>
+    → Nhanh hơn = ít thời gian hơn
+  </div>
+  <p class="tip">Nhiều người làm → nhanh hơn = tỉ lệ nghịch! 📉</p>`,
+
+  `<h2>🎯 Giải bài toán tỉ lệ</h2>
+  <div class="example">
+    <strong>Bài 1 (Tỉ lệ thuận):</strong> 3 công nhân làm 12 sản phẩm. 5 công nhân làm?<br>
+    → 1 CN: 12÷3 = 4 SP<br>
+    → 5 CN: 4×5 = <strong>20 SP</strong><br><br>
+    <strong>Bài 2 (Tỉ lệ nghịch):</strong> 4 người làm xong trong 6 ngày. 8 người?<br>
+    → Tổng công: 4×6 = 24 (ngày-người)<br>
+    → 8 người: 24÷8 = <strong>3 ngày</strong><br><br>
+    <strong>Bài 3 (Tỉ số):</strong> Chia 35 kẹo theo tỉ lệ 3:4<br>
+    → Tổng phần: 3+4 = 7<br>
+    → Phần 1: 35÷7×3 = <strong>15</strong>, Phần 2: 35÷7×4 = <strong>20</strong>
+  </div>`,
+],
+
 }; // end LESSONS
+
+// === GRADE TOPICS CONFIG ===
+const GRADE_TOPICS = {
+  2: [
+    { id: 'clock', icon: '🕐', name: 'Đồng Hồ', desc: 'Đọc giờ, phút, kéo kim' },
+    { id: 'units', icon: '📏', name: 'Đo Lường', desc: 'cm, m, kg, lít' },
+    { id: 'multiply', icon: '✖️', name: 'Bảng Nhân', desc: 'Nhân 2, 3, 4, 5' },
+    { id: 'carry', icon: '➕', name: 'Cộng Có Nhớ', desc: 'Cộng trừ qua 10' },
+    { id: 'shapes', icon: '🔷', name: 'Hình Học', desc: 'Hình, cạnh, chu vi' },
+    { id: 'money', icon: '💰', name: 'Tiền Việt Nam', desc: 'Đếm, trả tiền' },
+  ],
+  3: [
+    { id: 'mul3', icon: '✖️', name: 'Bảng Nhân', desc: 'Nhân 6, 7, 8, 9' },
+    { id: 'div3', icon: '➗', name: 'Phép Chia', desc: 'Chia hết, chia dư' },
+    { id: 'fractions3', icon: '🍕', name: 'Phân Số', desc: 'Đọc, so sánh PS đơn giản' },
+    { id: 'perimeter3', icon: '📐', name: 'Chu Vi', desc: 'Chu vi, diện tích' },
+    { id: 'time3', icon: '📅', name: 'Thời Gian', desc: 'Ngày, tháng, năm' },
+    { id: 'calc3', icon: '🧮', name: 'Tính Nhẩm', desc: 'Nhân chia nhẩm nhanh' },
+  ],
+  4: [
+    { id: 'bignum4', icon: '🔢', name: 'Số Lớn', desc: 'Triệu, tỉ, so sánh' },
+    { id: 'fractions4', icon: '🍕', name: 'Phân Số', desc: 'Rút gọn, quy đồng, cộng trừ' },
+    { id: 'angle4', icon: '📐', name: 'Góc & Hình', desc: 'Góc nhọn, tù, vuông' },
+    { id: 'area4', icon: '⬜', name: 'Diện Tích', desc: 'DT hình vuông, chữ nhật' },
+    { id: 'average4', icon: '📊', name: 'Trung Bình', desc: 'Tìm số trung bình cộng' },
+    { id: 'expr4', icon: '🧮', name: 'Biểu Thức', desc: 'Thứ tự tính, ngoặc' },
+  ],
+  5: [
+    { id: 'decimal5', icon: '🔢', name: 'Số Thập Phân', desc: 'Đọc, viết, so sánh' },
+    { id: 'percent5', icon: '💯', name: 'Phần Trăm', desc: 'Tính %, bài toán %' },
+    { id: 'area5', icon: '📐', name: 'Diện Tích', desc: 'Tam giác, hình thang, tròn' },
+    { id: 'volume5', icon: '📦', name: 'Thể Tích', desc: 'HLP, hình hộp CN' },
+    { id: 'speed5', icon: '🚗', name: 'Chuyển Động', desc: 'Vận tốc, quãng đường, t/gian' },
+    { id: 'ratio5', icon: '⚖️', name: 'Tỉ Lệ', desc: 'Tỉ số, bài toán tỉ lệ' },
+  ],
+};
+
+const GRADE_SUBTITLES = {
+  2: 'Toán lớp 2 - Học qua hình ảnh!',
+  3: 'Toán lớp 3 - Nâng cao hơn!',
+  4: 'Toán lớp 4 - Khám phá số học!',
+  5: 'Toán lớp 5 - Sẵn sàng lên cấp!',
+};
+
+let currentGrade = 2;
+
+function switchGrade(grade) {
+  currentGrade = grade;
+  document.querySelectorAll('.grade-tab').forEach(t => t.classList.toggle('active', parseInt(t.dataset.grade) === grade));
+  document.getElementById('learn-subtitle').textContent = GRADE_SUBTITLES[grade];
+  renderTopicsGrid();
+}
+
+function renderTopicsGrid() {
+  const grid = document.getElementById('topics-grid');
+  const topics = GRADE_TOPICS[currentGrade] || [];
+  grid.innerHTML = topics.map(t => `
+    <div class="topic-card" onclick="openTopic('${t.id}')">
+      <span class="topic-icon">${t.icon}</span>
+      <span class="topic-name">${t.name}</span>
+      <span class="topic-desc">${t.desc}</span>
+    </div>
+  `).join('');
+}
+
+// Init grade from player profile
+(function initGrade() {
+  try {
+    const p = JSON.parse(localStorage.getItem('hocvui_profile'));
+    if (p && p.grade >= 2 && p.grade <= 5) { currentGrade = p.grade; switchGrade(currentGrade); return; }
+  } catch {}
+  renderTopicsGrid();
+})();
 
 // === INTERACTIVE CLOCK ===
 let clockState = { hour: 12, minute: 0, dragging: null, targetHour: 3, targetMinute: 0, correct: 0, wrong: 0 };
