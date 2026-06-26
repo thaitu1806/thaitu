@@ -1035,3 +1035,110 @@ body {
 .help-content h3 { margin-bottom: 12px; }
 .help-content p { text-align: left; line-height: 1.8; font-size: 0.95rem; margin-bottom: 16px; }
 .help-content button { padding: 10px 24px; background: #4CAF50; color: #fff; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+
+/* ===== CHARACTER SPRITE SYSTEM (V6 racers) ===== */
+/* The .car host previously used font-size for the emoji — give the sprite
+   explicit dimensions so the inline SVG fills the same footprint. */
+.car { width: 40px; height: 40px; }
+.car .hv-char { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.car .hv-char svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.car .hv-char svg .head,
+.car .hv-char svg .body,
+.car .hv-char svg .accent,
+.car .hv-char svg .wheel,
+.car .hv-char svg .hub { transform-origin: center; transform-box: fill-box; }
+
+/* Idle — gentle engine idle bob + slow wheel turn */
+.hv-char.is-idle svg.racer { animation: racer-idle 1.6s ease-in-out infinite; }
+@keyframes racer-idle { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+.hv-char.is-idle svg .wheel { animation: racer-wheel 1.6s linear infinite; }
+
+/* Drive (boost / overtake) — lean forward + fast wheels */
+.hv-char.is-drive svg.racer { animation: racer-drive 0.5s ease-out; }
+@keyframes racer-drive { 0% { transform: rotate(0) translateX(0); } 40% { transform: rotate(-4deg) translateX(3px); } 100% { transform: rotate(0) translateX(0); } }
+.hv-char.is-drive svg .wheel { animation: racer-wheel 0.25s linear infinite; }
+
+/* Happy (correct answer) — bouncy celebrate */
+.hv-char.is-happy svg.racer { animation: racer-happy 0.5s ease-out; }
+@keyframes racer-happy { 0% { transform: scale(1); } 35% { transform: scale(1.14) rotate(-5deg); } 70% { transform: scale(1.03) rotate(3deg); } 100% { transform: scale(1); } }
+.hv-char.is-happy svg .wheel { animation: racer-wheel 0.3s linear infinite; }
+
+/* Bump (obstacle hit) — shudder */
+.hv-char.is-bump svg.racer { animation: racer-bump 0.4s ease-in-out; }
+@keyframes racer-bump { 0%,100% { transform: translateX(0) rotate(0); } 25% { transform: translateX(-3px) rotate(3deg); } 50% { transform: translateX(3px) rotate(-3deg); } 75% { transform: translateX(-2px) rotate(2deg); } }
+
+@keyframes racer-wheel { from { transform: rotate(0); } to { transform: rotate(-360deg); } }
+
+/* ===== PARTICLES ===== */
+.pfx { position: absolute; left: 50%; top: 50%; pointer-events: none; will-change: transform, opacity; z-index: 24; }
+.pfx-sparkle {
+  width: 7px; height: 7px; margin: -3px 0 0 -3px;
+  background: radial-gradient(circle, #fff 0%, #ffd23f 55%, transparent 70%);
+  border-radius: 50%;
+  animation: pfx-sparkle 0.8s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-sparkle {
+  0% { transform: translate(0,0) scale(0.4); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) scale(1.3); opacity: 0; }
+}
+.pfx-confetti {
+  width: 6px; height: 9px; margin: -4px 0 0 -3px; border-radius: 2px;
+  background: #3498db;
+  animation: pfx-confetti 0.8s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+.pfx-confetti:nth-child(2n) { background: #e74c3c; }
+.pfx-confetti:nth-child(3n) { background: #ffd23f; }
+.pfx-confetti:nth-child(4n) { background: #27ae60; }
+@keyframes pfx-confetti {
+  0% { transform: translate(0,0) rotate(0); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) rotate(220deg); opacity: 0; }
+}
+
+/* ===== GUIDE BUTTON ===== */
+.btn-guide {
+  display: block; width: 100%; padding: 14px; margin-top: 12px;
+  background: var(--card-bg); color: var(--p1-color);
+  border: 2px solid var(--p1-color); border-radius: 14px;
+  font-family: var(--font); font-size: 1.05rem; font-weight: 800; cursor: pointer;
+  transition: transform 0.15s;
+}
+.btn-guide:active { transform: scale(0.97); }
+
+/* In-game styled exit button (🚪) — sits beside the ✕ in the info bar */
+.btn-exit {
+  width: 28px; height: 28px; padding: 0; border-radius: 50%;
+  background: rgba(0,0,0,0.08); border: 1px solid var(--border);
+  color: var(--text); font-size: 0.9rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font); transition: transform 0.15s;
+}
+.btn-exit:active { transform: scale(0.92); }
+
+/* ===== MODALS (guide + exit) ===== */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 9500; background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-card {
+  background: #fff; color: var(--text); border-radius: 20px; padding: 22px 20px;
+  max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  animation: modalPop 0.3s ease;
+}
+@keyframes modalPop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-title { font-size: 1.25rem; text-align: center; margin-bottom: 14px; }
+.modal-rules { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.modal-rules li { padding: 7px 0; font-size: 0.95rem; line-height: 1.5; border-bottom: 1px solid #f0e6e6; }
+.modal-rules li:last-child { border-bottom: none; }
+.modal-rules b { color: var(--p1-color); }
+.exit-modal-card { text-align: center; max-width: 320px; }
+.exit-modal-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.exit-modal-text { font-size: 1.15rem; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.exit-modal-sub { font-size: 0.88rem; color: var(--text-light); margin-bottom: 18px; }
+.exit-modal-actions { display: flex; gap: 10px; justify-content: center; }
+.exit-modal-cancel { padding: 11px 18px; background: #e0e6ed; color: var(--text); border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: var(--font); }
+.exit-modal-confirm { padding: 11px 18px; background: var(--red); color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: var(--font); }
+.exit-modal-cancel:active, .exit-modal-confirm:active { transform: translateY(2px); }

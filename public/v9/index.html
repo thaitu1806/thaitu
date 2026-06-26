@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -60,6 +61,7 @@
         </div>
 
         <button class="btn-start" id="btn-start">⚔️ Bắt đầu đấu!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -68,7 +70,7 @@
     <section id="game-screen" class="screen">
       <div class="game-layout">
         <div class="game-header">
-          <button class="btn-exit" id="btn-exit">✕</button>
+          <button class="btn-exit" id="btn-exit">🚪</button>
           <div class="turn-info" id="turn-info">Lượt: ...</div>
         </div>
 
@@ -139,11 +141,41 @@
     </section>
   </div>
 
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>♟️ Chọn một <b>quân</b> của mình, rồi chạm vào <b>ô đích</b> để di chuyển.</li>
+        <li>❓ Mỗi nước đi cần <b>trả lời đúng</b> một câu hỏi mới được đi.</li>
+        <li>❌ Trả lời <b>sai</b> = <b>mất lượt</b>, đến phiên đối thủ.</li>
+        <li>👑 <b>Tướng</b> (Vua) đi 1 ô theo mọi hướng. <b>Lính</b> tiến 1 ô, ăn chéo phía trước.</li>
+        <li>🏆 Thắng khi <b>bắt được Tướng</b> đối phương hoặc đưa <b>Tướng</b> của mình đến <b>hàng cuối</b>.</li>
+        <li>🤖 Có thể đấu với <b>Bot</b> hoặc <b>hai người</b> trên cùng máy.</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/generals.js"></script>
   <script type="module" src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
 </body>
 </html>

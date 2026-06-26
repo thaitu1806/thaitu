@@ -53,7 +53,7 @@ function findComparisonBlocks(code) {
 }
 
 describe('Answer Comparison Safety - All Versions', () => {
-  for (let v = 2; v <= 40; v++) {
+  for (let v = 2; v <= 60; v++) {
     const js = readGameJs(v);
     if (!js) continue;
 

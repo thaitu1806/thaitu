@@ -412,3 +412,163 @@ async function saveSession() {
 init();
 
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V32's game logic lives in the IIFE above with private functions, so this
+// layer hooks in non-invasively via DOM observation + event listeners. It
+// never touches game state or rewrites logic.
+(function () {
+  'use strict';
+
+  let sciChar = null;   // kid-scientist avatar
+  let botChar = null;   // robot helper mascot
+  let flaskChar = null; // beaker mascot on the reaction screen
+  let happyTimer = null;
+
+  const C = () => window.HocVuiCharacters;
+
+  function mountLab() {
+    const sciHost = document.getElementById('scientist-host');
+    const botHost = document.getElementById('robot-host');
+    if (sciHost && !sciChar) {
+      if (C() && C().hasSpecies('scientist')) {
+        sciChar = C().createCharacter('scientist', sciHost, { state: 'idle' });
+      } else {
+        sciHost.textContent = '🔬';
+      }
+    }
+    if (botHost && !botChar) {
+      if (C() && C().hasSpecies('robot')) {
+        botChar = C().createCharacter('robot', botHost, { state: 'idle' });
+      } else {
+        botHost.textContent = '🤖';
+      }
+    }
+  }
+
+  function mountReaction() {
+    const host = document.getElementById('reaction-stage');
+    if (!host) return;
+    if (flaskChar) { flaskChar.destroy(); flaskChar = null; }
+    if (C() && C().hasSpecies('beaker')) {
+      flaskChar = C().createCharacter('beaker', host, { state: 'happy' });
+      setTimeout(() => { if (flaskChar) flaskChar.setState('idle'); }, 900);
+    } else {
+      host.textContent = '🧪';
+    }
+  }
+
+  function celebrate() {
+    [sciChar, botChar].forEach(ch => {
+      if (!ch) return;
+      ch.setState('happy');
+    });
+    if (happyTimer) clearTimeout(happyTimer);
+    happyTimer = setTimeout(() => {
+      if (sciChar) sciChar.setState('idle');
+      if (botChar) botChar.setState('idle');
+    }, 900);
+    const stage = document.querySelector('.scientist-stage');
+    if (stage) spawnParticles(stage, 'sparkle', 8);
+  }
+
+  // Particle helper — sparkles around the scientist on a correct answer.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+
+  // Confetti burst for the reaction screen (separate from the result-screen one).
+  function spawnReactionConfetti() {
+    const host = document.getElementById('reaction-stage');
+    if (!host) return;
+    const colors = ['#7c3aed', '#a855f7', '#06b6d4', '#10b981', '#f59e0b', '#ec4899'];
+    for (let i = 0; i < 14; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-confetti';
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.setProperty('--tx', (Math.random() * 120 - 60) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 30) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+      host.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    const $ = id => document.getElementById(id);
+
+    // Mount the lab characters once the game screen is shown, and react to
+    // screen transitions (game-screen / reaction-screen become .active).
+    const gameScreen = $('game-screen');
+    const reactionScreen = $('reaction-screen');
+    if (gameScreen) {
+      const obs = new MutationObserver(() => {
+        if (gameScreen.classList.contains('active')) mountLab();
+      });
+      obs.observe(gameScreen, { attributes: true, attributeFilter: ['class'] });
+      if (gameScreen.classList.contains('active')) mountLab();
+    }
+    if (reactionScreen) {
+      const obs = new MutationObserver(() => {
+        if (reactionScreen.classList.contains('active')) {
+          mountReaction();
+          spawnReactionConfetti();
+        }
+      });
+      obs.observe(reactionScreen, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Celebrate when feedback flips to "correct" (an ingredient was added).
+    const feedback = $('q-feedback');
+    if (feedback) {
+      const obs = new MutationObserver(() => {
+        if (feedback.classList.contains('correct')) celebrate();
+      });
+      obs.observe(feedback, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Guide modal
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // Styled exit modal
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Best-effort: stop any running interval timers before leaving.
+        try {
+          const hi = setInterval(() => {}, 999999);
+          for (let i = 0; i <= hi; i++) clearInterval(i);
+        } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

@@ -180,3 +180,99 @@ body {
   from { transform: translateY(100vh) rotate(0deg); }
   to { transform: translateY(-10vh) rotate(360deg); }
 }
+
+/* ===== CHARACTER SCENE (animated sprites alongside emoji) ===== */
+.dentist-scene {
+  display: flex; align-items: flex-end; justify-content: center; gap: 10px;
+  margin-bottom: 6px;
+}
+.sprite-host { display: inline-flex; align-items: center; justify-content: center; }
+.dentist-host { width: 92px; height: 92px; }
+.tooth-host { width: 64px; height: 64px; }
+
+.hv-char { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.hv-char svg { width: 100%; height: 100%; overflow: visible; }
+.hv-char svg .head, .hv-char svg .body, .hv-char svg .accent { transform-origin: center; transform-box: fill-box; }
+
+/* Dentist idle — gentle breathing sway + tool glint */
+.hv-char.hv-char--dentist.is-idle svg { animation: dentist-bob 2.8s ease-in-out infinite; }
+@keyframes dentist-bob { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-4px) rotate(1deg); } }
+.hv-char.hv-char--dentist.is-idle svg .accent { animation: tool-glint 2.4s ease-in-out infinite; transform-origin: 80px 58px; }
+@keyframes tool-glint { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(5deg); } }
+
+/* Dentist happy — quick celebratory wobble */
+.hv-char.hv-char--dentist.is-happy svg { animation: dentist-cheer 0.7s ease-out; }
+@keyframes dentist-cheer { 0% { transform: scale(1) rotate(0); } 35% { transform: scale(1.1) rotate(-6deg); } 65% { transform: scale(1.05) rotate(5deg); } 100% { transform: scale(1) rotate(0); } }
+
+/* Tooth mascot idle — soft float, sparkle twinkle */
+.hv-char.hv-char--tooth.is-idle svg { animation: tooth-float 2.6s ease-in-out infinite; }
+@keyframes tooth-float { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-4px) rotate(2deg); } }
+.hv-char.hv-char--tooth svg .accent { animation: tooth-sparkle 2s ease-in-out infinite; transform-origin: 76px 31px; }
+@keyframes tooth-sparkle { 0%,100% { transform: scale(0.7); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } }
+
+/* Tooth mascot happy — bounce when a tooth gets cleaned */
+.hv-char.hv-char--tooth.is-happy svg { animation: tooth-pop 0.6s ease-out; }
+@keyframes tooth-pop { 0% { transform: scale(1); } 40% { transform: scale(1.22) rotate(-7deg); } 70% { transform: scale(1.06) rotate(5deg); } 100% { transform: scale(1); } }
+
+/* ===== PARTICLES ===== */
+.pfx { position: absolute; left: 50%; top: 50%; pointer-events: none; will-change: transform, opacity; z-index: 24; }
+.pfx-sparkle {
+  width: 8px; height: 8px; margin: -4px 0 0 -4px;
+  background: radial-gradient(circle, #fff 0%, #67e8f9 55%, transparent 70%);
+  border-radius: 50%;
+  animation: pfx-sparkle 0.8s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-sparkle {
+  0% { transform: translate(0,0) scale(0.4); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) scale(1.3); opacity: 0; }
+}
+.pfx-confetti {
+  width: 9px; height: 9px; margin: -4px 0 0 -4px;
+  background: #06b6d4; border-radius: 2px;
+  animation: pfx-confetti 1.1s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+.pfx-confetti:nth-child(3n) { background: #fbbf24; }
+.pfx-confetti:nth-child(3n+1) { background: #a855f7; }
+.pfx-confetti:nth-child(3n+2) { background: #22c55e; }
+@keyframes pfx-confetti {
+  0% { transform: translate(0,0) rotate(0) scale(0.6); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), calc(var(--ty,-40px) * -2.4)) rotate(540deg) scale(1); opacity: 0; }
+}
+
+/* ===== GUIDE BUTTON + EXIT BUTTON ===== */
+.btn-guide {
+  display: block; width: 100%; max-width: 260px; margin: 0 auto 8px;
+  padding: 14px 20px; background: rgba(255,255,255,0.65);
+  color: #0c4a6e; border: 2px solid rgba(255,255,255,0.9);
+  border-radius: 16px; font-size: 1rem; font-weight: 800; cursor: pointer;
+  font-family: inherit; transition: transform 0.2s;
+}
+.btn-guide:active { transform: scale(0.96); }
+.btn-exit {
+  padding: 5px 10px; background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(6,182,212,0.4); color: #0c4a6e;
+  border-radius: 10px; font-size: 0.95rem; cursor: pointer; font-family: inherit;
+}
+.btn-exit:active { transform: scale(0.92); }
+
+/* ===== MODALS (guide + exit) ===== */
+.modal-overlay { position: fixed; inset: 0; z-index: 9500; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-card { background: #fff; color: #0c4a6e; border-radius: 20px; padding: 22px 20px; max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: modalPop 0.3s ease; }
+@keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-title { font-size: 1.25rem; text-align: center; margin-bottom: 14px; }
+.modal-rules { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.modal-rules li { padding: 7px 0; font-size: 0.95rem; line-height: 1.5; border-bottom: 1px solid #e0f2fe; }
+.modal-rules li:last-child { border-bottom: none; }
+.modal-rules b { color: #0891b2; }
+.exit-modal-card { text-align: center; max-width: 320px; }
+.exit-modal-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.exit-modal-text { font-size: 1.1rem; font-weight: 800; color: #0c4a6e; margin-bottom: 6px; }
+.exit-modal-sub { font-size: 0.85rem; color: #777; margin-bottom: 18px; }
+.exit-modal-actions { display: flex; gap: 10px; justify-content: center; }
+.exit-modal-cancel { padding: 10px 18px; background: #e0e0e0; color: #333; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-confirm { padding: 10px 18px; background: #0891b2; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-cancel:active, .exit-modal-confirm:active { transform: translateY(2px); }

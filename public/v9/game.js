@@ -710,3 +710,136 @@ document.getElementById('btn-speak-v9')?.addEventListener('click', () => {
   const q = State._currentQuestion;
   window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, State.settings?.subject);
 });
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+// Mounts animated chibi general/soldier sprites onto the existing emoji
+// pieces, wires the start-screen guide modal and the styled in-game exit
+// modal, and adds sparkle/confetti particle feedback. All additive — the
+// chess engine, bot AI and quiz logic above are never modified.
+(function () {
+  'use strict';
+
+  function speciesFor(player, type) {
+    const side = player === P1 ? 'red' : 'blue';
+    const role = type === KING ? 'general' : 'soldier';
+    return side + '-' + role;
+  }
+
+  // Replace the emoji inside each rendered .piece with a vector sprite.
+  function mountSprites() {
+    const C = window.HocVuiCharacters;
+    document.querySelectorAll('#board .piece').forEach(pieceEl => {
+      if (pieceEl.dataset.spriteMounted === '1') return;
+      const player = pieceEl.classList.contains('p1') ? P1 : P2;
+      const type = pieceEl.classList.contains('king') ? KING : SOLDIER;
+      const id = speciesFor(player, type);
+      if (C && C.hasSpecies(id)) {
+        pieceEl.textContent = '';
+        C.createCharacter(id, pieceEl, { state: 'idle' });
+        pieceEl.dataset.spriteMounted = '1';
+      }
+      // else: leave the original emoji fallback in place.
+    });
+  }
+
+  // Particle helper — sparkle/confetti bursts around a board cell.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v9_spawnParticles = spawnParticles;
+
+  function cellAt(row, col) {
+    return document.querySelector(`#board .cell[data-row="${row}"][data-col="${col}"]`);
+  }
+
+  // Wrap renderBoard so freshly drawn pieces always get their sprite.
+  if (typeof renderBoard === 'function') {
+    const origRender = renderBoard;
+    renderBoard = function () {
+      const r = origRender.apply(this, arguments);
+      try { mountSprites(); } catch (e) {}
+      return r;
+    };
+  }
+
+  // Wrap executeMove so a successful move (only happens on a correct answer)
+  // makes the moving piece cheer and sprays particles — happy on attack/correct.
+  if (typeof executeMove === 'function') {
+    const origMove = executeMove;
+    executeMove = function () {
+      const move = State.pendingMove;
+      const wasCapture = !!(move && State.board[move.to.row] && State.board[move.to.row][move.to.col]);
+      const r = origMove.apply(this, arguments);
+      try {
+        if (move && move.to) {
+          const cell = cellAt(move.to.row, move.to.col);
+          if (cell) {
+            const charEl = cell.querySelector('.hv-char');
+            if (charEl) {
+              charEl.classList.remove('is-idle');
+              charEl.classList.add('is-happy');
+              setTimeout(() => {
+                charEl.classList.remove('is-happy');
+                charEl.classList.add('is-idle');
+              }, 650);
+            }
+            spawnParticles(cell, wasCapture ? 'confetti' : 'sparkle', wasCapture ? 10 : 6);
+          }
+        }
+      } catch (e) {}
+      return r;
+    };
+  }
+
+  // Modals (guide + styled exit) -------------------------------------------
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $id = id => document.getElementById(id);
+
+    // Guide modal (start screen).
+    const guide = $id('guide-modal');
+    const guideBtn = $id('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $id('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // Styled exit modal (in-game). startGame() reassigns btn-exit.onclick on
+    // every run to open the legacy inline overlay, so we intercept in the
+    // capture phase and stopImmediatePropagation to guarantee the styled
+    // modal wins (no window.confirm, legacy overlay bypassed).
+    const exit = $id('exit-modal');
+    const exitBtn = $id('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', e => {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        exit.style.display = 'flex';
+      }, true);
+      const cancel = $id('btn-exit-cancel');
+      const confirm = $id('btn-exit-confirm');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop game loops so pending bot turns cannot fire, then leave.
+        State.current = 'GAME_OVER';
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

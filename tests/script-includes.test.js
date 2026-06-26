@@ -33,7 +33,7 @@ const REQUIRED_SCRIPTS = {
 // V12+ should have help-rules.js
 // All versions should have tts, link-gate, quest-widget, diamond-animation
 const ALL_VERSIONS = [];
-for (let v = 2; v <= 40; v++) ALL_VERSIONS.push(v);
+for (let v = 2; v <= 60; v++) ALL_VERSIONS.push(v);
 
 describe('Required Script Includes', () => {
   ALL_VERSIONS.forEach(v => {

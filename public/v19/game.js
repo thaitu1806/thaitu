@@ -671,3 +671,167 @@
   }
 
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+// V19's game logic lives in a private IIFE above, so this layer hooks the DOM
+// non-invasively (MutationObservers + listeners) instead of wrapping globals.
+(function () {
+  'use strict';
+
+  let detectiveChar = null;
+  let pupChar = null;
+  let happyTimer = null;
+
+  function $(id) { return document.getElementById(id); }
+
+  function mountDetectives() {
+    const C = window.HocVuiCharacters;
+    const dHost = $('detective-host');
+    const pHost = $('pup-host');
+    if (dHost && !detectiveChar) {
+      dHost.innerHTML = '';
+      if (C && C.hasSpecies('detective')) {
+        detectiveChar = C.createCharacter('detective', dHost, { state: 'idle' });
+      } else {
+        dHost.textContent = '🕵️';
+      }
+    }
+    if (pHost && !pupChar) {
+      pHost.innerHTML = '';
+      if (C && C.hasSpecies('pup')) {
+        pupChar = C.createCharacter('pup', pHost, { state: 'idle' });
+      } else {
+        pHost.textContent = '🐶';
+      }
+    }
+  }
+
+  // Brief happy bounce, then settle back to idle.
+  function cheer() {
+    [detectiveChar, pupChar].forEach(c => {
+      if (!c) return;
+      c.setState('happy');
+    });
+    const stage = $('detective-stage');
+    if (stage) spawnParticles(stage, 'sparkle', 8);
+    clearTimeout(happyTimer);
+    happyTimer = setTimeout(() => {
+      [detectiveChar, pupChar].forEach(c => { if (c) c.setState('idle'); });
+    }, 900);
+  }
+
+  // ===== PARTICLE HELPERS =====
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+
+  function spawnConfetti(parent, count) {
+    if (!parent) return;
+    const colors = ['#ffd700', '#7c4dff', '#4caf50', '#ff8c00', '#536dfe'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-confetti';
+      p.style.background = colors[i % colors.length];
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.setProperty('--tx', (Math.random() * 120 - 60) + 'px');
+      p.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+      p.style.setProperty('--delay', (Math.random() * 0.3) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v19_spawnParticles = spawnParticles;
+  window.__v19_spawnConfetti = spawnConfetti;
+
+  // ===== OBSERVERS =====
+  // Clue pins flip to .revealed only after a correct answer → cheer.
+  function watchClueBoard() {
+    const board = $('clue-board');
+    if (!board) return;
+    const obs = new MutationObserver(muts => {
+      for (const m of muts) {
+        if (m.type === 'attributes' && m.target.classList &&
+            m.target.classList.contains('clue-pin') &&
+            m.target.classList.contains('revealed')) {
+          cheer();
+          break;
+        }
+      }
+    });
+    obs.observe(board, { attributes: true, attributeFilter: ['class'], subtree: true });
+  }
+
+  // Case solved → confetti burst over the result.
+  function watchResult() {
+    const container = $('result-container');
+    if (!container) return;
+    const obs = new MutationObserver(() => {
+      const title = container.querySelector('.result-title');
+      if (title && /phá/i.test(title.textContent)) {
+        spawnConfetti(container, 40);
+      }
+    });
+    obs.observe(container, { childList: true });
+  }
+
+  // Mount sprites whenever the investigation screen becomes active.
+  function watchScreens() {
+    const inv = $('investigation-screen');
+    if (!inv) return;
+    const obs = new MutationObserver(() => {
+      if (inv.classList.contains('active')) mountDetectives();
+    });
+    obs.observe(inv, { attributes: true, attributeFilter: ['class'] });
+    if (inv.classList.contains('active')) mountDetectives();
+  }
+
+  // ===== MODALS (guide + exit) =====
+  function wireModals() {
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Reload the current game page to re-show the start/menu screen and stop all timers/loops.
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  }
+
+  function init() {
+    mountDetectives();
+    watchClueBoard();
+    watchResult();
+    watchScreens();
+    wireModals();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();

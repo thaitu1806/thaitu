@@ -1682,3 +1682,109 @@ body {
     font-size: 1.8rem;
   }
 }
+
+
+/* ===== CHARACTER SYSTEM (animated horse tokens) ===== */
+.token-sprite {
+  width: 30px;
+  height: 30px;
+  font-size: 0 !important;
+}
+.token-sprite .hv-char,
+.victory-winner-sprite .hv-char { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.hv-char { display: inline-flex; align-items: center; justify-content: center; }
+.hv-char svg { width: 100%; height: 100%; overflow: visible; }
+.hv-char svg .head, .hv-char svg .body, .hv-char svg .accent,
+.hv-char svg .legs, .hv-char svg .mane, .hv-char svg .tail, .hv-char svg .leg {
+  transform-origin: center; transform-box: fill-box;
+}
+
+/* Idle — gentle breathing sway + tail flick */
+.hv-char.is-idle svg { animation: horse-idle 2.6s ease-in-out infinite; }
+@keyframes horse-idle { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-2px) rotate(1deg); } }
+.hv-char.is-idle svg .tail { animation: horse-tail 1.8s ease-in-out infinite; }
+@keyframes horse-tail { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(7deg); } }
+
+/* Happy — celebratory gallop bounce */
+.hv-char.is-happy svg { animation: horse-happy 0.6s ease-out; }
+@keyframes horse-happy { 0% { transform: scale(1); } 35% { transform: scale(1.2) translateY(-5px) rotate(-5deg); } 70% { transform: scale(1.05) rotate(4deg); } 100% { transform: scale(1); } }
+.hv-char.is-happy svg .leg { animation: horse-gallop 0.2s ease-in-out 3; }
+@keyframes horse-gallop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px) rotate(8deg); } }
+
+/* Dice mascot idle wobble */
+.hv-char--dicey.is-idle svg { animation: dicey-idle 2s ease-in-out infinite; }
+@keyframes dicey-idle { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg) translateY(-2px); } }
+
+.victory-winner-sprite { display: inline-flex; width: 56px; height: 56px; vertical-align: middle; }
+
+/* ===== PARTICLES ===== */
+.pfx { position: absolute; left: 50%; top: 50%; pointer-events: none; will-change: transform, opacity; z-index: 24; }
+.pfx-sparkle {
+  width: 7px; height: 7px; margin: -3px 0 0 -3px;
+  background: radial-gradient(circle, #fff 0%, #ffd93d 55%, transparent 70%);
+  border-radius: 50%;
+  animation: pfx-sparkle 0.8s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-sparkle {
+  0% { transform: translate(0,0) scale(0.4); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) scale(1.3); opacity: 0; }
+}
+
+/* ===== GUIDE BUTTON + EXIT BUTTON ===== */
+.btn-guide {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  border: 2px solid var(--blue);
+  border-radius: 14px;
+  background: #eef6ff;
+  color: var(--blue);
+  font-family: var(--font);
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-guide:hover { background: var(--blue); color: #fff; }
+.btn-guide:active { transform: scale(0.97); }
+
+.btn-exit {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.08);
+  border: none;
+  color: var(--text);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-right: 6px;
+  transition: all 0.2s ease;
+}
+.btn-exit:hover { background: rgba(0,0,0,0.16); transform: scale(1.08); }
+.btn-exit:active { transform: scale(0.92); }
+
+/* ===== MODALS (guide + exit) ===== */
+.modal-overlay { position: fixed; inset: 0; z-index: 9500; background: rgba(0,0,0,0.65); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-card { background: #fff; color: var(--text); border-radius: 20px; padding: 22px 20px; max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: modalPop 0.3s ease; }
+@keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-title { font-size: 1.25rem; text-align: center; margin-bottom: 14px; }
+.modal-rules { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.modal-rules li { padding: 7px 0; font-size: 0.95rem; line-height: 1.5; border-bottom: 1px solid var(--border); }
+.modal-rules li:last-child { border-bottom: none; }
+.modal-rules b { color: var(--blue); }
+.exit-modal-card { text-align: center; max-width: 320px; }
+.exit-modal-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.exit-modal-text { font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.exit-modal-sub { font-size: 0.85rem; color: var(--text-light); margin-bottom: 18px; }
+.exit-modal-actions { display: flex; gap: 10px; justify-content: center; }
+.exit-modal-cancel { padding: 10px 18px; background: var(--border); color: var(--text); border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-confirm { padding: 10px 18px; background: var(--red); color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-cancel:active, .exit-modal-confirm:active { transform: translateY(2px); }

@@ -413,3 +413,132 @@ async function saveSession() {
 init();
 
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+(function () {
+  'use strict';
+
+  const hosts = {}; // id -> character instance
+
+  function mountHost(hostId, species, fallback) {
+    const el = document.getElementById(hostId);
+    if (!el) return;
+    el.innerHTML = '';
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies(species)) {
+      hosts[hostId] = C.createCharacter(species, el, { state: 'idle' });
+    } else {
+      el.textContent = fallback;
+      el.classList.add('host-fallback');
+    }
+  }
+
+  function cheer(hostId) {
+    const ch = hosts[hostId];
+    if (!ch) return;
+    ch.setState('happy');
+    setTimeout(() => { if (ch) ch.setState('idle'); }, 700);
+  }
+
+  // Particle helper — sparkles around an element (good answer).
+  function spawnSparkle(parent, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-sparkle';
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 46 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+
+  // Confetti burst helper — colorful ribbons rising from an element.
+  function spawnConfettiBurst(parent, count) {
+    if (!parent) return;
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#F7DC6F', '#BB8FCE', '#FF9800'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-confetti';
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.setProperty('--tx', (Math.random() * 120 - 60) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 60 + 30) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v30_spawnSparkle = spawnSparkle;
+  window.__v30_spawnConfettiBurst = spawnConfettiBurst;
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    const $ = id => document.getElementById(id);
+
+    // Mount mascots: cheerful host on start + wheel, clown buddy in question header.
+    mountHost('host-stage', 'host', '🤹');
+    mountHost('wheel-host', 'host', '🤹');
+    mountHost('quiz-host', 'clown', '🤡');
+
+    // Sync "happy" reaction to correct answers by observing the feedback node.
+    const fb = $('q-feedback');
+    if (fb && window.MutationObserver) {
+      const obs = new MutationObserver(() => {
+        if (fb.classList.contains('correct')) {
+          cheer('quiz-host');
+          const host = $('quiz-host');
+          if (host) spawnSparkle(host, 7);
+        }
+      });
+      obs.observe(fb, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Celebrate on the result screen (when it becomes active).
+    const resultScreen = $('result-screen');
+    if (resultScreen && window.MutationObserver) {
+      const robs = new MutationObserver(() => {
+        if (resultScreen.classList.contains('active')) {
+          const stage = $('host-stage');
+          if (hosts['host-stage']) cheer('host-stage');
+          if (stage) spawnConfettiBurst(stage, 14);
+        }
+      });
+      robs.observe(resultScreen, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Guide modal
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // Exit modal (styled, no window.confirm)
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop any running timers/loops before leaving the page.
+        try {
+          const hi = setInterval(function () {}, 100000);
+          for (let i = 0; i <= hi; i++) clearInterval(i);
+        } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

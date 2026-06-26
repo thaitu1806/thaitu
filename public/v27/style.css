@@ -13,6 +13,7 @@ body {
   min-height: 100vh;
   padding: 20px 16px;
   padding-top: env(safe-area-inset-top, 20px);
+  position: relative;
 }
 .screen.active { display: block; }
 
@@ -486,3 +487,115 @@ body {
   0%, 100% { transform: scale(1); filter: none; }
   50% { transform: scale(0.9); filter: brightness(2); }
 }
+
+/* ===== CHARACTER SYSTEM ===== */
+.hv-char { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.hv-char svg { width: 100%; height: 100%; overflow: visible; }
+.hv-char svg .head, .hv-char svg .body, .hv-char svg .accent,
+.hv-char svg .arm, .hv-char svg .arm-wand, .hv-char svg .wing,
+.hv-char svg .hat, .hv-char svg .wand-star, .hv-char svg .hat-star {
+  transform-origin: center; transform-box: fill-box;
+}
+
+/* Wizard idle — gentle breathing sway + twinkling wand star */
+.hv-char.is-idle svg.wizard { animation: wiz-idle 2.8s ease-in-out infinite; }
+.hv-char.is-idle svg.wizard .wand-star,
+.hv-char.is-idle svg.wizard .hat-star { animation: wiz-twinkle 1.6s ease-in-out infinite; }
+@keyframes wiz-idle { 0%,100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-3px) rotate(1.5deg); } }
+@keyframes wiz-twinkle { 0%,100% { opacity: 0.55; transform: scale(0.85); } 50% { opacity: 1; transform: scale(1.15); } }
+
+/* Wizard happy — celebratory wand wave on a correct answer / new spell */
+.hv-char.is-happy svg.wizard { animation: wiz-cast 0.7s ease-out; }
+.hv-char.is-happy svg.wizard .wand-star,
+.hv-char.is-happy svg.wizard .hat-star { animation: wiz-flash 0.7s ease-out; }
+@keyframes wiz-cast { 0% { transform: scale(1) rotate(0); } 35% { transform: scale(1.16) rotate(-7deg); } 65% { transform: scale(1.06) rotate(6deg); } 100% { transform: scale(1) rotate(0); } }
+@keyframes wiz-flash { 0% { transform: scale(0.8); opacity: 0.6; } 40% { transform: scale(1.6); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
+
+/* Owl familiar idle — soft bob + slow blink-free sway */
+.hv-char.is-idle svg.owl { animation: owl-idle 2.4s ease-in-out infinite; }
+.hv-char.is-idle svg.owl .wing { animation: owl-wing 2.4s ease-in-out infinite; }
+@keyframes owl-idle { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes owl-wing { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(4deg); } }
+
+/* Owl happy — flappy bounce when a spell lands an effective hit */
+.hv-char.is-happy svg.owl { animation: owl-pop 0.7s ease-out; }
+.hv-char.is-happy svg.owl .wing { animation: owl-flap 0.7s ease-out; }
+@keyframes owl-pop { 0% { transform: scale(1); } 40% { transform: scale(1.18) rotate(-5deg); } 70% { transform: scale(1.05) rotate(4deg); } 100% { transform: scale(1); } }
+@keyframes owl-flap { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-16deg); } 75% { transform: rotate(16deg); } }
+
+/* ===== SPRITE HOSTS (explicit sizes — these replaced font-size emoji) ===== */
+.menu-mascot {
+  display: flex; align-items: flex-end; justify-content: center; gap: 6px;
+  margin: 4px auto 14px; height: 110px;
+}
+.mascot-slot { width: 92px; height: 92px; }
+.mascot-slot--owl { width: 64px; height: 64px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35)); }
+.menu-mascot .hv-char { filter: drop-shadow(0 6px 14px rgba(124,58,237,0.45)); }
+
+/* Quiz wand host (was font-size: 2.5rem emoji) */
+.wand-display { width: 56px; height: 56px; flex: none; }
+
+/* Boss arena player familiar host (sits beside the enemy emoji) */
+.boss-sprite { width: 70px; height: 70px; margin: 0 auto 4px; }
+
+/* ===== PARTICLES ===== */
+.pfx { position: absolute; left: 50%; top: 50%; pointer-events: none; will-change: transform, opacity; z-index: 50; }
+.pfx-sparkle {
+  width: 8px; height: 8px; margin: -4px 0 0 -4px;
+  background: radial-gradient(circle, #fff 0%, #ffd700 55%, transparent 72%);
+  border-radius: 50%;
+  animation: pfx-sparkle 0.85s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-sparkle {
+  0% { transform: translate(0,0) scale(0.4); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) scale(1.3); opacity: 0; }
+}
+
+/* Sprite hosts need relative positioning so particles anchor correctly */
+.wand-display, .boss-sprite, .mascot-slot { position: relative; }
+
+/* ===== GUIDE BUTTON + EXIT BUTTON ===== */
+.btn-guide {
+  display: block; width: 100%; padding: 14px; margin-top: 12px;
+  background: rgba(255,255,255,0.1); color: #f0e6ff;
+  border: 2px solid rgba(255,215,0,0.35); border-radius: 14px;
+  font-family: inherit; font-size: 1rem; font-weight: 800; cursor: pointer;
+  transition: transform 0.2s;
+}
+.btn-guide:active { transform: scale(0.96); }
+.btn-exit {
+  padding: 7px 11px; background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.3); color: #f0e6ff;
+  border-radius: 10px; font-size: 0.9rem; cursor: pointer; font-family: inherit;
+}
+.btn-exit:active { transform: scale(0.92); }
+.btn-exit-corner { position: absolute; top: 16px; right: 16px; z-index: 5; }
+.quiz-header .btn-exit { flex: none; }
+
+/* ===== MODALS (guide + exit) ===== */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 9500; background: rgba(10,5,25,0.72);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-card {
+  background: #fff; color: #2a1148; border-radius: 20px; padding: 22px 20px;
+  max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  animation: modalPop 0.3s ease;
+}
+@keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-title { font-size: 1.25rem; text-align: center; margin-bottom: 14px; color: #5b21b6; }
+.modal-rules { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.modal-rules li { padding: 7px 0; font-size: 0.95rem; line-height: 1.5; border-bottom: 1px solid #efe6fb; color: #3a2a55; }
+.modal-rules li:last-child { border-bottom: none; }
+.modal-rules b { color: #7c3aed; }
+.modal-card .btn-magic { margin-top: 4px; }
+.exit-modal-card { text-align: center; max-width: 320px; }
+.exit-modal-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.exit-modal-text { font-size: 1.1rem; font-weight: 800; color: #2a1148; margin-bottom: 6px; }
+.exit-modal-sub { font-size: 0.85rem; color: #777; margin-bottom: 18px; }
+.exit-modal-actions { display: flex; gap: 10px; justify-content: center; }
+.exit-modal-cancel { padding: 10px 18px; background: #e8e0f5; color: #5b21b6; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-confirm { padding: 10px 18px; background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-cancel:active, .exit-modal-confirm:active { transform: translateY(2px); }

@@ -353,3 +353,157 @@ async function saveSession(rescued) {
 init();
 
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V33's game logic lives in a self-contained IIFE above (private `state` and
+// functions). This block never touches that logic — it observes the DOM to
+// mount animated sprites, sync states, throw particles, and wire the modals.
+(function () {
+  'use strict';
+
+  // --- Track game intervals so the exit button can stop loops cleanly. ---
+  // The question timer is created via setInterval during play. We record any
+  // interval ids spawned after this block loads so exit can clear them.
+  const tracked = new Set();
+  const origSetInterval = window.setInterval.bind(window);
+  const origClearInterval = window.clearInterval.bind(window);
+  window.setInterval = function () {
+    const id = origSetInterval.apply(null, arguments);
+    tracked.add(id);
+    return id;
+  };
+  window.clearInterval = function (id) {
+    tracked.delete(id);
+    return origClearInterval(id);
+  };
+  function stopAllLoops() {
+    tracked.forEach(id => origClearInterval(id));
+    tracked.clear();
+  }
+
+  function getC() { return window.HocVuiCharacters; }
+
+  // Mount a species into a host element, with emoji fallback.
+  function mount(hostId, species, fallback, size) {
+    const host = document.getElementById(hostId);
+    if (!host) return null;
+    host.innerHTML = '';
+    const C = getC();
+    if (C && C.hasSpecies(species)) {
+      return C.createCharacter(species, host, { state: 'idle', size: size });
+    }
+    host.textContent = fallback;
+    return null;
+  }
+
+  let heroChar = null;     // start screen mascot
+  let rescuerChar = null;  // mission scene rescuer
+  let chopperChar = null;  // rescue-success helicopter
+
+  // Particle helper — sparkle/confetti burst around an element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 25) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+      if (kind === 'confetti') {
+        const colors = ['#ee5a24', '#ffd93d', '#4caf50', '#00b4d8', '#f472b6'];
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      }
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v33_spawnParticles = spawnParticles;
+
+  function celebrate(char, hostId, kind, count) {
+    if (char) {
+      char.setState('happy');
+      setTimeout(() => { if (char) char.setState('idle'); }, 700);
+    }
+    const host = document.getElementById(hostId);
+    if (host) spawnParticles(host, kind, count);
+  }
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    const $ = id => document.getElementById(id);
+
+    // Mount the start-screen mascot immediately.
+    heroChar = mount('hero-mascot', 'rescue_worker', '🚁', 96);
+
+    // Observe each screen's active state to (re)mount sprites at the right time.
+    function onScreenActive(id, fn) {
+      const el = $(id);
+      if (!el) return;
+      const obs = new MutationObserver(() => {
+        if (el.classList.contains('active')) fn();
+      });
+      obs.observe(el, { attributes: true, attributeFilter: ['class'] });
+      if (el.classList.contains('active')) fn();
+    }
+
+    onScreenActive('start-screen', () => {
+      if (!heroChar) heroChar = mount('hero-mascot', 'rescue_worker', '🚁', 96);
+    });
+    onScreenActive('mission-screen', () => {
+      rescuerChar = mount('rescuer-mascot', 'rescue_worker', '🚁', 80);
+    });
+    onScreenActive('rescue-screen', () => {
+      const msg = $('rescue-msg');
+      const success = !msg || msg.textContent.indexOf('Đã cứu') !== -1 || msg.textContent.indexOf('thành công') !== -1;
+      if (success) {
+        chopperChar = mount('rescue-chopper', 'rescue_chopper', '🚁', 110);
+        celebrate(chopperChar, 'rescue-chopper', 'confetti', 18);
+      } else {
+        // Mission failed — show a gentle idle chopper, no confetti.
+        chopperChar = mount('rescue-chopper', 'rescue_chopper', '🚁', 110);
+      }
+    });
+
+    // Celebrate on the rescuer when a question is answered correctly.
+    const feedback = $('q-feedback');
+    if (feedback) {
+      const fbObs = new MutationObserver(() => {
+        const t = feedback.textContent || '';
+        if (t.indexOf('Đúng') !== -1) {
+          celebrate(rescuerChar, 'rescuer-mascot', 'sparkle', 8);
+        }
+      });
+      fbObs.observe(feedback, { childList: true, characterData: true, subtree: true });
+    }
+
+    // Guide modal -----------------------------------------------------------
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // Exit modal ------------------------------------------------------------
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        stopAllLoops();           // clear question timer + any other loops
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

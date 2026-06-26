@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -36,6 +37,7 @@
         </div>
 
         <button class="btn-start" id="btn-start">🧑‍🚒 Xuất phát cứu hỏa!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -57,6 +59,7 @@
             <span class="hud-icon">⏱️</span>
             <span id="timer-text">10</span>s
           </div>
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
         </div>
 
         <!-- BUILDING VISUAL -->
@@ -112,9 +115,38 @@
     </section>
   </div>
 
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🔥 Trả lời <b>đúng</b> = phun nước <b>dập một ngọn lửa</b> ở tầng đang cháy.</li>
+        <li>🧑‍🚒 Dập hết lửa một tầng = <b>cứu được người</b> ở tầng đó.</li>
+        <li>❌ Trả lời <b>sai</b> hoặc <b>hết giờ</b> = <b>lửa lan thêm</b> sang một tầng.</li>
+        <li>⏱️ Mỗi câu chỉ có <b>10 giây</b> để trả lời.</li>
+        <li>🏚️ Nếu lửa lan tới <b>20 ngọn</b>, tòa nhà <b>sụp đổ</b> — thua cuộc.</li>
+        <li>🦸 Cứu được <b>cả 5 người</b> là chiến thắng, càng cứu nhiều càng nhiều sao!</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/firefighters.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

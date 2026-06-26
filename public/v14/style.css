@@ -133,3 +133,77 @@ body { font-family: 'Nunito', sans-serif; min-height: 100vh; overflow: hidden; b
 .result-btn { padding: 14px 22px; border: none; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; font-family: inherit; }
 .result-btn.primary { background: linear-gradient(135deg, #7c3aed, #4f46e5); color: #fff; }
 .result-btn.secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+
+/* ===== CHARACTER SYSTEM ===== */
+.hv-char { width: 100%; height: 100%; display: inline-flex; align-items: center; justify-content: center; }
+.hv-char svg { width: 100%; height: 100%; overflow: visible; }
+.hv-char svg .head, .hv-char svg .body, .hv-char svg .accent, .hv-char svg .arm-l, .hv-char svg .arm-r { transform-origin: center; transform-box: fill-box; }
+
+/* Give sprite hosts explicit size (they previously relied on font-size). */
+.hero { width: 92px; height: 92px; font-size: 2.8rem; display: inline-flex; align-items: center; justify-content: center; }
+.enemy { width: 84px; height: 84px; font-size: 3.5rem; display: inline-flex; align-items: center; justify-content: center; }
+
+/* Astronaut idle — gentle float + arm sway */
+.hv-char.is-idle svg.rescuer { animation: astro-bob 2.6s ease-in-out infinite; }
+.hv-char.is-idle svg.rescuer .arm-l { animation: astro-arm 2.4s ease-in-out infinite; }
+.hv-char.is-idle svg.rescuer .arm-r { animation: astro-arm 2.4s ease-in-out infinite reverse; }
+@keyframes astro-bob { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-5px) rotate(1deg); } }
+@keyframes astro-arm { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(8deg); } }
+
+/* Germ idle — squishy wobble */
+.hv-char.is-idle svg.germ { animation: germ-wobble 2.2s ease-in-out infinite; }
+@keyframes germ-wobble { 0%,100% { transform: scale(1, 1) translateY(0); } 50% { transform: scale(1.06, 0.94) translateY(3px); } }
+
+/* Happy — celebratory hop (used on correct / rescue) */
+.hv-char.is-happy svg { animation: hv-happy 0.6s ease-out; }
+@keyframes hv-happy { 0% { transform: translateY(0) scale(1); } 35% { transform: translateY(-12px) scale(1.14) rotate(-6deg); } 70% { transform: translateY(0) scale(1.04) rotate(4deg); } 100% { transform: translateY(0) scale(1); } }
+
+/* ===== PARTICLES ===== */
+.pfx { position: absolute; left: 50%; top: 40%; pointer-events: none; will-change: transform, opacity; z-index: 60; }
+.pfx-sparkle {
+  width: 8px; height: 8px; margin: -4px 0 0 -4px;
+  background: radial-gradient(circle, #fff 0%, #22d3ee 55%, transparent 70%);
+  border-radius: 50%;
+  animation: pfx-sparkle 0.85s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-sparkle {
+  0% { transform: translate(0,0) scale(0.4); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) scale(1.3); opacity: 0; }
+}
+.pfx-confetti {
+  width: 8px; height: 12px; margin: -6px 0 0 -4px;
+  background: #7c3aed; border-radius: 2px;
+  animation: pfx-confetti 1.1s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-confetti {
+  0% { transform: translate(0,0) rotate(0) scale(0.5); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-40px)) rotate(540deg) scale(1); opacity: 0; }
+}
+
+/* ===== GUIDE BUTTON + EXIT BUTTON ===== */
+.btn-guide { width: 100%; padding: 14px; margin-top: 10px; background: rgba(255,255,255,0.12); color: #fff; border: 2px solid rgba(255,255,255,0.4); border-radius: 16px; font-size: 1rem; font-weight: 800; cursor: pointer; font-family: inherit; }
+.btn-guide:active { transform: scale(0.96); }
+.btn-exit { padding: 6px 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.35); color: #fff; border-radius: 10px; font-size: 0.9rem; cursor: pointer; font-family: inherit; margin-left: 6px; }
+.btn-exit:active { transform: scale(0.92); }
+
+/* ===== MODALS (guide + exit) ===== */
+.modal-overlay { position: fixed; inset: 0; z-index: 9500; background: rgba(0,0,0,0.65); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-card { background: #fff; color: #2d1b69; border-radius: 20px; padding: 22px 20px; max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: modalPop 0.3s ease; }
+@keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-title { font-size: 1.25rem; text-align: center; margin-bottom: 14px; }
+.modal-rules { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.modal-rules li { padding: 7px 0; font-size: 0.95rem; line-height: 1.5; border-bottom: 1px solid #ece6fb; }
+.modal-rules li:last-child { border-bottom: none; }
+.modal-rules b { color: #7c3aed; }
+.exit-modal-card { text-align: center; max-width: 320px; }
+.exit-modal-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.exit-modal-text { font-size: 1.1rem; font-weight: 800; color: #2d1b69; margin-bottom: 6px; }
+.exit-modal-sub { font-size: 0.85rem; color: #777; margin-bottom: 18px; }
+.exit-modal-actions { display: flex; gap: 10px; justify-content: center; }
+.exit-modal-cancel { padding: 10px 18px; background: #e0e0e0; color: #333; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-confirm { padding: 10px 18px; background: #7c3aed; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-cancel:active, .exit-modal-confirm:active { transform: translateY(2px); }

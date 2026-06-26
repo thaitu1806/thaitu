@@ -100,3 +100,83 @@ body { font-family: 'Nunito', sans-serif; min-height: 100vh; overflow: hidden; b
 .result-btn { padding: 13px 20px; border: none; border-radius: 13px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
 .result-btn.primary { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #7c2d12; }
 .result-btn.secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+
+/* ===== CHEF STAGE ===== */
+.chef-stage { position: relative; display: flex; align-items: flex-end; justify-content: center; gap: 6px; min-height: 92px; margin-bottom: 4px; }
+.chef-avatar { width: 88px; height: 88px; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+.helper-avatar { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+
+/* ===== CHARACTER SYSTEM ===== */
+.hv-char { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.hv-char svg { width: 100%; height: 100%; overflow: visible; }
+.hv-char svg .head, .hv-char svg .body, .hv-char svg .accent, .hv-char svg .spoon, .hv-char svg .steam { transform-origin: center; transform-box: fill-box; }
+
+/* Chef idle — gentle bob + stirring spoon */
+.hv-char--chef.is-idle svg { animation: chef-bob 2.6s ease-in-out infinite; }
+.hv-char--chef.is-idle svg .spoon { animation: chef-stir 1.6s ease-in-out infinite; }
+@keyframes chef-bob { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-5px) rotate(1deg); } }
+@keyframes chef-stir { 0%,100% { transform: rotate(-12deg); } 50% { transform: rotate(14deg); } }
+
+/* Chef happy — celebratory hop */
+.hv-char--chef.is-happy svg { animation: chef-cheer 0.6s ease-out; }
+@keyframes chef-cheer { 0% { transform: scale(1); } 35% { transform: scale(1.15) translateY(-8px) rotate(-5deg); } 65% { transform: scale(1.05) translateY(-2px) rotate(4deg); } 100% { transform: scale(1); } }
+
+/* Helper pot idle — steam wisp + soft squish */
+.hv-char--helper.is-idle svg { animation: helper-squish 2.8s ease-in-out infinite; }
+.hv-char--helper.is-idle svg .steam { animation: helper-steam 2.2s ease-in-out infinite; }
+@keyframes helper-squish { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(0.94); } }
+@keyframes helper-steam { 0% { opacity: 0.2; transform: translateY(4px); } 50% { opacity: 0.85; transform: translateY(-2px); } 100% { opacity: 0.2; transform: translateY(4px); } }
+
+/* Helper happy — wobble */
+.hv-char--helper.is-happy svg { animation: helper-pop 0.6s ease-out; }
+@keyframes helper-pop { 0% { transform: scale(1); } 45% { transform: scale(1.18) rotate(-6deg); } 75% { transform: scale(1.05) rotate(5deg); } 100% { transform: scale(1); } }
+
+/* ===== PARTICLES ===== */
+.pfx { position: absolute; left: 50%; top: 50%; pointer-events: none; will-change: transform, opacity; z-index: 15; }
+.pfx-sparkle {
+  width: 7px; height: 7px; margin: -3px 0 0 -3px;
+  background: radial-gradient(circle, #fff 0%, #fbbf24 55%, transparent 70%);
+  border-radius: 50%;
+  animation: pfx-sparkle 0.8s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-sparkle {
+  0% { transform: translate(0,0) scale(0.4); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) scale(1.3); opacity: 0; }
+}
+.pfx-confetti {
+  width: 8px; height: 11px; margin: -5px 0 0 -4px; border-radius: 2px;
+  animation: pfx-confetti 1s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-confetti {
+  0% { transform: translate(0,0) rotate(0deg); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-50px)) rotate(var(--rot,360deg)); opacity: 0; }
+}
+
+/* ===== GUIDE BUTTON + EXIT BUTTON ===== */
+.btn-guide { width: 100%; padding: 13px; margin-top: 8px; background: rgba(255,255,255,0.14); color: #fff; border: 2px solid rgba(255,255,255,0.45); border-radius: 14px; font-size: 1rem; font-weight: 800; cursor: pointer; font-family: inherit; }
+.btn-guide:active { transform: scale(0.96); }
+.btn-exit { padding: 5px 10px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.4); color: #fff; border-radius: 9px; font-size: 0.9rem; cursor: pointer; font-family: inherit; }
+.btn-exit:active { transform: scale(0.92); }
+
+/* ===== MODALS (guide + exit) ===== */
+.modal-overlay { position: fixed; inset: 0; z-index: 9500; background: rgba(0,0,0,0.65); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-card { background: #fff; color: #7c2d12; border-radius: 20px; padding: 22px 20px; max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: modalPop 0.3s ease; }
+@keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-title { font-size: 1.25rem; text-align: center; margin-bottom: 14px; }
+.modal-rules { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.modal-rules li { padding: 7px 0; font-size: 0.92rem; line-height: 1.5; border-bottom: 1px solid #fde0c8; color: #3a3a3a; }
+.modal-rules li:last-child { border-bottom: none; }
+.modal-rules b { color: #ea580c; }
+.modal-card .btn-start { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #7c2d12; }
+.exit-modal-card { text-align: center; max-width: 320px; }
+.exit-modal-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.exit-modal-text { font-size: 1.1rem; font-weight: 800; color: #7c2d12; margin-bottom: 6px; }
+.exit-modal-sub { font-size: 0.85rem; color: #777; margin-bottom: 18px; }
+.exit-modal-actions { display: flex; gap: 10px; justify-content: center; }
+.exit-modal-cancel { padding: 10px 18px; background: #e5e7eb; color: #333; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-confirm { padding: 10px 18px; background: #dc2626; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-cancel:active, .exit-modal-confirm:active { transform: translateY(2px); }

@@ -1,5 +1,5 @@
 /**
- * Comprehensive smoke tests for all game versions (V2-V40)
+ * Comprehensive smoke tests for all game versions (V2-V60)
  * Validates:
  * - HTML structure: required scripts, meta tags, language
  * - Game.js: case-insensitive answer comparison, no 2020+ emojis,
@@ -13,7 +13,7 @@ import { join } from 'path';
 
 // All game versions that should exist
 const VERSIONS = [];
-for (let v = 2; v <= 40; v++) VERSIONS.push(v);
+for (let v = 2; v <= 60; v++) VERSIONS.push(v);
 
 // Required scripts that must be present in every game HTML
 const REQUIRED_SCRIPTS_ALL = [
@@ -305,7 +305,7 @@ describe('Emoji Compatibility - CSS Files', () => {
 // ===== SUBJECT OPTIONS =====
 describe('Subject Options - All Versions (V13+)', () => {
   // V13+ should support math at minimum, and ideally all 3 subjects
-  for (let v = 13; v <= 40; v++) {
+  for (let v = 13; v <= 60; v++) {
     describe(`V${v}`, () => {
       const html = readGameFile(v, 'index.html');
       const js = readGameFile(v, 'game.js');

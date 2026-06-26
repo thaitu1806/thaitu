@@ -506,3 +506,158 @@
     init();
   }
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V20 has no game-logic.js. The core logic above lives in its own IIFE and is
+// left completely untouched. This block only mounts animated farm sprites on
+// pre-existing decorative hosts, syncs happy states via DOM observation/events,
+// and wires the guide + exit modals. No game logic is altered.
+(function () {
+  'use strict';
+  const chars = {};
+
+  function mount(hostId, fallback) {
+    const host = document.getElementById(hostId);
+    if (!host) return;
+    const species = host.dataset.species;
+    host.innerHTML = '';
+    const C = window.HocVuiCharacters;
+    if (C && species && C.hasSpecies(species)) {
+      chars[hostId] = C.createCharacter(species, host, { state: 'idle' });
+    } else {
+      host.textContent = fallback || '🌻';
+    }
+  }
+
+  function setHappy(hostId, ms) {
+    const c = chars[hostId];
+    if (!c) return;
+    c.setState('happy');
+    setTimeout(() => { if (chars[hostId]) chars[hostId].setState('idle'); }, ms || 700);
+  }
+
+  function happyFarmFriends() {
+    ['friend-farmer', 'friend-cow', 'friend-chicken', 'friend-pig'].forEach((id, i) => {
+      setTimeout(() => setHappy(id, 700), i * 90);
+    });
+  }
+
+  // Particle helper — sparkles bursting from a host element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + (kind || 'sparkle');
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+
+  function spawnConfetti(parent, count) {
+    if (!parent) return;
+    const colors = ['#4CAF50', '#FFC107', '#FF9800', '#2196F3', '#E5392F', '#8BC34A'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-confetti';
+      p.style.background = colors[i % colors.length];
+      p.style.setProperty('--tx', (Math.random() * 160 - 80) + 'px');
+      p.style.setProperty('--ty', (Math.random() * 60 + 40) + 'px');
+      p.style.setProperty('--rot', (Math.random() * 540 - 270) + 'deg');
+      p.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v20_spawnParticles = spawnParticles;
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    // Mount all decorative sprites (hosts always present in HTML).
+    mount('friend-farmer', '🧑\u200d🌾');
+    mount('friend-cow', '🐄');
+    mount('friend-chicken', '🐔');
+    mount('friend-pig', '🐷');
+    mount('quiz-mascot', '🧑\u200d🌾');
+    mount('result-mascot', '🐄');
+
+    // Correct-answer celebration: the logic adds `.correct` to the picked
+    // button. Listen on the answers container and react after it settles.
+    const answers = document.getElementById('quiz-answers');
+    if (answers) {
+      answers.addEventListener('click', function (e) {
+        const btn = e.target.closest('.ans-btn');
+        if (!btn) return;
+        setTimeout(function () {
+          if (btn.classList.contains('correct')) {
+            setHappy('quiz-mascot', 700);
+            const host = document.getElementById('quiz-mascot');
+            if (host) spawnParticles(host, 'sparkle', 7);
+          }
+        }, 60);
+      });
+    }
+
+    // Harvest celebration: the logic injects a `.harvest-popup` node into body.
+    // Watch for it and make the farm friends cheer.
+    const mo = new MutationObserver(function (mutations) {
+      for (const m of mutations) {
+        for (const node of m.addedNodes) {
+          if (node.nodeType !== 1) continue;
+          if (node.classList && node.classList.contains('harvest-popup')) {
+            happyFarmFriends();
+            spawnParticles(node, 'sparkle', 8);
+          }
+        }
+      }
+    });
+    mo.observe(document.body, { childList: true });
+
+    // Result screen: when it becomes active, celebrate with the mascot.
+    const resultScreen = document.getElementById('result-screen');
+    if (resultScreen) {
+      const ro = new MutationObserver(function () {
+        if (resultScreen.classList.contains('active')) {
+          setHappy('result-mascot', 1200);
+          const c = document.querySelector('#result-screen .result-container');
+          if (c) spawnConfetti(c, 16);
+        }
+      });
+      ro.observe(resultScreen, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Guide modal.
+    const guide = document.getElementById('guide-modal');
+    const guideBtn = document.getElementById('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const gc = document.getElementById('btn-guide-close');
+      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // Exit modal (in-game) — styled, no window.confirm.
+    const exit = document.getElementById('exit-modal');
+    const exitBtn = document.getElementById('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const ec = document.getElementById('btn-exit-cancel');
+      if (ec) ec.addEventListener('click', () => { exit.style.display = 'none'; });
+      const ef = document.getElementById('btn-exit-confirm');
+      if (ef) ef.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop the highest-rate timers we can reach, then leave. Navigating to
+        // "/" unloads the page, which clears any remaining intervals/observers.
+        try { mo.disconnect(); } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

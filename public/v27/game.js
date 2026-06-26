@@ -506,3 +506,129 @@
     init();
   }
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V27 game logic lives in the IIFE above and is intentionally untouched.
+// This block mounts animated wizard/owl sprites where emoji were shown and
+// mirrors gameplay outcomes (correct answer / spell cast / boss hit) onto the
+// sprites by observing DOM changes — never by altering the embedded logic.
+(function () {
+  'use strict';
+
+  let menuWizard = null, menuOwl = null;
+  let quizWizard = null, bossOwl = null;
+
+  function mount(id, species, fallback) {
+    const host = document.getElementById(id);
+    if (!host) return null;
+    host.innerHTML = '';
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies(species)) {
+      return C.createCharacter(species, host, { state: 'idle' });
+    }
+    host.textContent = fallback;
+    return null;
+  }
+
+  // Particle helper — magic sparkles around a sprite host.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 44 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.18) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v27_spawnParticles = spawnParticles;
+
+  function pulseHappy(char, host) {
+    if (!char) return;
+    char.setState('happy');
+    if (host) spawnParticles(host, 'sparkle', 8);
+    setTimeout(() => { if (char) char.setState('idle'); }, 700);
+  }
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    const $ = id => document.getElementById(id);
+
+    // --- Mount sprites where emoji used to be ---
+    // Menu: wizard avatar + owl familiar showcase.
+    const menuHost = $('menu-mascot');
+    if (menuHost) {
+      menuHost.innerHTML = '<div class="mascot-slot" id="menu-mascot-wizard"></div>' +
+                           '<div class="mascot-slot mascot-slot--owl" id="menu-mascot-owl"></div>';
+      menuWizard = mount('menu-mascot-wizard', 'wizard', '🧙');
+      menuOwl = mount('menu-mascot-owl', 'owl', '🦉');
+    }
+    // Quiz: the student wizard replaces the static wand emoji.
+    quizWizard = mount('wand-display', 'wizard', '🪄');
+    // Boss arena: owl familiar fights alongside the player (boss emoji stays the enemy).
+    bossOwl = mount('boss-sprite', 'owl', '🦉');
+
+    // --- Sync wizard happy on a correct answer / spell learned ---
+    const feedback = $('quiz-feedback');
+    if (feedback) {
+      const fbObserver = new MutationObserver(() => {
+        const txt = feedback.textContent || '';
+        if (txt.includes('✅') || txt.includes('🌟') || txt.includes('✨')) {
+          pulseHappy(quizWizard, $('wand-display'));
+        }
+      });
+      fbObserver.observe(feedback, { childList: true, characterData: true, subtree: true });
+    }
+
+    // --- Sync owl happy on an effective boss hit (battle log gains a 🌟 line) ---
+    const log = $('battle-log');
+    if (log) {
+      const logObserver = new MutationObserver(() => {
+        const first = log.querySelector('p');
+        if (first && (first.textContent || '').includes('🌟')) {
+          pulseHappy(bossOwl, $('boss-sprite'));
+        }
+      });
+      logObserver.observe(log, { childList: true });
+    }
+
+    // --- Idle wizard breathing on the menu doubles as a gentle greeting ---
+    // (state already 'idle'; nothing else needed)
+
+    // --- Guide modal ---
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const gc = $('btn-guide-close');
+      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // --- Exit modal (styled, no window.confirm) ---
+    const exit = $('exit-modal');
+    function openExit() { if (exit) exit.style.display = 'flex'; }
+    ['btn-exit-quiz', 'btn-exit-boss'].forEach(bid => {
+      const b = $(bid);
+      if (b) b.addEventListener('click', openExit);
+    });
+    if (exit) {
+      const cancel = $('btn-exit-cancel');
+      const confirm = $('btn-exit-confirm');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // V27 uses only transient setTimeout effects (no persistent intervals/loops),
+        // so reloading the page is enough to stop further presentation updates.
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

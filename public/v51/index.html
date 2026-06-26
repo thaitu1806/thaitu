@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <script src="../api-config.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🐢 Vườn Thú Pokémon Việt - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <h1 class="main-title">🐢 Vườn Thú Pokémon Việt</h1>
+        <p class="subtitle">Trả lời đúng, ném bóng, thu thập 8 loài!</p>
+        <div class="hero-card">
+          <div class="hero-emoji">🐢</div>
+          <div class="hero-stats">
+            <span>🎒 Loài: <span id="total-captures">0</span></span>
+            <span>🏆 Bộ đủ: <span id="total-pokedex">0</span></span>
+          </div>
+        </div>
+        <div class="selector-group"><label class="selector-label">📚 Môn học:</label><div class="selector-options" data-group="subject">
+          <button type="button" class="sel-btn active" data-value="mix">🎲 Trộn</button>
+          <button type="button" class="sel-btn" data-value="math">🔢 Toán</button>
+          <button type="button" class="sel-btn" data-value="vietnamese">📖 Tiếng Việt</button>
+          <button type="button" class="sel-btn" data-value="english">🔤 Anh</button>
+        </div></div>
+        <div class="selector-group"><label class="selector-label">⚡ Độ khó:</label><div class="selector-options" data-group="difficulty">
+          <button type="button" class="sel-btn active" data-value="easy">🌱 Dễ</button>
+          <button type="button" class="sel-btn" data-value="medium">🌿 Vừa</button>
+          <button type="button" class="sel-btn" data-value="hard">🌳 Khó</button>
+        </div></div>
+        <button class="btn-primary" id="btn-start">🐢 Bắt Đầu Săn!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <section id="game-screen" class="screen">
+      <div class="game-hud">
+        <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
+        <span class="hud-item">🎒 <span id="captured-text">0/8</span></span>
+        <span class="hud-item">🔥 <span id="streak-text">0</span></span>
+        <span class="hud-item">❓ <span id="progress-text">0/24</span></span>
+      </div>
+      <div class="zoo-stage" id="zoo-stage">
+        <div class="pokedex" id="pokedex"></div>
+        <div class="feedback" id="feedback" style="display:none;"></div>
+      </div>
+      <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+      <div class="question-card">
+        <p class="q-text" id="q-text"></p>
+        <div class="q-options" id="q-options"></div>
+      </div>
+    </section>
+
+    <section id="result-screen" class="screen">
+      <div class="container">
+        <div class="result-emoji" id="result-emoji">🐢</div>
+        <h2 class="result-title" id="result-title">Kết Thăm</h2>
+        <div class="badge-row" id="result-badges"></div>
+        <div class="result-detail" id="result-detail"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Săn Lại</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🐢 Trả lời <b>đúng</b> = có cơ hội bắt được 1 loài thú hoang.</li>
+        <li>🔥 Trả lời đúng <b>liên tiếp</b> (đủ chuỗi) = tăng tỉ lệ bắt được.</li>
+        <li>❌ Trả lời <b>sai</b> hoặc <b>hết giờ</b> = mất chuỗi (streak về 0).</li>
+        <li>🎒 Loài đã bắt sẽ hiện trong Pokedex, loài chưa bắt là bóng mờ.</li>
+        <li>🏆 Sưu tập đủ <b>8 loài</b> = thắng, hoàn thành bộ sưu tập!</li>
+      </ul>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-card">
+      <div class="exit-icon">🚪</div>
+      <p class="exit-text">Thoát game?</p>
+      <p class="exit-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-actions">
+        <button class="exit-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/creatures.js"></script>
+  <script src="game-logic.js" type="module"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

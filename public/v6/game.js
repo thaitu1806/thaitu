@@ -545,7 +545,7 @@ document.getElementById('exit-cancel').addEventListener('click', () => {
   document.getElementById('exit-confirm-overlay').classList.remove('active');
 });
 document.getElementById('exit-confirm').addEventListener('click', () => {
-  window.location.href = '/';
+  window.location.reload();
 });
 
 // ===== TRACK CONTROLLER =====
@@ -863,3 +863,101 @@ function showObstacleChallenge(player, obstaclePos) {
     }, 800);
   });
 }
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// Mounts animated car/driver sprites where the 🚗/🚙 emoji were rendered and
+// mirrors the game's existing car effects (.star / .boost / .shake) onto the
+// sprite via a MutationObserver. No game logic is modified here.
+(function () {
+  'use strict';
+  const C = window.HocVuiCharacters;
+  const chars = {};
+  const SPECIES = { p1: 'car-red', p2: 'car-blue' };
+  const FALLBACK = { p1: '🚗', p2: '🚙' };
+
+  function mountCar(player) {
+    const host = document.getElementById('car-' + player);
+    if (!host || host.dataset.spriteMounted === '1') return;
+    const id = SPECIES[player];
+    if (C && C.hasSpecies(id)) {
+      host.textContent = '';
+      chars[player] = C.createCharacter(id, host, { state: 'idle' });
+      host.dataset.spriteMounted = '1';
+    } else if (!host.textContent) {
+      host.textContent = FALLBACK[player];
+    }
+  }
+
+  function mountCars() { mountCar('p1'); mountCar('p2'); }
+
+  // Particle helper — sparkle on correct, confetti burst on a boost/overtake.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 36 + 18) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v6_spawnParticles = spawnParticles;
+
+  // Mirror the car's CSS effect classes onto the sprite state.
+  function watchCar(player) {
+    const host = document.getElementById('car-' + player);
+    if (!host) return;
+    const obs = new MutationObserver(() => {
+      const ch = chars[player];
+      if (!ch) return;
+      if (host.classList.contains('shake')) {
+        ch.setState('bump');
+      } else if (host.classList.contains('boost')) {
+        ch.setState('drive');
+        spawnParticles(host, 'confetti', 5);
+      } else if (host.classList.contains('star')) {
+        ch.setState('happy');
+        spawnParticles(host, 'sparkle', 6);
+      } else {
+        ch.setState('idle');
+      }
+    });
+    obs.observe(host, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // Modals (guide + styled exit) -------------------------------------------
+  function wireModals() {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const gc = $('btn-guide-close');
+      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const ec = $('btn-exit-cancel');
+      if (ec) ec.addEventListener('click', () => { exit.style.display = 'none'; });
+      const cf = $('btn-exit-confirm');
+      if (cf) cf.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop the active round timer/loops before leaving.
+        try { if (State && State.round && State.round.timerId) clearInterval(State.round.timerId); } catch (e) {}
+        window.location.href = '/';
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  }
+
+  // game.js is a deferred module, so the DOM is already parsed here.
+  mountCars();
+  watchCar('p1');
+  watchCar('p2');
+  wireModals();
+})();

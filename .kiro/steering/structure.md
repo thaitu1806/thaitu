@@ -21,20 +21,25 @@
 │   ├── local.db         # Local SQLite database file
 │   └── questions/       # Seed data files organized by subject-difficulty
 ├── public/              # Static frontend files
+│   ├── index.html       # Capacitor entry — redirects to home.html
+│   ├── api-config.js    # Runtime API base URL patch for native shell
 │   ├── home.html        # Landing page / game selector
 │   ├── game.html + game.js + style.css   # V1 Classic mode
 │   ├── admin.html + admin.js + admin.css # Admin dashboard
 │   ├── exam.html + exam.js + exam.css    # Exam mode
 │   ├── learn.html + learn.js + learn.css # Learning mode
-│   ├── v2/             # V2 Adventure mode (standalone HTML/JS/CSS)
-│   ├── v3/             # V3 Local 2-Player Duel
-│   └── v4/             # V4 Online Duel (WebSocket-based)
+│   ├── v2/ … v40/       # Self-contained game versions (index.html + game.js + style.css)
+├── scripts/
+│   └── inject-api-config.js # Idempotently injects api-config.js into every HTML file
+├── android/             # Capacitor native Android project
+├── ios/                 # Capacitor native iOS project
 ```
 
 ## Architecture Notes
 
 - Local dev: single `server.js` serves both API and static files, plus WebSocket
 - Production (Vercel): API routes are serverless functions in `api/`, static files served from `public/`
-- Each game version (v1-v4) is a self-contained HTML/JS/CSS bundle with no build step
+- Each game version (v1+) is a self-contained HTML/JS/CSS bundle with no build step
 - The `api/` handlers mirror the routes defined inline in `server.js` for Vercel compatibility
-- WebSocket (V4 duel) only works on the local server; Vercel uses polling via `api/room.js`
+- V4 online duel uses Firebase Realtime Database directly from the client (the legacy `ws-server.js` is only used locally and is being phased out)
+- Native Android/iOS builds are produced via Capacitor — see `mobile-build.md`

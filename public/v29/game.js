@@ -361,3 +361,143 @@ function init() {
 init();
 
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// The game logic above lives in a private IIFE, so this layer is wired purely
+// through the DOM (hosts + observers) — it never touches game state or logic.
+(function () {
+  'use strict';
+  const C = window.HocVuiCharacters;
+
+  function mount(hostId, species, fallback, size) {
+    const host = document.getElementById(hostId);
+    if (!host) return null;
+    host.innerHTML = '';
+    if (C && C.hasSpecies(species)) {
+      return C.createCharacter(species, host, { state: 'idle', size: size });
+    }
+    host.textContent = fallback;
+    return null;
+  }
+
+  let castaway = null;
+  let crab = null;
+  let victoryChar = null;
+  let happyTimer = null;
+
+  function setCastaway(stateName) {
+    if (!castaway) return;
+    castaway.setState(stateName);
+    if (crab && stateName === 'happy') crab.setState('happy');
+    if (happyTimer) clearTimeout(happyTimer);
+    if (stateName !== 'idle') {
+      happyTimer = setTimeout(() => {
+        if (castaway) castaway.setState('idle');
+        if (crab) crab.setState('idle');
+      }, 900);
+    }
+  }
+
+  // Particle helpers — sparkle on resource gained, confetti on victory.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 25) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.18) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+
+  function spawnConfetti(parent, count) {
+    if (!parent) return;
+    const colors = ['#ff6b35', '#4caf50', '#ffd93d', '#1e88e5', '#e53935'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-confetti';
+      p.style.background = colors[i % colors.length];
+      p.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+      p.style.setProperty('--ty', (Math.random() * 120 + 60) + 'px');
+      p.style.setProperty('--rot', (Math.random() * 540 - 270) + 'deg');
+      p.style.setProperty('--delay', (Math.random() * 0.25) + 's');
+      p.style.left = (40 + Math.random() * 20) + '%';
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v29_spawnParticles = spawnParticles;
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    // Mount island avatar + crab mascot (always present on the island screen).
+    castaway = mount('island-castaway', 'castaway', '🧑', 88);
+    crab = mount('island-crab', 'crab', '🦀', 56);
+
+    // React to quiz feedback by observing the feedback element's class.
+    const feedback = document.getElementById('feedback');
+    if (feedback) {
+      const obs = new MutationObserver(() => {
+        if (feedback.classList.contains('correct')) {
+          setCastaway('happy');
+          const gather = document.querySelector('.gather-container');
+          if (gather) spawnParticles(gather, 'sparkle', 8);
+        } else if (feedback.classList.contains('wrong')) {
+          setCastaway('scared');
+        }
+      });
+      obs.observe(feedback, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Mount the victory castaway + celebrate when the victory screen activates.
+    const victory = document.getElementById('victory-screen');
+    if (victory) {
+      const vObs = new MutationObserver(() => {
+        if (victory.classList.contains('active')) {
+          if (!victoryChar) victoryChar = mount('victory-castaway', 'castaway', '🚣', 110);
+          if (victoryChar) victoryChar.setState('happy');
+          const card = victory.querySelector('.victory-container');
+          if (card) spawnConfetti(card, 28);
+        }
+      });
+      vObs.observe(victory, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Guide modal.
+    const guide = document.getElementById('guide-modal');
+    const guideBtn = document.getElementById('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = document.getElementById('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // Styled exit modal (no window.confirm). Confirm clears timers, then leaves.
+    const exit = document.getElementById('exit-modal');
+    const exitBtn = document.getElementById('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = document.getElementById('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = document.getElementById('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop any running quiz timer/loops by clearing the highest interval id.
+        try {
+          const top = setInterval(() => {}, 9999);
+          for (let i = 0; i <= top; i++) clearInterval(i);
+          clearInterval(top);
+        } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

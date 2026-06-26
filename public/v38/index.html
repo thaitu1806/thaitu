@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -20,6 +21,7 @@
           <span>😁 Kỷ lục: </span><span id="high-smiles">0</span> nụ cười
         </div>
         <button class="btn-primary" id="btn-start">🏥 Bắt Đầu Ca Trực!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -31,10 +33,15 @@
           <span class="patient-count">🧑 BN <span id="patient-num">1</span>/6</span>
           <span class="smiles-count">😁 <span id="smiles">0</span></span>
           <span class="retries-left">❤️ <span id="retries">2</span></span>
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
         </div>
 
         <!-- Mouth/Teeth Visual -->
         <div class="mouth-area" id="mouth-area">
+          <div class="dentist-scene">
+            <div class="sprite-host dentist-host" id="dentist-host"></div>
+            <div class="sprite-host tooth-host" id="tooth-host"></div>
+          </div>
           <div class="mouth-emoji" id="mouth-emoji">😬</div>
           <div class="teeth-row" id="teeth-row">
             <span class="tooth dirty">🦷</span>
@@ -81,8 +88,37 @@
     </section>
   </div>
 
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🏥 Bạn là <b>bác sĩ răng</b>, chữa cho <b>6 bệnh nhân</b> mỗi ca trực.</li>
+        <li>🦷 Mỗi bệnh nhân cần <b>4 bước</b>: 🔍 Khám → 🧹 Cạo vôi → 🔧 Trám → ✨ Đánh bóng.</li>
+        <li>✅ Trả lời <b>đúng</b> = hoàn thành một bước, răng sạch dần và nụ cười tươi hơn.</li>
+        <li>❤️ Mỗi bệnh nhân có <b>2 lượt sai</b>; sai quá hoặc hết giờ là <b>chuyển viện</b>.</li>
+        <li>⏱️ Mỗi câu có <b>10 giây</b> — trả lời nhanh nhé!</li>
+        <li>😁 Chữa thành công = thu thêm một <b>nụ cười</b>. Lập <b>kỷ lục</b> nụ cười!</li>
+      </ul>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/dentists.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

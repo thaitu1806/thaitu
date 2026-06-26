@@ -338,3 +338,123 @@ async function saveSession() {
 init();
 
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V35's game logic lives in the IIFE above. This block never touches that
+// logic — it only mounts animated sprites, mirrors visual state, and wires
+// the guide/exit modals. State sync is observed from the DOM (cone layers)
+// so no internal function needs to be rewritten.
+(function () {
+  'use strict';
+
+  let serverChar = null;
+  let coneChar = null;
+
+  function mountSprites() {
+    const C = window.HocVuiCharacters;
+    const serverHost = document.getElementById('server-host');
+    const coneHost = document.getElementById('cone-base');
+
+    if (serverHost && !serverChar) {
+      if (C && C.hasSpecies('icecream-server')) {
+        serverChar = C.createCharacter('icecream-server', serverHost, { state: 'idle' });
+      } else {
+        serverHost.textContent = '🧑‍🍳';
+      }
+    }
+    if (coneHost && !coneChar) {
+      if (C && C.hasSpecies('icecream-cone')) {
+        coneHost.textContent = '';
+        coneChar = C.createCharacter('icecream-cone', coneHost, { state: 'idle' });
+      }
+      // else: keep the existing 🍦 emoji fallback already in the host
+    }
+  }
+
+  // Briefly flip a character to "happy", then back to idle.
+  function cheer(char) {
+    if (!char) return;
+    char.setState('happy');
+    setTimeout(() => { if (char) char.setState('idle'); }, 650);
+  }
+
+  // Particle helper — sparkles around a host element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v35_spawnParticles = spawnParticles;
+
+  // Watch the cone for newly served scoops. A correct answer appends a
+  // .cone-layer WITHOUT the .wrong class — that's a "scoop served" moment, so
+  // the server kid and cone mascot cheer and sparkles fly.
+  function watchCone() {
+    const layers = document.getElementById('cone-layers');
+    if (!layers) return;
+    const obs = new MutationObserver(muts => {
+      for (const m of muts) {
+        m.addedNodes.forEach(node => {
+          if (node.nodeType !== 1 || !node.classList) return;
+          if (node.classList.contains('cone-layer') && !node.classList.contains('wrong')) {
+            cheer(serverChar);
+            cheer(coneChar);
+            const host = document.getElementById('server-host');
+            if (host) spawnParticles(host, 'sparkle', 6);
+          }
+        });
+      }
+    });
+    obs.observe(layers, { childList: true });
+  }
+
+  // Modals (guide + exit) ---------------------------------------------------
+  function wireModals() {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop any running timers/intervals before leaving (defensive — the
+        // game keeps its own `timer` private, so clear the highest ids too).
+        try {
+          const hi = setInterval(() => {}, 9999);
+          for (let i = 0; i <= hi; i++) clearInterval(i);
+        } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  }
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    mountSprites();
+    watchCone();
+    wireModals();
+  });
+})();

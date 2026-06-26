@@ -398,7 +398,7 @@ function endGame() {
 // ===== EXIT =====
 document.getElementById('btn-exit').addEventListener('click', () => document.getElementById('exit-overlay').classList.add('active'));
 document.getElementById('exit-cancel').addEventListener('click', () => document.getElementById('exit-overlay').classList.remove('active'));
-document.getElementById('exit-confirm').addEventListener('click', () => { window.location.href = '/'; });
+document.getElementById('exit-confirm').addEventListener('click', () => { window.location.reload(); });
 
 // ===== SCREEN =====
 function showScreen(id) {
@@ -412,3 +412,163 @@ document.getElementById('btn-speak-v8')?.addEventListener('click', () => {
   if (!q) return;
   window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, State.config?.subject);
 });
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+(function () {
+  'use strict';
+  let mascotChar = null;
+  let happyTimer = null;
+
+  // Pick a mascot species that fits the chosen castle theme.
+  function mascotSpeciesFor(theme) {
+    switch (theme) {
+      case 'stone': return 'knight';
+      case 'space': return 'king';
+      case 'candy': return 'princess';
+      default: return 'builder';
+    }
+  }
+
+  function mountMascot() {
+    const host = document.getElementById('builder-mascot');
+    if (!host) return;
+    host.innerHTML = '';
+    mascotChar = null;
+    const C = window.HocVuiCharacters;
+    const id = mascotSpeciesFor(State.config && State.config.theme);
+    if (C && C.hasSpecies(id)) {
+      mascotChar = C.createCharacter(id, host, { state: 'idle' });
+    } else {
+      host.textContent = '👷';
+    }
+  }
+
+  function cheer() {
+    if (!mascotChar) return;
+    mascotChar.setState('happy');
+    if (happyTimer) clearTimeout(happyTimer);
+    happyTimer = setTimeout(() => { if (mascotChar) mascotChar.setState('idle'); }, 700);
+  }
+
+  function tremble() {
+    if (!mascotChar) return;
+    mascotChar.setState('scared');
+    if (happyTimer) clearTimeout(happyTimer);
+    happyTimer = setTimeout(() => { if (mascotChar) mascotChar.setState('idle'); }, 900);
+  }
+
+  // Particle helper — sparkles burst around a host element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+
+  function spawnConfetti(parent, count) {
+    if (!parent) return;
+    const colors = ['#ffd54f', '#ff7043', '#81c784', '#64b5f6', '#ba68c8', '#fff'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-confetti';
+      p.style.setProperty('--x', Math.random() * 100 + '%');
+      p.style.setProperty('--delay', (Math.random() * 0.6) + 's');
+      p.style.setProperty('--rot', Math.floor(Math.random() * 360) + 'deg');
+      p.style.background = colors[i % colors.length];
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v8_spawnParticles = spawnParticles;
+  window.__v8_spawnConfetti = spawnConfetti;
+
+  // Mount the mascot at the start of each game. updateGameInfo() is called by
+  // global name inside startGame() (after the tower is cleared), so wrapping it
+  // mounts the sprite reliably; the btn-start listener captured the original
+  // startGame reference, so wrapping startGame itself would not fire.
+  if (typeof updateGameInfo === 'function') {
+    const origInfo = updateGameInfo;
+    let mounted = false;
+    updateGameInfo = function () {
+      const r = origInfo.apply(this, arguments);
+      const host = document.getElementById('builder-mascot');
+      if (host && (!mounted || !host.firstChild)) {
+        mountMascot();
+        mounted = true;
+      }
+      return r;
+    };
+    // Reset the mount guard whenever a fresh game begins.
+    if (typeof startGame === 'function') {
+      const origStart = startGame;
+      startGame = function () { mounted = false; return origStart.apply(this, arguments); };
+    }
+  }
+
+  // Cheer + sparkle on each block built.
+  if (typeof addBlock === 'function') {
+    const origAdd = addBlock;
+    addBlock = function () {
+      const r = origAdd.apply(this, arguments);
+      cheer();
+      const host = document.getElementById('builder-mascot');
+      if (host) spawnParticles(host, 'sparkle', 6);
+      return r;
+    };
+  }
+
+  // Tremble when the tower shakes from an earthquake.
+  if (typeof triggerEarthquake === 'function') {
+    const origQuake = triggerEarthquake;
+    triggerEarthquake = function () {
+      tremble();
+      return origQuake.apply(this, arguments);
+    };
+  }
+
+  // Confetti celebration on a win.
+  if (typeof endGame === 'function') {
+    const origEnd = endGame;
+    endGame = function () {
+      const r = origEnd.apply(this, arguments);
+      const host = document.getElementById('result-container');
+      if (host) spawnConfetti(host, 36);
+      return r;
+    };
+  }
+
+  // Modals (guide + styled exit) -------------------------------------------
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    // Exit modal: overlay-click closes; confirm stops loops/timers then leaves.
+    const exit = $('exit-overlay');
+    if (exit) {
+      exit.addEventListener('click', e => { if (e.target === exit) exit.classList.remove('active'); });
+    }
+    const confirmBtn = $('exit-confirm');
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', () => {
+        try { clearInterval(timerId); } catch (e) {}
+        try { State.gameOver = true; } catch (e) {}
+      });
+    }
+  });
+})();

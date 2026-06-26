@@ -92,6 +92,26 @@ app.use('/v37', express.static(join(__dirname, 'public/v37')));
 app.use('/v38', express.static(join(__dirname, 'public/v38')));
 app.use('/v39', express.static(join(__dirname, 'public/v39')));
 app.use('/v40', express.static(join(__dirname, 'public/v40')));
+app.use('/v41', express.static(join(__dirname, 'public/v41')));
+app.use('/v42', express.static(join(__dirname, 'public/v42')));
+app.use('/v43', express.static(join(__dirname, 'public/v43')));
+app.use('/v44', express.static(join(__dirname, 'public/v44')));
+app.use('/v45', express.static(join(__dirname, 'public/v45')));
+app.use('/v46', express.static(join(__dirname, 'public/v46')));
+app.use('/v47', express.static(join(__dirname, 'public/v47')));
+app.use('/v48', express.static(join(__dirname, 'public/v48')));
+app.use('/v49', express.static(join(__dirname, 'public/v49')));
+app.use('/v50', express.static(join(__dirname, 'public/v50')));
+app.use('/v51', express.static(join(__dirname, 'public/v51')));
+app.use('/v52', express.static(join(__dirname, 'public/v52')));
+app.use('/v53', express.static(join(__dirname, 'public/v53')));
+app.use('/v54', express.static(join(__dirname, 'public/v54')));
+app.use('/v55', express.static(join(__dirname, 'public/v55')));
+app.use('/v56', express.static(join(__dirname, 'public/v56')));
+app.use('/v57', express.static(join(__dirname, 'public/v57')));
+app.use('/v58', express.static(join(__dirname, 'public/v58')));
+app.use('/v59', express.static(join(__dirname, 'public/v59')));
+app.use('/v60', express.static(join(__dirname, 'public/v60')));
 
 // Home page -> game selector
 app.get('/', (req, res) => res.sendFile(join(__dirname, 'public/home.html')));

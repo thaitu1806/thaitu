@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -41,6 +42,7 @@
         </div>
 
         <button class="btn-start" id="btn-start">🚀 Lặn xuống!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -64,7 +66,7 @@
 
       <!-- Submarine (moves vertically) -->
       <div class="submarine-wrap" id="submarine-wrap">
-        <div class="submarine" id="submarine">🛥️</div>
+        <div class="submarine" id="submarine"></div>
       </div>
 
       <!-- HUD overlay -->
@@ -80,6 +82,7 @@
           </div>
         </div>
         <div class="hud-right">
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
           <button class="btn-surface" id="btn-surface">🔼 Nổi lên</button>
         </div>
       </div>
@@ -123,9 +126,39 @@
       <div class="result-container" id="result-container"></div>
     </section>
   </div>
+
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🌊 Trả lời <b>đúng</b> = lặn sâu hơn, kiếm <b>ngọc trai</b>.</li>
+        <li>🔥 Trả lời đúng liên tiếp = <b>combo</b>, nhân đôi ngọc trai.</li>
+        <li>🐚 Lặn sâu để <b>phát hiện sinh vật biển</b> mới cho bộ sưu tập.</li>
+        <li>🎁 Có cơ hội gặp <b>kho báu</b>: thêm ngọc trai và oxy.</li>
+        <li>❌ Trả lời <b>sai</b> hoặc <b>hết giờ</b> = bị đẩy lên.</li>
+        <li>⏱️ Hết <b>oxy</b> là kết thúc — lặn càng sâu càng nhiều sao!</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/ocean.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -14,6 +15,7 @@
     <section id="menu-screen" class="screen active">
       <div class="container">
         <h1 class="title">🧙 Lớp Học Phép Thuật</h1>
+        <div class="menu-mascot" id="menu-mascot"></div>
         <p class="subtitle">Học thần chú, chiến đấu bóng tối!</p>
         <div class="menu-stats">
           <div class="stat-item"><span class="stat-icon">📖</span><span id="stat-spells">0/20</span><span class="stat-label">Phép thuật</span></div>
@@ -24,6 +26,7 @@
           <button class="btn-magic btn-book" id="btn-book">📖 Sách Phép Thuật</button>
           <button class="btn-magic btn-boss" id="btn-boss">⚔️ Đấu Boss</button>
         </div>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -32,7 +35,8 @@
     <section id="quiz-screen" class="screen">
       <div class="container">
         <div class="quiz-header">
-          <div class="wand-display">🪄</div>
+          <button class="btn-exit" id="btn-exit-quiz" title="Thoát game">🚪</button>
+          <div class="wand-display" id="wand-display">🪄</div>
           <div class="fragment-progress">
             <span id="fragment-count">0/3</span> mảnh ghép
             <div class="fragment-bar"><div class="fragment-fill" id="fragment-fill"></div></div>
@@ -66,9 +70,11 @@
     <section id="boss-screen" class="screen">
       <div class="container">
         <h2 class="boss-title" id="boss-title">⚔️ Chọn Boss</h2>
+        <button class="btn-exit btn-exit-corner" id="btn-exit-boss" title="Thoát game">🚪</button>
         <div class="boss-list" id="boss-list"></div>
         <div class="boss-arena" id="boss-arena" style="display:none">
           <div class="boss-info">
+            <div class="boss-sprite" id="boss-sprite"></div>
             <div class="boss-emoji" id="boss-emoji">👹</div>
             <div class="boss-name" id="boss-name">Boss</div>
             <div class="boss-hp-bar"><div class="boss-hp-fill" id="boss-hp-fill"></div></div>
@@ -97,9 +103,40 @@
   <!-- Sparkle effects container -->
   <div class="sparkles" id="sparkles"></div>
 
+  <!-- GUIDE MODAL -->
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>📝 Vào <b>Học Phép</b>, trả lời <b>đúng</b> câu hỏi để gom <b>mảnh ghép</b>.</li>
+        <li>🌟 Đủ <b>3 mảnh ghép</b> là <b>học được một phép thuật</b> mới.</li>
+        <li>📖 Mở <b>Sách Phép Thuật</b> để xem các phép theo nguyên tố: Lửa, Nước, Đất, Gió.</li>
+        <li>⚔️ Vào <b>Đấu Boss</b> và dùng phép đúng <b>điểm yếu</b> của boss để gây sát thương.</li>
+        <li>💡 Mỗi boss có một nguyên tố khắc chế riêng — chọn phép cho khớp nhé!</li>
+        <li>🏆 Hạ đủ boss để <b>đánh bại bóng tối</b> và trở thành phù thủy giỏi.</li>
+      </ul>
+      <button class="btn-magic btn-study" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <!-- EXIT MODAL -->
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/wizards.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

@@ -376,3 +376,164 @@ async function saveSession() {
 init();
 
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V38's game logic lives in a self-contained IIFE above. We do NOT touch it.
+// Here we mount animated sprites alongside the existing emoji elements and
+// mirror their state by observing the DOM nodes the logic already updates.
+(function () {
+  'use strict';
+
+  let dentistChar = null;
+  let toothChar = null;
+  let lastCleanCount = 0;
+  let toothHappyTimer = null;
+
+  function mountSprites() {
+    const C = window.HocVuiCharacters;
+    const dHost = document.getElementById('dentist-host');
+    const tHost = document.getElementById('tooth-host');
+    if (dHost && !dentistChar) {
+      dHost.innerHTML = '';
+      if (C && C.hasSpecies('dentist')) {
+        dentistChar = C.createCharacter('dentist', dHost, { state: 'idle' });
+      } else {
+        dHost.textContent = '🧑\u200d⚕️';
+      }
+    }
+    if (tHost && !toothChar) {
+      tHost.innerHTML = '';
+      if (C && C.hasSpecies('tooth')) {
+        toothChar = C.createCharacter('tooth', tHost, { state: 'idle' });
+      } else {
+        tHost.textContent = '🦷';
+      }
+    }
+  }
+
+  function toothCelebrate() {
+    if (toothChar) {
+      toothChar.setState('happy');
+      if (toothHappyTimer) clearTimeout(toothHappyTimer);
+      toothHappyTimer = setTimeout(() => { if (toothChar) toothChar.setState('idle'); }, 700);
+    }
+    const host = document.getElementById('tooth-host');
+    if (host) spawnParticles(host, 'sparkle', 7);
+  }
+
+  function dentistCheer() {
+    if (dentistChar) {
+      dentistChar.setState('happy');
+      setTimeout(() => { if (dentistChar) dentistChar.setState('idle'); }, 700);
+    }
+  }
+
+  // Particle helper — sparkles around a host element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 45 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v38_spawnParticles = spawnParticles;
+
+  // Confetti burst on the result screen (mirrors logic's spawnConfetti timing).
+  function spawnResultConfetti() {
+    const host = document.querySelector('#result-screen .result-container') || document.getElementById('result-screen');
+    if (!host) return;
+    spawnParticles(host, 'confetti', 18);
+  }
+  window.__v38_spawnResultConfetti = spawnResultConfetti;
+
+  function countCleanTeeth() {
+    return document.querySelectorAll('#teeth-row .tooth.clean').length;
+  }
+
+  // Observe the teeth row + mouth emoji to mirror happy moments onto sprites.
+  function watchScene() {
+    const teethRow = document.getElementById('teeth-row');
+    const mouth = document.getElementById('mouth-emoji');
+    if (teethRow) {
+      const obs = new MutationObserver(() => {
+        const n = countCleanTeeth();
+        if (n > lastCleanCount) toothCelebrate();
+        lastCleanCount = n;
+      });
+      obs.observe(teethRow, { attributes: true, attributeFilter: ['class'], subtree: true });
+    }
+    if (mouth) {
+      const obs2 = new MutationObserver(() => {
+        const txt = mouth.textContent || '';
+        if (txt.indexOf('😁') !== -1) { toothCelebrate(); dentistCheer(); }
+      });
+      obs2.observe(mouth, { childList: true, characterData: true, subtree: true });
+    }
+  }
+
+  // Reset the clean-teeth tracker each time a new patient/game screen appears.
+  function watchScreens() {
+    const game = document.getElementById('game-screen');
+    const result = document.getElementById('result-screen');
+    if (game) {
+      const obs = new MutationObserver(() => {
+        if (game.classList.contains('active')) { mountSprites(); lastCleanCount = countCleanTeeth(); }
+      });
+      obs.observe(game, { attributes: true, attributeFilter: ['class'] });
+    }
+    if (result) {
+      const obs = new MutationObserver(() => {
+        if (result.classList.contains('active')) spawnResultConfetti();
+      });
+      obs.observe(result, { attributes: true, attributeFilter: ['class'] });
+    }
+  }
+
+  // Modals (guide + exit) --------------------------------------------------
+  function wireModals() {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Navigating away fully unloads the page, which terminates the
+        // logic IIFE's question timer and all observers. We also hide the
+        // game screen first so no further UI updates flash before unload.
+        const game = $('game-screen');
+        if (game) game.classList.remove('active');
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  }
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    mountSprites();
+    lastCleanCount = countCleanTeeth();
+    watchScene();
+    watchScreens();
+    wireModals();
+  });
+})();

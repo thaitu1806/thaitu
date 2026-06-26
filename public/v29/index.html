@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -17,6 +18,11 @@
         <h1 class="main-title">🏝️ Đảo Hoang Sinh Tồn</h1>
         <p class="subtitle">Kiếm tài nguyên, chế tạo bè thoát đảo!</p>
 
+        <div class="island-hero">
+          <div class="hero-host" id="island-castaway"></div>
+          <div class="hero-host hero-mascot" id="island-crab"></div>
+        </div>
+
         <div class="resource-bar">
           <div class="resource"><span class="res-icon">🌲</span><span class="res-count" id="wood-count">0</span></div>
           <div class="resource"><span class="res-icon">🧱</span><span class="res-count" id="stone-count">0</span></div>
@@ -30,6 +36,7 @@
           <button class="btn-secondary" id="btn-craft">🔨 Chế Tạo</button>
         </div>
 
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -38,6 +45,7 @@
     <section id="gather-screen" class="screen">
       <div class="gather-container">
         <div class="gather-header">
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
           <span class="gather-progress" id="gather-progress">Câu 1/10</span>
           <span class="gather-score" id="gather-score">🌲0 🧱0 🎀0</span>
         </div>
@@ -67,7 +75,7 @@
     <!-- VICTORY SCREEN -->
     <section id="victory-screen" class="screen">
       <div class="victory-container">
-        <div class="victory-emoji">🚣</div>
+        <div class="hero-host victory-host" id="victory-castaway"></div>
         <h2 class="victory-title">🎉 Thoát Đảo Thành Công!</h2>
         <p class="victory-msg">Con đã chế tạo bè và thoát khỏi đảo hoang!</p>
         <div class="victory-stats" id="victory-stats"></div>
@@ -77,8 +85,36 @@
     </section>
   </div>
 
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🔍 Bấm <b>Thu Thập Tài Nguyên</b> để bắt đầu trả lời câu hỏi.</li>
+        <li>✅ Trả lời <b>đúng</b> = nhận ngẫu nhiên 1 tài nguyên: 🌲 gỗ, 🧱 đá hoặc 🎀 dây.</li>
+        <li>❌ Trả lời <b>sai</b> hoặc <b>hết giờ</b> = không nhận tài nguyên.</li>
+        <li>🔨 Vào <b>Chế Tạo</b> để dùng tài nguyên làm lửa trại, lều, cần câu, lọc nước.</li>
+        <li>🚣 Chế tạo đủ <b>Bè Tre</b> để <b>thoát khỏi đảo</b> và chiến thắng!</li>
+      </ul>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/castaways.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -24,11 +25,21 @@
           <span id="harvest-count">🌿 Thu hoạch: 0</span>
           <span id="daily-bonus-status"></span>
         </div>
+
+        <!-- Decorative farm friends (animated sprites) -->
+        <div class="farm-friends" id="farm-friends">
+          <div class="farm-friend" id="friend-farmer" data-species="farmer"></div>
+          <div class="farm-friend" id="friend-cow" data-species="cow"></div>
+          <div class="farm-friend" id="friend-chicken" data-species="chicken"></div>
+          <div class="farm-friend" id="friend-pig" data-species="pig"></div>
+        </div>
+
         <div class="farm-grid" id="farm-grid"></div>
         <div class="farm-actions">
           <button class="btn-water" id="btn-water">💧 Tưới nước (Quiz)</button>
           <button class="btn-shop" id="btn-shop">🏪 Cửa hàng</button>
         </div>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -70,7 +81,9 @@
             </div>
           </div>
           <div class="quiz-correct-count">💧 <span id="quiz-correct">0</span>/10</div>
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
         </div>
+        <div class="quiz-mascot" id="quiz-mascot" data-species="farmer"></div>
         <div class="quiz-question-box">
           <p class="quiz-question" id="quiz-question"></p>
         </div>
@@ -86,6 +99,7 @@
     <!-- QUIZ RESULT SCREEN -->
     <section id="result-screen" class="screen">
       <div class="result-container">
+        <div class="result-mascot" id="result-mascot" data-species="cow"></div>
         <div class="result-icon">💧</div>
         <h2 class="result-title" id="result-title">Kết quả tưới nước!</h2>
         <p class="result-detail" id="result-detail"></p>
@@ -94,9 +108,39 @@
       </div>
     </section>
   </div>
+
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🌱 Chọn ô đất trống rồi <b>mua hạt giống</b> bằng xu để trồng cây.</li>
+        <li>💧 Bấm <b>Tưới nước</b> để trả lời câu hỏi — mỗi câu <b>đúng</b> tưới lớn một cây.</li>
+        <li>🌿 Cây lớn qua <b>3 giai đoạn</b>, theo thời gian thật hoặc khi được tưới.</li>
+        <li>🌾 Cây chín thì bấm để <b>thu hoạch</b> và nhận thêm <b>xu</b>.</li>
+        <li>🏪 Vào <b>Cửa hàng</b> để mua thêm ô đất mở rộng nông trại.</li>
+        <li>🎁 Mỗi ngày đăng nhập nhận <b>thưởng xu</b> miễn phí!</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/farm.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

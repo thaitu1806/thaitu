@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -54,6 +55,7 @@
         </div>
 
         <button class="btn-start" id="btn-start">🚀 Bắt đầu!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -62,15 +64,24 @@
     <section id="game-screen" class="screen">
       <div class="game-layout">
         <div class="game-header">
-          <button class="btn-exit" id="btn-exit">✕</button>
+          <button class="btn-exit" id="btn-exit">🚪</button>
           <div class="game-info" id="game-info"></div>
           <div class="timer" id="timer">⏱️ 0:00</div>
         </div>
         <div class="card-grid" id="card-grid"></div>
         <div class="turn-bar" id="turn-bar"></div>
+        <div class="mascot-corner" id="mascot-host"></div>
       </div>
       <div class="exit-overlay" id="exit-overlay">
-        <div class="exit-card"><p>🚪 Thoát?</p><div class="exit-btns"><button class="exit-btn cancel" id="exit-cancel">Tiếp</button><button class="exit-btn confirm" id="exit-confirm">Thoát</button></div></div>
+        <div class="modal-card exit-modal-card">
+          <div class="exit-modal-icon">🚪</div>
+          <p class="exit-modal-text">Thoát game?</p>
+          <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+          <div class="exit-modal-actions">
+            <button class="exit-modal-cancel" id="exit-cancel">Tiếp tục chơi</button>
+            <button class="exit-modal-confirm" id="exit-confirm">🚪 Thoát</button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -79,8 +90,26 @@
       <div class="result-container" id="result-container"></div>
     </section>
   </div>
+
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🧩 Lật các thẻ để tìm <b>cặp ghép đúng</b>: một thẻ câu hỏi và một thẻ đáp án.</li>
+        <li>✅ Ghép đúng = giữ cặp thẻ và <b>ăn điểm</b>. Ghép sai = thẻ lật úp lại.</li>
+        <li>🔥 Ghép đúng liên tiếp tạo <b>combo</b> — cú nhân khí thế!</li>
+        <li>👥 Chế độ <b>Đối đầu</b>: ghép sai là tới lượt người chơi kế tiếp.</li>
+        <li>📊 Chọn kích thước lớn hơn (<b>4×6</b>, <b>4×8</b>) để thử thách trí nhớ.</li>
+        <li>🏆 Lật hết tất cả các cặp là <b>chiến thắng</b> — nhanh và ít lượt lật là giỏi nhất!</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/flipper.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

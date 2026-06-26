@@ -450,6 +450,137 @@ function init() {
   document.getElementById('btn-back-wardrobe').onclick = showWardrobe;
 }
 
+// ========== CHARACTER SYSTEM INTEGRATION (presentation only) ==========
+// Additive layer: mounts animated chibi fashion sprites where emoji used to
+// stand, wires the guide + styled exit modals, and adds vector particles.
+// It wraps the inner presentation functions non-invasively — no game logic
+// is rewritten.
+let wardrobeChar = null;
+let runwayChar = null;
+
+function mountWardrobeModel() {
+  const host = document.getElementById('char-body');
+  if (!host) return;
+  host.innerHTML = '';
+  wardrobeChar = null;
+  const C = window.HocVuiCharacters;
+  if (C && C.hasSpecies('fashionista')) {
+    wardrobeChar = C.createCharacter('fashionista', host, { state: 'idle' });
+  } else {
+    host.textContent = '🧍';
+  }
+}
+
+function mountRunwayModel() {
+  const host = document.getElementById('runway-model');
+  if (!host) return;
+  host.innerHTML = '';
+  runwayChar = null;
+  const C = window.HocVuiCharacters;
+  if (C && C.hasSpecies('fashionista')) {
+    runwayChar = C.createCharacter('fashionista', host, { state: 'happy' });
+  } else {
+    host.textContent = '🧍';
+  }
+}
+
+// Vector particle helpers — sparkle burst + confetti rain on the runway.
+function spawnParticles(parent, kind, count) {
+  if (!parent) return;
+  for (let i = 0; i < (count || 8); i++) {
+    const p = document.createElement('span');
+    p.className = 'pfx pfx-' + kind;
+    p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+    p.style.setProperty('--ty', -(Math.random() * 50 + 25) + 'px');
+    p.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+    parent.appendChild(p);
+    p.addEventListener('animationend', () => p.remove(), { once: true });
+  }
+}
+
+function spawnConfetti(parent, count) {
+  if (!parent) return;
+  const colors = ['#ff6ec4', '#ffd700', '#7873f5', '#e040fb', '#4caf50'];
+  for (let i = 0; i < (count || 18); i++) {
+    const p = document.createElement('span');
+    p.className = 'pfx pfx-confetti';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px');
+    p.style.setProperty('--dur', (1.1 + Math.random() * 0.9) + 's');
+    p.style.setProperty('--delay', (Math.random() * 0.4) + 's');
+    parent.appendChild(p);
+    p.addEventListener('animationend', () => p.remove(), { once: true });
+  }
+}
+
+// Wrap showWardrobe — mount the idle model after the screen renders.
+const _origShowWardrobe = showWardrobe;
+showWardrobe = function () {
+  const r = _origShowWardrobe.apply(this, arguments);
+  mountWardrobeModel();
+  return r;
+};
+
+// Wrap showCatwalk — mount the strutting model + celebratory particles.
+const _origShowCatwalk = showCatwalk;
+showCatwalk = function () {
+  const r = _origShowCatwalk.apply(this, arguments);
+  mountRunwayModel();
+  if (runwayChar) {
+    runwayChar.setState('happy');
+    const stage = document.querySelector('#catwalk-screen .runway');
+    if (stage) { spawnParticles(stage, 'sparkle', 10); spawnConfetti(stage, 20); }
+  }
+  return r;
+};
+
+// Wrap handleItemClick — happy bounce when the wardrobe model gets dressed.
+const _origHandleItemClick = handleItemClick;
+handleItemClick = function () {
+  const r = _origHandleItemClick.apply(this, arguments);
+  if (wardrobeChar) {
+    wardrobeChar.setState('happy');
+    const host = document.getElementById('char-body');
+    if (host) spawnParticles(host, 'sparkle', 5);
+    setTimeout(() => { if (wardrobeChar) wardrobeChar.setState('idle'); }, 650);
+  }
+  return r;
+};
+
+// Guide + styled exit modals (no window.confirm).
+(function () {
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        try { clearInterval(timer); } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();
+
 init();
 
 })();

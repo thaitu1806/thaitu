@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -39,6 +40,7 @@
         </div>
         <div class="setup-stats">🍽️ Tổng khách phục vụ: <strong id="total-served">0</strong></div>
         <button class="btn-start" id="btn-start">👨‍🍳 Bắt đầu ca!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -50,6 +52,7 @@
         <div class="hud-shift">🍽️ <span id="hud-served">0</span>/<span id="hud-total">8</span></div>
         <div class="hud-coins">💰 <span id="hud-coins">0</span></div>
         <div class="hud-combo" id="hud-combo"></div>
+        <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
       </div>
 
       <!-- Customer area -->
@@ -61,6 +64,10 @@
 
       <!-- Cooking area -->
       <div class="cooking-area">
+        <div class="chef-stage">
+          <div class="chef-avatar" id="chef-avatar">👨‍🍳</div>
+          <div class="helper-avatar" id="helper-avatar"></div>
+        </div>
         <div class="dish-name" id="dish-name">🍜 Phở</div>
         <div class="cooking-steps" id="cooking-steps">
           <div class="cook-step" data-step="0"><span class="step-icon">🥩</span><span class="step-label">Thái thịt</span></div>
@@ -94,9 +101,40 @@
       <div class="result-container" id="result-container"></div>
     </section>
   </div>
+
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>👨‍🍳 Mỗi khách gọi <b>một món</b> — nấu xong sẽ phục vụ họ.</li>
+        <li>✅ Trả lời <b>đúng</b> = hoàn thành <b>một bước nấu</b> (cần 3 bước).</li>
+        <li>🔥 Trả lời <b>sai</b> = bị <b>cháy</b>. Cháy <b>2 lần</b> là hỏng món, khách bỏ đi.</li>
+        <li>⏱️ Mỗi câu có <b>thời gian</b> — hết giờ tính là sai.</li>
+        <li>😊 Khách có <b>thanh kiên nhẫn</b>: phục vụ trước khi hết để không mất khách.</li>
+        <li>💰 Nấu nhanh và không cháy = <b>tiền tip</b> nhân đôi xu.</li>
+        <li>⭐ Phục vụ nhiều khách để được <b>nhiều sao</b> và mở khóa món, quán mới!</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/chefs.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

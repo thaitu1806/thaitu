@@ -396,3 +396,113 @@
   // INIT
   updateUI();
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V26 is a special mode that does NOT save sessions. This block adds the
+// shared animated character host + lucky-cat mascot, particle effects, and
+// the guide/exit modals without altering any wheel/quiz logic above.
+(function () {
+  'use strict';
+  let hostChar = null;
+
+  function mountHost() {
+    const slot = document.getElementById('host-mascot');
+    if (!slot) return;
+    slot.innerHTML = '';
+    hostChar = null;
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies('host')) {
+      hostChar = C.createCharacter('host', slot, { state: 'idle' });
+    } else {
+      slot.textContent = '🎩'; // emoji fallback
+    }
+  }
+
+  function cheer() {
+    if (hostChar) {
+      hostChar.setState('happy');
+      setTimeout(() => { if (hostChar) hostChar.setState('idle'); }, 800);
+    }
+  }
+
+  // Particle helper — sparkle/confetti burst around a parent element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    const colors = ['#ffe066', '#ff6b6b', '#6BCB77', '#4D96FF', '#9B59B6', '#FFA94D'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      if (kind === 'confetti') p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.setProperty('--tx', (Math.random() * 90 - 45) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 25) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v26_spawnParticles = spawnParticles;
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    const $ = id => document.getElementById(id);
+    mountHost();
+
+    // Host cheers + confetti when a winning result popup appears.
+    const overlay = $('result-overlay');
+    if (overlay) {
+      const mo = new MutationObserver(() => {
+        if (overlay.classList.contains('active')) {
+          const text = ($('result-text') || {}).textContent || '';
+          if (text.indexOf('Chúc mừng') !== -1) {
+            cheer();
+            const popup = $('result-popup');
+            if (popup) spawnParticles(popup, 'confetti', 16);
+          }
+        }
+      });
+      mo.observe(overlay, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Host gives a little cheer + sparkles each time a correct quiz answer
+    // earns a token. Watch the feedback line non-invasively.
+    const feedback = $('quiz-feedback');
+    if (feedback) {
+      const fo = new MutationObserver(() => {
+        if (feedback.textContent.indexOf('lượt quay') !== -1) {
+          const slot = $('host-mascot');
+          if (slot) spawnParticles(slot, 'sparkle', 8);
+        }
+      });
+      fo.observe(feedback, { childList: true, characterData: true, subtree: true });
+    }
+
+    // Guide modal
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const gc = $('btn-guide-close');
+      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // Exit modal (styled, no window.confirm). V26 does not save sessions.
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const ec = $('btn-exit-cancel');
+      if (ec) ec.addEventListener('click', () => { exit.style.display = 'none'; });
+      const ok = $('btn-exit-confirm');
+      if (ok) ok.addEventListener('click', () => {
+        exit.style.display = 'none';
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

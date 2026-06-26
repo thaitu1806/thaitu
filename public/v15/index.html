@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -23,6 +24,7 @@
         <button class="zoo-btn shop" id="btn-shop">🛒 Mua Thú</button>
         <button class="zoo-btn rewards" id="btn-rewards">🎁 Phần Thưởng</button>
       </div>
+      <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
       <div class="zoo-info" id="zoo-info">Tap ô trống để xây chuồng!</div>
     </section>
 
@@ -59,6 +61,7 @@
     <!-- QUIZ SCREEN -->
     <section id="quiz-screen" class="screen">
       <div class="quiz-hud">
+        <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
         <div class="quiz-progress" id="quiz-progress">1/10</div>
         <div class="quiz-combo" id="quiz-combo"></div>
         <div class="quiz-earned">💰 <span id="quiz-earned">0</span></div>
@@ -81,9 +84,39 @@
       <div class="qr-container" id="qr-container"></div>
     </section>
   </div>
+
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>📝 Bấm <b>Kiếm Xu</b> để trả lời câu hỏi và nhận <b>xu</b>.</li>
+        <li>✅ Mỗi câu <b>đúng</b> = nhiều xu hơn; trả lời nhanh trước khi hết giờ!</li>
+        <li>🔥 Đúng liên tiếp = <b>combo</b>, nhân đôi hoặc nhân ba số xu.</li>
+        <li>🛒 Vào <b>Cửa Hàng</b> dùng xu để <b>mua thú</b> cho vườn thú.</li>
+        <li>🦁 Combo cao có thể <b>mở khóa thú hiếm</b> miễn phí!</li>
+        <li>🎁 Sưu tập đủ thú để mở <b>Phần Thưởng</b> thật từ ba mẹ.</li>
+      </ul>
+      <button class="zoo-btn play" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/zoo.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

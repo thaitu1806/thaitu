@@ -461,3 +461,146 @@ async function saveSession() {
 init();
 
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V37's game logic lives in a private IIFE above. This block adds animated
+// athlete sprites, particle effects and styled modals WITHOUT touching any
+// existing logic — it observes the DOM the logic already updates.
+(function () {
+  'use strict';
+
+  const C = window.HocVuiCharacters;
+  let athChar = null;
+  let currentSpecies = null;
+
+  // Map an event label (set by the logic) to the matching athlete species.
+  function speciesForLabel(label) {
+    const t = (label || '').toLowerCase();
+    if (t.indexOf('chạy') !== -1) return 'runner';
+    if (t.indexOf('nhảy') !== -1) return 'gymnast';
+    if (t.indexOf('bơi') !== -1) return 'swimmer';
+    if (t.indexOf('bắn') !== -1) return 'archer';
+    if (t.indexOf('xe') !== -1) return 'cyclist';
+    return 'runner';
+  }
+
+  function mountAthlete(species) {
+    const host = document.getElementById('athlete-stage');
+    if (!host) return;
+    if (species === currentSpecies && athChar) return;
+    host.innerHTML = '';
+    athChar = null;
+    currentSpecies = species;
+    if (C && C.hasSpecies(species)) {
+      athChar = C.createCharacter(species, host, { state: 'idle' });
+    } else {
+      // Emoji fallback mirrors the event icon set.
+      const fb = { runner: '🏃', gymnast: '🤸', swimmer: '🏊', archer: '🎯', cyclist: '🚴' };
+      host.textContent = fb[species] || '🏃';
+    }
+  }
+
+  function pulseHappy(char) {
+    if (!char) return;
+    char.setState('happy');
+    setTimeout(() => { if (char) char.setState('idle'); }, 900);
+  }
+
+  // Particle helper — sparkle / confetti around a host element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 46 + 22) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.18) + 's');
+      if (kind === 'confetti') {
+        const colors = ['#fbbf24', '#f59e0b', '#22c55e', '#ef4444', '#3b82f6', '#a855f7'];
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      }
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  function spawnSparkle(parent, n) { spawnParticles(parent, 'sparkle', n || 8); }
+  window.__v37_spawnParticles = spawnParticles;
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    const $ = id => document.getElementById(id);
+
+    // --- Mount / swap the athlete sprite whenever the event label changes ---
+    const eventLabel = $('event-label');
+    if (eventLabel) {
+      const syncAthlete = () => mountAthlete(speciesForLabel(eventLabel.textContent));
+      syncAthlete();
+      const elObs = new MutationObserver(syncAthlete);
+      elObs.observe(eventLabel, { childList: true, characterData: true, subtree: true });
+    }
+
+    // --- Celebrate correct answers: watch options for the .correct class ---
+    const options = $('q-options');
+    if (options) {
+      const optObs = new MutationObserver(muts => {
+        muts.forEach(m => {
+          if (m.type === 'attributes' && m.target.classList &&
+              m.target.classList.contains('correct')) {
+            pulseHappy(athChar);
+            spawnSparkle($('athlete-stage'), 8);
+          }
+        });
+      });
+      optObs.observe(options, { attributes: true, attributeFilter: ['class'], subtree: true });
+    }
+
+    // --- Celebrate medals: watch the event-result popup icon ---
+    const resultIcon = $('event-result-icon');
+    if (resultIcon) {
+      const riObs = new MutationObserver(() => {
+        const popup = $('event-result');
+        const visible = popup && popup.style.display !== 'none';
+        const txt = resultIcon.textContent || '';
+        if (visible && (txt.indexOf('🥇') !== -1 || txt.indexOf('🥈') !== -1 || txt.indexOf('🥉') !== -1)) {
+          pulseHappy(athChar);
+          spawnParticles(popup, 'confetti', 18);
+        }
+      });
+      riObs.observe(resultIcon, { childList: true, characterData: true, subtree: true });
+    }
+
+    // --- Guide modal ---
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const gc = $('btn-guide-close');
+      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // --- Styled exit modal ---
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const ec = $('btn-exit-cancel');
+      if (ec) ec.addEventListener('click', () => { exit.style.display = 'none'; });
+      const ef = $('btn-exit-confirm');
+      if (ef) ef.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop the question countdown loop before leaving. The logic's timer
+        // is private, but navigating away fully unloads the page; we also
+        // hide the question box so no further interaction can fire.
+        const qbox = $('question-box');
+        if (qbox) qbox.style.display = 'none';
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

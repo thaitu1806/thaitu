@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -15,8 +16,10 @@
       <div class="container">
         <h1 class="main-title">📖 Truyện Cổ Tích</h1>
         <p class="subtitle">Chọn truyện để đọc nào!</p>
+        <div class="tale-mascot" id="tale-mascot"></div>
         <div class="badge-bar" id="badge-bar"></div>
         <div class="tale-grid" id="tale-grid"></div>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -27,6 +30,7 @@
         <div class="book-header">
           <button class="btn-back" id="btn-back">← Quay lại</button>
           <span class="tale-title" id="tale-title"></span>
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
         </div>
         <div class="page-progress" id="page-progress"></div>
         <div class="book-page" id="book-page">
@@ -69,9 +73,38 @@
     </section>
   </div>
 
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>📚 Chọn một <b>truyện cổ tích</b> để bắt đầu đọc.</li>
+        <li>📖 Trang đầu tiên đã <b>mở sẵn</b> — đọc thoải mái nhé!</li>
+        <li>🔒 Muốn mở <b>trang mới</b>, hãy trả lời <b>đúng</b> một câu hỏi.</li>
+        <li>⏱️ Mỗi câu có <b>15 giây</b> — trả lời sai hoặc hết giờ thì thử câu khác.</li>
+        <li>◀▶ Dùng nút <b>Trước / Tiếp</b> để lật trang đã mở.</li>
+        <li>🏅 Đọc hết 6 trang để <b>hoàn thành truyện</b> và nhận huy hiệu!</li>
+      </ul>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/fairytales.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

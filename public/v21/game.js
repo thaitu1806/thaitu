@@ -503,3 +503,150 @@
     init();
   }
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V21's game logic lives inside the IIFE above and is intentionally left
+// untouched. This block upgrades the static emoji to animated sprites and
+// wires the guide/exit modals purely through the DOM, so no game logic is
+// rewritten.
+(function () {
+  'use strict';
+
+  const C = window.HocVuiCharacters;
+  let ffChar = null;
+
+  // --- Particle helper (sparkle / confetti) ---
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 25) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.18) + 's');
+      if (kind === 'confetti') {
+        const colors = ['#ffd23f', '#ff6b35', '#4fc3f7', '#81c784', '#fff'];
+        p.style.background = colors[i % colors.length];
+        p.style.setProperty('--rot', (Math.random() * 360) + 'deg');
+      }
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v21_spawnParticles = spawnParticles;
+
+  // --- Mount the firefighter sprite in place of the 🧑‍🚒 emoji ---
+  function mountFirefighter() {
+    const host = document.getElementById('firefighter');
+    if (!host) return;
+    host.innerHTML = '';
+    ffChar = null;
+    if (C && C.hasSpecies('firefighter')) {
+      ffChar = C.createCharacter('firefighter', host, { state: 'idle', size: 60 });
+    } else {
+      host.textContent = '🧑‍🚒';
+    }
+  }
+
+  // --- Upgrade each fire 🔥 emoji to the animated flame sprite ---
+  function upgradeFlame(span) {
+    if (!span || span.dataset.ffUpgraded) return;
+    if (!(C && C.hasSpecies('flame'))) return; // keep emoji fallback
+    span.dataset.ffUpgraded = '1';
+    span.textContent = '';
+    C.createCharacter('flame', span, { state: 'idle', size: 18 });
+  }
+
+  function upgradeAllFlames(root) {
+    (root || document).querySelectorAll('.fire-emoji').forEach(upgradeFlame);
+  }
+
+  // --- Observe floors so freshly-rendered fires become sprites ---
+  function watchFires() {
+    for (let f = 1; f <= 5; f++) {
+      const container = document.getElementById('fires-' + f);
+      if (!container) continue;
+      upgradeAllFlames(container);
+      const mo = new MutationObserver(() => upgradeAllFlames(container));
+      mo.observe(container, { childList: true });
+    }
+  }
+
+  // --- Sync firefighter to "happy" when it sprays water on a correct answer ---
+  function watchFirefighter() {
+    const host = document.getElementById('firefighter');
+    if (!host) return;
+    const mo = new MutationObserver(muts => {
+      for (const m of muts) {
+        if (m.attributeName === 'class' && host.classList.contains('spray')) {
+          if (ffChar) {
+            ffChar.setState('happy');
+            setTimeout(() => { if (ffChar) ffChar.setState('idle'); }, 600);
+          }
+          spawnParticles(host, 'sparkle', 8);
+        }
+      }
+    });
+    mo.observe(host, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // --- Confetti burst when the result screen shows a win ---
+  function watchResult() {
+    const result = document.getElementById('result-screen');
+    if (!result) return;
+    const mo = new MutationObserver(() => {
+      if (!result.classList.contains('active')) return;
+      const container = document.getElementById('result-container');
+      if (container && /🦸/.test(container.textContent || '')) {
+        spawnParticles(result, 'confetti', 28);
+      }
+    });
+    mo.observe(result, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // --- Guide + exit modals ---
+  function wireModals() {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // V21's timer lives in the game closure (S.timer) and isn't directly
+        // reachable here. Since we navigate away immediately, defensively clear
+        // any pending intervals so no loop keeps running during the transition.
+        try {
+          const highest = setInterval(() => {}, 100000);
+          for (let i = 0; i <= highest; i++) clearInterval(i);
+        } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  }
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    mountFirefighter();
+    watchFires();
+    watchFirefighter();
+    watchResult();
+    wireModals();
+  });
+})();

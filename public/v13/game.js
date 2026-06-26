@@ -506,3 +506,99 @@ async function logAnswer(q, selected, correct, isCorrect) {
   const playerId = getPlayerId(); if (!playerId) return;
   try { await fetch('/api/answers', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ session_id: 0, player_id: playerId, question_id: q.id || 0, selected_answer: selected, correct_answer: correct, is_correct: isCorrect ? 1 : 0, time_spent_ms: 0, difficulty: S.config.difficulty, combo_streak: S.combo }) }); } catch {}
 }
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+(function () {
+  'use strict';
+  let subChar = null;
+
+  function mountSubmarine() {
+    const host = document.getElementById('submarine');
+    if (!host) return;
+    host.innerHTML = '';
+    subChar = null;
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies('submarine')) {
+      subChar = C.createCharacter('submarine', host, { state: 'idle' });
+    } else {
+      host.textContent = '🛥️';
+    }
+  }
+
+  // Wrap animateSubmarine to mirror the dive/rise on the character sprite.
+  if (typeof window.animateSubmarine === 'function' || typeof animateSubmarine === 'function') {
+    const orig = animateSubmarine;
+    animateSubmarine = function (direction) {
+      orig(direction);
+      if (subChar) {
+        const st = direction === 'diving' ? 'diving' : 'rising';
+        subChar.setState(st);
+        setTimeout(() => { if (subChar) subChar.setState('idle'); }, 700);
+      }
+      if (direction === 'diving') {
+        const wrap = document.getElementById('submarine-wrap');
+        if (wrap) spawnParticles(wrap, 'sparkle', 6);
+      }
+    };
+  }
+
+  // Particle helper — bubbles/sparkles around the submarine on a good answer.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v13_spawnParticles = spawnParticles;
+
+  // Mount the submarine character when a game starts. startGame() calls
+  // setupOceanWorld() by global name on every run, so wrapping that mounts
+  // the sprite reliably (the btn-start listener captured the original
+  // startGame reference, so wrapping startGame itself would not fire).
+  if (typeof setupOceanWorld === 'function') {
+    const origSetup = setupOceanWorld;
+    setupOceanWorld = function () {
+      const r = origSetup.apply(this, arguments);
+      mountSubmarine();
+      return r;
+    };
+  }
+
+  // Modals (guide + exit) ---------------------------------------------------
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      $('btn-guide-close').addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      $('btn-exit-cancel').addEventListener('click', () => { exit.style.display = 'none'; });
+      $('btn-exit-confirm').addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop loops/timers before leaving.
+        try { if (S.oxygenTimer) clearInterval(S.oxygenTimer); } catch (e) {}
+        try { if (S.ambientTimer) clearInterval(S.ambientTimer); } catch (e) {}
+        try { stopQuestionTimer(); } catch (e) {}
+        S.gameOver = true;
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

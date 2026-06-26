@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -29,6 +30,7 @@
       </div>
 
       <button id="help-btn-mode" class="btn-help">❓ Luật chơi</button>
+      <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
       <a href="/home.html" class="btn-home" style="margin-top:10px;">🏠 Về trang chủ</a>
     </div>
   </div>
@@ -149,6 +151,7 @@
   <div id="game-screen" class="screen">
     <!-- Header: players info -->
     <div id="game-header">
+      <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
       <div id="players-bar"></div>
       <div id="round-info">Vòng <span id="round-num">1</span>/20</div>
     </div>
@@ -200,13 +203,47 @@
     </div>
   </div>
 
+  <!-- GUIDE MODAL -->
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🎯 Mục tiêu: trở thành <b>tỉ phú giàu nhất</b> sau 20 vòng.</li>
+        <li>🎲 Tung 2 xúc xắc để di chuyển quanh <b>28 tỉnh thành</b>.</li>
+        <li>🏠 Đi qua ô <b>Xuất phát</b>: nhận <b>+200 coin</b>.</li>
+        <li>🏘️ Ô đất chưa chủ: trả lời <b>đúng</b> = mua miễn phí; <b>sai</b> = trả tiền hoặc bỏ qua.</li>
+        <li>💰 Đáp ô đất của người khác = trả <b>tiền thuê</b> cho chủ đất.</li>
+        <li>❓ Ô câu hỏi: trả lời đúng <b>+100 coin</b>.</li>
+        <li>🎁 Ô hộp quà: <b>sự kiện ngẫu nhiên</b>; 💰 ô thuế: mất tiền.</li>
+        <li>📈 Sở hữu <b>3+ đất</b> = tiền thuê <b>nhân đôi</b>!</li>
+      </ul>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <!-- EXIT MODAL -->
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/tycoons.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
 </body>
 </html>

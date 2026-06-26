@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -28,6 +29,7 @@
           </div>
         </div>
         <button class="btn-primary" id="btn-start">🧪 Bắt Đầu Thí Nghiệm!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -39,10 +41,15 @@
           <span class="ingredient-count" id="ingredient-count">🧫 0/5</span>
           <span class="experiment-num" id="experiment-num">Thí nghiệm 1</span>
           <span class="game-score" id="game-score">⭐ 0</span>
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
         </div>
 
         <!-- TEST TUBE -->
         <div class="lab-area">
+          <div class="scientist-stage">
+            <div class="scientist-host" id="scientist-host"></div>
+            <div class="robot-host" id="robot-host"></div>
+          </div>
           <div class="test-tube-wrapper">
             <div class="test-tube" id="test-tube">
               <div class="tube-liquid" id="tube-liquid"></div>
@@ -77,6 +84,7 @@
     <section id="reaction-screen" class="screen">
       <div class="reaction-container">
         <h2 class="reaction-title">🧪 Phản Ứng Thành Công!</h2>
+        <div class="reaction-stage" id="reaction-stage"></div>
         <div class="reaction-result" id="reaction-result">🧪</div>
         <div class="reaction-name" id="reaction-name">Đang phản ứng...</div>
         <button class="btn-secondary" id="btn-next-experiment">🔬 Thí Nghiệm Tiếp!</button>
@@ -98,8 +106,37 @@
     </section>
   </div>
 
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🔬 Trả lời <b>đúng</b> = thêm một <b>nguyên liệu</b> vào ống nghiệm.</li>
+        <li>🧫 Gom đủ <b>5 nguyên liệu</b> để hoàn thành một <b>thí nghiệm</b>.</li>
+        <li>🧪 Mỗi thí nghiệm xong sẽ tạo ra một <b>phát minh</b> mới cho bộ sưu tập.</li>
+        <li>💨 Trả lời <b>sai</b> hoặc <b>hết giờ</b> = nguyên liệu bốc hơi.</li>
+        <li>⏱️ Mỗi câu có <b>10 giây</b> để trả lời.</li>
+        <li>🏆 Hoàn thành cả <b>3 thí nghiệm</b> để trở thành Nhà Khoa Học Xuất Sắc!</li>
+      </ul>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/scientists.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

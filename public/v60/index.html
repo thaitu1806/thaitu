@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <script src="../api-config.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>📜 Cổ Tích Việt Nam - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <h1 class="main-title">📜 Cổ Tích Việt Nam</h1>
+        <p class="subtitle">Đọc truyện cổ tích, học bài học cha ông!</p>
+        <div class="hero-card">
+          <div class="hero-emoji">📜</div>
+          <div class="hero-stats">
+            <span>📖 Truyện: <span id="total-stories">0</span></span>
+            <span>✨ Bài học: <span id="total-morals">0</span></span>
+          </div>
+        </div>
+        <div class="selector-group"><label class="selector-label">📚 Môn học:</label><div class="selector-options" data-group="subject">
+          <button type="button" class="sel-btn active" data-value="mix">🎲 Trộn</button>
+          <button type="button" class="sel-btn" data-value="math">🔢 Toán</button>
+          <button type="button" class="sel-btn" data-value="vietnamese">📖 Tiếng Việt</button>
+          <button type="button" class="sel-btn" data-value="english">🔤 Anh</button>
+        </div></div>
+        <div class="selector-group"><label class="selector-label">⚡ Độ khó:</label><div class="selector-options" data-group="difficulty">
+          <button type="button" class="sel-btn active" data-value="easy">🌱 Dễ</button>
+          <button type="button" class="sel-btn" data-value="medium">🌿 Vừa</button>
+          <button type="button" class="sel-btn" data-value="hard">🌳 Khó</button>
+        </div></div>
+        <button class="btn-primary" id="btn-start">📜 Mở Sách!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <section id="game-screen" class="screen">
+      <div class="game-hud">
+        <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
+        <span class="hud-item">📖 <span id="stories-text">0/3</span></span>
+        <span class="hud-item">📜 <span id="chapters-text">0/4</span></span>
+        <span class="hud-item">❓ <span id="progress-text">0/26</span></span>
+      </div>
+      <div class="book-stage" id="book-stage">
+        <div class="chapter-row" id="chapter-row"></div>
+        <div class="stories-row" id="stories-row"></div>
+        <div class="morals-row" id="morals-row"></div>
+      </div>
+      <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+      <div class="question-card">
+        <p class="q-text" id="q-text"></p>
+        <div class="q-options" id="q-options"></div>
+        <div class="feedback" id="feedback" style="display:none;"></div>
+      </div>
+    </section>
+
+    <section id="result-screen" class="screen">
+      <div class="container">
+        <div class="result-emoji" id="result-emoji">📜</div>
+        <h2 class="result-title" id="result-title">Kết Buổi Đọc</h2>
+        <div class="badge-row" id="result-badges"></div>
+        <div class="result-detail" id="result-detail"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Đọc Tiếp</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>📜 Trả lời <b>đúng</b> = lật 1 trang truyện.</li>
+        <li>📖 Đủ <b>4 trang</b> = đọc xong 1 truyện cổ tích.</li>
+        <li>✨ Trả lời đúng <b>liên tiếp (4 câu)</b> = rút ra 1 bài học.</li>
+        <li>❌ Trả lời <b>sai</b> = lùi 1 trang.</li>
+        <li>📚 Đọc xong <b>3 truyện</b> = thắng, trở thành Bậc Thầy Cổ Tích!</li>
+      </ul>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-card">
+      <div class="exit-icon">🚪</div>
+      <p class="exit-text">Thoát game?</p>
+      <p class="exit-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-actions">
+        <button class="exit-cancel" id="btn-exit-cancel">Tiếp tục đọc</button>
+        <button class="exit-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/tales.js"></script>
+  <script src="game-logic.js" type="module"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

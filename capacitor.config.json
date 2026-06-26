@@ -1,0 +1,13 @@
+{
+  "appId": "com.hocvui.app",
+  "appName": "Học Vui",
+  "webDir": "public",
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}

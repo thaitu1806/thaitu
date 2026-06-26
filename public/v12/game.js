@@ -295,10 +295,102 @@ function endGame() {
 // ===== EXIT =====
 document.getElementById('btn-exit').addEventListener('click', () => document.getElementById('exit-overlay').classList.add('active'));
 document.getElementById('exit-cancel').addEventListener('click', () => document.getElementById('exit-overlay').classList.remove('active'));
-document.getElementById('exit-confirm').addEventListener('click', () => { window.location.href = '/'; });
+document.getElementById('exit-confirm').addEventListener('click', () => { window.location.reload(); });
 
 // ===== SCREEN =====
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id)?.classList.add('active');
 }
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+(function () {
+  'use strict';
+  let mascot = null;
+
+  function mountMascot() {
+    const host = document.getElementById('mascot-host');
+    if (!host) return;
+    host.innerHTML = '';
+    mascot = null;
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies('owl')) {
+      mascot = C.createCharacter('owl', host, { state: 'idle' });
+    } else {
+      host.textContent = '🦉';
+    }
+  }
+
+  function cheer() {
+    if (!mascot) return;
+    mascot.setState('happy');
+    setTimeout(() => { if (mascot) mascot.setState('idle'); }, 700);
+    const host = document.getElementById('mascot-host');
+    if (host) spawnParticles(host, 'sparkle', 7);
+  }
+
+  // Particle helper — sparkles around the mascot on a correct match.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v12_spawnParticles = spawnParticles;
+
+  // Mount the mascot whenever a grid is (re)rendered. renderGrid() is called by
+  // global name inside startGame() on every run, so wrapping it mounts reliably.
+  if (typeof renderGrid === 'function') {
+    const origRender = renderGrid;
+    renderGrid = function () {
+      const r = origRender.apply(this, arguments);
+      mountMascot();
+      return r;
+    };
+  }
+
+  // Wrap checkMatch to react with a happy cheer when a pair is matched.
+  // onCardClick() calls checkMatch() by global name, so reassigning works.
+  if (typeof checkMatch === 'function') {
+    const origCheck = checkMatch;
+    checkMatch = function () {
+      const before = State.matchedPairs;
+      const r = origCheck.apply(this, arguments);
+      if (State.matchedPairs > before) cheer();
+      return r;
+    };
+  }
+
+  // Modals (guide + exit) ---------------------------------------------------
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // Exit modal: overlay-click closes; confirm stops loops before leaving.
+    const exit = $('exit-overlay');
+    if (exit) {
+      exit.addEventListener('click', e => { if (e.target === exit) exit.classList.remove('active'); });
+      const confirm = $('exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        try { if (State.timerInterval) clearInterval(State.timerInterval); } catch (e) {}
+      });
+    }
+  });
+})();

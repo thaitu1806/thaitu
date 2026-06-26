@@ -542,4 +542,105 @@
       updateTrack();
     }
   });
+
+  // ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+  // Mounts animated race-car sprites in place of the static car emojis and
+  // mirrors gameplay events (correct answer / combo boost) onto sprite states.
+  // No game logic is changed — advanceRacer is wrapped additively.
+  const SPECIES = ['speedster-blue', 'speedster-red', 'speedster-green', 'speedster-gold'];
+  const FALLBACK = ['🚙', '🚗', '🚕', '🚐'];
+  const carChars = [null, null, null, null];
+
+  function mountCars() {
+    const C = window.HocVuiCharacters;
+    for (let i = 0; i < 4; i++) {
+      const car = $(`car-${i}`);
+      if (!car) continue;
+      const span = car.querySelector('.car-emoji');
+      if (!span) continue;
+      span.innerHTML = '';
+      carChars[i] = null;
+      if (C && C.hasSpecies(SPECIES[i])) {
+        carChars[i] = C.createCharacter(SPECIES[i], span, { state: 'idle' });
+      } else {
+        span.textContent = FALLBACK[i];
+      }
+    }
+  }
+
+  // Particle helper — sparkle / confetti bursts around a car host.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 60 - 30) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 34 + 16) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+
+  // Reflect a racer's advance onto its sprite. amount >= ADVANCE_CORRECT means
+  // a correct answer; boost means a combo burst.
+  function syncRacer(index, amount, boost) {
+    const ch = carChars[index];
+    if (!ch) return;
+    const host = $(`car-${index}`);
+    if (boost) {
+      ch.setState('boost');
+      if (host) spawnParticles(host, 'confetti', 9);
+      setTimeout(() => { if (carChars[index]) carChars[index].setState('idle'); }, 700);
+    } else if (amount >= ADVANCE_CORRECT) {
+      ch.setState('happy');
+      if (host) spawnParticles(host, 'sparkle', 5);
+      setTimeout(() => { if (carChars[index]) carChars[index].setState('idle'); }, 600);
+    }
+  }
+
+  // Wrap advanceRacer non-invasively (function declarations create a mutable
+  // binding; all call sites resolve to this wrapped version at call time).
+  const _origAdvanceRacer = advanceRacer;
+  advanceRacer = function (index, amount, boost) {
+    const r = _origAdvanceRacer(index, amount, boost);
+    try { syncRacer(index, amount, boost); } catch (e) {}
+    return r;
+  };
+
+  // ===== MODALS (guide + styled exit) =====
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    mountCars();
+
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const gc = $('btn-guide-close');
+      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const ec = $('btn-exit-cancel');
+      if (ec) ec.addEventListener('click', () => { exit.style.display = 'none'; });
+      const ex = $('btn-exit-confirm');
+      if (ex) ex.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop all timers/loops before leaving.
+        raceFinished = true;
+        try { clearInterval(timerInterval); } catch (e) {}
+        try { botIntervals.forEach(id => clearTimeout(id)); botIntervals = []; } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
 })();

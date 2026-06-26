@@ -771,7 +771,7 @@ function bindExitButton() {
 
   if (confirmBtn) {
     confirmBtn.addEventListener('click', () => {
-      window.location.href = '/';
+      window.location.reload();
     });
   }
 }
@@ -2507,3 +2507,165 @@ document.addEventListener('click', (e) => {
     v5OnlineRollDice();
   }
 }, true);
+
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+// Additive, non-invasive layer that swaps the static emoji tokens for animated
+// chibi-horse sprites from /lib/sprites/horses.js, wires the guide/exit modals,
+// and adds sparkle particles. No game logic is changed: every wrapper calls the
+// original function first and only decorates the result. Falls back to the
+// original emoji tokens when the shared engine/sprites are unavailable.
+(function () {
+  'use strict';
+
+  const C = window.HocVuiCharacters;
+  // Players currently in a short "happy" celebration (by player index).
+  const celebrating = new Set();
+
+  function speciesForColor(color) { return 'horse-' + color; }
+
+  // Replace the plain emoji inside each .token with a mounted horse sprite.
+  function decorateTokens() {
+    if (!C || !gameState) return;
+    const grid = document.getElementById('board-grid');
+    if (!grid) return;
+    grid.querySelectorAll('.token').forEach(token => {
+      const idx = parseInt(token.dataset.player);
+      const player = gameState.players[idx];
+      if (!player) return;
+      const id = speciesForColor(player.color);
+      if (!C.hasSpecies(id)) return; // keep emoji fallback
+      token.textContent = '';
+      token.classList.add('token-sprite');
+      C.createCharacter(id, token, { state: celebrating.has(idx) ? 'happy' : 'idle' });
+    });
+  }
+
+  // Sparkle particle helper (copied + renamed from V13/V49).
+  function spawnSparkles(parent, count) {
+    if (!parent) return;
+    for (let i = 0; i < (count || 8); i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-sparkle';
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v5_spawnSparkles = spawnSparkles;
+
+  // Wrap renderTokens so sprites are (re)mounted after every render pass.
+  if (typeof renderTokens === 'function') {
+    const origRenderTokens = renderTokens;
+    renderTokens = function () {
+      const r = origRenderTokens.apply(this, arguments);
+      decorateTokens();
+      return r;
+    };
+  }
+
+  // Wrap handleCorrectAnswer to play a happy bounce + sparkles for the mover.
+  if (typeof handleCorrectAnswer === 'function') {
+    const origHandleCorrect = handleCorrectAnswer;
+    handleCorrectAnswer = async function () {
+      const idx = gameState ? gameState.currentPlayerIndex : -1;
+      if (idx >= 0) celebrating.add(idx);
+      // Sparkle burst on the mover's current tile token.
+      try {
+        const grid = document.getElementById('board-grid');
+        const token = grid && grid.querySelector('.token[data-player="' + idx + '"]');
+        if (token) spawnSparkles(token, 8);
+      } catch (e) {}
+      try {
+        return await origHandleCorrect.apply(this, arguments);
+      } finally {
+        if (idx >= 0) {
+          setTimeout(() => {
+            celebrating.delete(idx);
+            try { if (typeof renderTokens === 'function') renderTokens(); } catch (e) {}
+          }, 900);
+        }
+      }
+    };
+  }
+
+  // Wrap renderBoard to inject a styled 🚪 exit button into the HUD.
+  if (typeof renderBoard === 'function') {
+    const origRenderBoard = renderBoard;
+    renderBoard = function () {
+      const r = origRenderBoard.apply(this, arguments);
+      try {
+        const indicator = document.getElementById('turn-indicator');
+        if (indicator && !indicator.querySelector('.btn-exit')) {
+          const btn = document.createElement('button');
+          btn.className = 'btn-exit';
+          btn.id = 'btn-exit';
+          btn.title = 'Thoát game';
+          btn.textContent = '🚪';
+          indicator.insertBefore(btn, indicator.firstChild);
+          btn.addEventListener('click', () => {
+            const modal = document.getElementById('exit-modal');
+            if (modal) modal.style.display = 'flex';
+          });
+        }
+      } catch (e) {}
+      return r;
+    };
+  }
+
+  // Wrap showVictoryScreen to mount the winner's horse sprite + sparkle it.
+  if (typeof showVictoryScreen === 'function') {
+    const origVictory = showVictoryScreen;
+    showVictoryScreen = function () {
+      const r = origVictory.apply(this, arguments);
+      try {
+        if (C && gameState) {
+          const winner = gameState.players[gameState.winner];
+          const host = document.querySelector('.victory-winner-emoji');
+          const id = winner && speciesForColor(winner.color);
+          if (host && id && C.hasSpecies(id)) {
+            host.textContent = '';
+            host.classList.add('victory-winner-sprite');
+            C.createCharacter(id, host, { state: 'happy' });
+          }
+        }
+      } catch (e) {}
+      return r;
+    };
+  }
+
+  // Modal wiring (guide + styled exit). ------------------------------------
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $ = id => document.getElementById(id);
+
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    const exit = $('exit-modal');
+    if (exit) {
+      const cancel = $('btn-exit-cancel');
+      const confirm = $('btn-exit-confirm');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop animation loops / timers before leaving.
+        try { if (typeof stopConfetti === 'function') stopConfetti(); } catch (e) {}
+        try { if (gameState) gameState.state = 'game_over'; } catch (e) {}
+        window.location.href = '/';
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

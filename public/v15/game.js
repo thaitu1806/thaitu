@@ -382,3 +382,130 @@ async function logAnswer(q, selected, correct, isCorrect) {
 
 // ===== INIT =====
 renderZoo();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+// Mounts animated chibi sprites over the zoo-grid animal cells for the species
+// that have a registered sprite (lion / elephant / monkey / panda). Every other
+// animal keeps its original emoji. The collection logic in game.js is untouched —
+// this only swaps how matching cells are *drawn*.
+(function () {
+  'use strict';
+
+  const SPRITE_IDS = ['lion', 'elephant', 'monkey', 'panda'];
+  const mounted = [];
+  let prevAnimalCount = (function () {
+    try { return (JSON.parse(localStorage.getItem('v15_zoo')) || {}).animals?.length || 0; } catch { return 0; }
+  })();
+
+  function clearMounted() {
+    while (mounted.length) {
+      const c = mounted.pop();
+      try { c.destroy(); } catch (e) {}
+    }
+  }
+
+  // After renderZoo() paints the grid, upgrade matching cells to live sprites.
+  function decorateZoo() {
+    const C = window.HocVuiCharacters;
+    if (!C) return;
+    clearMounted();
+    document.querySelectorAll('#zoo-grid .zoo-cell.has-animal').forEach(cell => {
+      const span = cell.querySelector('.cell-animal');
+      if (!span) return;
+      const slot = parseInt(cell.dataset.slot, 10);
+      const id = (typeof zoo !== 'undefined' && zoo.animals) ? zoo.animals[slot] : null;
+      if (!id || SPRITE_IDS.indexOf(id) === -1 || !C.hasSpecies(id)) return;
+      span.textContent = '';
+      span.classList.add('cell-sprite-host');
+      const char = C.createCharacter(id, span, { state: 'idle' });
+      mounted.push(char);
+    });
+  }
+
+  // Wrap renderZoo non-invasively: run the original, then decorate + celebrate.
+  if (typeof renderZoo === 'function') {
+    const origRender = renderZoo;
+    renderZoo = function () {
+      const r = origRender.apply(this, arguments);
+      decorateZoo();
+      // If the collection just grew, give the newest sprite a happy bounce + confetti.
+      const count = (typeof zoo !== 'undefined' && zoo.animals) ? zoo.animals.length : 0;
+      if (count > prevAnimalCount && mounted.length) {
+        const last = mounted[mounted.length - 1];
+        try {
+          last.setState('happy');
+          spawnParticles(last.root, 'confetti', 10);
+          setTimeout(() => { try { last.setState('idle'); } catch (e) {} }, 700);
+        } catch (e) {}
+      }
+      prevAnimalCount = count;
+      return r;
+    };
+    // Initial paint already ran at load (renderZoo() at end of game.js), so
+    // decorate the current grid once now.
+    decorateZoo();
+  }
+
+  // Particle helper — sparkle / confetti bursts around a host element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v15_spawnParticles = spawnParticles;
+
+  // Sparkle burst on a correct quiz answer (listener runs after the game.js one).
+  const answers = document.getElementById('quiz-answers');
+  if (answers) {
+    answers.addEventListener('click', e => {
+      const btn = e.target.closest('.qa-btn');
+      if (!btn) return;
+      // game.js marks the chosen/correct button; sparkle when it ends up correct.
+      setTimeout(() => {
+        if (btn.classList.contains('correct')) {
+          spawnParticles(btn, 'sparkle', 8);
+        }
+      }, 0);
+    });
+  }
+
+  // Modals (guide + exit) ---------------------------------------------------
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop the quiz timer before leaving.
+        try { if (typeof stopTimer === 'function') stopTimer(); } catch (e) {}
+        try { if (typeof Q !== 'undefined' && Q.timer) { clearInterval(Q.timer); Q.timer = null; } } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

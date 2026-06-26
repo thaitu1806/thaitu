@@ -9,9 +9,17 @@
     "seed": "node db/seed.js",
     "seed:turso": "node db/seed-turso.js",
     "start": "node server.js",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "inject:api": "node scripts/inject-api-config.js",
+    "cap:sync": "npm run inject:api && npx cap sync",
+    "cap:android": "npm run cap:sync && npx cap open android",
+    "cap:ios": "npm run cap:sync && npx cap open ios"
   },
   "dependencies": {
+    "@capacitor/android": "^7.6.7",
+    "@capacitor/cli": "^7.6.7",
+    "@capacitor/core": "^7.6.7",
+    "@capacitor/ios": "^7.6.7",
     "@libsql/client": "0.5.6",
     "better-sqlite3": "^11.0.0",
     "express": "^4.18.2"

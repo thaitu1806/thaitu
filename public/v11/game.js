@@ -1534,3 +1534,167 @@ function renderWaitingPlayers(players) {
 
 // --- Init ---
 initSetup();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+// Mounts animated tycoon sprites on the board tokens + a money-bag mascot in
+// the board centre, wires the guide/exit modals, and adds particle bursts on
+// positive events. All additive — no game logic is modified.
+(function () {
+  'use strict';
+
+  const SLOT_COLORS = (typeof PLAYER_COLORS !== 'undefined')
+    ? PLAYER_COLORS
+    : ['#FF5722', '#2196F3', '#4CAF50', '#9C27B0'];
+
+  // Normalise a hex colour to "r,g,b" for matching against computed styles.
+  function hexToKey(hex) {
+    const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex.trim());
+    if (!m) return hex.toLowerCase();
+    return parseInt(m[1], 16) + ',' + parseInt(m[2], 16) + ',' + parseInt(m[3], 16);
+  }
+  function rgbToKey(rgb) {
+    const m = /(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(rgb || '');
+    return m ? (m[1] + ',' + m[2] + ',' + m[3]) : '';
+  }
+  const COLOR_TO_SLOT = {};
+  SLOT_COLORS.forEach((c, i) => { COLOR_TO_SLOT[hexToKey(c)] = i; });
+
+  // index → mounted character (rebuilt every renderBoard)
+  let tokenChars = {};
+  let bagChar = null;
+
+  function mountTokens() {
+    tokenChars = {};
+    const C = window.HocVuiCharacters;
+    document.querySelectorAll('#board .cell-players .token').forEach(host => {
+      // Resolve which player slot this token belongs to via its colour.
+      let slot = COLOR_TO_SLOT[rgbToKey(getComputedStyle(host).backgroundColor)];
+      if (slot === undefined) {
+        const inline = host.getAttribute('style') || '';
+        const hm = /#([0-9a-fA-F]{6})/.exec(inline);
+        if (hm) slot = COLOR_TO_SLOT[hexToKey(hm[0])];
+      }
+      const speciesId = 'tycoon' + (slot != null ? slot : 0);
+      if (C && C.hasSpecies(speciesId)) {
+        host.textContent = '';
+        host.classList.add('token--sprite');
+        const ch = C.createCharacter(speciesId, host, { state: 'idle' });
+        if (slot != null) tokenChars[slot] = ch;
+      }
+      // else: leave the existing emoji fallback in place.
+    });
+  }
+
+  function mountMascot() {
+    const center = document.querySelector('#board .board-center');
+    if (!center) return;
+    if (center.querySelector('.mascot-host')) return;
+    const C = window.HocVuiCharacters;
+    const host = document.createElement('div');
+    host.className = 'mascot-host';
+    // Insert mascot above the dice row.
+    center.insertBefore(host, center.firstChild);
+    if (C && C.hasSpecies('moneybag')) {
+      bagChar = C.createCharacter('moneybag', host, { state: 'idle' });
+    } else {
+      host.textContent = '💰';
+    }
+  }
+
+  // Particle helper — sparkle/confetti bursts around an element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 45 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v11_spawnParticles = spawnParticles;
+
+  // Resolve the slot index of the player whose turn is currently active.
+  function activeSlot() {
+    try {
+      if (typeof onlineMode !== 'undefined' && onlineMode && state && state.myIdx != null) {
+        // In online play the local player only animates on their own turn.
+        return state.currentPlayerIdx;
+      }
+      return state ? state.currentPlayerIdx : 0;
+    } catch (e) { return 0; }
+  }
+
+  // Celebrate on the active player's token: happy bounce + sparkles.
+  function celebrateActive() {
+    const slot = activeSlot();
+    const ch = tokenChars[slot];
+    if (ch) {
+      ch.setState('happy');
+      spawnParticles(ch.root, 'sparkle', 6);
+      setTimeout(() => { try { ch.setState('idle'); } catch (e) {} }, 700);
+    }
+    if (bagChar) {
+      bagChar.setState('happy');
+      setTimeout(() => { try { bagChar.setState('idle'); } catch (e) {} }, 700);
+    }
+  }
+
+  // Wrap renderBoard so sprites are (re)mounted after every board paint.
+  if (typeof window.renderBoard === 'function' || typeof renderBoard === 'function') {
+    const origRender = renderBoard;
+    renderBoard = function () {
+      const r = origRender.apply(this, arguments);
+      try { mountTokens(); mountMascot(); } catch (e) {}
+      return r;
+    };
+  }
+
+  // Wrap positive-event sound effects as cheap, reliable celebration hooks.
+  // sfxCorrect → correct answer, sfxBuy → bought land/earned, sfxLucky → bonus.
+  ['sfxCorrect', 'sfxBuy', 'sfxLucky'].forEach(function (name) {
+    if (typeof window[name] === 'function') {
+      const orig = window[name];
+      window[name] = function () {
+        const r = orig.apply(this, arguments);
+        try { celebrateActive(); } catch (e) {}
+        return r;
+      };
+    }
+  });
+
+  // Modals (guide + exit) ---------------------------------------------------
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const gc = $('btn-guide-close');
+      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const ec = $('btn-exit-cancel');
+      if (ec) ec.addEventListener('click', () => { exit.style.display = 'none'; });
+      const ef = $('btn-exit-confirm');
+      if (ef) ef.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop loops/turns and detach the online room before leaving.
+        try { if (typeof state !== 'undefined') state.gameOver = true; } catch (e) {}
+        try { if (typeof roomRef !== 'undefined' && roomRef) roomRef.off(); } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

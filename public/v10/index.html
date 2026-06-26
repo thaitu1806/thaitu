@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -55,6 +56,7 @@
       </div>
 
       <button id="start-btn" class="start-btn">🔍 Bắt đầu dò!</button>
+      <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
       <a href="/" class="back-link">← Về trang chủ</a>
     </div>
   </div>
@@ -62,6 +64,10 @@
   <!-- GAME SCREEN -->
   <div id="game-screen" class="screen">
     <div class="game-container">
+      <div class="mascot-bar">
+        <div class="sapper-mascot" id="sapper-mascot"></div>
+        <div class="bomb-mascot" id="bomb-mascot"></div>
+      </div>
       <div class="game-header">
         <div class="header-item lives">
           <span id="lives-display">❤️❤️❤️</span>
@@ -81,6 +87,7 @@
 
       <div class="game-footer">
         <button id="quit-btn" class="quit-btn">🏠 Thoát</button>
+        <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
       </div>
     </div>
   </div>
@@ -114,11 +121,43 @@
     </div>
   </div>
 
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi Dò Mìn</h3>
+      <ul class="modal-rules">
+        <li>👆 Bấm vào một ô để mở <b>câu hỏi</b>.</li>
+        <li>✅ Trả lời <b>đúng</b> = ô được mở ra.</li>
+        <li>❌ Trả lời <b>sai</b> = mất 1 ❤️ (có 3 mạng).</li>
+        <li>💣 Tránh ô có <b>mìn</b> — đạp mìn cũng mất mạng.</li>
+        <li>💎 Tìm ô <b>kho báu</b> để được thêm điểm.</li>
+        <li>🔢 Số trên ô cho biết có bao nhiêu <b>mìn</b> xung quanh.</li>
+        <li>🚩 Nhấn giữ một ô để <b>cắm cờ</b> đánh dấu mìn.</li>
+        <li>🏆 Mở hết các ô an toàn để <b>chiến thắng</b>!</li>
+      </ul>
+      <button class="start-btn" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/sappers.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
 </body>
 </html>

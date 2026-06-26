@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <script src="../api-config.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🦖 Cứu Hộ Khủng Long - Học Vui</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <h1 class="main-title">🦖 Cứu Hộ Khủng Long</h1>
+        <p class="subtitle">Núi lửa sắp phun, cứu khủng long về nơi an toàn!</p>
+        <div class="hero-card">
+          <div class="hero-emoji">🦖</div>
+          <div class="hero-stats">
+            <span>⛑️ Đã cứu: <span id="total-rescued">0</span></span>
+            <span>🏆 Chiến thắng: <span id="total-wins">0</span></span>
+          </div>
+        </div>
+        <div class="selector-group"><label class="selector-label">📚 Môn học:</label><div class="selector-options" data-group="subject">
+          <button type="button" class="sel-btn active" data-value="mix">🎲 Trộn</button>
+          <button type="button" class="sel-btn" data-value="math">🔢 Toán</button>
+          <button type="button" class="sel-btn" data-value="vietnamese">📖 Tiếng Việt</button>
+          <button type="button" class="sel-btn" data-value="english">🔤 Anh</button>
+        </div></div>
+        <div class="selector-group"><label class="selector-label">⚡ Độ khó:</label><div class="selector-options" data-group="difficulty">
+          <button type="button" class="sel-btn active" data-value="easy">🌱 Dễ</button>
+          <button type="button" class="sel-btn" data-value="medium">🌿 Vừa</button>
+          <button type="button" class="sel-btn" data-value="hard">🌳 Khó</button>
+        </div></div>
+        <button class="btn-primary" id="btn-start">🦖 Bắt Đầu Cứu Hộ!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+
+    <section id="game-screen" class="screen">
+      <div class="game-hud">
+        <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
+        <span class="hud-item">⛑️ <span id="rescued-text">0/8</span></span>
+        <span class="hud-item">🌋 <span id="danger-text">0/5</span></span>
+        <span class="hud-item">❓ <span id="progress-text">0/22</span></span>
+      </div>
+      <div class="rescue-stage" id="rescue-stage">
+        <div class="volcano-row">
+          <div class="volcano" id="volcano" data-danger="0">
+            <svg class="volcano-svg" viewBox="0 0 120 100" aria-hidden="true">
+              <defs>
+                <linearGradient id="v48-lava" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#fff176"/>
+                  <stop offset="60%" stop-color="#ff5722"/>
+                  <stop offset="100%" stop-color="#b71c1c"/>
+                </linearGradient>
+                <linearGradient id="v48-mountain" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#6d4c41"/>
+                  <stop offset="100%" stop-color="#3e2723"/>
+                </linearGradient>
+              </defs>
+              <g class="smoke">
+                <circle class="puff puff-1" cx="60" cy="32" r="9" fill="#9e9e9e" opacity="0.7"/>
+                <circle class="puff puff-2" cx="52" cy="22" r="7" fill="#bdbdbd" opacity="0.6"/>
+                <circle class="puff puff-3" cx="68" cy="18" r="6" fill="#cfcfcf" opacity="0.55"/>
+                <circle class="puff puff-4" cx="58" cy="10" r="5" fill="#e0e0e0" opacity="0.45"/>
+              </g>
+              <g class="mountain">
+                <path d="M10 95 L50 30 L70 30 L110 95 Z" fill="url(#v48-mountain)" stroke="#1b0d0a" stroke-width="2.5" stroke-linejoin="round"/>
+                <path class="lava-stream" d="M50 38 L55 60 L48 72 L58 92" stroke="url(#v48-lava)" stroke-width="4" fill="none" stroke-linecap="round" opacity="0"/>
+                <path class="lava-stream" d="M70 38 L66 56 L74 72 L66 92" stroke="url(#v48-lava)" stroke-width="4" fill="none" stroke-linecap="round" opacity="0"/>
+              </g>
+              <ellipse class="crater" cx="60" cy="32" rx="14" ry="5" fill="url(#v48-lava)" stroke="#3e2723" stroke-width="2"/>
+              <g class="sparks">
+                <rect class="spark spark-1" x="48" y="20" width="3" height="3" fill="#ffd54f"/>
+                <rect class="spark spark-2" x="68" y="22" width="3" height="3" fill="#ff7043"/>
+                <rect class="spark spark-3" x="58" y="14" width="3" height="3" fill="#ffeb3b"/>
+              </g>
+            </svg>
+          </div>
+          <div class="danger-bar"><div class="danger-fill" id="danger-fill"></div></div>
+        </div>
+        <div class="dino-grid" id="dino-grid"></div>
+      </div>
+      <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+      <div class="question-card">
+        <p class="q-text" id="q-text"></p>
+        <div class="q-options" id="q-options"></div>
+        <div class="feedback" id="feedback" style="display:none;"></div>
+      </div>
+    </section>
+
+    <section id="result-screen" class="screen">
+      <div class="container">
+        <div class="result-emoji" id="result-emoji">🦖</div>
+        <h2 class="result-title" id="result-title">Kết Thúc</h2>
+        <div class="badge-row" id="result-badges"></div>
+        <div class="result-detail" id="result-detail"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Cứu Hộ Lần Nữa</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🦖 Cứu khủng long khỏi núi lửa sắp phun trào.</li>
+        <li>✅ Trả lời <b>đúng</b> = cứu được 1 chú khủng long.</li>
+        <li>✨ <b>Combo 3 câu</b> đúng liên tiếp = cứu thêm 1 con thưởng!</li>
+        <li>❌ Trả lời <b>sai</b> hoặc <b>hết giờ</b> = núi lửa nguy hiểm hơn.</li>
+        <li>🌋 Đủ <b>5 nguy hiểm</b> = núi lửa phun trào, thua cuộc.</li>
+        <li>🏆 Cứu hết <b>8 khủng long</b> = thắng, thành Anh Hùng Cứu Hộ!</li>
+      </ul>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-card">
+      <div class="exit-icon">🚪</div>
+      <p class="exit-text">Thoát game?</p>
+      <p class="exit-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-actions">
+        <button class="exit-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/dinosaurs.js"></script>
+  <script src="game-logic.js" type="module"></script>
+  <script src="game.js"></script>
+  <script src="/quest-widget.js"></script>
+  <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
+</body>
+</html>

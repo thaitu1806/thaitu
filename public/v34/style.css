@@ -350,3 +350,127 @@ body {
   background: rgba(255,255,255,0.2);
   color: rgba(255,255,255,0.5);
 }
+
+/* ===== START-SCREEN HERO BAND (mascots preview) ===== */
+.hero-band {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  min-height: 72px;
+}
+.hero-slot { width: 64px; height: 64px; }
+.hero-slot:nth-child(2) { width: 52px; height: 52px; }
+.hero-slot:nth-child(3) { width: 56px; height: 56px; }
+
+/* ===== MUSICIAN STAGE (in-game animated character) ===== */
+.musician-stage {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  min-height: 96px;
+}
+.musician-host { width: 96px; height: 96px; }
+.bird-host { width: 62px; height: 62px; }
+
+/* Exit button in the play header */
+.play-header .btn-exit {
+  margin-left: auto;
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.4);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+.play-header .btn-exit:active { transform: scale(0.92); }
+
+/* ===== CHARACTER SYSTEM ===== */
+.hv-char { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.hv-char svg { width: 100%; height: 100%; overflow: visible; }
+.hv-char svg .head, .hv-char svg .body, .hv-char svg .accent,
+.hv-char svg .instr, .hv-char svg .arms, .hv-char svg .wing, .hv-char svg .note-accent {
+  transform-origin: center; transform-box: fill-box;
+}
+
+/* Idle — gentle sway + a tiny breathing bob; mascot notes float */
+.hv-char.is-idle svg { animation: musicianIdle 2.6s ease-in-out infinite; }
+@keyframes musicianIdle { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-3px) rotate(1.5deg); } }
+.hv-char.is-idle svg .note-accent { animation: noteFloat 2.2s ease-in-out infinite; }
+@keyframes noteFloat { 0%,100% { transform: translateY(0); opacity: 0.85; } 50% { transform: translateY(-4px); opacity: 1; } }
+.hv-char.is-idle svg.bird .wing { animation: wingFlap 1.6s ease-in-out infinite; }
+@keyframes wingFlap { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-12deg); } }
+
+/* Happy — celebratory bounce when a note is played */
+.hv-char.is-happy svg { animation: musicianHappy 0.7s ease-out; }
+@keyframes musicianHappy {
+  0% { transform: scale(1) rotate(0); }
+  35% { transform: scale(1.16) rotate(-6deg); }
+  65% { transform: scale(1.06) rotate(5deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.hv-char.is-happy svg .arms { animation: armPlay 0.7s ease-out; }
+@keyframes armPlay { 0%,100% { transform: rotate(0); } 40% { transform: rotate(-10deg); } 70% { transform: rotate(8deg); } }
+
+/* ===== PARTICLES ===== */
+.pfx { position: absolute; left: 50%; top: 50%; pointer-events: none; will-change: transform, opacity; z-index: 5; }
+.pfx-note {
+  font-size: 1.3rem; line-height: 1; color: #ffeb3b;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  animation: pfx-note 1s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-note {
+  0% { transform: translate(0,0) scale(0.5) rotate(0); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-40px)) scale(1.2) rotate(18deg); opacity: 0; }
+}
+.pfx-sparkle {
+  width: 7px; height: 7px; margin: -3px 0 0 -3px;
+  background: radial-gradient(circle, #fff 0%, #e040fb 60%, transparent 72%);
+  border-radius: 50%;
+  animation: pfx-sparkle 0.8s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-sparkle {
+  0% { transform: translate(0,0) scale(0.4); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) scale(1.3); opacity: 0; }
+}
+
+/* ===== GUIDE BUTTON ===== */
+.btn-guide {
+  display: block; width: 100%; max-width: 280px; margin: 12px auto 0;
+  padding: 14px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-radius: 16px;
+  font-size: 1rem; font-weight: 800; cursor: pointer; font-family: inherit;
+}
+.btn-guide:active { transform: scale(0.96); }
+
+/* ===== MODALS (guide + exit) ===== */
+.modal-overlay { position: fixed; inset: 0; z-index: 9500; background: rgba(0,0,0,0.65); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-card { background: #fff; color: #2a0a4a; border-radius: 20px; padding: 22px 20px; max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: modalPop 0.3s ease; }
+@keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-title { font-size: 1.25rem; text-align: center; margin-bottom: 14px; }
+.modal-rules { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.modal-rules li { padding: 7px 0; font-size: 0.95rem; line-height: 1.5; border-bottom: 1px solid #f0e0f7; }
+.modal-rules li:last-child { border-bottom: none; }
+.modal-rules b { color: #aa00ff; }
+.modal-card .btn-primary { margin-top: 4px; }
+.exit-modal-card { text-align: center; max-width: 320px; }
+.exit-modal-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.exit-modal-text { font-size: 1.1rem; font-weight: 800; color: #2a0a4a; margin-bottom: 6px; }
+.exit-modal-sub { font-size: 0.85rem; color: #777; margin-bottom: 18px; }
+.exit-modal-actions { display: flex; gap: 10px; justify-content: center; }
+.exit-modal-cancel { padding: 10px 18px; background: #e0e0e0; color: #333; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-confirm { padding: 10px 18px; background: #aa00ff; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-cancel:active, .exit-modal-confirm:active { transform: translateY(2px); }

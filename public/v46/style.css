@@ -1,0 +1,175 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(160deg, #1b5e20 0%, #4caf50 50%, #c8e6c9 100%);
+  overflow-x: hidden;
+}
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; align-items: center; justify-content: center; padding: 20px 16px; }
+#game-screen.active { display: block; padding: 14px; }
+.container { text-align: center; max-width: 420px; width: 100%; }
+.main-title { font-size: 1.9rem; color: white; text-shadow: 2px 3px 6px rgba(0,0,0,0.3); margin-bottom: 4px; }
+.subtitle { color: rgba(255,255,255,0.9); font-weight: 700; margin-bottom: 16px; }
+.hero-card { background: rgba(255,255,255,0.95); border: 4px solid #2e7d32; border-radius: 18px; padding: 16px; margin-bottom: 16px; box-shadow: 0 6px 0 #1b5e20; }
+.hero-emoji { font-size: 3.2rem; animation: bobUp 2s ease-in-out infinite; }
+@keyframes bobUp { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
+.hero-stats { display: flex; justify-content: space-around; margin-top: 8px; color: #1b5e20; font-weight: 800; }
+.selector-group { background: rgba(0,0,0,0.15); border-radius: 14px; padding: 10px 12px; margin-bottom: 12px; }
+.selector-label { display: block; color: white; font-weight: 800; margin-bottom: 8px; font-size: 0.9rem; text-align: left; }
+.selector-options { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.sel-btn { padding: 8px 12px; border: 2px solid rgba(255,255,255,0.4); border-radius: 12px; background: rgba(255,255,255,0.2); color: white; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit; }
+.sel-btn.active { background: #ffd700; color: #1b5e20; border-color: #1b5e20; }
+.sel-btn:active { transform: scale(0.96); }
+.btn-primary { display: block; width: 100%; padding: 14px; background: linear-gradient(135deg, #ffeb3b, #fbc02d); color: #1b5e20; border: 3px solid #f57f17; border-radius: 14px; font-size: 1.1rem; font-weight: 800; cursor: pointer; font-family: inherit; box-shadow: 0 5px 0 #f57f17; margin-bottom: 10px; }
+.btn-primary:active { transform: translateY(3px); box-shadow: 0 2px 0 #f57f17; }
+.home-link { display: inline-block; margin-top: 8px; color: white; text-decoration: none; font-weight: 700; background: rgba(0,0,0,0.25); padding: 8px 14px; border-radius: 12px; }
+.game-hud { display: flex; justify-content: space-around; background: rgba(0,0,0,0.4); padding: 10px 16px; color: white; font-weight: 800; border-radius: 14px; margin-bottom: 12px; }
+.pot-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 14px 8px; background: rgba(255,255,255,0.2); border-radius: 16px; margin-bottom: 12px; }
+.pot { aspect-ratio: 1; background: rgba(255,255,255,0.6); border: 2px solid #2e7d32; border-radius: 12px; display: grid; place-items: center; font-size: 1.6rem; cursor: pointer; transition: transform 0.2s, background 0.3s, border-color 0.3s; position: relative; overflow: visible; }
+.pot.selected { background: #fff59d; border-color: #f57f17; transform: scale(1.1); box-shadow: 0 0 12px rgba(245,127,23,0.5); }
+.pot.full { background: linear-gradient(135deg, #66bb6a, #388e3c); border-color: #1b5e20; cursor: default; box-shadow: 0 0 14px rgba(129,199,132,0.7); }
+.pot-emoji { display: block; }
+
+/* Character system ─────────────────────────────────────────────────────── */
+.hv-char { width: 100%; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
+.hv-char svg { width: 92%; height: 92%; overflow: visible; transition: transform 0.4s ease; transform-origin: 50% 90%; }
+.hv-char svg .head, .hv-char svg .body, .hv-char svg .accent, .hv-char svg .stem, .hv-char svg .arm, .hv-char svg .cane { transform-origin: center; transform-box: fill-box; }
+
+/* Growth scale ramp — driven by pot data-stage (0=tiny sprout, 4=full plant). */
+.pot[data-stage="0"] .hv-char svg { transform: scale(0.42); }
+.pot[data-stage="1"] .hv-char svg { transform: scale(0.58); }
+.pot[data-stage="2"] .hv-char svg { transform: scale(0.74); }
+.pot[data-stage="3"] .hv-char svg { transform: scale(0.9); }
+.pot[data-stage="4"] .hv-char svg { transform: scale(1); }
+
+/* Idle — gentle breathe + sway, like a plant in a soft breeze. */
+.hv-char.is-idle svg .head { animation: plant-sway 3s ease-in-out infinite; }
+.hv-char.is-idle svg .body { animation: plant-breathe 3.4s ease-in-out infinite; }
+.hv-char.is-idle svg .accent { animation: plant-sway 3.2s ease-in-out infinite; }
+@keyframes plant-sway { 0%,100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
+@keyframes plant-breathe { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.04); } }
+
+/* Happy — bloom bounce on the crown, played when a pot grows or is full.
+   Targets head/accent (not the svg root) so the data-stage scale is preserved. */
+.hv-char.is-happy svg .head { animation: plant-pop 0.6s ease-out; }
+.hv-char.is-happy svg .accent { animation: plant-pop 0.6s ease-out; }
+@keyframes plant-pop { 0% { transform: scale(0.8) rotate(-6deg); } 35% { transform: scale(1.2) translateY(-4px) rotate(5deg); } 70% { transform: scale(1.05) rotate(-2deg); } 100% { transform: scale(1) rotate(0); } }
+/* Full-grown pots keep a soft glow. */
+.pot.full .hv-char svg { filter: drop-shadow(0 0 5px #c5e1a5); }
+
+/* Scared — brief wilt/droop on a wrong answer.
+   Targets head (not the svg root) so the data-stage scale is preserved. */
+.hv-char.is-scared svg .head { animation: plant-droop 0.7s ease-in-out; }
+.hv-char.is-scared svg .accent { animation: plant-droop 0.7s ease-in-out; }
+@keyframes plant-droop { 0% { transform: translateY(0) rotate(0); } 30% { transform: translateY(3px) rotate(-9deg); } 60% { transform: translateY(2px) rotate(5deg); } 100% { transform: translateY(0) rotate(0); } }
+
+.timer-bar { height: 8px; background: rgba(0,0,0,0.25); border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+.timer-fill { height: 100%; background: linear-gradient(90deg, #4caf50, #ffd700); transition: width 0.1s linear; }
+.timer-fill.warning { background: linear-gradient(90deg, #f44336, #ff6f6f); }
+.question-card { background: white; border: 4px solid #2e7d32; border-radius: 18px; padding: 16px 14px; box-shadow: 0 6px 0 #1b5e20; }
+.q-text { font-size: 1.05rem; font-weight: 800; color: #333; margin-bottom: 14px; line-height: 1.5; text-align: center; }
+.q-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.option-btn { padding: 14px 12px; border: 3px solid #4caf50; border-radius: 14px; background: linear-gradient(180deg, #fff, #f1f8e9); font-size: 1rem; font-weight: 800; cursor: pointer; font-family: inherit; color: #1b5e20; box-shadow: 0 4px 0 #388e3c; min-height: 50px; word-break: break-word; }
+.option-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #388e3c; }
+.option-btn.correct { background: linear-gradient(180deg, #88e088, #4caf50); color: white; }
+.option-btn.wrong { background: linear-gradient(180deg, #ff9999, #f44336); border-color: #c62828; color: white; }
+.option-btn.disabled { pointer-events: none; opacity: 0.85; }
+.feedback { margin-top: 12px; text-align: center; padding: 10px; border-radius: 12px; font-weight: 800; animation: fbPop 0.3s ease; }
+.feedback.good { background: #e8f5e9; color: #2e7d32; border: 2px solid #4caf50; }
+.feedback.bad { background: #ffebee; color: #c62828; border: 2px solid #f44336; }
+@keyframes fbPop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.result-emoji { font-size: 4rem; margin-bottom: 6px; animation: bobUp 2s ease-in-out infinite; }
+.result-title { color: white; font-size: 1.6rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+.badge-row { font-size: 2.2rem; letter-spacing: 8px; margin-bottom: 12px; min-height: 50px; }
+.result-detail { color: white; background: rgba(0,0,0,0.3); border-radius: 14px; padding: 14px 18px; margin-bottom: 16px; font-size: 0.95rem; line-height: 1.8; text-align: left; }
+@media (min-width: 500px) { .main-title { font-size: 2.4rem; } }
+
+/* Particle effects ─────────────────────────────────────────────────────── */
+.pfx { position: absolute; pointer-events: none; will-change: transform, opacity; z-index: 5; }
+
+/* Leaf burst — small green sparks when a pot grows a stage. */
+.pfx-leaf {
+  left: 50%; top: 50%;
+  width: 7px; height: 7px; margin: -3px 0 0 -3px;
+  background: radial-gradient(circle, #a5d6a7 0%, #43a047 60%, transparent 72%);
+  border-radius: 50% 0 50% 50%;
+  animation: pfx-leaf 0.8s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-leaf {
+  0%   { transform: translate(0,0) scale(0.4) rotate(0); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) scale(1.3) rotate(140deg); opacity: 0; }
+}
+
+/* Bloom burst — bigger gold + pink burst when a pot becomes a full bonsai. */
+.pfx-bloom {
+  left: 50%; top: 45%;
+  width: 9px; height: 9px; margin: -4px 0 0 -4px;
+  background: radial-gradient(circle, #fff59d 0%, #ffca28 45%, #ec407a 80%, transparent 88%);
+  border-radius: 50%;
+  box-shadow: 0 0 6px #ffd54f;
+  animation: pfx-bloom 0.9s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-bloom {
+  0%   { transform: translate(0,0) scale(0.4); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-40px)) scale(1.5); opacity: 0; }
+}
+
+/* Win confetti — falls from the top of the pot row with rotation. */
+.pfx-confetti {
+  left: var(--x, 50%); top: -8px;
+  width: 7px; height: 11px;
+  border-radius: 1px;
+  transform: rotate(var(--rot, 0));
+  animation: pfx-confetti 2.6s ease-in forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-confetti {
+  0%   { transform: translateY(0) rotate(var(--rot, 0)); opacity: 0; }
+  10%  { opacity: 1; }
+  100% { transform: translateY(240px) rotate(calc(var(--rot, 0) + 540deg)); opacity: 0.2; }
+}
+
+/* Guide button on start screen */
+.btn-guide { display: block; width: 100%; padding: 12px; background: rgba(0,0,0,0.25); color: #fff; border: 2px solid #ffd700; border-radius: 14px; font-size: 1rem; font-weight: 800; cursor: pointer; font-family: inherit; margin-bottom: 10px; }
+.btn-guide:active { transform: translateY(2px); }
+
+/* Exit button inside the game HUD */
+.game-hud { position: relative; padding-left: 50px; }
+.btn-exit { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; border: 2px solid #fff; background: linear-gradient(135deg, #66bb6a, #2e7d32); color: #fff; font-size: 1rem; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.4); padding: 0; }
+.btn-exit:active { transform: translateY(-50%) scale(0.9); }
+
+/* Modals (guide + exit) */
+.modal-overlay { position: fixed; inset: 0; z-index: 9500; background: rgba(0,0,0,0.65); display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); }
+.modal-card { background: #fff; color: #1b5e20; border-radius: 20px; padding: 22px 20px; max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: fbPop 0.3s ease; }
+.modal-title { font-size: 1.25rem; text-align: center; margin-bottom: 14px; }
+.modal-rules { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.modal-rules li { padding: 7px 0; font-size: 0.95rem; line-height: 1.5; border-bottom: 1px solid #c8e6c9; }
+.modal-rules li:last-child { border-bottom: none; }
+.modal-rules b { color: #2e7d32; }
+
+/* Exit confirm modal */
+.exit-card { text-align: center; max-width: 320px; }
+.exit-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.exit-text { font-size: 1.1rem; font-weight: 800; color: #1b5e20; margin-bottom: 6px; }
+.exit-sub { font-size: 0.85rem; color: #777; margin-bottom: 18px; }
+.exit-actions { display: flex; gap: 10px; justify-content: center; }
+.exit-cancel { padding: 10px 18px; background: #eee; color: #333; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-confirm { padding: 10px 18px; background: #2e7d32; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-cancel:active, .exit-confirm:active { transform: translateY(2px); }
+
+/* Floating help button overrides tuned to V46 green palette */
+.help-rules-btn, .help-home-btn {
+  background: linear-gradient(135deg, #66bb6a, #2e7d32) !important;
+  border: 2px solid #fff !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35), 0 0 0 2px rgba(200,230,201,0.4) !important;
+  width: 44px !important;
+  height: 44px !important;
+  font-size: 1.3rem !important;
+}
+.help-rules-btn:hover, .help-home-btn:hover { filter: brightness(1.08); }

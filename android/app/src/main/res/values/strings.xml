@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Học Vui</string>
+    <string name="title_activity_main">Học Vui</string>
+    <string name="package_name">com.hocvui.app</string>
+    <string name="custom_url_scheme">com.hocvui.app</string>
+</resources>

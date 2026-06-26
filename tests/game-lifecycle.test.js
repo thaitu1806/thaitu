@@ -208,7 +208,7 @@ describe('Question Format Contract', () => {
 // ===== SESSION SAVE VALIDATION =====
 describe('Session Save Validation', () => {
   test('mode field matches game version pattern', () => {
-    const validModes = ['v1', 'v2', 'v13', 'v22', 'v30', 'v40', 'classic', 'exam'];
+    const validModes = ['v1', 'v2', 'v13', 'v22', 'v30', 'v40', 'v41', 'v42', 'v43', 'v44', 'v45', 'v46', 'v47', 'classic', 'exam'];
     
     for (const mode of validModes) {
       // Mode should be a string

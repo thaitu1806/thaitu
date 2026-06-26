@@ -424,3 +424,132 @@
     init();
   }
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V24's game logic lives in a private IIFE above. This block adds animated
+// character sprites, particle effects and styled modals WITHOUT touching any
+// existing logic — it observes the DOM the logic already updates.
+(function () {
+  'use strict';
+
+  let mayorChar = null;
+  let citizenChar = null;
+
+  const C = window.HocVuiCharacters;
+
+  function mount(hostId, speciesId, emojiFallback) {
+    const host = document.getElementById(hostId);
+    if (!host) return null;
+    host.innerHTML = '';
+    if (C && C.hasSpecies(speciesId)) {
+      return C.createCharacter(speciesId, host, { state: 'idle' });
+    }
+    host.textContent = emojiFallback;
+    return null;
+  }
+
+  function pulseHappy(char) {
+    if (!char) return;
+    char.setState('happy');
+    setTimeout(() => { if (char) char.setState('idle'); }, 900);
+  }
+
+  // Particle helper — sparkle / confetti around a host element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 46 + 22) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.18) + 's');
+      if (kind === 'confetti') {
+        const colors = ['#ffd700', '#4facfe', '#27ae60', '#ff7eb3', '#ffaa00'];
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      }
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  function spawnSparkle(parent, n) { spawnParticles(parent, 'sparkle', n || 7); }
+  function spawnConfetti(parent, n) { spawnParticles(parent, 'confetti', n || 14); }
+  window.__v24_spawnParticles = spawnParticles;
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    const $ = id => document.getElementById(id);
+
+    // --- Mount sprites ---
+    mayorChar = mount('mayor-stage', 'mayor', '👷');
+    citizenChar = mount('quiz-mascot', 'citizen', '🙂');
+
+    // --- Celebrate correct answers: watch quiz feedback text ---
+    const feedback = $('quiz-feedback');
+    if (feedback) {
+      const fbObs = new MutationObserver(() => {
+        const txt = feedback.textContent || '';
+        if (txt.indexOf('Đúng') !== -1) {
+          pulseHappy(citizenChar);
+          spawnConfetti($('quiz-mascot'), 14);
+        }
+      });
+      fbObs.observe(feedback, { childList: true, characterData: true, subtree: true });
+    }
+
+    // --- Celebrate building placement: watch build-grid for pop-in cells ---
+    const buildGrid = $('build-grid');
+    if (buildGrid) {
+      const bObs = new MutationObserver(muts => {
+        muts.forEach(m => {
+          if (m.type === 'attributes' && m.target.classList &&
+              m.target.classList.contains('pop-in')) {
+            spawnSparkle(m.target, 7);
+            pulseHappy(mayorChar);
+          }
+        });
+      });
+      bObs.observe(buildGrid, { attributes: true, attributeFilter: ['class'], subtree: true });
+    }
+
+    // --- Mayor reacts when returning to a freshly built city ---
+    const cityScreen = $('city-screen');
+    if (cityScreen) {
+      const csObs = new MutationObserver(() => {
+        if (cityScreen.classList.contains('active') && !mayorChar &&
+            C && C.hasSpecies('mayor')) {
+          mayorChar = mount('mayor-stage', 'mayor', '👷');
+        }
+      });
+      csObs.observe(cityScreen, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // --- Guide modal ---
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const gc = $('btn-guide-close');
+      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // --- Styled exit modal ---
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const ec = $('btn-exit-cancel');
+      if (ec) ec.addEventListener('click', () => { exit.style.display = 'none'; });
+      const ef = $('btn-exit-confirm');
+      if (ef) ef.addEventListener('click', () => {
+        exit.style.display = 'none';
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

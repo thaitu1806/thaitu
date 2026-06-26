@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -49,6 +50,7 @@
           </div>
         </div>
         <button class="btn-start" id="btn-start">🩺 Bắt đầu ca trực!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -60,6 +62,7 @@
           <span class="game-patient-num" id="game-patient-num">Bệnh nhân 1/8</span>
           <span class="game-retries" id="game-retries">❤️❤️</span>
           <span class="game-timer" id="game-timer">⏱️ 10</span>
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
         </div>
 
         <!-- PET DISPLAY -->
@@ -123,9 +126,38 @@
       </div>
     </section>
   </div>
+
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🩺 Mỗi ca trực có <b>8 bệnh nhân</b> thú cưng cần chữa.</li>
+        <li>🐶 Mỗi thú cưng cần qua <b>4 bước</b>: khám, chẩn đoán, điều trị, hồi phục.</li>
+        <li>✅ Trả lời <b>đúng</b> = hoàn thành một bước chữa bệnh.</li>
+        <li>❤️ Mỗi bệnh nhân có <b>2 lượt sai</b>. Hết lượt thì thú cưng buồn rời đi.</li>
+        <li>⏱️ Mỗi câu hỏi có <b>10 giây</b> — hết giờ tính là trả lời sai.</li>
+        <li>🏆 Chữa khỏi càng nhiều thú cưng thì điểm càng cao!</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/vets.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

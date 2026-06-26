@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -27,6 +28,7 @@
           <button class="diff-btn" data-diff="hard">Khó</button>
         </div>
         <button class="btn-start" id="btn-start">🚀 Bắt đầu!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <div class="best-wave" id="best-wave"></div>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
@@ -40,10 +42,11 @@
           <div class="hud-item"><span class="hud-label">💥 Bắn hạ</span><span class="hud-value" id="hud-score">0</span></div>
           <div class="hud-item"><span class="hud-label">🔥 Combo</span><span class="hud-value" id="hud-combo">0</span></div>
           <div class="hud-item"><span class="hud-label">❤️ Mạng</span><span class="hud-value" id="hud-lives">10</span></div>
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
         </div>
         <div class="sky-field" id="sky-field">
           <div class="fort-zone">
-            <span class="fort-emoji">🏰</span>
+            <span class="fort-emoji" id="fort-emoji">🏰</span>
           </div>
         </div>
         <div class="quiz-panel" id="quiz-panel">
@@ -77,9 +80,39 @@
       </div>
     </section>
   </div>
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🎈 Bóng bay <b>trôi xuống</b> phía pháo đài của bạn.</li>
+        <li>✅ Trả lời <b>đúng</b> = bắn hạ quả bóng <b>gần pháo đài nhất</b>.</li>
+        <li>🔥 Combo <b>3 trở lên</b> = bắn hạ <b>2 bóng</b> cùng lúc.</li>
+        <li>🛡️ Bóng có khiên (số 2) cần bắn trúng <b>2 lần</b> mới nổ.</li>
+        <li>❌ Trả lời <b>sai</b> hoặc <b>hết giờ</b> = bóng tiếp tục trôi.</li>
+        <li>❤️ Bóng chạm pháo đài = mất <b>1 mạng</b>. Hết mạng là thua!</li>
+        <li>🌊 Sống sót qua mỗi <b>đợt</b> để lên đợt khó hơn.</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/balloons25.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

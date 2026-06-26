@@ -1,349 +1,240 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="api-config.js"></script>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <title>🌻 Học Vui - Vương Quốc Trí Tuệ</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    :root {
+      --ink: #1e2742;
+      --muted: #7c89a8;
+      --card: #ffffff;
+      --ring: rgba(79,172,254,0.35);
+    }
     body {
       font-family: 'Nunito', sans-serif;
       min-height: 100vh;
-      background: linear-gradient(160deg, #4facfe 0%, #00f2fe 100%);
-      padding: 20px 16px;
-      padding-top: env(safe-area-inset-top, 20px);
+      color: var(--ink);
+      background: #eaf3ff;
+      background-image:
+        radial-gradient(circle at 12% 8%, rgba(79,172,254,0.55), transparent 42%),
+        radial-gradient(circle at 88% 4%, rgba(168,85,247,0.40), transparent 40%),
+        radial-gradient(circle at 50% 100%, rgba(0,242,254,0.40), transparent 55%),
+        linear-gradient(160deg, #eef5ff 0%, #e6edff 100%);
+      background-attachment: fixed;
+      padding: env(safe-area-inset-top, 14px) 14px 40px;
     }
-    .home-container { max-width: 420px; margin: 0 auto; }
-    .home-header {
-      text-align: center; margin-bottom: 20px;
-    }
-    .home-title {
-      font-size: 1.8rem; color: white; font-weight: 900;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.2);
-    }
-    .home-sub {
-      color: rgba(255,255,255,0.95); font-size: 1.1rem; font-weight: 600; margin-top: 4px;
-    }
-    .game-modes { display: flex; flex-direction: column; gap: 12px; }
-    .mode-card {
-      display: flex; align-items: center; gap: 16px;
-      background: white; border-radius: 18px; padding: 16px 18px;
-      text-decoration: none; color: #333;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      transition: transform 0.2s;
-      border-left: 5px solid transparent;
-    }
-    .mode-card:active { transform: scale(0.97); }
-    .mode-icon { font-size: 2.4rem; min-width: 50px; text-align: center; }
-    .mode-info { flex: 1; }
-    .mode-name { font-size: 1.2rem; font-weight: 800; color: #222; display: block; }
-    .mode-desc { font-size: 0.9rem; color: #888; font-weight: 600; }
+    .wrap { max-width: 900px; margin: 0 auto; }
 
-    .mode-card:nth-child(1) { border-left-color: #FF9800; }
-    .mode-card:nth-child(2) { border-left-color: #4CAF50; }
-    .mode-card:nth-child(3) { border-left-color: #f44336; }
-    .mode-card:nth-child(4) { border-left-color: #9C27B0; }
-    .mode-card:nth-child(5) { border-left-color: #E91E63; }
-    .mode-card:nth-child(6) { border-left-color: #2196F3; }
-    .mode-card:nth-child(7) { border-left-color: #00BCD4; }
-    .mode-card:nth-child(8) { border-left-color: #FF5722; }
-    .mode-card:nth-child(9) { border-left-color: #795548; }
-    .mode-card:nth-child(10) { border-left-color: #607D8B; }
-    .mode-card:nth-child(11) { border-left-color: #FFC107; }
-
-    .admin-link {
-      display: block; text-align: center; margin-top: 18px;
-      color: rgba(255,255,255,0.8); font-size: 0.9rem; text-decoration: none; font-weight: 600;
+    /* ===== HERO / PLAYER CARD ===== */
+    .hero {
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: 24px; padding: 16px 18px;
+      box-shadow: 0 10px 30px rgba(40,80,160,0.16);
+      margin-bottom: 18px;
     }
+    .hero-avatar {
+      width: 58px; height: 58px; flex: 0 0 58px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      box-shadow: 0 6px 16px var(--ring);
+    }
+    .hero-text { flex: 1; min-width: 0; }
+    .home-title { font-size: 1.35rem; font-weight: 900; line-height: 1.1; }
+    .home-sub { color: var(--muted); font-size: 0.95rem; font-weight: 700; margin-top: 2px; }
 
     #reward-bar {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      background: rgba(255,255,255,0.15);
+      display: none; flex-wrap: wrap; align-items: center; gap: 8px;
+      margin-bottom: 22px;
+    }
+    .chip-stat {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.8);
       backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: 12px;
-      padding: 8px 16px;
-      margin-bottom: 14px;
-      font-size: 0.85rem;
-      color: white;
-      font-weight: 700;
-      flex-wrap: wrap;
+      border-radius: 999px; padding: 7px 13px;
+      font-size: 0.85rem; font-weight: 800; color: var(--ink);
+      box-shadow: 0 3px 10px rgba(40,80,160,0.10);
     }
-    #reward-bar a {
-      color: #ffe066;
-      text-decoration: none;
-      font-weight: 700;
+    .chip-stat#rb-shop { background: linear-gradient(135deg,#ffd166,#ffb703); color: #5a3d00; text-decoration: none; }
+    .chip-stat#rb-shop:active { transform: scale(0.95); }
+    #reward-bar .separator { display: none; }
+
+    /* ===== SECTION HEADINGS ===== */
+    .section-head {
+      display: flex; align-items: baseline; gap: 8px;
+      margin: 6px 2px 12px;
     }
-    #reward-bar .separator {
-      opacity: 0.5;
+    .section-head h2 { font-size: 1.15rem; font-weight: 900; }
+    .section-head .count { font-size: 0.8rem; font-weight: 800; color: var(--muted); }
+
+    /* ===== LEARNING CARDS ===== */
+    .learn-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 26px; }
+    .learn-card {
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; gap: 4px;
+      border-radius: 20px; padding: 16px 14px; text-decoration: none; color: #fff;
+      box-shadow: 0 8px 22px rgba(40,80,160,0.18);
+      transition: transform 0.18s;
+    }
+    .learn-card:active { transform: scale(0.96); }
+    .learn-card .lc-icon { font-size: 2rem; }
+    .learn-card .lc-name { font-size: 1.05rem; font-weight: 900; }
+    .learn-card .lc-desc { font-size: 0.78rem; font-weight: 700; opacity: 0.92; line-height: 1.3; }
+    .learn-card.c1 { background: linear-gradient(140deg,#ff9a3c,#ff6a88); }
+    .learn-card.c2 { background: linear-gradient(140deg,#43e97b,#38f9d7); }
+    .learn-card.c3 { background: linear-gradient(140deg,#a18cd1,#fbc2eb); }
+
+    /* ===== TOOLBAR (search + chips) ===== */
+    .toolbar { margin-bottom: 14px; }
+    .search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: #fff; border: 2px solid transparent; border-radius: 16px;
+      padding: 11px 14px; box-shadow: 0 4px 14px rgba(40,80,160,0.10);
+      transition: border-color 0.2s;
+    }
+    .search-box:focus-within { border-color: #4facfe; }
+    .search-box svg { width: 18px; height: 18px; flex: 0 0 18px; fill: var(--muted); }
+    .search-box input {
+      flex: 1; border: none; outline: none; font-family: inherit;
+      font-size: 1rem; font-weight: 700; color: var(--ink); background: transparent;
+    }
+    .search-box input::placeholder { color: #aab4cc; font-weight: 700; }
+    .chips { display: flex; gap: 8px; overflow-x: auto; padding: 12px 2px 4px; scrollbar-width: none; }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip {
+      flex: 0 0 auto; border: none; cursor: pointer; font-family: inherit;
+      background: #fff; color: var(--ink); font-weight: 800; font-size: 0.85rem;
+      padding: 8px 15px; border-radius: 999px; white-space: nowrap;
+      box-shadow: 0 3px 10px rgba(40,80,160,0.08); transition: all 0.18s;
+    }
+    .chip.active { background: linear-gradient(135deg,#4facfe,#00f2fe); color: #fff; box-shadow: 0 5px 14px var(--ring); }
+
+    /* ===== GAME GRID ===== */
+    .fav-head { display: none; align-items: center; gap: 6px; margin: 4px 2px 10px; font-weight: 900; font-size: 0.95rem; color: var(--ink); }
+    .game-grid {
+      display: grid; grid-template-columns: repeat(2,1fr); gap: 11px;
+    }
+    .game-card {
+      position: relative;
+      display: flex; align-items: center; gap: 11px;
+      background: var(--card); border-radius: 18px; padding: 13px 13px;
+      text-decoration: none; color: var(--ink);
+      box-shadow: 0 5px 16px rgba(40,80,160,0.10);
+      transition: transform 0.16s, box-shadow 0.16s;
+      animation: cardUp 0.4s ease both;
+    }
+    .game-card:active { transform: scale(0.96); }
+    .game-card:hover { box-shadow: 0 10px 24px rgba(40,80,160,0.18); }
+    @keyframes cardUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .gc-icon {
+      width: 46px; height: 46px; flex: 0 0 46px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.7rem;
+      background: var(--gc-bg, #eef3ff);
+    }
+    .gc-info { flex: 1; min-width: 0; }
+    .gc-name { font-size: 0.98rem; font-weight: 900; display: block; line-height: 1.15; }
+    .gc-desc { font-size: 0.76rem; color: var(--muted); font-weight: 700; line-height: 1.25; display: block; margin-top: 2px;
+      overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .gc-fav {
+      position: absolute; top: 8px; right: 8px; width: 26px; height: 26px;
+      border: none; background: transparent; cursor: pointer; font-size: 1rem;
+      opacity: 0.35; transition: transform 0.15s, opacity 0.15s; padding: 0; line-height: 1;
+    }
+    .gc-fav.on { opacity: 1; }
+    .gc-fav:active { transform: scale(1.3); }
+    .empty-msg { text-align: center; color: var(--muted); font-weight: 800; padding: 30px 10px; font-size: 0.95rem; }
+
+    /* ===== FOOTER LINKS ===== */
+    .footer-links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 26px; }
+    .footer-links a {
+      color: var(--ink); background: rgba(255,255,255,0.6); backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.7);
+      text-decoration: none; font-size: 0.85rem; font-weight: 800;
+      padding: 9px 14px; border-radius: 999px;
+    }
+    .footer-links a:active { transform: scale(0.96); }
+
+    @media (min-width: 640px) {
+      .game-grid { grid-template-columns: repeat(3,1fr); }
+      .home-title { font-size: 1.6rem; }
+    }
+    @media (min-width: 900px) {
+      .game-grid { grid-template-columns: repeat(4,1fr); }
     }
 
-    @media (min-width: 500px) {
-      body { display: flex; align-items: center; justify-content: center; }
-      .game-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-      .mode-card { flex-direction: column; text-align: center; padding: 22px 14px; border-left: none; border-bottom: 4px solid transparent; }
-      .mode-card:nth-child(1) { border-bottom-color: #FF9800; }
-      .mode-card:nth-child(2) { border-bottom-color: #4CAF50; }
-      .mode-card:nth-child(3) { border-bottom-color: #f44336; }
-      .mode-card:nth-child(4) { border-bottom-color: #9C27B0; }
-      .mode-card:nth-child(5) { border-bottom-color: #E91E63; }
-      .mode-card:nth-child(6) { border-bottom-color: #2196F3; }
-      .mode-card:nth-child(7) { border-bottom-color: #00BCD4; }
-      .mode-card:nth-child(8) { border-bottom-color: #FF5722; }
-      .mode-card:nth-child(9) { border-bottom-color: #795548; }
-      .mode-card:nth-child(10) { border-bottom-color: #607D8B; }
-      .mode-card:nth-child(11) { border-bottom-color: #FFC107; }
-      .mode-icon { font-size: 3rem; }
-      .mode-name { font-size: 1.3rem; }
-      .mode-info { text-align: center; }
-      .home-title { font-size: 2.5rem; }
-    }
+    @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   </style>
 </head>
 <body>
-  <div class="home-container">
-    <div class="home-header">
-      <h1 class="home-title">🌻 Học Vui 🧟</h1>
-      <p class="home-sub">Chọn cách chơi nào!</p>
+  <div class="wrap">
+    <div class="hero">
+      <div class="hero-avatar" id="hero-avatar">🧒</div>
+      <div class="hero-text">
+        <h1 class="home-title">🌻 Học Vui</h1>
+        <p class="home-sub">Chọn cách chơi nào!</p>
+      </div>
     </div>
 
     <div id="reward-bar">
-      <span id="rb-streak">🔥 0 ngày</span>
+      <span class="chip-stat" id="rb-streak">🔥 0 ngày</span>
       <span class="separator">|</span>
-      <span id="rb-diamonds">💎 0</span>
+      <span class="chip-stat" id="rb-diamonds">💎 0</span>
       <span class="separator">|</span>
-      <span id="rb-quests">📋 0/0 NV</span>
+      <span class="chip-stat" id="rb-quests">📋 0/0 NV</span>
       <span class="separator">|</span>
-      <a href="/shop.html">🛒 Shop</a>
+      <a class="chip-stat" id="rb-shop" href="/shop.html">🛒 Shop</a>
     </div>
 
-    <div class="game-modes">
-      <a href="/learn.html" class="mode-card">
-        <span class="mode-icon">📚</span>
-        <div class="mode-info">
-          <span class="mode-name">Kiến Thức</span>
-          <span class="mode-desc">Học qua hình ảnh, dễ hiểu!</span>
-        </div>
+    <!-- HỌC TẬP -->
+    <div class="section-head"><h2>📘 Học tập</h2></div>
+    <div class="learn-grid">
+      <a href="/learn.html" class="mode-card learn-card c1">
+        <span class="lc-icon">📚</span>
+        <span class="lc-name">Kiến Thức</span>
+        <span class="lc-desc">Học qua hình ảnh, dễ hiểu!</span>
       </a>
-
-      <a href="/game.html" class="mode-card">
-        <span class="mode-icon">🌻</span>
-        <div class="mode-info">
-          <span class="mode-name">Luyện Tập</span>
-          <span class="mode-desc">Bắn zombie bằng trí tuệ!</span>
-        </div>
+      <a href="/game.html" class="mode-card learn-card c2">
+        <span class="lc-icon">🌻</span>
+        <span class="lc-name">Luyện Tập</span>
+        <span class="lc-desc">Bắn zombie bằng trí tuệ!</span>
       </a>
-
-      <a href="/exam.html" class="mode-card">
-        <span class="mode-icon">📝</span>
-        <div class="mode-info">
-          <span class="mode-name">Phòng Thi</span>
-          <span class="mode-desc">Làm bài, xem điểm!</span>
-        </div>
+      <a href="/exam.html" class="mode-card learn-card c3">
+        <span class="lc-icon">📝</span>
+        <span class="lc-name">Phòng Thi</span>
+        <span class="lc-desc">Làm bài, xem điểm!</span>
       </a>
-
-      <a href="/v2/" class="mode-card">
-        <span class="mode-icon">🗺️</span>
-        <div class="mode-info">
-          <span class="mode-name">Phiêu Lưu</span>
-          <span class="mode-desc">50 level, chinh phục bản đồ!</span>
-        </div>
-      </a>
-
-      <a href="/v3/" class="mode-card">
-        <span class="mode-icon">👫</span>
-        <div class="mode-info">
-          <span class="mode-name">Đấu 2 Bạn</span>
-          <span class="mode-desc">Ai nhanh hơn thắng!</span>
-        </div>
-      </a>
-
-      <a href="/v4/" class="mode-card">
-        <span class="mode-icon">📱</span>
-        <div class="mode-info">
-          <span class="mode-name">Đấu Online</span>
-          <span class="mode-desc">Mỗi bạn 1 điện thoại!</span>
-        </div>
-      </a>
-
-      <a href="/v5/" class="mode-card">
-        <span class="mode-icon">🎲</span>
-        <div class="mode-info">
-          <span class="mode-name">Cờ Cá Ngựa</span>
-          <span class="mode-desc">Lắc xúc xắc, trả lời đúng để tiến!</span>
-        </div>
-      </a>
-
-      <a href="/v6/" class="mode-card">
-        <span class="mode-icon">🏎️</span>
-        <div class="mode-info">
-          <span class="mode-name">Đua Xe Trí Tuệ</span>
-          <span class="mode-desc">Ai về đích trước thắng!</span>
-        </div>
-      </a>
-
-      <a href="/v7/" class="mode-card">
-        <span class="mode-icon">🧗</span>
-        <div class="mode-info">
-          <span class="mode-name">Leo Núi Trí Tuệ</span>
-          <span class="mode-desc">Ai lên đỉnh trước thắng!</span>
-        </div>
-      </a>
-
-      <a href="/v8/" class="mode-card">
-        <span class="mode-icon">🏰</span>
-        <div class="mode-info">
-          <span class="mode-name">Xây Lâu Đài</span>
-          <span class="mode-desc">Xây cao bằng trí tuệ!</span>
-        </div>
-      </a>
-
-      <a href="/v9/" class="mode-card">
-        <span class="mode-icon">♟️</span>
-        <div class="mode-info">
-          <span class="mode-name">Đấu Tướng</span>
-          <span class="mode-desc">Cờ vua mini + quiz!</span>
-        </div>
-      </a>
-
-      <a href="/v10/" class="mode-card">
-        <span class="mode-icon">💣</span>
-        <div class="mode-info">
-          <span class="mode-name">Dò Mìn Trí Tuệ</span>
-          <span class="mode-desc">Mở ô bằng trí tuệ, tránh mìn!</span>
-        </div>
-      </a>
-
-      <a href="/v11/" class="mode-card">
-        <span class="mode-icon">💰</span>
-        <div class="mode-info">
-          <span class="mode-name">Tỉ Phú Trí Tuệ</span>
-          <span class="mode-desc">Mua tỉnh thành, thu tiền thuê!</span>
-        </div>
-      </a>
-
-      <a href="/v12/" class="mode-card">
-        <span class="mode-icon">🧩</span>
-        <div class="mode-info">
-          <span class="mode-name">Lật Hình Trí Tuệ</span>
-          <span class="mode-desc">Ghép câu hỏi với đáp án!</span>
-        </div>
-      </a>
-
-      <a href="/v13/" class="mode-card">
-        <span class="mode-icon">🌊</span>
-        <div class="mode-info">
-          <span class="mode-name">Thám Hiểm Đại Dương</span>
-          <span class="mode-desc">Lặn sâu, khám phá sinh vật biển!</span>
-        </div>
-      </a>
-
-      <a href="/v14/" class="mode-card">
-        <span class="mode-icon">🚀</span>
-        <div class="mode-info">
-          <span class="mode-name">Giải Cứu Hành Tinh</span>
-          <span class="mode-desc">Hạ boss virus, cứu cư dân!</span>
-        </div>
-      </a>
-
-      <a href="/v15/" class="mode-card">
-        <span class="mode-icon">🦁</span>
-        <div class="mode-info">
-          <span class="mode-name">Vườn Thú Kỳ Diệu</span>
-          <span class="mode-desc">Xây vườn thú, sưu tập thú cưng!</span>
-        </div>
-      </a>
-
-      <a href="/v16/" class="mode-card">
-        <span class="mode-icon">👨‍🍳</span>
-        <div class="mode-info">
-          <span class="mode-name">Đầu Bếp Nhí</span>
-          <span class="mode-desc">Nấu ăn, phục vụ khách!</span>
-        </div>
-      </a>
-
-      <a href="/v17/" class="mode-card">
-        <span class="mode-icon">🚀</span>
-        <div class="mode-info">
-          <span class="mode-name">Phi Hành Gia Nhí</span>
-          <span class="mode-desc">Khám phá Hệ Mặt Trời!</span>
-        </div>
-      </a>
-
-      <a href="/v18/" class="mode-card">
-        <span class="mode-icon">⚔️</span>
-        <div class="mode-info">
-          <span class="mode-name">Ninja Toán Học</span>
-          <span class="mode-desc">Chém câu hỏi, luyện võ trí tuệ!</span>
-        </div>
-      </a>
-
-      <a href="/v19/" class="mode-card">
-        <span class="mode-icon">🔍</span>
-        <div class="mode-info">
-          <span class="mode-name">Thám Tử Nhí</span>
-          <span class="mode-desc">Giải mã manh mối, phá án!</span>
-        </div>
-      </a>
-
-      <a href="/v20/" class="mode-card">
-        <span class="mode-icon">🌾</span>
-        <div class="mode-info">
-          <span class="mode-name">Nông Trại Vui Vẻ</span>
-          <span class="mode-desc">Trồng cây, thu hoạch, kiếm xu!</span>
-        </div>
-      </a>
-
-      <a href="/v21/" class="mode-card"><span class="mode-icon">🚒</span><div class="mode-info"><span class="mode-name">Siêu Nhân Cứu Hỏa</span><span class="mode-desc">Dập lửa, cứu người!</span></div></a>
-
-      <a href="/v22/" class="mode-card">
-        <span class="mode-icon">🏎️</span>
-        <div class="mode-info">
-          <span class="mode-name">Đua Xe Tri Thức</span>
-          <span class="mode-desc">Đua tốc độ với bạn bè!</span>
-        </div>
-      </a>
-
-      <a href="/v23/" class="mode-card"><span class="mode-icon">🏥</span><div class="mode-info"><span class="mode-name">Bệnh Viện Thú Cưng</span><span class="mode-desc">Chữa bệnh cho thú!</span></div></a>
-
-      <a href="/v24/" class="mode-card"><span class="mode-icon">🏙️</span><div class="mode-info"><span class="mode-name">Xây Thành Phố</span><span class="mode-desc">Xây dựng thành phố mơ ước!</span></div></a>
-
-      <a href="/v25/" class="mode-card"><span class="mode-icon">🎈</span><div class="mode-info"><span class="mode-name">Pháo Đài Bóng Bay</span><span class="mode-desc">Bắn hạ bóng bay, bảo vệ pháo đài!</span></div></a>
-
-      <a href="/v26/" class="mode-card"><span class="mode-icon">🎡</span><div class="mode-info"><span class="mode-name">Vòng Quay May Mắn</span><span class="mode-desc">Quay vòng quay, nhận thưởng!</span></div></a>
-
-      <a href="/v27/" class="mode-card"><span class="mode-icon">🧙</span><div class="mode-info"><span class="mode-name">Lớp Học Phép Thuật</span><span class="mode-desc">Học thần chú, chiến đấu bóng tối!</span></div></a>
-
-      <a href="/v28/" class="mode-card"><span class="mode-icon">📖</span><div class="mode-info"><span class="mode-name">Truyện Cổ Tích</span><span class="mode-desc">Đọc truyện, mở trang bằng trí tuệ!</span></div></a>
-
-      <a href="/v29/" class="mode-card"><span class="mode-icon">🏝️</span><div class="mode-info"><span class="mode-name">Đảo Hoang Sinh Tồn</span><span class="mode-desc">Kiếm tài nguyên, craft bè thoát đảo!</span></div></a>
-
-      <a href="/v30/" class="mode-card"><span class="mode-icon">🎪</span><div class="mode-info"><span class="mode-name">Giải Đố Vui</span><span class="mode-desc">Mini-games đa dạng, điểm cao!</span></div></a>
-
-      <a href="/v31/" class="mode-card"><span class="mode-icon">📮</span><div class="mode-info"><span class="mode-name">Bưu Điện Vui</span><span class="mode-desc">Giao thư đúng địa chỉ!</span></div></a>
-      <a href="/v32/" class="mode-card"><span class="mode-icon">🔬</span><div class="mode-info"><span class="mode-name">Nhà Khoa Học Nhí</span><span class="mode-desc">Thí nghiệm, tạo sinh vật mới!</span></div></a>
-
-      <a href="/v33/" class="mode-card"><span class="mode-icon">🚁</span><div class="mode-info"><span class="mode-name">Đội Cứu Hộ</span><span class="mode-desc">Cứu động vật mắc kẹt!</span></div></a>
-      <a href="/v34/" class="mode-card"><span class="mode-icon">🎵</span><div class="mode-info"><span class="mode-name">Nhạc Sĩ Nhí</span><span class="mode-desc">Tạo bài hát từ nốt nhạc!</span></div></a>
-
-      <a href="/v35/" class="mode-card"><span class="mode-icon">🍦</span><div class="mode-info"><span class="mode-name">Tiệm Kem</span><span class="mode-desc">Xếp kem, phục vụ khách!</span></div></a>
-
-      <a href="/v36/" class="mode-card"><span class="mode-icon">🤿</span><div class="mode-info"><span class="mode-name">Thợ Lặn Kho Báu</span><span class="mode-desc">Lật ô tìm kho báu!</span></div></a>
-
-      <a href="/v37/" class="mode-card"><span class="mode-icon">🏃</span><div class="mode-info"><span class="mode-name">Vận Động Viên</span><span class="mode-desc">Olympic mini, giành huy chương!</span></div></a>
-      <a href="/v38/" class="mode-card"><span class="mode-icon">🦷</span><div class="mode-info"><span class="mode-name">Bác Sĩ Răng</span><span class="mode-desc">Chữa răng, thu nụ cười!</span></div></a>
-      <a href="/v39/" class="mode-card"><span class="mode-icon">👗</span><div class="mode-info"><span class="mode-name">Thời Trang Show</span><span class="mode-desc">Thiết kế outfit, trình diễn!</span></div></a>
-      <a href="/v40/" class="mode-card"><span class="mode-icon">🛒</span><div class="mode-info"><span class="mode-name">Siêu Thị Mini</span><span class="mode-desc">Tính tiền, nâng cấp shop!</span></div></a>
     </div>
 
-    <a href="/guide.html" class="admin-link" style="margin-top:12px">📖 Hướng dẫn chơi</a>
-    <a href="/admin.html" class="admin-link" style="margin-top:8px">🔒 Quản lý (bố mẹ)</a>
-    <a href="/profile.html" class="admin-link" style="margin-top:8px">👤 Hồ sơ của con</a>
+    <!-- TRÒ CHƠI -->
+    <div class="section-head"><h2>🎮 Trò chơi</h2><span class="count" id="game-count"></span></div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 10-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1114 9.5 4.5 4.5 0 019.5 14z"/></svg>
+        <input type="text" id="search" placeholder="Tìm trò chơi..." autocomplete="off">
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <div class="fav-head" id="fav-head">⭐ Yêu thích</div>
+    <div class="game-grid" id="fav-grid"></div>
+
+    <div class="game-grid" id="game-grid" style="margin-top:14px;"></div>
+    <p class="empty-msg" id="empty-msg" style="display:none;">Không tìm thấy trò chơi nào 🔍</p>
+
+    <div class="footer-links">
+      <a href="/guide.html">📖 Hướng dẫn chơi</a>
+      <a href="/profile.html">👤 Hồ sơ của con</a>
+      <a href="/admin.html">🔒 Quản lý (bố mẹ)</a>
+    </div>
   </div>
 
   <!-- PROFILE GATE POPUP -->
@@ -367,47 +258,197 @@
     </div>
   </div>
 
-  <style>
-    @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  </style>
+  <script>
+  /* ===== GAME CATALOG =====
+     cat: hoc(core) | phieu(adventure/explore) | dau(versus/compete) | kinhdoanh(tycoon/serve) | sangtao(creative) | giaitri(casual)
+     Plain "/vNN/" path strings are kept here so routing-consistency.test.js (which
+     scans the raw HTML for /v2/.. /v40/) still passes. */
+  const GAMES = [
+    { p:'/v2/',  i:'🗺️', n:'Phiêu Lưu', d:'50 level, chinh phục bản đồ!', c:'phieu', bg:'#fff1e0' },
+    { p:'/v3/',  i:'👫', n:'Đấu 2 Bạn', d:'Ai nhanh hơn thắng!', c:'dau', bg:'#e9f7ec' },
+    { p:'/v4/',  i:'📱', n:'Đấu Online', d:'Mỗi bạn 1 điện thoại!', c:'dau', bg:'#fdeaea' },
+    { p:'/v5/',  i:'🎲', n:'Cờ Cá Ngựa', d:'Lắc xúc xắc, trả lời đúng để tiến!', c:'dau', bg:'#f3edff' },
+    { p:'/v6/',  i:'🏎️', n:'Đua Xe Trí Tuệ', d:'Ai về đích trước thắng!', c:'dau', bg:'#fdeef5' },
+    { p:'/v7/',  i:'🧗', n:'Leo Núi Trí Tuệ', d:'Ai lên đỉnh trước thắng!', c:'phieu', bg:'#e7f6ff' },
+    { p:'/v8/',  i:'🏰', n:'Xây Lâu Đài', d:'Xây cao bằng trí tuệ!', c:'sangtao', bg:'#fff1e0' },
+    { p:'/v9/',  i:'♟️', n:'Đấu Tướng', d:'Cờ vua mini + quiz!', c:'dau', bg:'#eef0f5' },
+    { p:'/v10/', i:'💣', n:'Dò Mìn Trí Tuệ', d:'Mở ô bằng trí tuệ, tránh mìn!', c:'giaitri', bg:'#eef0f5' },
+    { p:'/v11/', i:'💰', n:'Tỉ Phú Trí Tuệ', d:'Mua tỉnh thành, thu tiền thuê!', c:'kinhdoanh', bg:'#fff8e0' },
+    { p:'/v12/', i:'🧩', n:'Lật Hình Trí Tuệ', d:'Ghép câu hỏi với đáp án!', c:'giaitri', bg:'#f3edff' },
+    { p:'/v13/', i:'🌊', n:'Thám Hiểm Đại Dương', d:'Lặn sâu, khám phá sinh vật biển!', c:'phieu', bg:'#e7f6ff' },
+    { p:'/v14/', i:'🚀', n:'Giải Cứu Hành Tinh', d:'Hạ boss virus, cứu cư dân!', c:'phieu', bg:'#f3edff' },
+    { p:'/v15/', i:'🦁', n:'Vườn Thú Kỳ Diệu', d:'Xây vườn thú, sưu tập thú cưng!', c:'kinhdoanh', bg:'#fff1e0' },
+    { p:'/v16/', i:'👨‍🍳', n:'Đầu Bếp Nhí', d:'Nấu ăn, phục vụ khách!', c:'kinhdoanh', bg:'#fdeaea' },
+    { p:'/v17/', i:'🚀', n:'Phi Hành Gia Nhí', d:'Khám phá Hệ Mặt Trời!', c:'phieu', bg:'#eef0f5' },
+    { p:'/v18/', i:'⚔️', n:'Ninja Toán Học', d:'Chém câu hỏi, luyện võ trí tuệ!', c:'phieu', bg:'#fff1e0' },
+    { p:'/v19/', i:'🔍', n:'Thám Tử Nhí', d:'Giải mã manh mối, phá án!', c:'phieu', bg:'#f3edff' },
+    { p:'/v20/', i:'🌾', n:'Nông Trại Vui Vẻ', d:'Trồng cây, thu hoạch, kiếm xu!', c:'kinhdoanh', bg:'#e9f7ec' },
+    { p:'/v21/', i:'🚒', n:'Siêu Nhân Cứu Hỏa', d:'Dập lửa, cứu người!', c:'phieu', bg:'#fdeaea' },
+    { p:'/v22/', i:'🏎️', n:'Đua Xe Tri Thức', d:'Đua tốc độ với bạn bè!', c:'dau', bg:'#e7f6ff' },
+    { p:'/v23/', i:'🏥', n:'Bệnh Viện Thú Cưng', d:'Chữa bệnh cho thú!', c:'kinhdoanh', bg:'#fdeef5' },
+    { p:'/v24/', i:'🏙️', n:'Xây Thành Phố', d:'Xây dựng thành phố mơ ước!', c:'sangtao', bg:'#e9f7ec' },
+    { p:'/v25/', i:'🎈', n:'Pháo Đài Bóng Bay', d:'Bắn hạ bóng bay, bảo vệ pháo đài!', c:'giaitri', bg:'#e7f6ff' },
+    { p:'/v26/', i:'🎡', n:'Vòng Quay May Mắn', d:'Quay vòng quay, nhận thưởng!', c:'giaitri', bg:'#fdeef5' },
+    { p:'/v27/', i:'🧙', n:'Lớp Học Phép Thuật', d:'Học thần chú, chiến đấu bóng tối!', c:'phieu', bg:'#f3edff' },
+    { p:'/v28/', i:'📖', n:'Truyện Cổ Tích', d:'Đọc truyện, mở trang bằng trí tuệ!', c:'sangtao', bg:'#fff8e0' },
+    { p:'/v29/', i:'🏝️', n:'Đảo Hoang Sinh Tồn', d:'Kiếm tài nguyên, craft bè thoát đảo!', c:'phieu', bg:'#fff1e0' },
+    { p:'/v30/', i:'🎪', n:'Giải Đố Vui', d:'Mini-games đa dạng, điểm cao!', c:'giaitri', bg:'#fdeef5' },
+    { p:'/v31/', i:'📮', n:'Bưu Điện Vui', d:'Giao thư đúng địa chỉ!', c:'kinhdoanh', bg:'#e9f7ec' },
+    { p:'/v32/', i:'🔬', n:'Nhà Khoa Học Nhí', d:'Thí nghiệm, tạo sinh vật mới!', c:'sangtao', bg:'#f3edff' },
+    { p:'/v33/', i:'🚁', n:'Đội Cứu Hộ', d:'Cứu động vật mắc kẹt!', c:'phieu', bg:'#e9f7ec' },
+    { p:'/v34/', i:'🎵', n:'Nhạc Sĩ Nhí', d:'Tạo bài hát từ nốt nhạc!', c:'sangtao', bg:'#f3edff' },
+    { p:'/v35/', i:'🍦', n:'Tiệm Kem', d:'Xếp kem, phục vụ khách!', c:'kinhdoanh', bg:'#fdeef5' },
+    { p:'/v36/', i:'🤿', n:'Thợ Lặn Kho Báu', d:'Lật ô tìm kho báu!', c:'phieu', bg:'#e7f6ff' },
+    { p:'/v37/', i:'🏃', n:'Vận Động Viên', d:'Olympic mini, giành huy chương!', c:'dau', bg:'#e9f7ec' },
+    { p:'/v38/', i:'🦷', n:'Bác Sĩ Răng', d:'Chữa răng, thu nụ cười!', c:'kinhdoanh', bg:'#e7f6ff' },
+    { p:'/v39/', i:'👗', n:'Thời Trang Show', d:'Thiết kế outfit, trình diễn!', c:'sangtao', bg:'#fdeef5' },
+    { p:'/v40/', i:'🛒', n:'Siêu Thị Mini', d:'Tính tiền, nâng cấp shop!', c:'kinhdoanh', bg:'#fff8e0' },
+    { p:'/v41/', i:'🍄', n:'Phiêu Lưu Mario', d:'Nhảy qua chướng ngại bằng trí tuệ!', c:'phieu', bg:'#fdeaea' },
+    { p:'/v42/', i:'🎈', n:'Khinh Khí Cầu', d:'Bay cao lên mây, núi và vũ trụ!', c:'phieu', bg:'#e7f6ff' },
+    { p:'/v43/', i:'🍕', n:'Pizzeria Của Bé', d:'Làm pizza, phục vụ khách, kiếm tip!', c:'kinhdoanh', bg:'#fff1e0' },
+    { p:'/v44/', i:'🦈', n:'Vũ Trụ Cá Mập', d:'Đua tàu không gian, vượt boss cá mập!', c:'phieu', bg:'#eef0f5' },
+    { p:'/v45/', i:'🤖', n:'Lập Trình Robot', d:'Mở khóa lệnh, đưa robot về đích!', c:'sangtao', bg:'#e7f6ff' },
+    { p:'/v46/', i:'🌵', n:'Tiệm Cây Cảnh', d:'Tưới cây, sưu tập bonsai!', c:'kinhdoanh', bg:'#e9f7ec' },
+    { p:'/v47/', i:'🧪', n:'Lab Slime', d:'Pha màu, săn slime hiếm!', c:'sangtao', bg:'#f3edff' },
+    { p:'/v48/', i:'🦖', n:'Cứu Hộ Khủng Long', d:'Cứu khủng long trước khi núi lửa phun!', c:'phieu', bg:'#fff1e0' },
+    { p:'/v49/', i:'🎧', n:'DJ Nhí', d:'Mix nhịp, lên đỉnh sàn diễn!', c:'sangtao', bg:'#f3edff' },
+    { p:'/v50/', i:'⚓', n:'Tàu Ngầm Đại Dương', d:'Lặn sâu, săn báu vật đáy biển!', c:'phieu', bg:'#e7f6ff' },
+    { p:'/v51/', i:'🐢', n:'Vườn Thú Pokémon Việt', d:'Bắt 8 loài thú trong rừng!', c:'phieu', bg:'#e9f7ec' },
+    { p:'/v52/', i:'🏮', n:'Lễ Hội Trung Thu', d:'Thắp đèn lồng đón trăng rằm!', c:'sangtao', bg:'#fdeaea' },
+    { p:'/v53/', i:'🐱', n:'Đặc Vụ Mèo', d:'Lẻn qua tầng, thu thập tài liệu mật!', c:'phieu', bg:'#eef0f5' },
+    { p:'/v54/', i:'🧙', n:'Phù Thủy Thuốc', d:'Pha chế thuốc thần kỳ trong vạc!', c:'sangtao', bg:'#f3edff' },
+    { p:'/v55/', i:'⚽', n:'Sân Bóng Trí Tuệ', d:'Sút bóng vào lưới, ghi bàn!', c:'dau', bg:'#e9f7ec' },
+    { p:'/v56/', i:'⛄', n:'Người Tuyết Cứu Bắc Cực', d:'Xây người tuyết, cứu Bắc Cực!', c:'sangtao', bg:'#e7f6ff' },
+    { p:'/v57/', i:'👘', n:'Tiệm May Áo Dài', d:'May áo dài truyền thống Việt!', c:'kinhdoanh', bg:'#fdeef5' },
+    { p:'/v58/', i:'🌾', n:'Hành Trình Lúa Gạo', d:'Gieo, nảy mầm, đơm bông, thu hoạch!', c:'kinhdoanh', bg:'#e9f7ec' },
+    { p:'/v59/', i:'🚴', n:'Đua Xe Đạp', d:'Đạp xe, giữ sức, cán đích!', c:'dau', bg:'#fff1e0' },
+    { p:'/v60/', i:'📜', n:'Cổ Tích Việt Nam', d:'Đọc truyện cổ tích, học bài học cha ông!', c:'sangtao', bg:'#fff8e0' }
+  ];
+
+  const CATS = [
+    { id:'all', label:'✨ Tất cả' },
+    { id:'fav', label:'⭐ Yêu thích' },
+    { id:'phieu', label:'🗺️ Phiêu lưu' },
+    { id:'dau', label:'⚔️ Thi đấu' },
+    { id:'kinhdoanh', label:'🏪 Kinh doanh' },
+    { id:'sangtao', label:'🎨 Sáng tạo' },
+    { id:'giaitri', label:'🎯 Giải trí' }
+  ];
+
+  const FAV_KEY = 'hocvui_favs';
+  const RECENT_KEY = 'hocvui_recent';
+  function getFavs() { try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); } catch { return []; } }
+  function setFavs(a) { localStorage.setItem(FAV_KEY, JSON.stringify(a)); }
+  function getRecent() { try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch { return []; } }
+
+  let activeCat = 'all';
+  let query = '';
+
+  const $ = id => document.getElementById(id);
+  const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  function cardHtml(g) {
+    const fav = getFavs().includes(g.p);
+    return '<a href="' + g.p + '" class="game-card" data-path="' + g.p + '" style="--gc-bg:' + g.bg + '">' +
+      '<button class="gc-fav' + (fav ? ' on' : '') + '" data-fav="' + g.p + '" title="Yêu thích" aria-label="Yêu thích">' + (fav ? '⭐' : '☆') + '</button>' +
+      '<span class="gc-icon">' + g.i + '</span>' +
+      '<span class="gc-info"><span class="gc-name">' + g.n + '</span><span class="gc-desc">' + g.d + '</span></span>' +
+    '</a>';
+  }
+
+  function renderChips() {
+    $('chips').innerHTML = CATS.map(c =>
+      '<button class="chip' + (c.id === activeCat ? ' active' : '') + '" data-cat="' + c.id + '">' + c.label + '</button>'
+    ).join('');
+  }
+
+  function renderFavRow() {
+    const favs = getFavs();
+    const recent = getRecent();
+    const head = $('fav-head');
+    const grid = $('fav-grid');
+    // Only show the quick row on the "all" tab with no active search.
+    if (activeCat !== 'all' || query) { head.style.display = 'none'; grid.innerHTML = ''; grid.style.display = 'none'; return; }
+    const pinned = [];
+    favs.forEach(p => { const g = GAMES.find(x => x.p === p); if (g) pinned.push(g); });
+    recent.forEach(p => { if (!favs.includes(p)) { const g = GAMES.find(x => x.p === p); if (g) pinned.push(g); } });
+    const top = pinned.slice(0, 6);
+    if (!top.length) { head.style.display = 'none'; grid.innerHTML = ''; grid.style.display = 'none'; return; }
+    head.style.display = 'flex';
+    head.textContent = favs.length ? '⭐ Yêu thích & gần đây' : '🕘 Chơi gần đây';
+    grid.style.display = 'grid';
+    grid.innerHTML = top.map(cardHtml).join('');
+  }
+
+  function renderGames() {
+    const favs = getFavs();
+    let list = GAMES.slice();
+    if (activeCat === 'fav') list = list.filter(g => favs.includes(g.p));
+    else if (activeCat !== 'all') list = list.filter(g => g.c === activeCat);
+    if (query) { const q = norm(query); list = list.filter(g => norm(g.n).includes(q) || norm(g.d).includes(q)); }
+
+    $('game-grid').innerHTML = list.map(cardHtml).join('');
+    $('empty-msg').style.display = list.length ? 'none' : 'block';
+    $('game-count').textContent = GAMES.length + ' trò';
+    renderFavRow();
+  }
+
+  // Event delegation on the whole document so dynamically rendered cards work.
+  document.addEventListener('click', function (e) {
+    const favBtn = e.target.closest('.gc-fav');
+    if (favBtn) {
+      e.preventDefault(); e.stopPropagation();
+      const p = favBtn.dataset.fav;
+      const favs = getFavs();
+      const i = favs.indexOf(p);
+      if (i >= 0) favs.splice(i, 1); else favs.push(p);
+      setFavs(favs);
+      renderGames();
+      return;
+    }
+    const chip = e.target.closest('.chip');
+    if (chip) { activeCat = chip.dataset.cat; renderChips(); renderGames(); return; }
+    // Record recently played + enforce profile gate on any game/mode card.
+    const card = e.target.closest('.game-card, .mode-card');
+    if (card) {
+      if (!localStorage.getItem('hocvui_profile')) { e.preventDefault(); $('profile-gate').style.display = 'flex'; return; }
+      const p = card.dataset.path;
+      if (p) {
+        const recent = getRecent().filter(x => x !== p);
+        recent.unshift(p);
+        localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, 8)));
+      }
+    }
+  });
+
+  $('search').addEventListener('input', function () { query = this.value.trim(); renderGames(); });
+
+  renderChips();
+  renderGames();
+  </script>
 
   <script>
     (function() {
       const gate = document.getElementById('profile-gate');
 
-      function showGate() {
-        gate.style.display = 'flex';
-        // Block game links
-        document.querySelectorAll('.mode-card').forEach(c => {
-          c.addEventListener('click', (e) => {
-            if (!localStorage.getItem('hocvui_profile')) { e.preventDefault(); gate.style.display = 'flex'; }
-          });
-        });
-      }
+      function showGate() { gate.style.display = 'flex'; }
 
       async function verifyProfile() {
         const profile = localStorage.getItem('hocvui_profile');
         if (!profile) { showGate(); return; }
-
         const p = JSON.parse(profile);
-        // Verify player still exists in DB
         try {
           const res = await fetch(`/api/players?id=${p.id}`);
           const data = await res.json();
           if (!data || data.error || !data.id) {
-            // Player was deleted from DB - clear localStorage and show gate
             localStorage.removeItem('hocvui_profile');
             showGate();
             return;
           }
-          // Valid - show welcome
           document.querySelector('.home-sub').textContent = `Xin chào ${data.name}! 🎉`;
-          // Update local profile in case name changed
           localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade || 2 }));
-          // Load reward bar data
           loadRewardBar(data.id);
         } catch {
-          // Network error - trust local profile
           document.querySelector('.home-sub').textContent = `Xin chào ${p.name}! 🎉`;
           loadRewardBar(p.id);
         }
@@ -436,14 +477,11 @@
             const completed = questList.filter(q => q.is_completed).length;
             document.getElementById('rb-quests').textContent = `📋 ${completed}/${questList.length} NV`;
           }
-        } catch {
-          // Silently keep default values on network error
-        }
+        } catch {}
       }
 
       verifyProfile();
 
-      // Grade selector button handling
       let selectedGrade = 2;
       document.querySelectorAll('#gate-grade-options .grade-btn').forEach(btn => {
         btn.addEventListener('click', () => {

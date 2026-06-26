@@ -527,3 +527,179 @@
   // ===== INIT =====
   loadStats();
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V23 game logic lives in the IIFE above and is intentionally untouched. This
+// block observes the existing #pet-emoji node and mounts animated vector
+// sprites alongside, with graceful emoji fallback. It never alters game state.
+(function () {
+  'use strict';
+
+  // Map the logic's pet emoji → registered sprite species. Pets without a
+  // sprite simply keep their original emoji (fallback), so logic is unaffected.
+  const PET_SPECIES = { '🐶': 'puppy', '🐱': 'kitten', '🐰': 'bunny' };
+
+  let petChar = null;
+  let vetChar = null;
+  let currentSpecies = null;
+  let observing = true;
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  function petStateFromClasses(el) {
+    if (el.classList.contains('healed') || el.classList.contains('happy')) return 'happy';
+    if (el.classList.contains('sad')) return 'scared';
+    return 'idle';
+  }
+
+  // Mount the cheerful kid-vet companion into the pet card (once per game card).
+  function mountVet() {
+    const area = document.querySelector('.pet-area');
+    if (!area || area.querySelector('.vet-host')) return;
+    const host = document.createElement('div');
+    host.className = 'vet-host';
+    area.appendChild(host);
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies('vet')) {
+      vetChar = C.createCharacter('vet', host, { state: 'idle' });
+    } else {
+      host.textContent = '🧑‍⚕️';
+    }
+  }
+
+  // Render the patient pet sprite inside #pet-emoji, replacing the raw emoji.
+  function renderPet(emoji) {
+    const el = document.getElementById('pet-emoji');
+    if (!el) return;
+    const species = PET_SPECIES[emoji];
+    const C = window.HocVuiCharacters;
+    if (!species || !C || !C.hasSpecies(species)) {
+      // Fallback: leave the original emoji text in place.
+      petChar = null;
+      currentSpecies = null;
+      return;
+    }
+    observing = false;
+    el.textContent = '';
+    petChar = C.createCharacter(species, el, { state: petStateFromClasses(el) });
+    currentSpecies = species;
+    observing = true;
+  }
+
+  function syncPetState() {
+    if (!petChar) return;
+    petChar.setState(petStateFromClasses(document.getElementById('pet-emoji')));
+  }
+
+  // Particle helpers (sparkle on a healed step, confetti when a patient is cured).
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 90 - 45) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 25) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.18) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+
+  function spawnConfetti(parent, count) {
+    if (!parent) return;
+    const colors = ['#e91e63', '#f06292', '#ffd54f', '#4caf50', '#42a5f5'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-confetti';
+      p.style.background = colors[i % colors.length];
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.setProperty('--tx', (Math.random() * 60 - 30) + 'px');
+      p.style.setProperty('--rot', (Math.random() * 540 - 270) + 'deg');
+      p.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v23_spawnParticles = spawnParticles;
+
+  ready(function () {
+    const petEl = document.getElementById('pet-emoji');
+    if (!petEl) return;
+
+    // Initial mount (start screen → game keeps #pet-emoji in the DOM).
+    mountVet();
+    if (petEl.textContent && petEl.textContent.trim()) {
+      renderPet(petEl.textContent.trim());
+    }
+
+    const observer = new MutationObserver((mutations) => {
+      if (!observing) return;
+      let textChanged = false;
+      let classChanged = false;
+      for (const m of mutations) {
+        if (m.type === 'childList' || m.type === 'characterData') textChanged = true;
+        if (m.type === 'attributes' && m.attributeName === 'class') classChanged = true;
+      }
+      if (textChanged) {
+        const raw = (petEl.textContent || '').trim();
+        if (raw && raw in PET_SPECIES) {
+          // New patient with a sprite-backed pet — (re)mount the sprite.
+          mountVet();
+          renderPet(raw);
+        } else if (raw) {
+          // Emoji-only patient: keep fallback, drop any stale sprite ref.
+          petChar = null;
+          currentSpecies = null;
+        }
+      }
+      if (classChanged) {
+        const state = petStateFromClasses(petEl);
+        syncPetState();
+        if (vetChar && state === 'happy') {
+          vetChar.setState('happy');
+          setTimeout(() => { if (vetChar) vetChar.setState('idle'); }, 700);
+        }
+        const area = document.querySelector('.pet-area');
+        if (area) {
+          if (petEl.classList.contains('healed')) spawnConfetti(area, 16);
+          else if (petEl.classList.contains('happy')) spawnParticles(area, 'sparkle', 8);
+        }
+      }
+    });
+    observer.observe(petEl, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  });
+
+  // Modals (guide + exit) — styled overlays, no window.confirm.
+  ready(function () {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop any running interval/timer before leaving the page.
+        try {
+          const hi = window.setInterval(function () {}, 999999);
+          for (let i = 1; i <= hi; i++) window.clearInterval(i);
+        } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

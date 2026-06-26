@@ -27,8 +27,8 @@ const versionNumbers = publicDirs.map(d => parseInt(d.slice(1)));
 
 // ===== FOLDER EXISTENCE =====
 describe('Game Version Folders', () => {
-  // All expected versions 2-40 should exist
-  for (let v = 2; v <= 40; v++) {
+  // All expected versions 2-60 should exist
+  for (let v = 2; v <= 60; v++) {
     test(`public/v${v}/ folder exists`, () => {
       expect(existsSync(join('public', `v${v}`))).toBe(true);
     });

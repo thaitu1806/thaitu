@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -74,6 +75,7 @@
         </div>
 
         <button class="btn-start" id="btn-start">🚀 Bắt đầu xây!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -82,10 +84,11 @@
     <section id="game-screen" class="screen">
       <div class="game-layout">
         <div class="game-header">
-          <button class="btn-exit" id="btn-exit">✕</button>
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
           <div class="game-info" id="game-info"></div>
         </div>
         <div class="castle-area" id="castle-area">
+          <div class="builder-mascot" id="builder-mascot"></div>
           <div class="castle-tower" id="castle-tower"></div>
         </div>
         <div class="question-area">
@@ -101,13 +104,15 @@
           <div class="status-text" id="status-text"></div>
         </div>
       </div>
-      <!-- Exit confirm -->
+      <!-- Exit confirm (styled card) -->
       <div class="exit-overlay" id="exit-overlay">
-        <div class="exit-card">
-          <p>🚪 Bạn muốn thoát?</p>
-          <div class="exit-btns">
-            <button class="exit-btn cancel" id="exit-cancel">Tiếp tục</button>
-            <button class="exit-btn confirm" id="exit-confirm">Thoát</button>
+        <div class="exit-card modal-card exit-modal-card">
+          <div class="exit-modal-icon">🚪</div>
+          <p class="exit-modal-text">Thoát game?</p>
+          <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+          <div class="exit-btns exit-modal-actions">
+            <button class="exit-btn cancel exit-modal-cancel" id="exit-cancel">Tiếp tục chơi</button>
+            <button class="exit-btn confirm exit-modal-confirm" id="exit-confirm">🚪 Thoát</button>
           </div>
         </div>
       </div>
@@ -118,9 +123,26 @@
       <div class="result-container" id="result-container"></div>
     </section>
   </div>
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi Xây Lâu Đài</h3>
+      <ul class="modal-rules">
+        <li>🏰 Trả lời <b>đúng</b> = xây thêm 1 tầng gạch.</li>
+        <li>❌ Trả lời <b>sai</b> hoặc <b>hết giờ</b> = mất 1 tầng trên cùng.</li>
+        <li>🔥 Đúng liên tiếp tạo <b>combo</b>; cứ 5 câu liền = thưởng <b>+2 gạch</b>.</li>
+        <li>👑 Cứ mỗi 5 tầng nhận một <b>huy hiệu</b> mốc.</li>
+        <li>🌋 Coi chừng <b>động đất</b> bất ngờ: rơi mất 2 tầng!</li>
+        <li>🎮 Chơi <b>Solo</b>, <b>Hợp tác</b> hoặc <b>Đối đầu</b>; mở khoá thêm kiểu lâu đài khi chơi nhiều ván.</li>
+        <li>🏆 Xây đến <b>30 tầng</b> là chiến thắng — xây càng cao càng giỏi!</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/builders.js"></script>
   <script src="game.js"></script>
   <script>
     document.getElementById('help-btn-open')?.addEventListener('click', () => {
@@ -129,5 +151,6 @@
   </script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
 </body>
 </html>

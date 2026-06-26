@@ -352,3 +352,106 @@ body {
 @media (min-width: 500px) {
   .game-container { max-width: 480px; }
 }
+
+/* ===== CHARACTER SYSTEM ===== */
+.fort-guard-host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  position: relative;
+}
+.hv-char { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.hv-char svg { width: 100%; height: 100%; overflow: visible; }
+.hv-char svg .head, .hv-char svg .body, .hv-char svg .accent,
+.hv-char svg .arm, .hv-char svg .flag, .hv-char svg .string { transform-origin: center; transform-box: fill-box; }
+
+/* Guard idle — gentle breathing sway + waving flag */
+.hv-char.is-idle svg.guard { animation: guard-idle 2.6s ease-in-out infinite; }
+.hv-char.is-idle svg .flag { animation: guard-flag 1.6s ease-in-out infinite; }
+@keyframes guard-idle { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-3px) rotate(1deg); } }
+@keyframes guard-flag { 0%,100% { transform: skewX(0deg) scaleX(1); } 50% { transform: skewX(-8deg) scaleX(1.05); } }
+
+/* Guard happy — triumphant bounce + shield raise */
+.hv-char.is-happy svg.guard { animation: guard-happy 0.65s ease-out; }
+.hv-char.is-happy svg .arm { animation: guard-arm 0.65s ease-out; }
+@keyframes guard-happy { 0% { transform: scale(1); } 35% { transform: scale(1.14) translateY(-5px) rotate(-4deg); } 70% { transform: scale(1.04) rotate(3deg); } 100% { transform: scale(1); } }
+@keyframes guard-arm { 0%,100% { transform: rotate(0); } 40% { transform: rotate(-18deg); } }
+
+/* Guard scared — shiver (available for danger states) */
+.hv-char.is-scared svg.guard { animation: guard-scared 0.4s ease-in-out infinite; }
+@keyframes guard-scared { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-2px) rotate(-2deg); } 75% { transform: translateX(2px) rotate(2deg); } }
+
+/* Balloon-foe mascot idle — bob + string wiggle */
+.hv-char.is-idle svg.foe { animation: foe-bob 2.4s ease-in-out infinite; }
+.hv-char.is-idle svg.foe .string { animation: foe-string 2s ease-in-out infinite; }
+@keyframes foe-bob { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-4px) rotate(3deg); } }
+@keyframes foe-string { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+.hv-char.is-happy svg.foe { animation: foe-pop 0.5s ease-out; }
+@keyframes foe-pop { 0% { transform: scale(1); } 50% { transform: scale(1.2) rotate(-6deg); } 100% { transform: scale(1); } }
+
+/* ===== PARTICLES ===== */
+.pfx { position: absolute; left: 50%; top: 50%; pointer-events: none; will-change: transform, opacity; z-index: 24; }
+.pfx-sparkle {
+  width: 7px; height: 7px; margin: -3px 0 0 -3px;
+  background: radial-gradient(circle, #fff 0%, #ffd700 55%, transparent 70%);
+  border-radius: 50%;
+  animation: pfx-sparkle 0.8s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-sparkle {
+  0% { transform: translate(0,0) scale(0.4); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) scale(1.3); opacity: 0; }
+}
+.pfx-confetti {
+  width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 2px;
+  background: #f44336;
+  animation: pfx-confetti 0.9s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+.pfx-confetti:nth-child(2n) { background: #2196f3; }
+.pfx-confetti:nth-child(3n) { background: #ffeb3b; }
+.pfx-confetti:nth-child(4n) { background: #4caf50; }
+.pfx-confetti:nth-child(5n) { background: #9c27b0; }
+@keyframes pfx-confetti {
+  0% { transform: translate(0,0) rotate(0deg); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-40px)) rotate(540deg); opacity: 0; }
+}
+
+/* ===== GUIDE BUTTON + EXIT BUTTON ===== */
+.btn-guide {
+  display: block; width: 100%; max-width: 280px; margin: 0 auto 4px;
+  padding: 13px; background: #fff; color: #1565c0;
+  border: 2px solid #1976d2; border-radius: 16px;
+  font-size: 1rem; font-weight: 800; cursor: pointer; font-family: inherit;
+}
+.btn-guide:active { transform: scale(0.96); }
+.btn-exit {
+  padding: 4px 10px; background: rgba(244,67,54,0.12);
+  border: 1px solid rgba(244,67,54,0.4); color: #d32f2f;
+  border-radius: 10px; font-size: 1rem; cursor: pointer; font-family: inherit;
+  align-self: center;
+}
+.btn-exit:active { transform: scale(0.92); }
+
+/* ===== MODALS (guide + exit) ===== */
+.modal-overlay { position: fixed; inset: 0; z-index: 9500; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-card { background: #fff; color: #1a2a3a; border-radius: 20px; padding: 22px 20px; max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: modalPop 0.3s ease; }
+@keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-title { font-size: 1.25rem; text-align: center; margin-bottom: 14px; color: #1565c0; }
+.modal-rules { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.modal-rules li { padding: 7px 0; font-size: 0.95rem; line-height: 1.5; border-bottom: 1px solid #e3f2fd; }
+.modal-rules li:last-child { border-bottom: none; }
+.modal-rules b { color: #1976d2; }
+.modal-card .btn-start { margin-top: 4px; }
+.exit-modal-card { text-align: center; max-width: 320px; }
+.exit-modal-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.exit-modal-text { font-size: 1.1rem; font-weight: 800; color: #1a2a3a; margin-bottom: 6px; }
+.exit-modal-sub { font-size: 0.85rem; color: #777; margin-bottom: 18px; }
+.exit-modal-actions { display: flex; gap: 10px; justify-content: center; }
+.exit-modal-cancel { padding: 10px 18px; background: #e0e0e0; color: #333; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-confirm { padding: 10px 18px; background: #d32f2f; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-cancel:active, .exit-modal-confirm:active { transform: translateY(2px); }

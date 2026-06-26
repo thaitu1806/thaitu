@@ -586,7 +586,7 @@ document.getElementById('exit-cancel').addEventListener('click', () => {
   document.getElementById('exit-overlay').classList.remove('active');
 });
 document.getElementById('exit-confirm').addEventListener('click', () => {
-  window.location.href = '/';
+  window.location.reload();
 });
 
 // ===== SCREEN MANAGEMENT =====
@@ -601,3 +601,153 @@ document.getElementById('btn-speak-v7')?.addEventListener('click', () => {
   if (!q) return;
   window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, State.settings?.subject);
 });
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// Mounts animated chibi-climber sprites where the player emoji tokens were
+// rendered, perches a goat mascot at the summit, drives a happy bounce when a
+// player climbs, and wires the guide + styled exit modals. No game logic is
+// modified here — original functions are called first, then decorated.
+(function () {
+  'use strict';
+
+  const C = window.HocVuiCharacters;
+
+  // --- mount climber sprites onto the .climber tokens ---------------------
+  function mountClimbers() {
+    if (!C) return;
+    document.querySelectorAll('.mountain-tile .climber').forEach(span => {
+      if (span.dataset.spriteMounted === '1') return;
+      const emoji = (span.textContent || '').trim();
+      let idx = (typeof EMOJIS !== 'undefined') ? EMOJIS.indexOf(emoji) : -1;
+      if (idx < 0) idx = 0;
+      const id = 'climber' + idx;
+      if (C.hasSpecies(id)) {
+        span.textContent = '';
+        span.dataset.spriteMounted = '1';
+        span.dataset.climberIdx = String(idx);
+        C.createCharacter(id, span, { state: 'idle' });
+      }
+      // else: leave the original emoji as a graceful fallback
+    });
+  }
+
+  // --- perch a goat mascot beside the summit ------------------------------
+  function mountGoat() {
+    if (!C || !C.hasSpecies('goat')) return;
+    const summit = document.querySelector('.mountain-tile.tile-summit');
+    if (!summit || summit.querySelector('.summit-goat')) return;
+    const host = document.createElement('span');
+    host.className = 'summit-goat';
+    summit.appendChild(host);
+    C.createCharacter('goat', host, { state: 'idle' });
+  }
+
+  // --- particle helpers ---------------------------------------------------
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 60 - 30) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 38 + 18) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  function spawnConfetti(parent, count) {
+    if (!parent) return;
+    const colors = ['#e74c3c', '#3498db', '#27ae60', '#f39c12', '#9b59b6'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-confetti';
+      p.style.background = colors[i % colors.length];
+      p.style.setProperty('--tx', (Math.random() * 90 - 45) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 25) + 'px');
+      p.style.setProperty('--rot', (Math.random() * 540 - 270) + 'deg');
+      p.style.setProperty('--delay', (Math.random() * 0.18) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v7_spawnParticles = spawnParticles;
+  window.__v7_spawnConfetti = spawnConfetti;
+
+  // Celebrate a player's climb: bounce the sprite + sparkle around it.
+  function celebrate(player) {
+    if (!player) return;
+    const sel = '.mountain-tile[data-row="' + player.position + '"][data-tile="0"] ' +
+      '.hv-char--climber' + player.index;
+    const root = document.querySelector(sel);
+    if (!root) return;
+    root.classList.remove('is-idle');
+    root.classList.add('is-happy', 'is-climb');
+    spawnParticles(root, 'sparkle', 7);
+    setTimeout(() => {
+      root.classList.remove('is-happy', 'is-climb');
+      root.classList.add('is-idle');
+    }, 700);
+  }
+
+  // --- non-invasive wrapping ----------------------------------------------
+  // renderBoard recreates the climber tokens each call, so re-mount sprites
+  // after every render. Function declarations create mutable bindings, so all
+  // existing callers pick up the wrapped version (late binding).
+  if (typeof renderBoard === 'function') {
+    const origRender = renderBoard;
+    renderBoard = function () {
+      const r = origRender.apply(this, arguments);
+      mountClimbers();
+      mountGoat();
+      return r;
+    };
+  }
+
+  // movePlayer with a positive amount means the player climbed — celebrate.
+  if (typeof movePlayer === 'function') {
+    const origMove = movePlayer;
+    movePlayer = function (player, amount) {
+      const r = origMove.apply(this, arguments);
+      if (amount > 0) {
+        // origMove already re-rendered the board; celebrate on next frame.
+        requestAnimationFrame(() => celebrate(player));
+      }
+      return r;
+    };
+  }
+
+  // --- modals (guide + styled exit) ---------------------------------------
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $ = id => document.getElementById(id);
+
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const gc = $('btn-guide-close');
+      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit-go');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const ec = $('btn-exit-cancel');
+      if (ec) ec.addEventListener('click', () => { exit.style.display = 'none'; });
+      const cf = $('btn-exit-confirm');
+      if (cf) cf.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop timers/loops before leaving so nothing keeps running.
+        try { stopQuestionTimer(); } catch (e) {}
+        try { if (typeof questionTimerId !== 'undefined') clearInterval(questionTimerId); } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

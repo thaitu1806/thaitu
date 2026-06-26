@@ -505,3 +505,138 @@ async function logAnswer(q, selected, correct, isCorrect) {
     });
   } catch {}
 }
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+(function () {
+  'use strict';
+  let ninjaChar = null;
+  let oniChar = null;
+
+  function mountNinja() {
+    const host = document.getElementById('ninja-player');
+    if (!host) return;
+    // Already mounted? leave it.
+    if (host.querySelector('.hv-char')) return;
+    host.textContent = '';
+    ninjaChar = null;
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies('ninja')) {
+      ninjaChar = C.createCharacter('ninja', host, { state: 'idle' });
+    } else {
+      host.textContent = '⚔️'; // emoji fallback
+    }
+  }
+
+  function mountOni() {
+    const bossEl = document.getElementById('boss-indicator');
+    if (!bossEl) return;
+    let host = bossEl.querySelector('.boss-oni');
+    if (!host) {
+      host = document.createElement('div');
+      host.className = 'boss-oni';
+      bossEl.insertBefore(host, bossEl.firstChild);
+    }
+    if (host.querySelector('.hv-char')) return;
+    host.textContent = '';
+    oniChar = null;
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies('oni')) {
+      oniChar = C.createCharacter('oni', host, { state: 'idle' });
+    } else {
+      host.textContent = '👹'; // emoji fallback
+    }
+  }
+
+  // Particle helper — sparkle burst (correct slash) / confetti (boss down).
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 90 - 45) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  function spawnSparkle(parent, count) { spawnParticles(parent, 'sparkle', count || 8); }
+  function spawnConfetti(parent, count) { spawnParticles(parent, 'confetti', count || 14); }
+  window.__v18_spawnParticles = spawnParticles;
+
+  // Wrap animateNinja to mirror attack/hurt on the character sprite + sparkles.
+  if (typeof animateNinja === 'function') {
+    const orig = animateNinja;
+    animateNinja = function (type) {
+      orig(type);
+      if (ninjaChar) {
+        const st = type === 'attacking' ? 'happy' : 'hurt';
+        ninjaChar.setState(st);
+        setTimeout(() => { if (ninjaChar) ninjaChar.setState('idle'); }, 500);
+      }
+      const host = document.getElementById('ninja-player');
+      if (type === 'attacking' && host) spawnSparkle(host, 8);
+      // Mirror the strike onto the boss-ogre when present.
+      if (oniChar && document.getElementById('boss-indicator').classList.contains('active')) {
+        oniChar.setState(type === 'attacking' ? 'hurt' : 'idle');
+        setTimeout(() => { if (oniChar) oniChar.setState('idle'); }, 500);
+      }
+    };
+  }
+
+  // Mount the ninja once per game. startWave() runs by global name on every
+  // wave (including the first), so wrapping it mounts the sprite reliably —
+  // the btn-start listener captured the original startGame reference, so
+  // wrapping startGame itself would not fire.
+  if (typeof startWave === 'function') {
+    const origWave = startWave;
+    startWave = function () {
+      mountNinja();
+      return origWave.apply(this, arguments);
+    };
+  }
+
+  // Mount the oni when a boss wave is introduced.
+  if (typeof showBossIntro === 'function') {
+    const origBoss = showBossIntro;
+    showBossIntro = function () {
+      const r = origBoss.apply(this, arguments);
+      mountOni();
+      if (oniChar) oniChar.setState('idle');
+      return r;
+    };
+  }
+
+  // Modals (guide + exit) ---------------------------------------------------
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop timers/loops before leaving.
+        try { stopTimer(); } catch (e) {}
+        S.gameOver = true;
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

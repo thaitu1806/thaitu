@@ -461,3 +461,136 @@ async function logAnswer(q, selected, correct, isCorrect) {
   const playerId = getPlayerId(); if (!playerId) return;
   try { await fetch('/api/answers', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ session_id: 0, player_id: playerId, question_id: q.id||0, selected_answer: selected, correct_answer: correct, is_correct: isCorrect?1:0, time_spent_ms: Math.round((QUESTION_TIME - S.questionTimeLeft)*1000), difficulty: S.config.difficulty, combo_streak: S.combo }) }); } catch {}
 }
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+(function () {
+  'use strict';
+  let heroChar = null;
+  let enemyChar = null;
+
+  function mountHero() {
+    const host = document.getElementById('hero');
+    if (!host) return;
+    host.innerHTML = '';
+    heroChar = null;
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies('rescuer_hero')) {
+      heroChar = C.createCharacter('rescuer_hero', host, { state: 'idle', size: 92 });
+    } else {
+      host.textContent = '🚀';
+    }
+  }
+
+  function mountEnemy() {
+    const host = document.getElementById('enemy');
+    if (!host) return;
+    host.innerHTML = '';
+    enemyChar = null;
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies('rescuer_germ')) {
+      enemyChar = C.createCharacter('rescuer_germ', host, { state: 'idle', size: 84 });
+    } else {
+      host.textContent = '🦠';
+    }
+  }
+
+  // Particle helper — sparkle/confetti burst around an element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 25) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+      if (kind === 'confetti') {
+        const colors = ['#7c3aed', '#22d3ee', '#fbbf24', '#4ade80', '#f472b6'];
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      }
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v14_spawnParticles = spawnParticles;
+
+  // Wrap startZoneBattle to mount the hero astronaut on every battle start.
+  if (typeof startZoneBattle === 'function') {
+    const origStart = startZoneBattle;
+    startZoneBattle = function () {
+      const r = origStart.apply(this, arguments);
+      mountHero();
+      return r;
+    };
+  }
+
+  // Wrap showBattleEnemy to mount the alien sprite for regular virus rounds.
+  // Boss rounds keep their zone-specific emoji (set by the original function).
+  if (typeof showBattleEnemy === 'function') {
+    const origEnemy = showBattleEnemy;
+    showBattleEnemy = function (isBoss) {
+      const r = origEnemy.apply(this, arguments);
+      if (!isBoss) mountEnemy();
+      else { enemyChar = null; } // emoji boss; original set textContent
+      return r;
+    };
+  }
+
+  // Wrap handleCorrectAnswer to celebrate on the hero sprite.
+  if (typeof handleCorrectAnswer === 'function') {
+    const origCorrect = handleCorrectAnswer;
+    handleCorrectAnswer = function () {
+      const r = origCorrect.apply(this, arguments);
+      if (heroChar) {
+        heroChar.setState('happy');
+        setTimeout(() => { if (heroChar) heroChar.setState('idle'); }, 650);
+      }
+      const host = document.getElementById('hero');
+      if (host) spawnParticles(host, 'sparkle', 7);
+      return r;
+    };
+  }
+
+  // Wrap bossDefeated to throw confetti when citizens are rescued.
+  if (typeof bossDefeated === 'function') {
+    const origBoss = bossDefeated;
+    bossDefeated = function () {
+      if (heroChar) {
+        heroChar.setState('happy');
+        setTimeout(() => { if (heroChar) heroChar.setState('idle'); }, 800);
+      }
+      const host = document.getElementById('hero');
+      if (host) spawnParticles(host, 'confetti', 16);
+      return origBoss.apply(this, arguments);
+    };
+  }
+
+  // Modals (guide + exit) ---------------------------------------------------
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      $('btn-guide-close').addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      $('btn-exit-cancel').addEventListener('click', () => { exit.style.display = 'none'; });
+      $('btn-exit-confirm').addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop timers/loops before leaving.
+        try { stopQuestionTimer(); } catch (e) {}
+        S.gameOver = true;
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

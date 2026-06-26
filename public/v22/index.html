@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -49,6 +50,7 @@
           </div>
         </div>
         <button class="btn-start" id="btn-start">🏁 Bắt đầu đua!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -60,6 +62,7 @@
           <span class="race-question-num" id="race-q-num">Câu 1/15</span>
           <span class="race-combo" id="race-combo"></span>
           <span class="race-timer" id="race-timer">⏱️ 10</span>
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
         </div>
 
         <!-- RACE TRACK -->
@@ -144,9 +147,39 @@
       </div>
     </section>
   </div>
+
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🏁 Trả lời <b>đúng</b> để xe của bạn <b>tăng tốc</b> trên đường đua.</li>
+        <li>⚡ Đúng liên tiếp <b>3 lần</b> = <b>Combo Tăng Tốc</b>, bứt phá xa hơn.</li>
+        <li>❌ Trả lời <b>sai</b> hoặc <b>hết giờ</b> = xe chỉ nhích lên một chút.</li>
+        <li>⏱️ Mỗi câu chỉ có <b>10 giây</b> — trả lời thật nhanh nhé!</li>
+        <li>🤖 Đua với <b>3 đối thủ máy</b>: Sao Băng, Tia Chớp, Gió Lốc.</li>
+        <li>🏆 Về <b>đích 500m</b> đầu tiên để thắng cuộc đua!</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/speedsters.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

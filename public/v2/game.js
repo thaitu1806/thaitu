@@ -920,7 +920,7 @@ document.getElementById('btn-exit-battle').addEventListener('click', () => {
     document.head.appendChild(s);
   }
   document.body.appendChild(overlay);
-  overlay.querySelector('.confirm-btn-yes').addEventListener('click', () => { overlay.remove(); clearInterval(G.battle?.timer); window.location.href = '/'; });
+  overlay.querySelector('.confirm-btn-yes').addEventListener('click', () => { overlay.remove(); clearInterval(G.battle?.timer); window.location.reload(); });
   overlay.querySelector('.confirm-btn-no').addEventListener('click', () => overlay.remove());
 });
 

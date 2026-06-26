@@ -490,3 +490,165 @@ function init() {
 init();
 
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V28's game logic lives in a private IIFE above, so this layer is fully
+// self-contained: it mounts decorative fairy-tale sprites and reacts to
+// DOM changes (quiz feedback, page rendering) rather than touching logic.
+// V28 is a SPECIAL mode — no /api/sessions saving is added here.
+(function () {
+  'use strict';
+
+  const C = window.HocVuiCharacters;
+  let mascot = null;     // fairy on the tale-select screen
+  let companion = null;  // small pal inside the story book
+
+  function mountInto(host, species, fallbackEmoji) {
+    if (!host) return null;
+    host.innerHTML = '';
+    if (C && C.hasSpecies(species)) {
+      return C.createCharacter(species, host, { state: 'idle' });
+    }
+    host.textContent = fallbackEmoji;
+    return null;
+  }
+
+  function cheer(ch) {
+    if (!ch) return;
+    ch.setState('happy');
+    setTimeout(() => { try { ch.setState('idle'); } catch (e) {} }, 900);
+  }
+
+  // ----- Particle helpers (sparkle + confetti) ---------------------------
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 25) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.18) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  function spawnConfetti(parent, count) {
+    if (!parent) return;
+    const colors = ['#ffd54f', '#f06292', '#42a5f5', '#66bb6a', '#ce93d8', '#ff8f00'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-confetti';
+      p.style.background = colors[i % colors.length];
+      p.style.setProperty('--tx', (Math.random() * 160 - 80) + 'px');
+      p.style.setProperty('--ty', (Math.random() * 60 + 40) + 'px');
+      p.style.setProperty('--rot', (Math.random() * 540 - 270) + 'deg');
+      p.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v28_spawnParticles = spawnParticles;
+  window.__v28_spawnConfetti = spawnConfetti;
+
+  // ----- Mascot mounting --------------------------------------------------
+  // Rotate the royal/fairy/dragon cast so the select screen feels alive.
+  const CAST = ['fairy', 'princess', 'prince', 'dragon'];
+  const CAST_FALLBACK = { fairy: '🧚', princess: '👸', prince: '🤴', dragon: '🐉' };
+  let castIdx = 0;
+
+  function mountMascot() {
+    const host = document.getElementById('tale-mascot');
+    if (!host) return;
+    const species = CAST[castIdx % CAST.length];
+    mascot = mountInto(host, species, CAST_FALLBACK[species]);
+  }
+
+  function mountCompanion() {
+    const book = document.querySelector('.book-container');
+    if (!book) return;
+    let host = document.getElementById('story-companion');
+    if (!host) {
+      host = document.createElement('div');
+      host.id = 'story-companion';
+      host.className = 'story-companion';
+      book.appendChild(host);
+    }
+    // Cycle the cast each time a story opens for variety.
+    castIdx++;
+    const species = CAST[castIdx % CAST.length];
+    companion = mountInto(host, species, CAST_FALLBACK[species]);
+  }
+
+  // ----- State sync via DOM observation ----------------------------------
+  function watchQuizFeedback() {
+    const fb = document.getElementById('quiz-feedback');
+    if (!fb) return;
+    const obs = new MutationObserver(() => {
+      const txt = fb.textContent || '';
+      if (txt.indexOf('Đúng') !== -1) {
+        // Correct answer = story progress: celebrate.
+        cheer(mascot); cheer(companion);
+        const qc = document.querySelector('.quiz-container');
+        if (qc) spawnConfetti(qc, 16);
+      }
+    });
+    obs.observe(fb, { childList: true, characterData: true, subtree: true });
+  }
+
+  function watchStoryScreen() {
+    const screen = document.getElementById('story-screen');
+    if (!screen) return;
+    let wasActive = screen.classList.contains('active');
+    const obs = new MutationObserver(() => {
+      const active = screen.classList.contains('active');
+      if (active && !wasActive) {
+        // Returning to / opening the book — (re)mount + greet the companion.
+        mountCompanion();
+        cheer(companion);
+        const host = document.getElementById('story-companion');
+        if (host) spawnParticles(host, 'sparkle', 6);
+      }
+      wasActive = active;
+    });
+    obs.observe(screen, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // ----- Modals (guide + exit) -------------------------------------------
+  function wireModals() {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const gc = $('btn-guide-close');
+      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const ec = $('btn-exit-cancel');
+      if (ec) ec.addEventListener('click', () => { exit.style.display = 'none'; });
+      const ef = $('btn-exit-confirm');
+      if (ef) ef.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Reloading the page stops the quiz timer and every loop, and re-shows
+        // the start/menu screen. V28 is a special mode — nothing is saved on exit.
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  }
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    mountMascot();
+    wireModals();
+    watchQuizFeedback();
+    watchStoryScreen();
+  });
+})();

@@ -599,3 +599,132 @@
   // BOOT
   init();
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+// Additive layer — does NOT touch the game-logic IIFE above. The fort guard
+// mascot is mounted alongside the existing 🏰 emoji and synced to gameplay by
+// observing the HUD/feedback DOM, so the shooting logic stays untouched.
+(function () {
+  'use strict';
+
+  let guardChar = null;
+  let happyTimer = null;
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  // Mount the chibi fort-guard into the fort zone (replaces the 🏰 emoji host,
+  // with an emoji fallback if the sprite engine is unavailable).
+  function mountGuard() {
+    const host = document.getElementById('fort-emoji');
+    if (!host || guardChar) return;
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies('fortguard')) {
+      host.classList.add('fort-guard-host');
+      host.textContent = '';
+      guardChar = C.createCharacter('fortguard', host, { state: 'idle' });
+    }
+    // else: leave the existing 🏰 emoji as the fallback.
+  }
+
+  function cheer() {
+    if (!guardChar) return;
+    guardChar.setState('happy');
+    if (happyTimer) clearTimeout(happyTimer);
+    happyTimer = setTimeout(() => { if (guardChar) guardChar.setState('idle'); }, 700);
+  }
+
+  // Particle helper — confetti/sparkle burst around the fort on a balloon pop.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 45 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  function spawnSparkle(parent, count) { spawnParticles(parent, 'sparkle', count || 6); }
+  function spawnConfetti(parent, count) { spawnParticles(parent, 'confetti', count || 8); }
+  window.__v25_spawnParticles = spawnParticles;
+
+  ready(function () {
+    const $ = id => document.getElementById(id);
+
+    // Mount the guard whenever the game screen becomes active.
+    const gameScreen = $('game-screen');
+    if (gameScreen) {
+      mountGuard();
+      const screenObs = new MutationObserver(() => {
+        if (gameScreen.classList.contains('active')) mountGuard();
+      });
+      screenObs.observe(gameScreen, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Balloon popped → score HUD increases → cheer + sparkle.
+    const scoreEl = $('hud-score');
+    if (scoreEl) {
+      let last = parseInt(scoreEl.textContent, 10) || 0;
+      const scoreObs = new MutationObserver(() => {
+        const now = parseInt(scoreEl.textContent, 10) || 0;
+        if (now > last) {
+          cheer();
+          const host = document.querySelector('.fort-guard-host') || $('fort-emoji');
+          spawnSparkle(host, 6);
+        }
+        last = now;
+      });
+      scoreObs.observe(scoreEl, { childList: true, characterData: true, subtree: true });
+    }
+
+    // Correct answer feedback → small celebratory confetti on the fort guard.
+    const feedbackEl = $('feedback');
+    if (feedbackEl) {
+      const fbObs = new MutationObserver(() => {
+        if (feedbackEl.classList.contains('correct-fb')) {
+          cheer();
+          const host = document.querySelector('.fort-guard-host') || $('fort-emoji');
+          spawnConfetti(host, 8);
+        }
+      });
+      fbObs.observe(feedbackEl, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Guide modal --------------------------------------------------------
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // Styled exit modal --------------------------------------------------
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop any running loops/timers before leaving by clearing the highest
+        // active interval ids (the logic IIFE owns them privately).
+        try {
+          const top = setInterval(function () {}, 9999);
+          for (let i = 1; i <= top; i++) clearInterval(i);
+          clearInterval(top);
+        } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

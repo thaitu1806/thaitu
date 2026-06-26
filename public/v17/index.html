@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -35,6 +36,7 @@
         </div>
         <div class="setup-stats">🏆 Hành tinh đã khám phá: <strong id="planets-explored">0</strong>/8</div>
         <button class="btn-start" id="btn-start">🚀 Cất cánh!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -55,7 +57,7 @@
       <div class="fly-bg">
         <div class="stars-layer"></div>
       </div>
-      <div class="fly-ship">🚀</div>
+      <div class="fly-ship" id="fly-ship">🚀</div>
       <div class="fly-text" id="fly-text">Đang bay đến...</div>
     </section>
 
@@ -66,8 +68,10 @@
         <div class="ph-planet" id="ph-planet">🔴 Sao Hỏa</div>
         <div class="ph-fuel">⛽ <span id="ph-fuel">100</span>%</div>
         <div class="ph-progress" id="ph-progress">1/5</div>
+        <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
       </div>
       <div class="planet-visual">
+        <div class="planet-astronaut" id="planet-astronaut"></div>
         <div class="planet-emoji" id="planet-emoji">🔴</div>
         <div class="planet-sample" id="planet-sample"></div>
       </div>
@@ -89,9 +93,39 @@
       <div class="result-container" id="result-container"></div>
     </section>
   </div>
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🗺️ Chọn <b>hành tinh</b> trên bản đồ Hệ Mặt Trời để bay đến.</li>
+        <li>🚀 Mỗi hành tinh có <b>5 câu hỏi</b>. Trả lời đúng để khám phá.</li>
+        <li>❌ Trả lời <b>sai</b> hoặc <b>hết giờ</b> = mất <b>15% nhiên liệu</b>.</li>
+        <li>💥 Sai <b>3 lần</b> trên cùng một hành tinh = va chạm, kết thúc.</li>
+        <li>⛽ Hết <b>nhiên liệu</b> là kết thúc chuyến bay.</li>
+        <li>💎 Khám phá hành tinh <b>không sai câu nào</b> = thu thập <b>mẫu vật</b>.</li>
+        <li>🌍 Chinh phục cả <b>8 hành tinh</b> để thắng trọn Hệ Mặt Trời!</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/spacekids.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

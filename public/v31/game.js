@@ -387,3 +387,109 @@ async function saveSession() {
 init();
 
 })();
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
+// V31's game logic lives in the closed IIFE above and is left untouched.
+// This block only adds visuals: a chibi postman sprite on the delivery truck,
+// sparkle particles on a successful delivery, and styled guide/exit modals.
+(function () {
+  'use strict';
+
+  let postman = null;
+
+  function mountPostman() {
+    const host = document.getElementById('truck');
+    if (!host || host.dataset.mounted === '1') return;
+    host.dataset.mounted = '1';
+    host.textContent = '';
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies('postman')) {
+      postman = C.createCharacter('postman', host, { state: 'idle' });
+    } else {
+      host.textContent = '🚗';
+    }
+  }
+
+  // Sparkle particles around the truck on a good delivery.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v31_spawnParticles = spawnParticles;
+
+  function celebrate() {
+    if (postman) {
+      postman.setState('happy');
+      setTimeout(() => { if (postman) postman.setState('idle'); }, 800);
+    }
+    const host = document.getElementById('truck');
+    if (host) spawnParticles(host, 'sparkle', 7);
+  }
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    const $ = id => document.getElementById(id);
+
+    // Mount the postman when the game screen activates.
+    const gameScreen = $('game-screen');
+    if (gameScreen) {
+      const screenObs = new MutationObserver(() => {
+        if (gameScreen.classList.contains('active')) mountPostman();
+      });
+      screenObs.observe(gameScreen, { attributes: true, attributeFilter: ['class'] });
+      if (gameScreen.classList.contains('active')) mountPostman();
+    }
+
+    // React to delivery feedback: "correct" => postman celebrates.
+    const fb = $('q-feedback');
+    if (fb) {
+      const fbObs = new MutationObserver(() => {
+        if (fb.classList.contains('correct')) celebrate();
+      });
+      fbObs.observe(fb, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Guide modal --------------------------------------------------------
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const gc = $('btn-guide-close');
+      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+
+    // Exit modal ---------------------------------------------------------
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const ec = $('btn-exit-cancel');
+      if (ec) ec.addEventListener('click', () => { exit.style.display = 'none'; });
+      const ef = $('btn-exit-confirm');
+      if (ef) ef.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop every running timer/loop before leaving (state is private to the
+        // logic IIFE, so clear the whole timer range non-invasively).
+        try {
+          const hi = setTimeout(function () {}, 0);
+          for (let i = 0; i <= hi; i++) { clearTimeout(i); clearInterval(i); }
+        } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

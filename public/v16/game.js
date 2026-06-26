@@ -351,3 +351,145 @@ async function logAnswer(q, selected, correct, isCorrect) {
   const playerId = getPlayerId(); if (!playerId) return;
   try { await fetch('/api/answers', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ session_id: 0, player_id: playerId, question_id: q.id||0, selected_answer: selected, correct_answer: correct, is_correct: isCorrect?1:0, time_spent_ms: Math.round((QUESTION_TIME-S.timeLeft)*1000), difficulty: S.config.difficulty, combo_streak: S.combo }) }); } catch {}
 }
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+(function () {
+  'use strict';
+  let chefChar = null;
+  let helperChar = null;
+  let happyTimer = null;
+
+  function mountChefs() {
+    const C = window.HocVuiCharacters;
+    const chefHost = document.getElementById('chef-avatar');
+    const helperHost = document.getElementById('helper-avatar');
+    if (chefHost && !chefChar) {
+      chefHost.textContent = '';
+      if (C && C.hasSpecies('chef')) {
+        chefChar = C.createCharacter('chef', chefHost, { state: 'idle' });
+      } else {
+        chefHost.textContent = '👨‍🍳';
+      }
+    }
+    if (helperHost && !helperChar) {
+      helperHost.textContent = '';
+      if (C && C.hasSpecies('helper')) {
+        helperChar = C.createCharacter('helper', helperHost, { state: 'idle' });
+      } else {
+        helperHost.textContent = '🍲';
+      }
+    }
+  }
+
+  function cheer(duration) {
+    if (chefChar) chefChar.setState('happy');
+    if (helperChar) helperChar.setState('happy');
+    if (happyTimer) clearTimeout(happyTimer);
+    happyTimer = setTimeout(() => {
+      if (chefChar) chefChar.setState('idle');
+      if (helperChar) helperChar.setState('idle');
+    }, duration || 700);
+  }
+
+  // Particle helper — sparkles around the chef on a correct answer.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+
+  // Confetti burst — played when a dish is completed.
+  function spawnConfetti(parent, count) {
+    if (!parent) return;
+    const colors = ['#fbbf24', '#f97316', '#22c55e', '#ef4444', '#0077b6', '#fff'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-confetti';
+      p.style.background = colors[i % colors.length];
+      p.style.setProperty('--tx', (Math.random() * 160 - 80) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 60 + 40) + 'px');
+      p.style.setProperty('--rot', (Math.random() * 540 - 270) + 'deg');
+      p.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v16_spawnParticles = spawnParticles;
+  window.__v16_spawnConfetti = spawnConfetti;
+
+  // Mount the chef when a new customer arrives. nextCustomer() is called by
+  // global name inside startGame(), so reassigning it here runs reliably
+  // (the btn-start listener captured the original startGame reference).
+  if (typeof nextCustomer === 'function') {
+    const origNext = nextCustomer;
+    nextCustomer = function () {
+      mountChefs();
+      if (chefChar) chefChar.setState('idle');
+      if (helperChar) helperChar.setState('idle');
+      return origNext.apply(this, arguments);
+    };
+  }
+
+  // Correct answer — quick cheer + sparkles around the chef.
+  if (typeof handleCorrect === 'function') {
+    const origCorrect = handleCorrect;
+    handleCorrect = function () {
+      cheer(700);
+      const stage = document.querySelector('.chef-stage');
+      if (stage) spawnParticles(stage, 'sparkle', 7);
+      return origCorrect.apply(this, arguments);
+    };
+  }
+
+  // Dish complete — bigger celebration + confetti.
+  if (typeof dishComplete === 'function') {
+    const origComplete = dishComplete;
+    dishComplete = function () {
+      cheer(1500);
+      const stage = document.querySelector('.chef-stage');
+      if (stage) spawnConfetti(stage, 18);
+      return origComplete.apply(this, arguments);
+    };
+  }
+
+  // Modals (guide + exit) ---------------------------------------------------
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const gc = $('btn-guide-close');
+      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const ec = $('btn-exit-cancel');
+      if (ec) ec.addEventListener('click', () => { exit.style.display = 'none'; });
+      const ef = $('btn-exit-confirm');
+      if (ef) ef.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop loops/timers before leaving.
+        try { stopQuestionTimer(); } catch (e) {}
+        try { stopPatience(); } catch (e) {}
+        try { S.gameOver = true; } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -87,6 +88,7 @@
 
         <!-- Start Button -->
         <button class="btn-start" id="btn-start" disabled>🚀 Bắt đầu!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
 
         <button class="btn-online" id="btn-online-mode">🌐 Chơi Online</button>
 
@@ -173,9 +175,38 @@
     </section>
   </div>
 
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi Cờ Cá Ngựa</h3>
+      <ul class="modal-rules">
+        <li>🎲 Bấm <b>Tung xúc xắc</b> rồi bấm vào <b>ô đích</b> để di chuyển.</li>
+        <li>✅ Trả lời <b>đúng</b> = quân tiến tới ô đích. <b>Sai</b> = đứng yên, mất lượt.</li>
+        <li>⭐ Ô sao = tiến thêm <b>2 ô</b> thưởng.</li>
+        <li>⚠️ Ô bẫy = ngẫu nhiên: zombie thắng (lùi 3 ô) / bạn thắng (đứng yên) / thử thách câu hỏi.</li>
+        <li>🦶 Đạp lên quân khác = <b>đá</b> quân đó về vạch xuất phát.</li>
+        <li>🏆 Ai về <b>đích</b> trước thì thắng! Chơi 2-4 người hoặc với máy 🤖.</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/horses.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script type="module" src="game.js"></script>
@@ -186,5 +217,6 @@
   </script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
+  <script src="/help-rules.js"></script>
 </body>
 </html>

@@ -104,3 +104,76 @@ body { font-family: 'Nunito', sans-serif; min-height: 100vh; background: #2d8a4e
 .qr-btn { padding: 14px 22px; border: none; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; font-family: inherit; }
 .qr-btn.primary { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
 .qr-btn.secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+
+/* ===== CHARACTER SYSTEM ===== */
+/* Sprite host inside a zoo cell — explicit box so SVG sizes without font-size. */
+.cell-sprite-host { display: flex; align-items: center; justify-content: center; width: 54px; height: 54px; }
+.hv-char { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.hv-char svg { width: 100%; height: 100%; overflow: visible; }
+.hv-char svg .head, .hv-char svg .body, .hv-char svg .accent, .hv-char svg .tail, .hv-char svg .trunk { transform-origin: center; transform-box: fill-box; }
+
+/* Idle — gentle breathing sway, always playing. */
+.hv-char.is-idle svg { animation: animal-idle 2.4s ease-in-out infinite; }
+@keyframes animal-idle { 0%,100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-3px) rotate(1.5deg); } }
+
+/* Idle accents — monkey tail flick + lion mane breathe. */
+.hv-char.is-idle svg .tail { animation: animal-tail 2.8s ease-in-out infinite; }
+@keyframes animal-tail { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(6deg); } }
+
+/* Happy — celebratory bounce, played once when freshly collected. */
+.hv-char.is-happy svg { animation: animal-happy 0.7s ease-out; }
+@keyframes animal-happy { 0% { transform: scale(1); } 35% { transform: scale(1.22) rotate(-7deg); } 65% { transform: scale(1.06) rotate(5deg); } 100% { transform: scale(1) rotate(0); } }
+
+/* ===== PARTICLES ===== */
+.pfx { position: absolute; left: 50%; top: 50%; pointer-events: none; will-change: transform, opacity; z-index: 50; }
+.pfx-sparkle {
+  width: 8px; height: 8px; margin: -4px 0 0 -4px;
+  background: radial-gradient(circle, #fff 0%, #ffd700 55%, transparent 70%);
+  border-radius: 50%;
+  animation: pfx-sparkle 0.8s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-sparkle {
+  0% { transform: translate(0,0) scale(0.4); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) scale(1.3); opacity: 0; }
+}
+.pfx-confetti {
+  width: 8px; height: 10px; margin: -5px 0 0 -4px; border-radius: 2px;
+  background: #f59e0b;
+  animation: pfx-confetti 0.9s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+.pfx-confetti:nth-child(3n) { background: #8b5cf6; }
+.pfx-confetti:nth-child(3n+1) { background: #22c55e; }
+.pfx-confetti:nth-child(3n+2) { background: #ec4899; }
+@keyframes pfx-confetti {
+  0% { transform: translate(0,0) rotate(0) scale(0.6); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) rotate(260deg) scale(1); opacity: 0; }
+}
+
+/* ===== GUIDE BUTTON + EXIT BUTTON ===== */
+.btn-guide { display: block; width: calc(100% - 28px); margin: 0 auto 4px; padding: 12px; background: rgba(255,255,255,0.18); color: #fff; border: 2px solid rgba(255,255,255,0.45); border-radius: 14px; font-size: 0.95rem; font-weight: 800; cursor: pointer; font-family: inherit; }
+.btn-guide:active { transform: scale(0.97); }
+.btn-exit { padding: 6px 11px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.35); color: #fff; border-radius: 10px; font-size: 0.9rem; cursor: pointer; font-family: inherit; }
+.btn-exit:active { transform: scale(0.92); }
+
+/* ===== MODALS (guide + exit) ===== */
+.modal-overlay { position: fixed; inset: 0; z-index: 9500; background: rgba(0,0,0,0.65); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-card { background: #fff; color: #1a3d24; border-radius: 20px; padding: 22px 20px; max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: modalPop 0.3s ease; }
+@keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-title { font-size: 1.25rem; text-align: center; margin-bottom: 14px; }
+.modal-rules { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.modal-rules li { padding: 7px 0; font-size: 0.95rem; line-height: 1.5; border-bottom: 1px solid #e3f0e6; }
+.modal-rules li:last-child { border-bottom: none; }
+.modal-rules b { color: #16a34a; }
+.modal-card .zoo-btn.play { width: 100%; }
+.exit-modal-card { text-align: center; max-width: 320px; }
+.exit-modal-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.exit-modal-text { font-size: 1.1rem; font-weight: 800; color: #1a3d24; margin-bottom: 6px; }
+.exit-modal-sub { font-size: 0.85rem; color: #777; margin-bottom: 18px; }
+.exit-modal-actions { display: flex; gap: 10px; justify-content: center; }
+.exit-modal-cancel { padding: 10px 18px; background: #e0e0e0; color: #333; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-confirm { padding: 10px 18px; background: #d97706; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; }
+.exit-modal-cancel:active, .exit-modal-confirm:active { transform: translateY(2px); }

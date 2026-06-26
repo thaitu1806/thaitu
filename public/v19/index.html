@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -37,6 +38,7 @@
           <div class="stat-item">🏆 Vụ án đã phá: <strong id="cases-solved">0</strong>/6</div>
         </div>
         <button class="btn-start" id="btn-start">🔍 Bắt đầu điều tra!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -56,8 +58,15 @@
       <div class="investigation-container">
         <!-- Case header -->
         <div class="case-header">
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
           <div class="case-badge" id="case-badge">Vụ án #1</div>
           <h2 class="case-question" id="case-story"></h2>
+        </div>
+
+        <!-- Detective avatar -->
+        <div class="detective-stage" id="detective-stage">
+          <div class="detective-host" id="detective-host"></div>
+          <div class="pup-host" id="pup-host"></div>
         </div>
 
         <!-- Clue Board -->
@@ -107,9 +116,38 @@
       <div class="result-container" id="result-container"></div>
     </section>
   </div>
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>📁 Chọn một <b>vụ án</b> để bắt đầu điều tra.</li>
+        <li>🔍 Bấm <b>Tìm manh mối tiếp</b> rồi trả lời câu hỏi đúng để <b>mở manh mối</b>.</li>
+        <li>📌 Mỗi câu đúng mở thêm một manh mối trên <b>bảng manh mối</b> (tối đa 5).</li>
+        <li>⏱️ Mỗi câu có <b>12 giây</b> — hết giờ thì manh mối chưa mở, thử lại nhé.</li>
+        <li>🧠 Khi đủ manh mối, bấm <b>Phán đoán thủ phạm</b> và chọn nghi phạm đúng.</li>
+        <li>🎉 Phán đoán đúng = <b>phá án</b> và mở khóa vụ án tiếp theo!</li>
+      </ul>
+      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/detectives.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

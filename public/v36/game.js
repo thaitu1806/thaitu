@@ -420,6 +420,152 @@ async function saveSession() {
   } catch(e) {}
 }
 
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+let diverChar = null;
+let chestChar = null;
+
+function mountDiver() {
+  const host = document.getElementById('start-diver');
+  if (!host) return;
+  host.innerHTML = '';
+  diverChar = null;
+  const C = window.HocVuiCharacters;
+  if (C && C.hasSpecies('diver')) {
+    diverChar = C.createCharacter('diver', host, { state: 'idle' });
+  } else {
+    host.textContent = '🤿';
+  }
+}
+
+function mountChest() {
+  const host = document.getElementById('chest-sprite');
+  if (!host) return;
+  host.innerHTML = '';
+  chestChar = null;
+  const C = window.HocVuiCharacters;
+  const iconEl = document.querySelector('#treasure-chest .chest-icon');
+  if (C && C.hasSpecies('chest')) {
+    chestChar = C.createCharacter('chest', host, { state: 'idle' });
+    if (iconEl) iconEl.style.display = 'none';
+  } else {
+    if (iconEl) iconEl.style.display = '';
+  }
+}
+
+// Sparkle particle helper — bursts around an element on a happy moment.
+function diverSpawnSparkles(parent, count) {
+  if (!parent) return;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('span');
+    p.className = 'pfx pfx-sparkle';
+    p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+    p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+    p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+    parent.appendChild(p);
+    p.addEventListener('animationend', () => p.remove(), { once: true });
+  }
+}
+
+// Confetti burst around an element (used when the treasure is unlocked).
+function diverSpawnConfetti(parent, count) {
+  if (!parent) return;
+  const colors = ['#ffd60a', '#00b4d8', '#48cae4', '#90e0ef', '#a855f7', '#22c55e'];
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('span');
+    p.className = 'pfx pfx-confetti';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.setProperty('--tx', (Math.random() * 120 - 60) + 'px');
+    p.style.setProperty('--ty', (Math.random() * 60 + 30) + 'px');
+    p.style.setProperty('--delay', (Math.random() * 0.2) + 's');
+    parent.appendChild(p);
+    p.addEventListener('animationend', () => p.remove(), { once: true });
+  }
+}
+
+// Wrap startGame to mount the chest mascot for each new game (presentation).
+const __origStartGame = startGame;
+startGame = async function () {
+  const r = await __origStartGame.apply(this, arguments);
+  mountChest();
+  return r;
+};
+
+// Wrap updateUI to sync the chest mascot state with map progress.
+const __origUpdateUI = updateUI;
+updateUI = function () {
+  const r = __origUpdateUI.apply(this, arguments);
+  if (chestChar) chestChar.setState(mapPieces >= 4 ? 'happy' : 'idle');
+  return r;
+};
+
+// Wrap handleAnswer to celebrate a correct answer on the diver sprite.
+const __origHandleAnswer = handleAnswer;
+handleAnswer = function (selected, correct) {
+  const wasCorrect = String(selected).toLowerCase() === String(correct).toLowerCase();
+  const r = __origHandleAnswer.apply(this, arguments);
+  if (wasCorrect) {
+    if (diverChar) {
+      diverChar.setState('happy');
+      setTimeout(() => { if (diverChar) diverChar.setState('idle'); }, 700);
+    }
+    const startDiver = document.getElementById('start-diver');
+    if (startDiver) diverSpawnSparkles(startDiver, 6);
+  }
+  return r;
+};
+
+// Wrap revealTile to sparkle on the revealed tile, and confetti on treasure.
+const __origRevealTile = revealTile;
+revealTile = function () {
+  const idx = selectedTile;
+  const beforeMap = mapPieces;
+  const r = __origRevealTile.apply(this, arguments);
+  if (idx !== null) {
+    const tileEl = document.querySelectorAll('.grid-tile')[idx];
+    if (tileEl) diverSpawnSparkles(tileEl, 5);
+  }
+  // Treasure just completed → celebrate on the chest.
+  if (beforeMap < 4 && mapPieces >= 4) {
+    if (chestChar) {
+      chestChar.setState('happy');
+    }
+    const chestHost = document.getElementById('treasure-chest');
+    if (chestHost) diverSpawnConfetti(chestHost, 14);
+  }
+  return r;
+};
+
+// Modals (guide + exit) ---------------------------------------------------
+function setupModals() {
+  const $ = id => document.getElementById(id);
+  const guide = $('guide-modal');
+  const guideBtn = $('btn-guide');
+  if (guide && guideBtn) {
+    guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+    const close = $('btn-guide-close');
+    if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+    guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+  }
+  const exit = $('exit-modal');
+  const exitBtn = $('btn-exit');
+  if (exit && exitBtn) {
+    exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+    const cancel = $('btn-exit-cancel');
+    if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+    const confirm = $('btn-exit-confirm');
+    if (confirm) confirm.addEventListener('click', () => {
+      exit.style.display = 'none';
+      // Stop timers/loops before leaving.
+      try { clearInterval(timer); } catch (e) {}
+      gameActive = false;
+      window.location.reload();
+    });
+    exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+  }
+}
+
 init();
+mountDiver();
+setupModals();
 
 })();

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script src="../api-config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -20,6 +21,7 @@
           <span>🏅 Huy chương: </span><span id="high-medals">0</span>
         </div>
         <button class="btn-primary" id="btn-start">🏟️ Vào Thi Đấu!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
@@ -28,8 +30,10 @@
     <section id="game-screen" class="screen">
       <div class="game-container">
         <div class="game-header">
+          <span class="athlete-stage" id="athlete-stage"></span>
           <span class="event-label" id="event-label">🏃 Chạy 100m</span>
           <span class="event-progress">Môn <span id="event-num">1</span>/5</span>
+          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
         </div>
 
         <!-- Scoreboard -->
@@ -82,8 +86,36 @@
     </section>
   </div>
 
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>🏟️ Thi đấu <b>5 môn</b> Olympic mini: chạy, nhảy xa, bơi, bắn cung, xe đạp.</li>
+        <li>📝 Mỗi môn có <b>5 câu hỏi</b> — trả lời <b>đúng</b> để chạy về đích nhanh hơn.</li>
+        <li>⏱️ Mỗi câu có <b>10 giây</b>, hết giờ coi như trả lời sai.</li>
+        <li>🥇 Cuối mỗi môn so tài với JP, US, KR để giành <b>huy chương</b> vàng, bạc, đồng.</li>
+        <li>🏆 Gom thật nhiều huy chương để leo lên <b>bục vô địch</b>!</li>
+      </ul>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-modal-card">
+      <div class="exit-modal-icon">🚪</div>
+      <p class="exit-modal-text">Thoát game?</p>
+      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
+      <div class="exit-modal-actions">
+        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
+  <script src="/lib/character.js"></script>
+  <script src="/lib/sprites/athletes.js"></script>
   <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>

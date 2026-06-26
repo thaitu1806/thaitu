@@ -557,3 +557,150 @@ document.getElementById('btn-speak-v10')?.addEventListener('click', () => {
   if (!q) return;
   window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, 'mix');
 });
+
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+// V10's game logic lives inside an IIFE, so internal functions are not
+// reachable. Instead we observe the DOM (feedback text + grid cell classes)
+// to mirror the gameplay onto animated character sprites — fully additive.
+(function () {
+  'use strict';
+  let sapperChar = null;
+  let bombChar = null;
+  let happyTimer = null;
+  let scaredTimer = null;
+
+  function mountMascots() {
+    const C = window.HocVuiCharacters;
+    const sHost = document.getElementById('sapper-mascot');
+    const bHost = document.getElementById('bomb-mascot');
+    if (sHost) {
+      sHost.innerHTML = '';
+      if (C && C.hasSpecies('sapper')) {
+        sapperChar = C.createCharacter('sapper', sHost, { state: 'idle' });
+      } else {
+        sHost.textContent = '🧑‍🚒';
+      }
+    }
+    if (bHost) {
+      bHost.innerHTML = '';
+      if (C && C.hasSpecies('bomb')) {
+        bombChar = C.createCharacter('bomb', bHost, { state: 'idle' });
+      } else {
+        bHost.textContent = '💣';
+      }
+    }
+  }
+
+  function setSapper(state, holdMs) {
+    if (!sapperChar) return;
+    sapperChar.setState(state);
+    if (state === 'happy') {
+      if (happyTimer) clearTimeout(happyTimer);
+      happyTimer = setTimeout(() => { if (sapperChar) sapperChar.setState('idle'); }, holdMs || 800);
+    } else if (state === 'scared') {
+      if (scaredTimer) clearTimeout(scaredTimer);
+      scaredTimer = setTimeout(() => { if (sapperChar) sapperChar.setState('idle'); }, holdMs || 1000);
+    }
+  }
+
+  // Particle helper — sparkles around a host element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  window.__v10_spawnParticles = spawnParticles;
+
+  function celebrate() {
+    setSapper('happy');
+    const host = document.getElementById('sapper-mascot');
+    if (host) spawnParticles(host, 'sparkle', 7);
+  }
+
+  function panic() {
+    setSapper('scared');
+    if (bombChar) {
+      bombChar.setState('scared');
+      setTimeout(() => { if (bombChar) bombChar.setState('idle'); }, 900);
+    }
+    const host = document.getElementById('bomb-mascot');
+    if (host) spawnParticles(host, 'ember', 8);
+  }
+
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  ready(function () {
+    mountMascots();
+
+    // Observe quiz feedback text → happy on a correct answer.
+    const feedback = document.getElementById('quiz-feedback');
+    if (feedback) {
+      new MutationObserver(() => {
+        const t = feedback.textContent || '';
+        if (t.indexOf('Đúng') !== -1) celebrate();
+      }).observe(feedback, { childList: true, characterData: true, subtree: true });
+    }
+
+    // Observe the grid → scared when a mine opens, happy when treasure found.
+    const grid = document.getElementById('grid-container');
+    if (grid) {
+      new MutationObserver(muts => {
+        for (const m of muts) {
+          const el = m.target;
+          if (!el || el.nodeType !== 1 || !el.classList) continue;
+          if (el.classList.contains('mine-hit')) panic();
+          else if (el.classList.contains('treasure-found')) celebrate();
+        }
+      }).observe(grid, { attributes: true, attributeFilter: ['class'], subtree: true });
+    }
+
+    // Re-mount mascots whenever the game screen becomes active (new game).
+    const gameScreen = document.getElementById('game-screen');
+    if (gameScreen) {
+      new MutationObserver(() => {
+        if (gameScreen.classList.contains('active') && !document.querySelector('#sapper-mascot .hv-char')) {
+          mountMascots();
+        }
+      }).observe(gameScreen, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Modals (guide + exit) ------------------------------------------------
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Pause the visible timer loop and freeze mascots, then navigate away.
+        // (Navigating to "/" unloads the page, which stops all interval timers.)
+        if (sapperChar) try { sapperChar.setState('idle'); } catch (e) {}
+        if (bombChar) try { bombChar.setState('idle'); } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

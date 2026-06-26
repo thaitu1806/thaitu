@@ -285,3 +285,142 @@ async function logAnswer(q, selected, correct, isCorrect) {
   const playerId = getPlayerId(); if (!playerId) return;
   try { await fetch('/api/answers', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ session_id: 0, player_id: playerId, question_id: q.id||0, selected_answer: selected, correct_answer: correct, is_correct: isCorrect?1:0, time_spent_ms: Math.round((QUESTION_TIME-S.timeLeft)*1000), difficulty: S.config.difficulty, combo_streak: 0 }) }); } catch {}
 }
+
+// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+(function () {
+  'use strict';
+  let astroChar = null;
+  let shipChar = null;
+
+  // Mount the chibi astronaut next to the planet quiz (emoji fallback).
+  function mountAstronaut() {
+    const host = document.getElementById('planet-astronaut');
+    if (!host) return;
+    host.innerHTML = '';
+    astroChar = null;
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies('astronaut')) {
+      astroChar = C.createCharacter('astronaut', host, { state: 'idle' });
+    } else {
+      host.textContent = '🧑‍🚀';
+    }
+  }
+
+  // Mount the rocket sprite on the fly transition screen (emoji fallback).
+  function mountShip() {
+    const host = document.getElementById('fly-ship');
+    if (!host) return;
+    host.innerHTML = '';
+    shipChar = null;
+    const C = window.HocVuiCharacters;
+    if (C && C.hasSpecies('rocket')) {
+      shipChar = C.createCharacter('rocket', host, { state: 'happy' });
+    } else {
+      host.textContent = '🚀';
+    }
+  }
+
+  // Particle helper — sparkle / confetti burst around a host element.
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 50 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.18) + 's');
+      if (kind === 'confetti') {
+        const hues = ['#fbbf24', '#6366f1', '#22c55e', '#f0a04b', '#a5b4fc', '#ef4444'];
+        p.style.background = hues[i % hues.length];
+      }
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  function spawnConfetti(parent, count) { spawnParticles(parent, 'confetti', count || 16); }
+  window.__v17_spawnParticles = spawnParticles;
+  window.__v17_spawnConfetti = spawnConfetti;
+
+  // Wrap flyToPlanet to mount the rocket sprite during the transition.
+  if (typeof flyToPlanet === 'function') {
+    const orig = flyToPlanet;
+    flyToPlanet = function () {
+      const r = orig.apply(this, arguments);
+      mountShip();
+      return r;
+    };
+  }
+
+  // Wrap startPlanetQuiz to mount the astronaut sprite on the planet screen.
+  if (typeof startPlanetQuiz === 'function') {
+    const orig = startPlanetQuiz;
+    startPlanetQuiz = function () {
+      const r = orig.apply(this, arguments);
+      mountAstronaut();
+      return r;
+    };
+  }
+
+  // Wrap handleCorrect to play the astronaut's happy bounce + sparkles.
+  if (typeof handleCorrect === 'function') {
+    const orig = handleCorrect;
+    handleCorrect = function () {
+      const r = orig.apply(this, arguments);
+      if (astroChar) {
+        astroChar.setState('happy');
+        setTimeout(() => { if (astroChar) astroChar.setState('idle'); }, 700);
+      }
+      const host = document.getElementById('planet-astronaut');
+      if (host) spawnParticles(host, 'sparkle', 8);
+      return r;
+    };
+  }
+
+  // Wrap planetComplete to celebrate a cleared planet with confetti.
+  if (typeof planetComplete === 'function') {
+    const orig = planetComplete;
+    planetComplete = function () {
+      const r = orig.apply(this, arguments);
+      if (astroChar) {
+        astroChar.setState('happy');
+        setTimeout(() => { if (astroChar) astroChar.setState('idle'); }, 700);
+      }
+      const host = document.getElementById('planet-astronaut');
+      if (host) spawnConfetti(host, 18);
+      return r;
+    };
+  }
+
+  // Modals (guide + exit) ---------------------------------------------------
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  ready(function () {
+    const $ = id => document.getElementById(id);
+    const guide = $('guide-modal');
+    const guideBtn = $('btn-guide');
+    if (guide && guideBtn) {
+      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
+      const close = $('btn-guide-close');
+      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
+      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+    }
+    const exit = $('exit-modal');
+    const exitBtn = $('btn-exit');
+    if (exit && exitBtn) {
+      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
+      const cancel = $('btn-exit-cancel');
+      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
+      const confirm = $('btn-exit-confirm');
+      if (confirm) confirm.addEventListener('click', () => {
+        exit.style.display = 'none';
+        // Stop timers/loops before leaving.
+        try { stopTimer(); } catch (e) {}
+        try { S.gameOver = true; } catch (e) {}
+        window.location.reload();
+      });
+      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
+    }
+  });
+})();

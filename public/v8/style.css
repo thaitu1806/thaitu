@@ -137,3 +137,78 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .castle-area.theme-tree { background: linear-gradient(180deg, #56ab2f 0%, #2d7a2d 40%, #1a5c1a 70%, #0d3b0d 100%); }
 .castle-area.theme-space { background: linear-gradient(180deg, #0f0c29 0%, #302b63 40%, #24243e 70%, #0f0c29 100%); }
 .castle-area.theme-candy { background: linear-gradient(180deg, #ffecd2 0%, #fcb69f 40%, #ff9a9e 70%, #fad0c4 100%); }
+
+/* ===== BUILDER MASCOT HOST ===== */
+.builder-mascot { position: absolute; top: 10px; right: 10px; width: 84px; height: 84px; z-index: 5; pointer-events: none; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
+
+/* ===== CHARACTER SYSTEM ===== */
+.hv-char { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.hv-char svg { width: 100%; height: 100%; overflow: visible; }
+.hv-char svg .head, .hv-char svg .body, .hv-char svg .accent, .hv-char svg .arm, .hv-char svg .tool, .hv-char svg .plume, .hv-char svg .crown { transform-origin: center; transform-box: fill-box; }
+
+/* Idle — gentle breathing sway + a little arm/tool bob */
+.hv-char.is-idle svg { animation: builder-idle 2.6s ease-in-out infinite; }
+.hv-char.is-idle svg .arm { animation: builder-arm 2.2s ease-in-out infinite; }
+@keyframes builder-idle { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-4px) rotate(1deg); } }
+@keyframes builder-arm { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(8deg); } }
+
+/* Happy — celebratory hammer-swing bounce played once on a block built */
+.hv-char.is-happy svg { animation: builder-happy 0.7s ease-out; }
+.hv-char.is-happy svg .arm { animation: builder-swing 0.7s ease-out; }
+@keyframes builder-happy { 0% { transform: scale(1); } 35% { transform: scale(1.16) rotate(-5deg) translateY(-4px); } 70% { transform: scale(1.04) rotate(4deg); } 100% { transform: scale(1); } }
+@keyframes builder-swing { 0% { transform: rotate(0); } 40% { transform: rotate(-28deg); } 100% { transform: rotate(0); } }
+
+/* Scared — tremble during an earthquake */
+.hv-char.is-scared svg { animation: builder-scared 0.9s ease-in-out; }
+@keyframes builder-scared { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-4px) rotate(-3deg); } 40% { transform: translateX(4px) rotate(3deg); } 60% { transform: translateX(-3px) rotate(-2deg); } 80% { transform: translateX(3px) rotate(2deg); } }
+
+/* ===== PARTICLES ===== */
+.pfx { position: absolute; left: 50%; top: 50%; pointer-events: none; will-change: transform, opacity; z-index: 24; }
+.pfx-sparkle {
+  width: 8px; height: 8px; margin: -4px 0 0 -4px;
+  background: radial-gradient(circle, #fff 0%, #f4c430 55%, transparent 72%);
+  border-radius: 50%;
+  animation: pfx-sparkle 0.8s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-sparkle {
+  0% { transform: translate(0,0) scale(0.4); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) scale(1.3); opacity: 0; }
+}
+.pfx-confetti {
+  width: 9px; height: 14px; top: -10px; left: var(--x, 50%); margin: 0;
+  border-radius: 2px;
+  animation: pfx-confetti 1.5s ease-in forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-confetti {
+  0% { transform: translateY(-10px) rotate(var(--rot, 0deg)); opacity: 1; }
+  100% { transform: translateY(360px) rotate(calc(var(--rot, 0deg) + 360deg)); opacity: 0; }
+}
+
+/* ===== GUIDE BUTTON ===== */
+.btn-guide { display: block; width: 100%; min-height: 48px; margin-top: 10px; background: rgba(52,152,219,0.12); color: var(--blue); border: 2.5px solid var(--blue); border-radius: 14px; font-family: var(--font); font-size: 1rem; font-weight: 800; cursor: pointer; }
+.btn-guide:active { transform: scale(0.97); }
+
+/* ===== BTN-EXIT (in-game) ===== */
+.btn-exit { width: 34px; height: 34px; border-radius: 50%; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.4); color: #fff; font-size: 1.05rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.btn-exit:active { transform: scale(0.92); }
+
+/* ===== MODALS (guide + exit) ===== */
+.modal-overlay { position: fixed; inset: 0; z-index: 9500; background: rgba(0,0,0,0.65); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-card { background: #fff; color: var(--text); border-radius: 20px; padding: 22px 20px; max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: modalPop 0.3s ease; }
+@keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-title { font-size: 1.25rem; text-align: center; margin-bottom: 14px; }
+.modal-rules { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.modal-rules li { padding: 7px 0; font-size: 0.95rem; line-height: 1.5; border-bottom: 1px solid var(--border); }
+.modal-rules li:last-child { border-bottom: none; }
+.modal-rules b { color: var(--blue); }
+.exit-modal-card { text-align: center; max-width: 320px; }
+.exit-modal-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.exit-modal-text { font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.exit-modal-sub { font-size: 0.85rem; color: var(--text-light); margin-bottom: 18px; }
+.exit-modal-actions { display: flex; gap: 10px; justify-content: center; }
+.exit-modal-cancel { flex: 1; padding: 12px 18px; background: var(--border); color: var(--text); border: none; border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: var(--font); }
+.exit-modal-confirm { flex: 1; padding: 12px 18px; background: var(--red); color: #fff; border: none; border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer; font-family: var(--font); }
+.exit-modal-cancel:active, .exit-modal-confirm:active { transform: translateY(2px); }

@@ -93,3 +93,79 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   .card-back { font-size: 1.4rem; }
   .card-front { font-size: 0.7rem; }
 }
+
+/* ===== MASCOT HOST ===== */
+.mascot-corner {
+  position: absolute; right: 10px; bottom: 10px;
+  width: 76px; height: 76px; z-index: 50; pointer-events: none;
+  filter: drop-shadow(0 4px 10px rgba(74, 44, 106, 0.35));
+}
+@media (max-width: 360px) { .mascot-corner { width: 60px; height: 60px; } }
+
+/* ===== CHARACTER SYSTEM ===== */
+.hv-char { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.hv-char svg { width: 100%; height: 100%; overflow: visible; }
+.hv-char svg .head, .hv-char svg .body, .hv-char svg .accent,
+.hv-char svg .wing, .hv-char svg .tassel { transform-origin: center; transform-box: fill-box; }
+
+/* Owl idle — gentle breathing + slow wing sway + tassel swing */
+.hv-char.is-idle svg .body { animation: owl-breathe 3s ease-in-out infinite; }
+.hv-char.is-idle svg .wing-l { animation: owl-wing-l 2.6s ease-in-out infinite; }
+.hv-char.is-idle svg .wing-r { animation: owl-wing-r 2.6s ease-in-out infinite; }
+.hv-char.is-idle svg .tassel { animation: owl-tassel 2.4s ease-in-out infinite; }
+@keyframes owl-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+@keyframes owl-wing-l { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-8deg); } }
+@keyframes owl-wing-r { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(8deg); } }
+@keyframes owl-tassel { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(8deg); } }
+
+/* Happy — celebratory bounce when a pair is matched */
+.hv-char.is-happy svg { animation: char-happy 0.7s ease-out; }
+@keyframes char-happy {
+  0% { transform: scale(1) rotate(0); }
+  30% { transform: scale(1.18) rotate(-7deg); }
+  60% { transform: scale(1.08) rotate(5deg) translateY(-4px); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* Decorative star/puzzle pals ambient idle */
+.hv-char.is-idle svg.pal { animation: pal-sway 2.6s ease-in-out infinite; }
+@keyframes pal-sway { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-3px) rotate(3deg); } }
+
+/* ===== PARTICLES ===== */
+.pfx { position: absolute; left: 50%; top: 50%; pointer-events: none; will-change: transform, opacity; z-index: 55; }
+.pfx-sparkle {
+  width: 7px; height: 7px; margin: -3px 0 0 -3px;
+  background: radial-gradient(circle, #fff 0%, #f1c40f 55%, transparent 70%);
+  border-radius: 50%;
+  animation: pfx-sparkle 0.8s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes pfx-sparkle {
+  0% { transform: translate(0,0) scale(0.4); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(var(--tx,0), var(--ty,-30px)) scale(1.3); opacity: 0; }
+}
+
+/* ===== GUIDE BUTTON ===== */
+.btn-guide { display: block; width: 100%; min-height: 50px; margin-top: 12px; background: rgba(155, 89, 182, 0.12); color: var(--purple); border: 2px solid rgba(155, 89, 182, 0.4); border-radius: 14px; font-family: var(--font); font-size: 1.05rem; font-weight: 800; cursor: pointer; }
+.btn-guide:active { transform: scale(0.96); }
+
+/* ===== MODALS (guide + styled exit) ===== */
+.modal-overlay { position: fixed; inset: 0; z-index: 9500; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-card { background: #fff; color: var(--text); border-radius: 20px; padding: 22px 20px; max-width: 360px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: modalPop 0.3s ease; }
+@keyframes modalPop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal-title { font-size: 1.3rem; text-align: center; margin-bottom: 14px; }
+.modal-rules { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+.modal-rules li { padding: 7px 0; font-size: 0.95rem; line-height: 1.5; border-bottom: 1px solid #f0eaf7; }
+.modal-rules li:last-child { border-bottom: none; }
+.modal-rules b { color: var(--purple); }
+
+/* Styled exit card reuses .exit-overlay (#exit-overlay) for show/hide */
+.exit-modal-card { text-align: center; max-width: 320px; }
+.exit-modal-icon { font-size: 2.5rem; margin-bottom: 8px; }
+.exit-modal-text { font-size: 1.15rem; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.exit-modal-sub { font-size: 0.85rem; color: var(--text-light); margin-bottom: 18px; font-weight: 600; }
+.exit-modal-actions { display: flex; gap: 10px; justify-content: center; }
+.exit-modal-cancel { padding: 11px 18px; background: var(--border); color: var(--text); border: none; border-radius: 12px; font-family: var(--font); font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+.exit-modal-confirm { padding: 11px 18px; background: var(--red); color: #fff; border: none; border-radius: 12px; font-family: var(--font); font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+.exit-modal-cancel:active, .exit-modal-confirm:active { transform: translateY(2px); }
