@@ -15,6 +15,7 @@ import adminVouchersHandler from './api/admin/vouchers.js';
 import aiHandler from './api/ai.js';
 import { generateUniqueLinkCode } from './lib/link-code.js';
 import linkHandler from './api/link.js';
+import parentHandler from './api/parent.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -333,7 +334,10 @@ app.get('/api/shop/items', async (req, res) => {
   await shopHandler(req, res);
 });
 
-app.post('/api/shop/buy', async (req, res) => {
+// Parent routes (register/login/link/children/stats) — mirrors Vercel api/parent.js
+app.all('/api/parent', async (req, res) => {
+  await parentHandler(req, res);
+});app.post('/api/shop/buy', async (req, res) => {
   req.query.action = 'buy';
   await shopHandler(req, res);
 });

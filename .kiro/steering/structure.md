@@ -5,7 +5,7 @@
 ├── ws-server.js         # WebSocket server for V4 online duel
 ├── vercel.json          # Vercel deployment routing config
 ├── api/                 # Serverless API handlers (Vercel-compatible)
-│   ├── admin/index.js   # Admin CRUD (questions, exams, stats, players)
+│   ├── admin/index.js   # Admin CRUD (questions, exams, stats, players, parents)
 │   ├── answers.js       # Log individual answers
 │   ├── exams.js         # Exam CRUD + submission
 │   ├── players.js       # Player create/get
@@ -42,4 +42,5 @@
 - Each game version (v1+) is a self-contained HTML/JS/CSS bundle with no build step
 - The `api/` handlers mirror the routes defined inline in `server.js` for Vercel compatibility
 - V4 online duel uses Firebase Realtime Database directly from the client (the legacy `ws-server.js` is only used locally and is being phased out)
+- Parent system: `public/parent.html` (register/login/dashboard for parents) backed by `api/parent.js` (`/api/parent?action=...`). On Vercel `/api/parent` routes to `api/features.js?feature=parent`; locally `server.js` mounts `api/parent.js` directly at `/api/parent`. Admins manage parents via the "Phụ huynh" tab in `admin.html` → `api/admin/index.js` `resource=parents` (list / children / unlink / delete).
 - Native Android/iOS builds are produced via Capacitor — see `mobile-build.md`

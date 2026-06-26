@@ -296,5 +296,42 @@ async function handleRequest(req, res) {
     }
   }
 
+  // === PARENTS (admin management) ===
+  if (resource === 'parents') {
+    if (req.method === 'GET' && !id) {
+      // List all parents with their linked-children count.
+      const result = await db.execute({
+        sql: `SELECT pr.id, pr.username, pr.display_name, pr.created_at,
+          (SELECT COUNT(*) FROM parent_children WHERE parent_id = pr.id) as children_count
+          FROM parents pr ORDER BY pr.created_at DESC`,
+        args: [],
+      });
+      return res.json(result.rows);
+    }
+    if (req.method === 'GET' && id && action === 'children') {
+      // List the children (players) linked to a given parent.
+      const result = await db.execute({
+        sql: `SELECT p.id, p.name, p.grade, p.total_stars, p.total_diamonds, pc.linked_at
+          FROM players p JOIN parent_children pc ON pc.player_id = p.id
+          WHERE pc.parent_id = ? ORDER BY p.name`,
+        args: [parseInt(id)],
+      });
+      return res.json(result.rows);
+    }
+    if (req.method === 'DELETE' && id && action === 'unlink') {
+      // Remove a single parent-child link. player_id passed as query param.
+      const playerId = parseInt(req.query.player_id);
+      await db.execute({ sql: `DELETE FROM parent_children WHERE parent_id = ? AND player_id = ?`, args: [parseInt(id), playerId] });
+      return res.json({ ok: true });
+    }
+    if (req.method === 'DELETE' && id) {
+      // Delete a parent account and all of its child links.
+      const parentId = parseInt(id);
+      await db.execute({ sql: `DELETE FROM parent_children WHERE parent_id = ?`, args: [parentId] });
+      await db.execute({ sql: `DELETE FROM parents WHERE id = ?`, args: [parentId] });
+      return res.json({ ok: true });
+    }
+  }
+
   res.status(404).json({ error: 'Not found' });
 }

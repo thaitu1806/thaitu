@@ -113,6 +113,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     if (tab.dataset.tab === 'list') loadQuestionsList();
     if (tab.dataset.tab === 'stats') loadStats();
     if (tab.dataset.tab === 'players') loadPlayers();
+    if (tab.dataset.tab === 'parents') loadParents();
     if (tab.dataset.tab === 'exams') loadExamsList();
     if (tab.dataset.tab === 'shop') loadShopTab();
     if (tab.dataset.tab === 'ai-generator') loadAIGeneratorStatus();
@@ -946,6 +947,88 @@ async function deletePlayer(id, name) {
     showPopup('❌', 'Lỗi: ' + e.message);
   }
 }
+
+// === PARENTS ADMIN ===
+async function loadParents() {
+  const content = document.getElementById('parents-content');
+  content.innerHTML = '<p>Đang tải...</p>';
+  try {
+    const res = await adminFetch(adminUrl('parents'));
+    const parents = await res.json();
+    const list = Array.isArray(parents) ? parents : [];
+    if (list.length === 0) {
+      content.innerHTML = '<p class="empty-hint">Chưa có phụ huynh nào đăng ký.</p>';
+      return;
+    }
+    content.innerHTML = `<p class="list-total">Tổng: ${list.length} phụ huynh</p>` + list.map(p => `
+      <div class="parent-item" id="parent-row-${p.id}">
+        <div class="parent-main">
+          <div class="parent-info">
+            <strong>👨‍👩‍👧 ${escapeHtml(p.display_name || p.username)}</strong>
+            <span class="parent-meta">@${escapeHtml(p.username)} • 🧒 ${p.children_count} con • ${p.created_at ? new Date(p.created_at).toLocaleDateString('vi') : ''}</span>
+          </div>
+          <div class="parent-actions">
+            <button class="btn-sm" onclick="toggleParentChildren(${p.id})">👁️ Xem con</button>
+            <button class="btn-sm btn-sm-danger" onclick="deleteParent(${p.id}, '${escapeAttr(p.display_name || p.username)}')">🗑️</button>
+          </div>
+        </div>
+        <div class="parent-children hidden" id="parent-children-${p.id}"></div>
+      </div>
+    `).join('');
+  } catch (e) {
+    content.innerHTML = '<p>Lỗi tải dữ liệu phụ huynh</p>';
+  }
+}
+
+async function toggleParentChildren(parentId) {
+  const box = document.getElementById(`parent-children-${parentId}`);
+  if (!box) return;
+  if (!box.classList.contains('hidden')) { box.classList.add('hidden'); return; }
+  box.classList.remove('hidden');
+  box.innerHTML = '<p style="padding:8px;color:#888;">Đang tải...</p>';
+  try {
+    const res = await adminFetch(adminUrl('parents', { id: parentId, action: 'children' }));
+    const children = await res.json();
+    const list = Array.isArray(children) ? children : [];
+    if (list.length === 0) { box.innerHTML = '<p style="padding:8px;color:#888;">Chưa liên kết con nào.</p>'; return; }
+    box.innerHTML = list.map(c => `
+      <div class="child-link-row">
+        <span>🧒 <strong>${escapeHtml(c.name)}</strong> • Lớp ${c.grade || 2} • ⭐ ${c.total_stars || 0} • 💎 ${c.total_diamonds || 0}</span>
+        <button class="btn-sm btn-sm-danger" onclick="unlinkParentChild(${parentId}, ${c.id})">Gỡ liên kết</button>
+      </div>
+    `).join('');
+  } catch (e) {
+    box.innerHTML = '<p style="padding:8px;color:#c00;">Lỗi tải danh sách con</p>';
+  }
+}
+
+async function unlinkParentChild(parentId, playerId) {
+  if (!await showConfirm('Gỡ liên kết con này khỏi phụ huynh?', { icon: '🔗', okText: 'Gỡ', danger: true })) return;
+  try {
+    const res = await adminFetch(adminUrl('parents', { id: parentId, action: 'unlink', player_id: playerId }), { method: 'DELETE' });
+    if (res.ok) {
+      showPopup('✅', 'Đã gỡ liên kết!');
+      // Refresh the open children list and the parent row counts.
+      const box = document.getElementById(`parent-children-${parentId}`);
+      if (box) box.classList.add('hidden');
+      toggleParentChildren(parentId);
+      loadParents();
+    } else showPopup('❌', 'Lỗi gỡ liên kết');
+  } catch (e) { showPopup('❌', 'Lỗi: ' + e.message); }
+}
+
+async function deleteParent(id, name) {
+  if (!await showConfirm(`Xóa tài khoản phụ huynh "${name}"? Các liên kết với con cũng bị gỡ.`, { icon: '🗑️', okText: 'Xóa', danger: true })) return;
+  try {
+    const res = await adminFetch(adminUrl('parents', { id }), { method: 'DELETE' });
+    if (res.ok) { showPopup('✅', 'Đã xóa phụ huynh!'); loadParents(); }
+    else showPopup('❌', 'Lỗi xóa phụ huynh');
+  } catch (e) { showPopup('❌', 'Lỗi: ' + e.message); }
+}
+
+function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
+
 
 // === EXAM ADMIN ===
 document.getElementById('btn-create-exam').addEventListener('click', async () => {

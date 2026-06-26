@@ -335,3 +335,16 @@ body {
 /* Grade badge */
 .badge-grade { background: #e8eaf6; color: #3949ab; }
 .badge-ai { background: #ede7f6; color: #6a1b9a; }
+
+
+/* === PARENTS MANAGEMENT === */
+.parent-item { background: #fff; border: 1px solid #e3e8f0; border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.parent-main { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; }
+.parent-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.parent-info strong { font-size: 1rem; }
+.parent-meta { font-size: 0.8rem; color: #7c89a8; }
+.parent-actions { display: flex; gap: 6px; flex: 0 0 auto; }
+.parent-children { padding: 4px 14px 12px; border-top: 1px dashed #e3e8f0; }
+.parent-children.hidden { display: none; }
+.child-link-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: #f6f9ff; border-radius: 8px; margin-top: 8px; font-size: 0.88rem; }
+.empty-hint { color: #7c89a8; padding: 20px 6px; text-align: center; }
