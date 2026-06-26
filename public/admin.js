@@ -674,7 +674,7 @@ async function loadQuestionsList() {
   if (grade) url += `&grade=${grade}`;
 
   try {
-    const res = await fetch(url);
+    const res = await adminFetch(url);
     const data = await res.json();
     const questions = data.questions || [];
     const total = data.total || 0;
@@ -1302,13 +1302,44 @@ async function loadAIGeneratorStatus() {
       statusEl.innerHTML = `<span class="ai-status-on">🟢 AI đang hoạt động — ${data.provider} (${data.model})</span>`;
       document.getElementById('btn-ai-generate').disabled = false;
     } else {
-      statusEl.innerHTML = `<span class="ai-status-off">🔴 AI chưa được kích hoạt (thiếu API key)</span>`;
+      statusEl.innerHTML = `<span class="ai-status-off">🔴 AI chưa được kích hoạt (thiếu API key)</span>` + aiSetupHelpHtml();
       document.getElementById('btn-ai-generate').disabled = true;
     }
   } catch (e) {
-    statusEl.innerHTML = `<span class="ai-status-off">🔴 Không thể kết nối AI service</span>`;
+    statusEl.innerHTML = `<span class="ai-status-off">🔴 Không thể kết nối AI service</span>` + aiSetupHelpHtml();
     document.getElementById('btn-ai-generate').disabled = true;
   }
+}
+
+// Instructions panel: where to add the AI token (OpenAI/ChatGPT or Deepseek).
+// API keys are read from environment variables — on Vercel they must be set in
+// the project's Environment Variables (Settings → Environment Variables), then redeploy.
+function aiSetupHelpHtml() {
+  return `
+    <div class="ai-setup-help">
+      <h4>🔑 Cách thêm token AI</h4>
+      <p>API key được đọc từ <b>biến môi trường</b>. Vì lý do bảo mật, key không nhập trực tiếp trên web mà phải đặt ở server.</p>
+      <p><b>Trên Vercel:</b> Project → <b>Settings</b> → <b>Environment Variables</b> → thêm các biến dưới đây → <b>Redeploy</b>.</p>
+      <p><b>Chạy máy (local):</b> thêm vào file <code>.env</code> rồi khởi động lại server.</p>
+
+      <div class="ai-setup-cols">
+        <div class="ai-setup-col">
+          <div class="ai-setup-title">🤖 ChatGPT (OpenAI)</div>
+          <pre>AI_PROVIDER=openai
+OPENAI_API_KEY=sk-...
+AI_MODEL=gpt-4o-mini   (tùy chọn)</pre>
+          <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">Lấy key OpenAI →</a>
+        </div>
+        <div class="ai-setup-col">
+          <div class="ai-setup-title">🐳 Deepseek</div>
+          <pre>AI_PROVIDER=deepseek
+DEEPSEEK_API_KEY=sk-...
+AI_MODEL=deepseek-chat   (tùy chọn)</pre>
+          <a href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener">Lấy key Deepseek →</a>
+        </div>
+      </div>
+      <p class="ai-setup-note">Sau khi đặt biến và <b>redeploy</b>, quay lại tab này — trạng thái sẽ chuyển 🟢.</p>
+    </div>`;
 }
 
 document.getElementById('btn-ai-generate').addEventListener('click', async () => {
