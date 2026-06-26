@@ -77,8 +77,8 @@ Per-version budget: ≤ 300KB total added (engine + sprites + version CSS/JS gro
 
 ## Logic location varies by version
 
-- **V41–V60 (and V5/V6)** keep pure logic in a separate `game-logic.js` (ES module) — never touch it.
-- **V2–V39 (except V5/V6)** have NO `game-logic.js`; their game logic is embedded directly in `game.js`. For these, do NOT create a `game-logic.js` and do NOT rewrite the embedded logic. Add presentation only — wrap existing functions non-invasively (call the original first, then decorate) or observe the DOM via `MutationObserver` when the logic is sealed in a private IIFE. V13 (`public/v13/game.js`) is the reference for this embedded-logic integration.
+- **V41–V60 (and V5)** keep pure logic in a separate `game-logic.js` (ES module) — never touch it.
+- **V2–V39 (except V5)** have NO `game-logic.js`; their game logic lives directly in `game.js`. For these, do NOT create a `game-logic.js` and do NOT rewrite the embedded logic. Add presentation only — wrap existing functions non-invasively (call the original first, then decorate) or observe the DOM via `MutationObserver` when the logic is sealed in a private IIFE. V13 (`public/v13/game.js`) is the reference for this embedded-logic integration.
 - HTML wiring for non-module versions: `link-gate.js → /lib/character.js → /lib/sprites/<theme>.js → game.js` (no `type="module"` step).
 - Special modes V26 (lucky wheel) and V28 (fairy tales) intentionally do NOT save sessions — `tests/game-versions.test.js` exempts them; do not add `/api/sessions` saving.
 

@@ -37,5 +37,17 @@ Quy ước: mỗi game version mới (v41+) tuân theo pattern V41/V42:
 ## Pending
 *(All planned versions V41-V60 complete.)*
 
+## V2-V10 redesign (self-contained graphics rebuild)
+Toàn bộ V2, V3, V6, V7, V8, V9, V10 đã được **viết lại hoàn toàn** với gameplay mới + đồ họa vector động (inline SVG/CSS, particle effects). Mỗi game tự chứa trong `game.js` (IIFE, không phụ thuộc sprite registry dùng chung) — giữ nguyên hợp đồng: `/api/questions`, `/api/sessions` mode `vNN`, `.toLowerCase()`, `checkAndShowPrompt()`, không emoji 2020+.
+- V2 — Phiêu Lưu Kho Báu 🗺️ (đi đường mòn tới rương, bão = nguy hiểm)
+- V3 — Kéo Co Trí Tuệ 💪 (đối kháng tốc độ, panel P2 xoay 180°, có Bot)
+- V6 — Đua Xe Trí Tuệ 🏎️ (đua, combo 3 = nitro; **đã xóa `game-logic.js`** cũ)
+- V7 — Leo Vách Đá 🧗 (leo mỏm đá, combo vọt 2 nấc, hết sức = rơi)
+- V8 — Xếp Tháp Thăng Bằng 🏰 (cần cẩu đung đưa, bấm THẢ căn giữa, lệch nhiều = sụp)
+- V9 — Phá Đảo Boss ⚔️ (RPG theo lượt, combo 3 = đại chiêu x3, hạ 3 boss)
+- V10 — Đào Vàng Dò Mìn 💎 (minesweeper + quiz, flood-reveal, chế độ cắm cờ)
+
+V4 (Đấu Online/Firebase) và V5 (Cờ Cá Ngựa, có `game-logic.js` riêng) **chỉ nâng cấp đồ họa** (backdrop động append vào `style.css`), giữ nguyên logic.
+
 ## Banned emojis (avoid)
 Xem `BANNED_EMOJI_PATTERNS` trong `tests/game-versions.test.js` (2020+ emojis: 🪴 🪙 🪼 🪸 🪨 🧊 🪵 🪟 🪢 🫧 🪚 🪜 🫗 🪷 🪹 🪺 🪣 🪤 🪥 🪧 🪆 🫐 🫑 🫒). Nếu dùng phải dùng emoji 2019 trở về trước.

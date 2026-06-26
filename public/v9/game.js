@@ -1,845 +1,313 @@
-// V9 Đấu Tướng Trí Tuệ - Game Engine
-// Chess-lite with quiz integration, bot AI, touch-first
-
-// ===== CONSTANTS =====
-const COLS = 4;
-const ROWS = 6;
-const BOT_ANSWER_RATE = 0.6; // 60% correct
-const BOT_DELAY = 1500; // ms before bot acts
-const QUIZ_RESULT_DELAY = 1200; // ms to show quiz result
-
-// Piece types
-const KING = 'king';
-const SOLDIER = 'soldier';
-
-// Players
-const P1 = 1;
-const P2 = 2;
-
-// ===== GAME STATE =====
-const State = {
-  current: 'SETUP', // SETUP | LOADING | PLAYING | QUIZ | ANIMATING | GAME_OVER | RESULT
-  settings: {
-    p1Name: '',
-    p2Name: 'Bot',
-    p1Bot: false,
-    p2Bot: true,
-    subject: 'math',
-    difficulty: 'easy',
-  },
-  board: [], // 2D array [row][col] = { player, type } | null
-  turn: P1, // whose turn
-  selectedPiece: null, // { row, col }
-  validMoves: [], // [{ row, col, isCapture }]
-  pendingMove: null, // { from, to }
-  questions: [],
-  questionIndex: 0,
-  stats: {
-    turns: 0,
-    p1Correct: 0,
-    p1Wrong: 0,
-    p2Correct: 0,
-    p2Wrong: 0,
-  },
-  winner: null,
-  winReason: '',
-};
-
-// ===== AUDIO (Web Audio API) =====
-let audioCtx = null;
-function getAudioCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-function playTone(freq, duration, type = 'square') {
-  try {
-    const ctx = getAudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type;
-    osc.frequency.value = freq;
-    gain.gain.value = 0.15;
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + duration);
-  } catch (e) { /* ignore audio errors */ }
-}
-function sfxSelect() { playTone(600, 0.1); }
-function sfxMove() { playTone(800, 0.15, 'triangle'); }
-function sfxCapture() { playTone(200, 0.3, 'sawtooth'); }
-function sfxCorrect() { playTone(880, 0.15); setTimeout(() => playTone(1100, 0.2), 100); }
-function sfxWrong() { playTone(200, 0.3, 'sawtooth'); }
-function sfxWin() { playTone(523, 0.2); setTimeout(() => playTone(659, 0.2), 150); setTimeout(() => playTone(784, 0.3), 300); }
-
-// ===== INITIALIZATION =====
-function initBoard() {
-  // Create empty 6x4 board
-  const board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
-
-  // P1 (red) at bottom: rows 0-1 (visually bottom)
-  // Row 0: Lính, Vua, Vua-placeholder, Lính → actually 1 Vua + 2 Lính
-  // Layout: row 0 = [soldier, king, null, soldier], row 1 empty? 
-  // Better: P1 row 0 center has king, flanks have soldiers
-  // 4 cols: col 0,1,2,3
-  // P1: King at (0, 1) or (0, 2), soldiers at (0, 0) and (0, 3)
-  board[0][1] = { player: P1, type: KING };
-  board[0][0] = { player: P1, type: SOLDIER };
-  board[0][3] = { player: P1, type: SOLDIER };
-
-  // P2 (blue) at top: row 5
-  board[5][2] = { player: P2, type: KING };
-  board[5][0] = { player: P2, type: SOLDIER };
-  board[5][3] = { player: P2, type: SOLDIER };
-
-  return board;
-}
-
-function getValidMoves(board, row, col) {
-  const piece = board[row][col];
-  if (!piece) return [];
-  const moves = [];
-  const { player, type } = piece;
-
-  if (type === KING) {
-    // King: 1 step in any of 8 directions
-    const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
-    for (const [dr, dc] of dirs) {
-      const nr = row + dr;
-      const nc = col + dc;
-      if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) continue;
-      const target = board[nr][nc];
-      if (!target) {
-        moves.push({ row: nr, col: nc, isCapture: false });
-      } else if (target.player !== player) {
-        moves.push({ row: nr, col: nc, isCapture: true });
-      }
-    }
-  } else {
-    // Soldier: moves forward 1, captures diagonally forward
-    const forward = player === P1 ? 1 : -1;
-    // Move forward (straight)
-    const fr = row + forward;
-    if (fr >= 0 && fr < ROWS) {
-      const fc = col;
-      if (!board[fr][fc]) {
-        moves.push({ row: fr, col: fc, isCapture: false });
-      }
-      // Capture diagonally
-      for (const dc of [-1, 1]) {
-        const nc = col + dc;
-        if (nc < 0 || nc >= COLS) continue;
-        const target = board[fr][nc];
-        if (target && target.player !== player) {
-          moves.push({ row: fr, col: nc, isCapture: true });
-        }
-      }
-    }
-  }
-  return moves;
-}
-
-function checkWin(board, lastMovePlayer) {
-  // Win condition 1: Captured opponent's King
-  let p1King = false, p2King = false;
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const p = board[r][c];
-      if (p && p.type === KING) {
-        if (p.player === P1) p1King = true;
-        if (p.player === P2) p2King = true;
-      }
-    }
-  }
-  if (!p1King) return { winner: P2, reason: 'Bắt được Vua đối phương!' };
-  if (!p2King) return { winner: P1, reason: 'Bắt được Vua đối phương!' };
-
-  // Win condition 2: King reaches opponent's back row
-  // P1 king reaches row 5 (top)
-  for (let c = 0; c < COLS; c++) {
-    const p = board[5][c];
-    if (p && p.player === P1 && p.type === KING) {
-      return { winner: P1, reason: 'Vua đã đến hàng cuối đối phương!' };
-    }
-  }
-  // P2 king reaches row 0 (bottom)
-  for (let c = 0; c < COLS; c++) {
-    const p = board[0][c];
-    if (p && p.player === P2 && p.type === KING) {
-      return { winner: P2, reason: 'Vua đã đến hàng cuối đối phương!' };
-    }
-  }
-
-  return null;
-}
-
-// Check if a player has any valid moves
-function hasAnyMoves(board, player) {
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const p = board[r][c];
-      if (p && p.player === player) {
-        if (getValidMoves(board, r, c).length > 0) return true;
-      }
-    }
-  }
-  return false;
-}
-
-// ===== API =====
-async function fetchQuestions(subject, difficulty) {
-  const params = new URLSearchParams({ limit: '30' });
-  if (subject !== 'mix') params.set('subject', subject);
-  if (difficulty !== 'mix') params.set('difficulty', difficulty);
-  try {
-    const res = await fetch(`/api/questions?${params}`);
-    if (!res.ok) throw new Error('API error');
-    return await res.json();
-  } catch (e) {
-    console.warn('Failed to fetch questions, using fallback');
-    return generateFallbackQuestions();
-  }
-}
-
-function generateFallbackQuestions() {
-  const questions = [];
-  for (let i = 0; i < 30; i++) {
-    const a = Math.floor(Math.random() * 10) + 1;
-    const b = Math.floor(Math.random() * 10) + 1;
-    const correct = a + b;
-    const options = shuffleArray([
-      correct,
-      correct + 1,
-      correct - 1,
-      correct + 2,
-    ]);
-    const correctOpt = ['a','b','c','d'][options.indexOf(correct)];
-    questions.push({
-      question_text: `${a} + ${b} = ?`,
-      option_a: String(options[0]),
-      option_b: String(options[1]),
-      option_c: String(options[2]),
-      option_d: String(options[3]),
-      correct_answer: correctOpt,
-    });
-  }
-  return questions;
-}
-
-function shuffleArray(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-// ===== DOM HELPERS =====
-function $(id) { return document.getElementById(id); }
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  $(id).classList.add('active');
-}
-
-// ===== SETUP SCREEN =====
-function initSetup() {
-  // Auto-fill from profile
-  const profile = localStorage.getItem('hocvui_profile');
-  if (!profile) {
-    window.location.href = '/';
-    return;
-  }
-  const { name } = JSON.parse(profile);
-  $('p1-name').value = name || '';
-
-  // Toggle bot/human buttons
-  $('p1-type').addEventListener('click', () => toggleType('p1'));
-  $('p2-type').addEventListener('click', () => toggleType('p2'));
-
-  // Button groups
-  setupBtnGroup('subject-group', v => { State.settings.subject = v; });
-  setupBtnGroup('difficulty-group', v => { State.settings.difficulty = v; });
-
-  // Start button
-  $('btn-start').addEventListener('click', startGame);
-}
-
-function toggleType(player) {
-  const btn = $(`${player}-type`);
-  const input = $(`${player}-name`);
-  if (btn.dataset.type === 'human') {
-    btn.dataset.type = 'bot';
-    btn.textContent = '🤖';
-    btn.className = 'btn-toggle-type is-bot';
-    if (!input.value || input.value === input.placeholder) input.value = 'Bot';
-  } else {
-    btn.dataset.type = 'human';
-    btn.textContent = '👤';
-    btn.className = 'btn-toggle-type is-human';
-    if (input.value === 'Bot') input.value = '';
-  }
-}
-
-function setupBtnGroup(groupId, onChange) {
-  const group = $(groupId);
-  group.addEventListener('click', (e) => {
-    const btn = e.target.closest('.btn-option');
-    if (!btn) return;
-    group.querySelectorAll('.btn-option').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    onChange(btn.dataset.value);
-  });
-}
-
-// ===== START GAME =====
-async function startGame() {
-  const p1Name = $('p1-name').value.trim() || 'Đỏ';
-  const p2Name = $('p2-name').value.trim() || 'Xanh';
-  const p1Bot = $('p1-type').dataset.type === 'bot';
-  const p2Bot = $('p2-type').dataset.type === 'bot';
-
-  State.settings.p1Name = p1Name;
-  State.settings.p2Name = p2Name;
-  State.settings.p1Bot = p1Bot;
-  State.settings.p2Bot = p2Bot;
-
-  // Reset state
-  State.board = initBoard();
-  State.turn = P1;
-  State.selectedPiece = null;
-  State.validMoves = [];
-  State.pendingMove = null;
-  State.questionIndex = 0;
-  State.stats = { turns: 0, p1Correct: 0, p1Wrong: 0, p2Correct: 0, p2Wrong: 0 };
-  State.winner = null;
-  State.winReason = '';
-  State.current = 'LOADING';
-
-  $('btn-start').textContent = '⏳ Đang tải...';
-  $('btn-start').disabled = true;
-
-  // Fetch questions
-  State.questions = await fetchQuestions(State.settings.subject, State.settings.difficulty);
-  if (State.questions.length === 0) {
-    State.questions = generateFallbackQuestions();
-  }
-
-  $('btn-start').textContent = '⚔️ Bắt đầu đấu!';
-  $('btn-start').disabled = false;
-
-  State.current = 'PLAYING';
-  showScreen('game-screen');
-  renderBoard();
-  updateTurnInfo();
-  updateStatus('Chọn quân để di chuyển');
-
-  // Setup exit button
-  $('btn-exit').onclick = () => $('exit-overlay').classList.add('active');
-  $('exit-cancel').onclick = () => $('exit-overlay').classList.remove('active');
-  $('exit-confirm').onclick = () => {
-    $('exit-overlay').classList.remove('active');
-    State.current = 'SETUP';
-    showScreen('setup-screen');
-  };
-
-  // If current player is bot, trigger bot turn
-  if (isCurrentPlayerBot()) {
-    setTimeout(botTurn, BOT_DELAY);
-  }
-}
-
-// ===== RENDERING =====
-function renderBoard() {
-  const boardEl = $('board');
-  boardEl.innerHTML = '';
-
-  // Render from top (row 5) to bottom (row 0) so row 0 is at bottom visually
-  for (let r = ROWS - 1; r >= 0; r--) {
-    for (let c = 0; c < COLS; c++) {
-      const cell = document.createElement('div');
-      const isLight = (r + c) % 2 === 0;
-      cell.className = `cell ${isLight ? 'light' : 'dark'}`;
-      cell.dataset.row = r;
-      cell.dataset.col = c;
-
-      const piece = State.board[r][c];
-      if (piece) {
-        const pieceEl = document.createElement('div');
-        const playerClass = piece.player === P1 ? 'p1' : 'p2';
-        pieceEl.className = `piece ${playerClass} ${piece.type}`;
-        pieceEl.textContent = piece.type === KING ? '👑' : '⚔️';
-        cell.appendChild(pieceEl);
-      }
-
-      // Highlight selected
-      if (State.selectedPiece && State.selectedPiece.row === r && State.selectedPiece.col === c) {
-        cell.classList.add('selected');
-      }
-
-      // Highlight valid moves
-      const vm = State.validMoves.find(m => m.row === r && m.col === c);
-      if (vm) {
-        cell.classList.add(vm.isCapture ? 'valid-capture' : 'valid-move');
-      }
-
-      cell.addEventListener('click', () => onCellClick(r, c));
-      boardEl.appendChild(cell);
-    }
-  }
-}
-
-function updateTurnInfo() {
-  const name = State.turn === P1 ? State.settings.p1Name : State.settings.p2Name;
-  const color = State.turn === P1 ? '🔴' : '🔵';
-  $('turn-info').textContent = `${color} Lượt: ${name}`;
-}
-
-function updateStatus(msg) {
-  $('game-status').textContent = msg;
-}
-
-// ===== INTERACTION =====
-function isCurrentPlayerBot() {
-  return State.turn === P1 ? State.settings.p1Bot : State.settings.p2Bot;
-}
-
-function onCellClick(row, col) {
-  if (State.current !== 'PLAYING') return;
-  if (isCurrentPlayerBot()) return; // ignore clicks during bot turn
-
-  const piece = State.board[row][col];
-
-  // If clicking a valid move destination
-  const moveTarget = State.validMoves.find(m => m.row === row && m.col === col);
-  if (moveTarget && State.selectedPiece) {
-    // Set pending move and show quiz
-    State.pendingMove = {
-      from: { row: State.selectedPiece.row, col: State.selectedPiece.col },
-      to: { row, col },
-    };
-    showQuiz();
-    return;
-  }
-
-  // If clicking own piece, select it
-  if (piece && piece.player === State.turn) {
-    const moves = getValidMoves(State.board, row, col);
-    if (moves.length === 0) {
-      updateStatus('Quân này không thể đi!');
-      return;
-    }
-    State.selectedPiece = { row, col };
-    State.validMoves = moves;
-    sfxSelect();
-    renderBoard();
-    updateStatus('Chọn ô đích để di chuyển');
-    return;
-  }
-
-  // Deselect
-  State.selectedPiece = null;
-  State.validMoves = [];
-  renderBoard();
-  updateStatus('Chọn quân để di chuyển');
-}
-
-// ===== QUIZ =====
-function getNextQuestion() {
-  if (State.questionIndex >= State.questions.length) {
-    // Recycle
-    State.questions = shuffleArray(State.questions);
-    State.questionIndex = 0;
-  }
-  return State.questions[State.questionIndex++];
-}
-
-function showQuiz() {
-  State.current = 'QUIZ';
-  const question = getNextQuestion();
-  State._currentQuestion = question;
-
-  const overlay = $('quiz-overlay');
-  const playerName = State.turn === P1 ? State.settings.p1Name : State.settings.p2Name;
-  $('quiz-header').textContent = `${State.turn === P1 ? '🔴' : '🔵'} ${playerName} — Trả lời đúng để đi!`;
-  $('quiz-question').textContent = question.question_text || question.question || '';
-  $('quiz-result').textContent = '';
-  $('quiz-result').className = 'quiz-result';
-
-  const answers = $('quiz-answers');
-  const opts = ['a', 'b', 'c', 'd'];
-  answers.querySelectorAll('.quiz-btn').forEach((btn, i) => {
-    const opt = opts[i];
-    btn.textContent = question[`option_${opt}`];
-    btn.dataset.opt = opt;
-    btn.className = 'quiz-btn';
-    btn.disabled = false;
-    btn.onclick = () => handleAnswer(opt);
-  });
-
-  overlay.classList.add('active');
-
-  // If current player is bot, auto-answer
-  if (isCurrentPlayerBot()) {
-    setTimeout(() => botAnswer(question), BOT_DELAY);
-  }
-}
-
-function botAnswer(question) {
-  const isCorrect = Math.random() < BOT_ANSWER_RATE;
-  const opts = ['a', 'b', 'c', 'd'];
-  let chosen;
-  if (isCorrect) {
-    chosen = question.correct_answer;
-  } else {
-    const wrong = opts.filter(o => o !== question.correct_answer);
-    chosen = wrong[Math.floor(Math.random() * wrong.length)];
-  }
-  handleAnswer(chosen);
-}
-
-function handleAnswer(chosen) {
-  const question = State._currentQuestion;
-  const correct = question.correct_answer;
-  const isCorrect = chosen.toLowerCase() === correct.toLowerCase();
-
-  // Disable all buttons
-  const buttons = $('quiz-answers').querySelectorAll('.quiz-btn');
-  buttons.forEach(btn => {
-    btn.disabled = true;
-    btn.classList.add('disabled');
-    if (btn.dataset.opt.toLowerCase() === correct.toLowerCase()) btn.classList.add('correct');
-    if (btn.dataset.opt === chosen && !isCorrect) btn.classList.add('wrong');
-  });
-
-  // Update stats
-  if (State.turn === P1) {
-    if (isCorrect) State.stats.p1Correct++; else State.stats.p1Wrong++;
-  } else {
-    if (isCorrect) State.stats.p2Correct++; else State.stats.p2Wrong++;
-  }
-
-  // Show result
-  const resultEl = $('quiz-result');
-  if (isCorrect) {
-    resultEl.textContent = '✅ Đúng rồi! Được đi!';
-    resultEl.className = 'quiz-result correct';
-    sfxCorrect();
-  } else {
-    resultEl.textContent = '❌ Sai rồi! Mất lượt!';
-    resultEl.className = 'quiz-result wrong';
-    sfxWrong();
-  }
-
-  // After delay, process result
-  setTimeout(() => {
-    $('quiz-overlay').classList.remove('active');
-    if (isCorrect) {
-      executeMove();
-    } else {
-      // Lose turn
-      endTurn();
-    }
-  }, QUIZ_RESULT_DELAY);
-}
-
-// ===== MOVE EXECUTION =====
-function executeMove() {
-  const { from, to } = State.pendingMove;
-  const piece = State.board[from.row][from.col];
-  const captured = State.board[to.row][to.col];
-
-  // Move piece
-  State.board[to.row][to.col] = piece;
-  State.board[from.row][from.col] = null;
-
-  if (captured) {
-    sfxCapture();
-  } else {
-    sfxMove();
-  }
-
-  State.current = 'ANIMATING';
-  renderBoard();
-
-  // Check win
-  const winResult = checkWin(State.board, State.turn);
-  if (winResult) {
-    setTimeout(() => {
-      State.winner = winResult.winner;
-      State.winReason = winResult.reason;
-      State.current = 'GAME_OVER';
-      showResult();
-    }, 500);
-    return;
-  }
-
-  // End turn
-  setTimeout(() => endTurn(), 300);
-}
-
-function endTurn() {
-  State.stats.turns++;
-  State.selectedPiece = null;
-  State.validMoves = [];
-  State.pendingMove = null;
-
-  // Switch turn
-  State.turn = State.turn === P1 ? P2 : P1;
-  State.current = 'PLAYING';
-
-  // Check if next player has any moves
-  if (!hasAnyMoves(State.board, State.turn)) {
-    // No moves available - skip or check if stalemate
-    // In this simplified game, if no moves, other player wins
-    State.winner = State.turn === P1 ? P2 : P1;
-    State.winReason = 'Đối phương không thể di chuyển!';
-    State.current = 'GAME_OVER';
-    showResult();
-    return;
-  }
-
-  renderBoard();
-  updateTurnInfo();
-  updateStatus('Chọn quân để di chuyển');
-
-  // If next player is bot, trigger bot turn
-  if (isCurrentPlayerBot()) {
-    updateStatus('🤖 Bot đang suy nghĩ...');
-    setTimeout(botTurn, BOT_DELAY);
-  }
-}
-
-// ===== BOT AI =====
-function botTurn() {
-  if (State.current !== 'PLAYING') return;
-
-  // Collect all pieces with valid moves
-  const candidates = [];
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const p = State.board[r][c];
-      if (p && p.player === State.turn) {
-        const moves = getValidMoves(State.board, r, c);
-        if (moves.length > 0) {
-          candidates.push({ row: r, col: c, moves });
-        }
-      }
-    }
-  }
-
-  if (candidates.length === 0) return; // shouldn't happen, already checked
-
-  // Simple AI: prefer captures, then random
-  let chosen = null;
-  let chosenMove = null;
-
-  // Look for capture moves first
-  for (const cand of candidates) {
-    const captures = cand.moves.filter(m => m.isCapture);
-    if (captures.length > 0) {
-      chosen = cand;
-      chosenMove = captures[Math.floor(Math.random() * captures.length)];
-      break;
-    }
-  }
-
-  // If no captures, pick random
-  if (!chosen) {
-    chosen = candidates[Math.floor(Math.random() * candidates.length)];
-    chosenMove = chosen.moves[Math.floor(Math.random() * chosen.moves.length)];
-  }
-
-  // Select piece visually
-  State.selectedPiece = { row: chosen.row, col: chosen.col };
-  State.validMoves = chosen.moves;
-  renderBoard();
-
-  // After brief delay, set pending move and show quiz
-  setTimeout(() => {
-    State.pendingMove = {
-      from: { row: chosen.row, col: chosen.col },
-      to: { row: chosenMove.row, col: chosenMove.col },
-    };
-    showQuiz();
-  }, 600);
-}
-
-// ===== RESULT SCREEN =====
-function showResult() {
-  sfxWin();
-  const winnerName = State.winner === P1 ? State.settings.p1Name : State.settings.p2Name;
-  const color = State.winner === P1 ? '🔴' : '🔵';
-
-  $('result-title').textContent = `${color} ${winnerName} thắng!`;
-  $('result-winner').textContent = '🎉 Chúc mừng! 🎉';
-  $('result-reason').textContent = State.winReason;
-
-  $('stats-turns').textContent = State.stats.turns;
-  $('stats-p1').textContent = `${State.stats.p1Correct} ✅ / ${State.stats.p1Wrong} ❌`;
-  $('stats-p2').textContent = `${State.stats.p2Correct} ✅ / ${State.stats.p2Wrong} ❌`;
-
-  // Update labels with names
-  const statRows = document.querySelectorAll('.stat-row');
-  if (statRows[1]) statRows[1].querySelector('span').textContent = `🔴 ${State.settings.p1Name}`;
-  if (statRows[2]) statRows[2].querySelector('span').textContent = `🔵 ${State.settings.p2Name}`;
-
-  $('btn-play-again').onclick = () => {
-    State.current = 'SETUP';
-    showScreen('setup-screen');
-  };
-
-  showScreen('result-screen');
-
-  // Check and show parent linking prompt after game ends
-  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
-  if (window.checkAndShowPrompt && profile?.id) {
-    window.checkAndShowPrompt(profile.id);
-  }
-}
-
-// ===== INIT =====
-document.addEventListener('DOMContentLoaded', () => {
-  initSetup();
-});
-
-// TTS speak button
-document.getElementById('btn-speak-v9')?.addEventListener('click', () => {
-  if (!State._currentQuestion) return;
-  const q = State._currentQuestion;
-  window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, State.settings?.subject);
-});
-
-// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
-// Mounts animated chibi general/soldier sprites onto the existing emoji
-// pieces, wires the start-screen guide modal and the styled in-game exit
-// modal, and adds sparkle/confetti particle feedback. All additive — the
-// chess engine, bot AI and quiz logic above are never modified.
+// V9 — Phá Đảo Boss (Turn-based Boss Battle)
+// A turn-based RPG: each correct answer makes the hero attack the boss; a 3-combo
+// charges a super move (triple damage). Wrong answers let the boss counterattack.
+// Defeat all 3 bosses (each tougher) without losing all your HP to win.
 (function () {
   'use strict';
 
-  function speciesFor(player, type) {
-    const side = player === P1 ? 'red' : 'blue';
-    const role = type === KING ? 'general' : 'soldier';
-    return side + '-' + role;
+  const TIMER_SECONDS = 18;
+  const MAX_Q = 40;
+  const HERO_HP = 100;
+  const BOSSES = [
+    { name: 'Yêu Tinh', emoji: '👹', hp: 60, dmg: 10 },
+    { name: 'Rồng Lửa', emoji: '🐲', hp: 90, dmg: 14 },
+    { name: 'Quỷ Vương', emoji: '👺', hp: 120, dmg: 18 },
+  ];
+
+  let userData = { totalBoss: 0, totalWins: 0 };
+  function loadData() { try { const r = localStorage.getItem('v9_boss'); if (r) Object.assign(userData, JSON.parse(r)); } catch (e) {} }
+  function saveData() { try { localStorage.setItem('v9_boss', JSON.stringify(userData)); } catch (e) {} }
+
+  let cache = [], used = new Set();
+  let curQ = null, combo = 0, maxCombo = 0, charge = 0;
+  let subject = 'mix', difficulty = 'easy';
+  let bossIdx = 0, bossHp = 0, heroHp = HERO_HP, served = 0, correct = 0, wrong = 0, bossesDown = 0, outcome = null;
+  let qStart = 0, tH = null, locked = false, fbId = -1;
+
+  const $ = id => document.getElementById(id);
+  const ss = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); $(id).classList.add('active'); };
+
+  function renderStart() { $('total-boss').textContent = userData.totalBoss; $('total-wins').textContent = userData.totalWins; }
+  function wireSel() {
+    document.querySelectorAll('.selector-options').forEach(g => g.addEventListener('click', e => {
+      const b = e.target.closest('.sel-btn'); if (!b) return;
+      g.querySelectorAll('.sel-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      if (g.dataset.group === 'subject') subject = b.dataset.value;
+      else difficulty = b.dataset.value;
+    }));
   }
 
-  // Replace the emoji inside each rendered .piece with a vector sprite.
-  function mountSprites() {
-    const C = window.HocVuiCharacters;
-    document.querySelectorAll('#board .piece').forEach(pieceEl => {
-      if (pieceEl.dataset.spriteMounted === '1') return;
-      const player = pieceEl.classList.contains('p1') ? P1 : P2;
-      const type = pieceEl.classList.contains('king') ? KING : SOLDIER;
-      const id = speciesFor(player, type);
-      if (C && C.hasSpecies(id)) {
-        pieceEl.textContent = '';
-        C.createCharacter(id, pieceEl, { state: 'idle' });
-        pieceEl.dataset.spriteMounted = '1';
+  async function fetchQ() {
+    const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+    const g = p.grade || 2;
+    try {
+      if (subject === 'mix') {
+        const subs = ['math', 'vietnamese', 'english'];
+        const r = await Promise.all(subs.map(s => fetch(`/api/questions?subject=${s}&difficulty=${difficulty}&limit=14&grade=${g}`).then(x => x.ok ? x.json() : []).catch(() => [])));
+        cache = r.flat();
+      } else {
+        const r = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=${MAX_Q}&grade=${g}`);
+        cache = r.ok ? await r.json() : [];
       }
-      // else: leave the original emoji fallback in place.
+    } catch (e) { cache = []; }
+    if (!Array.isArray(cache)) cache = [];
+    for (let i = cache.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cache[i], cache[j]] = [cache[j], cache[i]]; }
+  }
+  function nextQ() { const q = cache.find(x => x && !used.has(x.id)); if (q) { used.add(q.id); return q; } return mkFallback(); }
+  function mkFallback() {
+    const a = 1 + Math.floor(Math.random() * 20), b = 1 + Math.floor(Math.random() * 20);
+    const c = a + b, d = new Set();
+    while (d.size < 3) { const off = [-3, -2, -1, 1, 2, 3][Math.floor(Math.random() * 6)]; const w = c + off; if (w > 0 && w !== c) d.add(w); }
+    const nums = [c, ...d].sort(() => Math.random() - 0.5);
+    fbId--;
+    return { id: fbId, question_text: `${a} + ${b} = ?`, option_a: String(nums[0]), option_b: String(nums[1]), option_c: String(nums[2]), option_d: String(nums[3]), correct_answer: 'abcd'[nums.indexOf(c)] };
+  }
+
+  const HERO_DMG = 20;       // base hero damage per correct answer
+
+  async function startRun() {
+    cache = []; used.clear(); combo = 0; maxCombo = 0; charge = 0; fbId = -1;
+    bossIdx = 0; heroHp = HERO_HP; served = 0; correct = 0; wrong = 0; bossesDown = 0; outcome = null;
+    spawnBoss(0);
+    ss('game-screen');
+    renderHud(); renderBars();
+    $('q-text').textContent = '⏳ Đang tải...'; $('q-options').innerHTML = ''; $('feedback').style.display = 'none';
+    await fetchQ();
+    showNextQ();
+  }
+
+  function spawnBoss(i) {
+    bossIdx = i; bossHp = BOSSES[i].hp;
+    $('boss-sprite').textContent = BOSSES[i].emoji;
+    $('boss-sprite').classList.remove('boss-defeated');
+    $('boss').classList.add('boss-enter');
+    setTimeout(() => $('boss').classList.remove('boss-enter'), 600);
+  }
+
+  function renderHud() {
+    $('boss-num').textContent = `${bossIdx + 1}/3`;
+    $('charge-text').textContent = `${charge}/3`;
+    $('progress-text').textContent = served;
+    $('charge-text').parentElement.classList.toggle('charged', charge >= 3);
+  }
+  function renderBars() {
+    const bMax = BOSSES[bossIdx].hp;
+    $('boss-hp-fill').style.width = Math.max(0, bossHp / bMax * 100) + '%';
+    $('boss-hp-label').textContent = `${BOSSES[bossIdx].name} ❤️${Math.max(0, bossHp)}`;
+    $('hero-hp-fill').style.width = Math.max(0, heroHp / HERO_HP * 100) + '%';
+    $('hero-hp-label').textContent = `🦸 ❤️${Math.max(0, heroHp)}`;
+  }
+
+  function isFinished() { return outcome !== null || heroHp <= 0 || (bossesDown >= BOSSES.length) || served >= MAX_Q; }
+
+  function showNextQ() {
+    if (heroHp <= 0) outcome = 'lost';
+    else if (bossesDown >= BOSSES.length) outcome = 'won';
+    if (outcome || served >= MAX_Q) { finish(); return; }
+    curQ = nextQ(); served++; locked = false; qStart = Date.now();
+    const subj = curQ.subject || subject;
+    $('q-badge').textContent = subj === 'vietnamese' ? '📖' : subj === 'english' ? '🔤' : '🔢';
+    $('q-text').textContent = curQ.question_text;
+    $('feedback').style.display = 'none';
+    const opts = $('q-options'); opts.innerHTML = '';
+    ['a', 'b', 'c', 'd'].forEach(k => {
+      const t = curQ[`option_${k}`]; if (t == null) return;
+      const btn = document.createElement('button'); btn.className = 'option-btn'; btn.dataset.key = k; btn.textContent = t;
+      btn.addEventListener('click', () => handleAns(k));
+      opts.appendChild(btn);
     });
+    renderHud(); startTimer();
   }
 
-  // Particle helper — sparkle/confetti bursts around a board cell.
-  function spawnParticles(parent, kind, count) {
+  function startTimer() {
+    clearInterval(tH);
+    const total = TIMER_SECONDS * 1000;
+    const fill = $('timer-fill'); fill.classList.remove('warning');
+    tH = setInterval(() => {
+      const rem = Math.max(0, total - (Date.now() - qStart));
+      fill.style.width = (rem / total) * 100 + '%';
+      if (rem <= total / 3) fill.classList.add('warning');
+      if (rem <= 0) { clearInterval(tH); handleTimeout(); }
+    }, 100);
+  }
+
+  function handleAns(sel) {
+    if (locked) return;
+    locked = true; clearInterval(tH);
+    const ck = (curQ.correct_answer || '').toLowerCase();
+    const ok = sel.toLowerCase() === ck;
+    document.querySelectorAll('.option-btn').forEach(b => {
+      b.classList.add('disabled');
+      if (b.dataset.key === ck) b.classList.add('correct');
+      else if (b.dataset.key === sel && !ok) b.classList.add('wrong');
+    });
+    logAns(sel, ck, ok, Date.now() - qStart);
+    const fb = $('feedback'); fb.style.display = 'block';
+    if (ok) {
+      correct++; combo++; if (combo > maxCombo) maxCombo = combo;
+      let dmg = HERO_DMG;
+      let isSuper = false;
+      if (combo > 0 && combo % 3 === 0) { dmg = HERO_DMG * 3; isSuper = true; charge = 0; }
+      else { charge = combo % 3; }
+      bossHp -= dmg;
+      heroAttack(isSuper, dmg);
+      if (isSuper) { fb.className = 'feedback bonus'; fb.textContent = `⚡ ĐẠI CHIÊU! -${dmg} máu boss!`; }
+      else { fb.className = 'feedback good'; fb.textContent = `✅ Trúng đòn! -${dmg} máu boss.`; }
+      if (bossHp <= 0) {
+        bossesDown++; userData.totalBoss += 1;
+        defeatBoss();
+        renderBars();
+        if (bossesDown >= BOSSES.length) { renderHud(); setTimeout(finish, 1300); return; }
+        setTimeout(() => { spawnBoss(bossIdx + 1); renderHud(); renderBars(); }, 900);
+        setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1500);
+        renderHud();
+        return;
+      }
+    } else {
+      wrong++; combo = 0; charge = 0;
+      const dmg = BOSSES[bossIdx].dmg;
+      heroHp -= dmg;
+      bossAttack(dmg);
+      fb.className = 'feedback bad'; fb.textContent = `❌ Sai! Boss phản đòn -${dmg} máu.`;
+    }
+    renderHud(); renderBars();
+    setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1100);
+  }
+
+  function handleTimeout() {
+    if (locked) return; locked = true;
+    wrong++; combo = 0; charge = 0;
+    const dmg = BOSSES[bossIdx].dmg;
+    heroHp -= dmg; bossAttack(dmg);
+    const fb = $('feedback'); fb.style.display = 'block'; fb.className = 'feedback bad'; fb.textContent = `⏰ Hết giờ! Boss đánh -${dmg} máu.`;
+    renderHud(); renderBars();
+    setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1100);
+  }
+
+  // ── FX ──────────────────────────────────────────────────────────────────────
+  function heroAttack(isSuper, dmg) {
+    $('hero-sprite').classList.add('lunge'); setTimeout(() => $('hero-sprite').classList.remove('lunge'), 450);
+    $('boss-sprite').classList.add('hit'); setTimeout(() => $('boss-sprite').classList.remove('hit'), 450);
+    slash(isSuper);
+    floatDmg($('boss'), '-' + dmg, isSuper ? '#ffcf3a' : '#fff');
+  }
+  function bossAttack(dmg) {
+    $('boss-sprite').classList.add('lunge-back'); setTimeout(() => $('boss-sprite').classList.remove('lunge-back'), 450);
+    $('hero-sprite').classList.add('hit'); setTimeout(() => $('hero-sprite').classList.remove('hit'), 450);
+    $('battle-stage').classList.add('shake'); setTimeout(() => $('battle-stage').classList.remove('shake'), 350);
+    floatDmg($('hero'), '-' + dmg, '#ff6b6b');
+  }
+  function defeatBoss() {
+    $('boss-sprite').classList.add('boss-defeated');
+    spawnBurst($('fx-layer'), 16);
+  }
+  function slash(isSuper) {
+    const s = document.createElement('div');
+    s.className = 'slash' + (isSuper ? ' slash-super' : '');
+    $('fx-layer').appendChild(s);
+    s.addEventListener('animationend', () => s.remove(), { once: true });
+  }
+  function floatDmg(target, txt, color) {
+    const el = document.createElement('span');
+    el.className = 'dmg-float'; el.textContent = txt; el.style.color = color;
+    const r = target.getBoundingClientRect();
+    const sr = $('battle-stage').getBoundingClientRect();
+    el.style.left = (r.left - sr.left + r.width / 2) + 'px';
+    el.style.top = (r.top - sr.top + 10) + 'px';
+    $('fx-layer').appendChild(el);
+    el.addEventListener('animationend', () => el.remove(), { once: true });
+  }
+  function spawnBurst(parent, count) {
     if (!parent) return;
+    const r = $('boss').getBoundingClientRect();
+    const sr = $('battle-stage').getBoundingClientRect();
+    const cx = r.left - sr.left + r.width / 2, cy = r.top - sr.top + r.height / 2;
     for (let i = 0; i < count; i++) {
-      const p = document.createElement('span');
-      p.className = 'pfx pfx-' + kind;
-      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
-      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
-      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
-      parent.appendChild(p);
-      p.addEventListener('animationend', () => p.remove(), { once: true });
+      const p = document.createElement('span'); p.className = 'pfx pfx-burst';
+      p.style.left = cx + 'px'; p.style.top = cy + 'px';
+      p.style.setProperty('--tx', (Math.random() * 160 - 80) + 'px');
+      p.style.setProperty('--ty', (Math.random() * 160 - 80) + 'px');
+      parent.appendChild(p); p.addEventListener('animationend', () => p.remove(), { once: true });
     }
   }
-  window.__v9_spawnParticles = spawnParticles;
 
-  function cellAt(row, col) {
-    return document.querySelector(`#board .cell[data-row="${row}"][data-col="${col}"]`);
+  function finish() {
+    clearInterval(tH);
+    if (!outcome) outcome = bossesDown >= BOSSES.length ? 'won' : (heroHp <= 0 ? 'lost' : 'end');
+    const total = correct + wrong;
+    const acc = total > 0 ? Math.round((correct / total) * 100) : 0;
+    let stars = 0;
+    if (outcome === 'won') stars = heroHp >= 70 ? 3 : heroHp >= 30 ? 2 : 1;
+    else if (bossesDown >= 2) stars = 1;
+    if (outcome === 'won') userData.totalWins += 1;
+    saveData();
+    saveSession({ stars, acc, total });
+
+    if (outcome === 'won') spawnConfetti($('battle-stage'), 40);
+    setTimeout(() => {
+      $('result-emoji').textContent = outcome === 'won' ? '👑' : outcome === 'lost' ? '💀' : '⚔️';
+      $('result-title').textContent = outcome === 'won' ? '👑 Phá Đảo Thành Công!' : outcome === 'lost' ? '💀 Anh Hùng Gục Ngã!' : '⚔️ Kết Thúc';
+      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}">⭐</span>`).join('');
+      $('result-detail').innerHTML = `👹 Boss đã hạ: ${bossesDown}/3<br>❤️ Máu còn: ${Math.max(0, heroHp)}/${HERO_HP}<br>✅ Đúng: ${correct}/${total} (${acc}%)<br>✨ Combo cao nhất: ${maxCombo}`;
+      ss('result-screen');
+      if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch (e) {} }
+    }, outcome === 'won' ? 1200 : 200);
   }
 
-  // Wrap renderBoard so freshly drawn pieces always get their sprite.
-  if (typeof renderBoard === 'function') {
-    const origRender = renderBoard;
-    renderBoard = function () {
-      const r = origRender.apply(this, arguments);
-      try { mountSprites(); } catch (e) {}
-      return r;
-    };
+  async function saveSession({ stars, acc, total }) {
+    try {
+      const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+      if (!p.id) return;
+      await fetch('/api/sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        player_id: p.id, subject: subject === 'mix' ? 'math' : subject, difficulty,
+        score: bossesDown, total_questions: total, correct_answers: correct,
+        stars_earned: stars, combo_max: maxCombo, mode: 'v9', accuracy: acc,
+      }) });
+    } catch (e) {}
+  }
+  function logAns(sel, ck, ok, ms) {
+    if (!curQ || curQ.id < 0) return;
+    try {
+      const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+      if (!p.id) return;
+      fetch('/api/answers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        player_id: p.id, question_id: curQ.id, selected_answer: sel, correct_answer: ck, is_correct: ok, time_spent_ms: ms, difficulty,
+      }) }).catch(() => {});
+    } catch (e) {}
   }
 
-  // Wrap executeMove so a successful move (only happens on a correct answer)
-  // makes the moving piece cheer and sprays particles — happy on attack/correct.
-  if (typeof executeMove === 'function') {
-    const origMove = executeMove;
-    executeMove = function () {
-      const move = State.pendingMove;
-      const wasCapture = !!(move && State.board[move.to.row] && State.board[move.to.row][move.to.col]);
-      const r = origMove.apply(this, arguments);
-      try {
-        if (move && move.to) {
-          const cell = cellAt(move.to.row, move.to.col);
-          if (cell) {
-            const charEl = cell.querySelector('.hv-char');
-            if (charEl) {
-              charEl.classList.remove('is-idle');
-              charEl.classList.add('is-happy');
-              setTimeout(() => {
-                charEl.classList.remove('is-happy');
-                charEl.classList.add('is-idle');
-              }, 650);
-            }
-            spawnParticles(cell, wasCapture ? 'confetti' : 'sparkle', wasCapture ? 10 : 6);
-          }
-        }
-      } catch (e) {}
-      return r;
-    };
-  }
-
-  // Modals (guide + styled exit) -------------------------------------------
-  function ready(fn) {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
-    else fn();
-  }
-  ready(function () {
-    const $id = id => document.getElementById(id);
-
-    // Guide modal (start screen).
-    const guide = $id('guide-modal');
-    const guideBtn = $id('btn-guide');
-    if (guide && guideBtn) {
-      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
-      const close = $id('btn-guide-close');
-      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
-      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
+  function spawnConfetti(parent, count) {
+    if (!parent) return;
+    const colors = ['#ffd54f', '#ff7043', '#81c784', '#64b5f6', '#ba68c8', '#fff'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span'); p.className = 'pfx pfx-confetti';
+      p.style.setProperty('--x', Math.random() * 100 + '%'); p.style.setProperty('--delay', (Math.random() * 0.6) + 's');
+      p.style.setProperty('--rot', Math.floor(Math.random() * 360) + 'deg'); p.style.background = colors[i % colors.length];
+      parent.appendChild(p); p.addEventListener('animationend', () => p.remove(), { once: true });
     }
+  }
+  function speakQ() {
+    if (!curQ) return;
+    if (window.HocVuiTTS && window.HocVuiTTS.speak) { window.HocVuiTTS.speak(curQ.question_text); return; }
+    try { const u = new SpeechSynthesisUtterance(curQ.question_text); u.lang = 'vi-VN'; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
+  }
 
-    // Styled exit modal (in-game). startGame() reassigns btn-exit.onclick on
-    // every run to open the legacy inline overlay, so we intercept in the
-    // capture phase and stopImmediatePropagation to guarantee the styled
-    // modal wins (no window.confirm, legacy overlay bypassed).
-    const exit = $id('exit-modal');
-    const exitBtn = $id('btn-exit');
-    if (exit && exitBtn) {
-      exitBtn.addEventListener('click', e => {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        exit.style.display = 'flex';
-      }, true);
-      const cancel = $id('btn-exit-cancel');
-      const confirm = $id('btn-exit-confirm');
-      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
-      if (confirm) confirm.addEventListener('click', () => {
-        exit.style.display = 'none';
-        // Stop game loops so pending bot turns cannot fire, then leave.
-        State.current = 'GAME_OVER';
-        window.location.reload();
-      });
-      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
-    }
-  });
+  function init() {
+    loadData(); renderStart(); wireSel();
+    $('btn-start').addEventListener('click', startRun);
+    $('btn-replay').addEventListener('click', startRun);
+    $('btn-speak').addEventListener('click', speakQ);
+    const guideModal = $('guide-modal');
+    $('btn-guide').addEventListener('click', () => { guideModal.style.display = 'flex'; });
+    $('btn-guide-close').addEventListener('click', () => { guideModal.style.display = 'none'; });
+    guideModal.addEventListener('click', e => { if (e.target === guideModal) guideModal.style.display = 'none'; });
+    $('btn-exit').addEventListener('click', () => { $('exit-modal').style.display = 'flex'; });
+    const exitModal = $('exit-modal');
+    $('btn-exit-cancel').addEventListener('click', () => { exitModal.style.display = 'none'; });
+    $('btn-exit-confirm').addEventListener('click', () => { exitModal.style.display = 'none'; clearInterval(tH); window.location.reload(); });
+    exitModal.addEventListener('click', e => { if (e.target === exitModal) exitModal.style.display = 'none'; });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();

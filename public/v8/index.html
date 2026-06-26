@@ -5,150 +5,117 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>🏰 Xây Lâu Đài - Học Vui</title>
+  <title>🏰 Xếp Tháp Thăng Bằng - Học Vui</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    .help-btn { position: fixed; top: 12px; right: 12px; width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(0,0,0,0.15); color: #fff; font-size: 1.3rem; cursor: pointer; z-index: 50; display: flex; align-items: center; justify-content: center; }
-    .help-popup { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
-    .help-popup.active { display: flex; }
-    .help-content { background: #fff; color: #333; border-radius: 20px; padding: 24px 20px; max-width: 340px; width: 90%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-    .help-content h3 { margin-bottom: 14px; font-size: 1.1rem; }
-    .help-content p { text-align: left; line-height: 2; font-size: 0.95rem; margin-bottom: 18px; }
-    .help-content button { padding: 12px 28px; background: #4CAF50; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; }
-  </style>
 </head>
 <body>
   <div id="app">
-    <!-- SETUP SCREEN -->
-    <section id="setup-screen" class="screen active">
-      <div class="setup-container">
-        <h1 class="setup-title">🏰 Xây Lâu Đài</h1>
-        <p class="setup-subtitle">Trả lời đúng để xây cao!</p>
-        <button class="help-btn" id="help-btn-open">❓</button>
-        <div class="help-popup" id="help-popup">
-          <div class="help-content">
-            <h3>🏰 Cách chơi Xây Lâu Đài</h3>
-            <p>• Trả lời đúng = xây thêm 1 gạch 🧱<br>
-            • Trả lời sai = mất 1 gạch trên cùng<br>
-            • Hết giờ = cũng mất 1 gạch<br>
-            • Combo 5 câu đúng liên tiếp = bonus 2 gạch!<br>
-            • Cứ 5 tầng = nhận huy hiệu milestone<br>
-            • Động đất 🌋 random: mất 2 tầng!<br>
-            • Xây đến 30 tầng = thắng<br>
-            • Chọn theme: Nhà Gỗ, Lâu Đài Đá, Nhà Trên Cây...</p>
-            <button onclick="document.getElementById('help-popup').classList.remove('active')">Hiểu rồi!</button>
-          </div>
+    <!-- START -->
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <div class="logo-scene" aria-hidden="true">
+          <span class="logo-block b1"></span>
+          <span class="logo-block b2"></span>
+          <span class="logo-block b3"></span>
+          <span class="logo-castle">🏰</span>
         </div>
+        <h1 class="main-title">🏰 Xếp Tháp Thăng Bằng</h1>
+        <p class="subtitle">Trả lời đúng rồi căn thời điểm thả khối, xây tháp thật cao!</p>
+        <div class="hero-card"><div class="hero-stats"><span>🏰 Tháp cao nhất: <span id="best-tower">0</span></span><span>🏆 Hoàn hảo: <span id="total-perfect">0</span></span></div></div>
 
-        <div class="setup-section">
-          <label class="setup-label">🎮 Chế độ</label>
-          <div class="btn-group" id="mode-group">
-            <button class="btn-option active" data-mode="solo">Solo</button>
-            <button class="btn-option" data-mode="coop">Hợp tác</button>
-            <button class="btn-option" data-mode="versus">Đối đầu</button>
-          </div>
-        </div>
-
-        <div class="setup-section">
-          <label class="setup-label">🏰 Kiểu lâu đài</label>
-          <div class="theme-grid" id="theme-grid"></div>
-        </div>
-
-        <div class="setup-section">
-          <label class="setup-label">📚 Môn học</label>
-          <div class="btn-group" id="subject-group">
-            <button class="btn-option active" data-subject="math">Toán</button>
-            <button class="btn-option" data-subject="vietnamese">Tiếng Việt</button>
-            <button class="btn-option" data-subject="english">English</button>
-            <button class="btn-option" data-subject="mix">Trộn</button>
-          </div>
-        </div>
-
-        <div class="setup-section">
-          <label class="setup-label">📊 Mức độ</label>
-          <div class="btn-group" id="difficulty-group">
-            <button class="btn-option active" data-difficulty="easy">Dễ</button>
-            <button class="btn-option" data-difficulty="medium">Trung bình</button>
-            <button class="btn-option" data-difficulty="hard">Khó</button>
-          </div>
-        </div>
-
-        <button class="btn-start" id="btn-start">🚀 Bắt đầu xây!</button>
-        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
+        <div class="selector-group"><label class="selector-label">📚 Môn học:</label><div class="selector-options" data-group="subject">
+          <button type="button" class="sel-btn active" data-value="mix">🎲 Trộn</button>
+          <button type="button" class="sel-btn" data-value="math">🔢 Toán</button>
+          <button type="button" class="sel-btn" data-value="vietnamese">📖 T.Việt</button>
+          <button type="button" class="sel-btn" data-value="english">🔤 Anh</button>
+        </div></div>
+        <div class="selector-group"><label class="selector-label">⚡ Độ khó:</label><div class="selector-options" data-group="difficulty">
+          <button type="button" class="sel-btn active" data-value="easy">🌱 Dễ</button>
+          <button type="button" class="sel-btn" data-value="medium">🌿 Vừa</button>
+          <button type="button" class="sel-btn" data-value="hard">🌳 Khó</button>
+        </div></div>
+        <button class="btn-primary" id="btn-start">🏰 Bắt Đầu Xây!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
 
-    <!-- GAME SCREEN -->
+    <!-- GAME -->
     <section id="game-screen" class="screen">
-      <div class="game-layout">
-        <div class="game-header">
-          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
-          <div class="game-info" id="game-info"></div>
-        </div>
-        <div class="castle-area" id="castle-area">
-          <div class="builder-mascot" id="builder-mascot"></div>
-          <div class="castle-tower" id="castle-tower"></div>
-        </div>
-        <div class="question-area">
-          <div class="timer-wrap"><div class="timer-bar" id="timer-bar"></div></div>
-          <div class="q-text" id="q-text"></div>
-          <button class="btn-speak" id="btn-speak-v8" title="Đọc câu hỏi" style="margin:4px auto 8px;display:flex;">🔊</button>
-          <div class="answer-grid" id="answer-grid">
-            <button class="ans-btn" data-opt="a">A</button>
-            <button class="ans-btn" data-opt="b">B</button>
-            <button class="ans-btn" data-opt="c">C</button>
-            <button class="ans-btn" data-opt="d">D</button>
-          </div>
-          <div class="status-text" id="status-text"></div>
-        </div>
+      <div class="game-hud">
+        <button class="btn-exit" id="btn-exit" title="Thoát">🚪</button>
+        <span class="hud-item">🏰 <span id="floor-text">0</span></span>
+        <span class="hud-item">⚖️ <span id="balance-text">Vững</span></span>
+        <span class="hud-item">❓ <span id="progress-text">0/15</span></span>
       </div>
-      <!-- Exit confirm (styled card) -->
-      <div class="exit-overlay" id="exit-overlay">
-        <div class="exit-card modal-card exit-modal-card">
-          <div class="exit-modal-icon">🚪</div>
-          <p class="exit-modal-text">Thoát game?</p>
-          <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
-          <div class="exit-btns exit-modal-actions">
-            <button class="exit-btn cancel exit-modal-cancel" id="exit-cancel">Tiếp tục chơi</button>
-            <button class="exit-btn confirm exit-modal-confirm" id="exit-confirm">🚪 Thoát</button>
-          </div>
+
+      <!-- Tower stage -->
+      <div class="tower-stage" id="tower-stage">
+        <div class="tower-clouds"></div>
+        <div class="crane" id="crane">
+          <div class="crane-arm"></div>
+          <div class="swing-block" id="swing-block"></div>
         </div>
+        <div class="tower-wrap" id="tower-wrap">
+          <div class="tower" id="tower"></div>
+          <div class="ground-base">🏝️</div>
+        </div>
+        <button class="btn-drop" id="btn-drop" style="display:none;">⬇️ THẢ KHỐI!</button>
+      </div>
+
+      <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+      <div class="question-card">
+        <div class="q-top"><span class="q-badge" id="q-badge">🔢</span><button class="btn-speak" id="btn-speak" title="Đọc câu hỏi">🔊</button></div>
+        <p class="q-text" id="q-text"></p>
+        <div class="q-options" id="q-options"></div>
+        <div class="feedback" id="feedback" style="display:none;"></div>
       </div>
     </section>
 
-    <!-- RESULT SCREEN -->
+    <!-- RESULT -->
     <section id="result-screen" class="screen">
-      <div class="result-container" id="result-container"></div>
+      <div class="container">
+        <div class="result-emoji" id="result-emoji">🏰</div>
+        <h2 class="result-title" id="result-title">Kết Thúc</h2>
+        <div class="star-row" id="result-stars"></div>
+        <div class="result-detail" id="result-detail"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Xây Lại</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
     </section>
   </div>
+
   <div id="guide-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card">
-      <h3 class="modal-title">📖 Cách Chơi Xây Lâu Đài</h3>
+      <h3 class="modal-title">📖 Cách Chơi</h3>
       <ul class="modal-rules">
-        <li>🏰 Trả lời <b>đúng</b> = xây thêm 1 tầng gạch.</li>
-        <li>❌ Trả lời <b>sai</b> hoặc <b>hết giờ</b> = mất 1 tầng trên cùng.</li>
-        <li>🔥 Đúng liên tiếp tạo <b>combo</b>; cứ 5 câu liền = thưởng <b>+2 gạch</b>.</li>
-        <li>👑 Cứ mỗi 5 tầng nhận một <b>huy hiệu</b> mốc.</li>
-        <li>🌋 Coi chừng <b>động đất</b> bất ngờ: rơi mất 2 tầng!</li>
-        <li>🎮 Chơi <b>Solo</b>, <b>Hợp tác</b> hoặc <b>Đối đầu</b>; mở khoá thêm kiểu lâu đài khi chơi nhiều ván.</li>
-        <li>🏆 Xây đến <b>30 tầng</b> là chiến thắng — xây càng cao càng giỏi!</li>
+        <li>❓ Trả lời <b>đúng</b> để được 1 khối xây.</li>
+        <li>🏗️ Khối đung đưa qua lại — bấm <b>THẢ KHỐI</b> đúng lúc giữa tháp.</li>
+        <li>🎯 Thả càng chính giữa = tháp càng vững, điểm càng cao.</li>
+        <li>⚖️ Thả lệch nhiều lần = tháp nghiêng và sụp đổ.</li>
+        <li>❌ Trả lời sai = mất lượt khối đó.</li>
+        <li>🏰 Xây 15 tầng vững vàng = chiến thắng!</li>
       </ul>
-      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
     </div>
   </div>
-  <link rel="stylesheet" href="/tts.css">
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-card">
+      <div class="exit-icon">🚪</div>
+      <p class="exit-text">Thoát game?</p>
+      <div class="exit-actions">
+        <button class="exit-cancel" id="btn-exit-cancel">Tiếp tục</button>
+        <button class="exit-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
-  <script src="/lib/character.js"></script>
-  <script src="/lib/sprites/builders.js"></script>
   <script src="game.js"></script>
-  <script>
-    document.getElementById('help-btn-open')?.addEventListener('click', () => {
-      document.getElementById('help-popup').classList.toggle('active');
-    });
-  </script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
   <script src="/help-rules.js"></script>

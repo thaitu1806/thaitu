@@ -52,6 +52,57 @@ function showPopup(icon, text) {
   overlay.style.display = 'flex';
 }
 
+// Custom confirm dialog (replaces window.confirm). Returns a Promise<boolean>.
+function showConfirm(text, { icon = '❓', okText = 'Đồng ý', cancelText = 'Hủy', danger = false } = {}) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);';
+    const okBg = danger ? '#e53935' : '#4CAF50';
+    overlay.innerHTML = `
+      <div style="background:#fff;border-radius:18px;padding:28px 22px;text-align:center;max-width:340px;width:88%;box-shadow:0 20px 50px rgba(0,0,0,0.3);animation:popIn 0.25s;">
+        <div style="font-size:2.5rem;margin-bottom:10px;">${icon}</div>
+        <div style="font-size:1.05rem;font-weight:700;color:#333;margin-bottom:20px;line-height:1.4;">${text}</div>
+        <div style="display:flex;gap:12px;justify-content:center;">
+          <button data-act="cancel" style="padding:12px 24px;border:none;border-radius:10px;background:#e0e0e0;color:#333;font-size:1rem;font-weight:700;cursor:pointer;">${cancelText}</button>
+          <button data-act="ok" style="padding:12px 24px;border:none;border-radius:10px;background:${okBg};color:#fff;font-size:1rem;font-weight:700;cursor:pointer;">${okText}</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    const close = (val) => { overlay.remove(); resolve(val); };
+    overlay.querySelector('[data-act="ok"]').addEventListener('click', () => close(true));
+    overlay.querySelector('[data-act="cancel"]').addEventListener('click', () => close(false));
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(false); });
+  });
+}
+
+// Custom prompt dialog (replaces window.prompt). Returns a Promise<string|null>.
+function showPrompt(text, { icon = '✏️', placeholder = '', okText = 'OK', cancelText = 'Hủy' } = {}) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);';
+    overlay.innerHTML = `
+      <div style="background:#fff;border-radius:18px;padding:28px 22px;text-align:center;max-width:360px;width:88%;box-shadow:0 20px 50px rgba(0,0,0,0.3);animation:popIn 0.25s;">
+        <div style="font-size:2.2rem;margin-bottom:10px;">${icon}</div>
+        <div style="font-size:1.05rem;font-weight:700;color:#333;margin-bottom:16px;line-height:1.4;">${text}</div>
+        <input type="text" data-act="input" placeholder="${placeholder}" style="width:100%;box-sizing:border-box;padding:12px;border:2px solid #ddd;border-radius:10px;font-size:1rem;margin-bottom:18px;" />
+        <div style="display:flex;gap:12px;justify-content:center;">
+          <button data-act="cancel" style="padding:12px 24px;border:none;border-radius:10px;background:#e0e0e0;color:#333;font-size:1rem;font-weight:700;cursor:pointer;">${cancelText}</button>
+          <button data-act="ok" style="padding:12px 24px;border:none;border-radius:10px;background:#4CAF50;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;">${okText}</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    const input = overlay.querySelector('[data-act="input"]');
+    setTimeout(() => input.focus(), 50);
+    const close = (val) => { overlay.remove(); resolve(val); };
+    overlay.querySelector('[data-act="ok"]').addEventListener('click', () => close(input.value));
+    overlay.querySelector('[data-act="cancel"]').addEventListener('click', () => close(null));
+    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') close(input.value); });
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(null); });
+  });
+}
+
 // === TABS ===
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -653,7 +704,7 @@ async function loadQuestionsList() {
 document.getElementById('btn-filter').addEventListener('click', loadQuestionsList);
 
 async function deleteQuestion(id) {
-  if (!confirm('Xóa câu hỏi này?')) return;
+  if (!await showConfirm('Xóa câu hỏi này?', { icon: '🗑️', okText: 'Xóa', danger: true })) return;
   await adminFetch(adminUrl('questions', {id}), { method: 'DELETE' });
   loadQuestionsList();
 }
@@ -880,13 +931,16 @@ async function loadPlayers() {
 }
 
 async function deletePlayer(id, name) {
-  if (!confirm(`Xóa người chơi "${name}" và tất cả dữ liệu liên quan?`)) return;
+  if (!await showConfirm(`Xóa người chơi "${name}" và tất cả dữ liệu liên quan?`, { icon: '🗑️', okText: 'Xóa', danger: true })) return;
   try {
     const res = await adminFetch(adminUrl('players', { id, action: 'delete' }), { method: 'DELETE' });
     if (res.ok) {
+      showPopup('✅', 'Đã xóa người chơi!');
       loadPlayers();
     } else {
-      showPopup('❌', 'Lỗi xóa người chơi!');
+      let msg = 'Lỗi xóa người chơi!';
+      try { const d = await res.json(); if (d.error) msg = d.error; } catch {}
+      showPopup('❌', msg);
     }
   } catch (e) {
     showPopup('❌', 'Lỗi: ' + e.message);
@@ -996,7 +1050,7 @@ async function toggleExam(id, active) {
 }
 
 async function deleteExam(id) {
-  if (!confirm('Xóa bài thi này?')) return;
+  if (!await showConfirm('Xóa bài thi này?', { icon: '🗑️', okText: 'Xóa', danger: true })) return;
   await adminFetch(adminUrl('exams', {id}), { method: 'DELETE' });
   loadExamsList();
 }
@@ -1163,7 +1217,7 @@ async function toggleShopItem(id, newActive) {
 }
 
 async function deleteShopItem(id) {
-  if (!confirm('Xóa vật phẩm này?')) return;
+  if (!await showConfirm('Xóa vật phẩm này?', { icon: '🗑️', okText: 'Xóa', danger: true })) return;
   try {
     const res = await adminFetch(`/api/admin/shop/items/${id}`, { method: 'DELETE' });
     const result = await res.json();
@@ -1211,7 +1265,13 @@ async function loadVouchers() {
 }
 
 async function resolveVoucher(id, status) {
-  const admin_note = status === 'rejected' ? prompt('Lý do từ chối (tùy chọn):') : '';
+  if (status === 'rejected') {
+    const confirmed = await showConfirm('Từ chối phiếu thưởng này?', { icon: '❌', okText: 'Từ chối', danger: true });
+    if (!confirmed) return;
+  }
+  const admin_note = status === 'rejected' ? (await showPrompt('Lý do từ chối (tùy chọn):', { icon: '📝', placeholder: 'Nhập lý do...' })) : '';
+  // Cancelling the reason prompt aborts the rejection.
+  if (status === 'rejected' && admin_note === null) return;
   try {
     const res = await adminFetch(`/api/admin/vouchers/${id}`, {
       method: 'PUT',

@@ -1,932 +1,352 @@
-// === V2 GAME ENGINE ===
-const ZONES = [
-  { name: '🌱 Vườn Hoa', levels: 10, bg: '#90EE90' },
-  { name: '🌳 Khu Rừng', levels: 10, bg: '#228B22' },
-  { name: '🏔️ Núi Cao', levels: 10, bg: '#87CEEB' },
-  { name: '🌋 Núi Lửa', levels: 10, bg: '#FF6B35' },
-  { name: '🏰 Lâu Đài', levels: 10, bg: '#4a0e4e' },
-  { name: '🌊 Biển Sâu', levels: 10, bg: '#006994' },
-  { name: '🏜️ Sa Mạc', levels: 10, bg: '#C2B280' },
-  { name: '❄️ Băng Giá', levels: 10, bg: '#A5F2F3' },
-  { name: '🌌 Vũ Trụ', levels: 10, bg: '#1a1a2e' },
-  { name: '🐉 Hang Rồng', levels: 10, bg: '#8B0000' },
-];
+// V2 — Phiêu Lưu Kho Báu (Treasure Map Adventure)
+// Self-contained controller. The hero hops along an animated jungle/sea trail
+// toward the treasure chest. Correct answers advance the hero; mistakes let a
+// storm cloud creep closer. Reach the chest before 5 storm hits to win.
+(function () {
+  'use strict';
 
-const PLANTS = [
-  { id: 'sunflower', emoji: '🌻', name: 'Hoa Hướng Dương', unlockLevel: 1, damage: 1 },
-  { id: 'rose', emoji: '🌹', name: 'Hoa Hồng', unlockLevel: 10, damage: 2 },
-  { id: 'cactus', emoji: '🌵', name: 'Xương Rồng', unlockLevel: 20, damage: 1, special: 'slow' },
-  { id: 'mushroom', emoji: '🍄', name: 'Nấm', unlockLevel: 30, damage: 1, special: 'freeze' },
-  { id: 'tree', emoji: '🌳', name: 'Cây Cổ Thụ', unlockLevel: 40, damage: 3 },
-  { id: 'coral', emoji: '🐚', name: 'San Hô', unlockLevel: 50, damage: 2, special: 'slow' },
-  { id: 'palm', emoji: '🌴', name: 'Cây Dừa', unlockLevel: 60, damage: 2 },
-  { id: 'crystal', emoji: '💎', name: 'Pha Lê', unlockLevel: 70, damage: 1, special: 'freeze' },
-  { id: 'rocket', emoji: '🚀', name: 'Tên Lửa', unlockLevel: 80, damage: 4 },
-  { id: 'dragon', emoji: '🐲', name: 'Rồng Lửa', unlockLevel: 90, damage: 5 },
-];
+  const STORAGE_KEY = 'v2_adventure';
+  const STEPS = 12;          // tiles from start to treasure
+  const MAX_DANGER = 5;      // storm hits allowed
+  const MAX_Q = 20;          // safety cap on questions served
+  const TIMER_SECONDS = 18;
 
-const ZOMBIE_TYPES = [
-  { id: 'normal', emoji: '💀', hp: 1, speed: 1, name: 'Zombie' },
-  { id: 'strong', emoji: '👹', hp: 3, speed: 0.8, name: 'Quỷ Đỏ' },
-  { id: 'fast', emoji: '👻', hp: 1, speed: 2, name: 'Ma Tốc Độ' },
-  { id: 'shield', emoji: '🦹', hp: 4, speed: 0.6, name: 'Giáp Sắt' },
-  { id: 'boss', emoji: '🐉', hp: 8, speed: 0.4, name: 'Rồng Boss' },
-];
+  let userData = { totalWins: 0, totalTreasure: 0 };
+  function loadData() { try { const r = localStorage.getItem(STORAGE_KEY); if (r) Object.assign(userData, JSON.parse(r)); } catch (e) {} }
+  function saveData() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(userData)); } catch (e) {} }
 
-// Random emoji sets for visual variety each game
-const ZOMBIE_SET = ['💀', '🧟', '👻', '👹', '👺', '🤖', '👾', '🦇', '🐛', '🦠','🎃', '☠️', '🕷️', '🦂', '🐍', '🦎', '🐲', '🐉', '🦖', '🦕','🐊', '🦈', '🐙', '🦑', '🐜', '🦗', '🕸️', '🦟','🐺', '🦁', '🐗', '🦍', '🐏', '🦏', '🐻', '🧛', '🧙'];
-const BULLET_SET = ['☄️', '🔥', '⚡', '💫', '🌟', '🚀', '🎯', '💣', '🌊','🏹', '🗡️', '🛡️', '⚔️', '🔱', '💎', '🧨', '🎱', '🪓','🌩️', '❄️', '🌪️', '☀️', '🌶️', '🍉', '🥊', '🎾', '⚾', '🏈','🪁', '🎳', '❄️', '💧',  '🌀', '⭐', '🔔', '🎵', '🍳'];
-const EXPLOSION_SET = ['💥', '🔥', '✨', '⭐', '🌟', '💫', '🎆', '🎇', '☀️', '🌈','🎊', '🎉', '🎀', '🌸', '🌺', '🏵️', '🌼', '💐', '🌻','⚡', '💢', '❗', '🔆', '🔅', '✳️', '❇️', '🌠', '☄️', '💨', '💦', '🌀', '🎭', '🧧', '🎪', '🎠'];
-const PLANT_SET = ['🌻', '🌹', '🌵', '🍄', '🌲', '🎋', '🌸', '🌿', '🏵️','🌷', '🌺', '🌼', '💐', '🍀', '☘️', '🌱', '🎍','🌾', '🎄', '🌳', '🍁', '🍂', '🍃',  '🐚', '🥀','🍇', '🍊', '🍋', '🍓', '🥝', '🥥', '🌽', '🥕', '🥦'];
+  let cache = [], used = new Set();
+  let curQ = null, combo = 0, maxCombo = 0;
+  let subject = 'mix', difficulty = 'easy';
+  let pos = 0, danger = 0, served = 0, correct = 0, wrong = 0, outcome = null;
+  let qStart = 0, tH = null, locked = false, fbId = -1;
 
-// Game state
-const G = {
-  player: null,
-  currentLevel: 1,
-  maxLevel: 100,
-  selectedPlant: 'sunflower',
-  // Battle state
-  battle: null,
-  // Persistent (saved to localStorage)
-  save: { name: '', level: 1, coins: 0, stars: {}, plants: ['sunflower'], powerups: { eliminate: 3, freeze: 2, double: 2 }, dailyDate: '', dailyProgress: [0, 0, 0], timerSpeed: 'normal' },
-};
+  const $ = id => document.getElementById(id);
+  const ss = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); $(id).classList.add('active'); };
 
-// === SAVE/LOAD ===
-function saveGame() {
-  localStorage.setItem('hocvui_v2', JSON.stringify(G.save));
-  // Sync to server if profile exists
-  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
-  if (profile?.id) {
-    return fetch(`/api/players/${profile.id}/progress/v2`, {
-      method: 'PUT', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ level: G.save.level, stars: G.save.stars, coins: G.save.coins, plants: G.save.plants, powerups: G.save.powerups }),
-    }).then(r => { if (!r.ok) console.warn('Save progress failed:', r.status); })
-      .catch(e => console.warn('Save progress error:', e));
+  function renderStart() {
+    $('total-wins').textContent = userData.totalWins;
+    $('total-treasure').textContent = userData.totalTreasure;
   }
-  return Promise.resolve();
-}
-async function loadGame() {
-  // Try load from server first
-  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
-  if (profile?.id) {
+
+  function wireSel() {
+    document.querySelectorAll('.selector-options').forEach(g => g.addEventListener('click', e => {
+      const b = e.target.closest('.sel-btn'); if (!b) return;
+      g.querySelectorAll('.sel-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      if (g.dataset.group === 'subject') subject = b.dataset.value;
+      else difficulty = b.dataset.value;
+    }));
+  }
+
+  // ── Question fetching ─────────────────────────────────────────────────────
+  async function fetchQ() {
+    const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+    const g = p.grade || 2;
     try {
-      const res = await fetch(`/api/players/${profile.id}/progress/v2`);
-      const data = await res.json();
-      if (data && data.level) {
-        G.save = { ...G.save, ...data, name: profile.name };
-        G.save.level = Number(G.save.level);
-        G.save.coins = Number(G.save.coins) || 0;
-        // Validate: level should not exceed highest completed level + 1
-        const highestCompleted = Object.keys(G.save.stars).map(Number).filter(k => G.save.stars[k] > 0).sort((a, b) => b - a)[0] || 0;
-        if (G.save.level > highestCompleted + 1) {
-          G.save.level = highestCompleted + 1;
-        }
-        localStorage.setItem('hocvui_v2', JSON.stringify(G.save));
-        return;
+      if (subject === 'mix') {
+        const subs = ['math', 'vietnamese', 'english'];
+        const per = Math.ceil(MAX_Q / 3);
+        const r = await Promise.all(subs.map(s => fetch(`/api/questions?subject=${s}&difficulty=${difficulty}&limit=${per}&grade=${g}`).then(x => x.ok ? x.json() : []).catch(() => [])));
+        cache = r.flat();
+      } else {
+        const r = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=${MAX_Q}&grade=${g}`);
+        cache = r.ok ? await r.json() : [];
       }
-    } catch {}
-    // Server has no data - try localStorage as fallback before starting fresh
-    const local = localStorage.getItem('hocvui_v2');
-    if (local) {
-      const parsed = JSON.parse(local);
-      if (parsed.name === profile.name && parsed.level > 1) {
-        G.save = { ...G.save, ...parsed };
-        G.save.level = Number(G.save.level);
-        G.save.coins = Number(G.save.coins) || 0;
-        // Push local progress to server
-        saveGame();
-        return;
-      }
+    } catch (e) { cache = []; }
+    if (!Array.isArray(cache)) cache = [];
+    for (let i = cache.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cache[i], cache[j]] = [cache[j], cache[i]]; }
+  }
+
+  function nextQ() {
+    const q = cache.find(x => x && !used.has(x.id));
+    if (q) { used.add(q.id); return q; }
+    return mkFallback();
+  }
+
+  function mkFallback() {
+    const a = 1 + Math.floor(Math.random() * 20), b = 1 + Math.floor(Math.random() * 20);
+    const c = a + b, d = new Set();
+    while (d.size < 3) { const off = [-3, -2, -1, 1, 2, 3][Math.floor(Math.random() * 6)]; const w = c + off; if (w > 0 && w !== c) d.add(w); }
+    const nums = [c, ...d].sort(() => Math.random() - 0.5);
+    fbId--;
+    return { id: fbId, question_text: `${a} + ${b} = ?`, option_a: String(nums[0]), option_b: String(nums[1]), option_c: String(nums[2]), option_d: String(nums[3]), correct_answer: 'abcd'[nums.indexOf(c)] };
+  }
+
+  // ── Trail building ────────────────────────────────────────────────────────
+  let heroEl = null;
+  function buildTrail() {
+    const trail = $('trail');
+    trail.innerHTML = '';
+    for (let i = 0; i <= STEPS; i++) {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.dataset.idx = String(i);
+      if (i === 0) tile.classList.add('tile-start');
+      if (i === STEPS) { tile.classList.add('tile-goal'); tile.innerHTML = '<span class="goal-chest">🏴‍☠️</span>'; }
+      else if (i % 4 === 0 && i !== 0) tile.classList.add('tile-marker');
+      trail.appendChild(tile);
     }
-    G.save.name = profile.name;
-    return;
-  }
-  // No profile - use localStorage directly (guest mode)
-  const local = localStorage.getItem('hocvui_v2');
-  if (local) {
-    const parsed = JSON.parse(local);
-    G.save = { ...G.save, ...parsed };
-    G.save.level = Number(G.save.level);
-    G.save.coins = Number(G.save.coins) || 0;
-    // Validate level
-    const highestCompleted = Object.keys(G.save.stars).map(Number).filter(k => G.save.stars[k] > 0).sort((a, b) => b - a)[0] || 0;
-    if (G.save.level > highestCompleted + 1) {
-      G.save.level = highestCompleted + 1;
-    }
-  }
-}
-
-// === SCREENS ===
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-// === SPLASH ===
-document.getElementById('btn-play').addEventListener('click', () => {
-  const name = document.getElementById('player-name').value.trim();
-  if (!name) return;
-  G.save.name = name;
-  G.save.timerSpeed = document.getElementById('timer-speed').value;
-  saveGame();
-  enterMap();
-});
-document.getElementById('player-name').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('btn-play').click(); });
-
-// Init
-(async () => {
-  // Verify profile exists in DB
-  const profileRaw = localStorage.getItem('hocvui_profile');
-  if (!profileRaw) {
-    window.location.href = '/';
-    return;
-  }
-  const profileCheck = JSON.parse(profileRaw);
-  try {
-    const verifyRes = await fetch(`/api/players?id=${profileCheck.id}`);
-    const verifyData = await verifyRes.json();
-    if (!verifyData || verifyData.error || !verifyData.id) {
-      localStorage.removeItem('hocvui_profile');
-      window.location.href = '/';
-      return;
-    }
-    localStorage.setItem('hocvui_profile', JSON.stringify({ id: verifyData.id, name: verifyData.name }));
-  } catch {
-    // Network error - trust local
+    // hero token
+    heroEl = document.createElement('div');
+    heroEl.className = 'hero-token';
+    heroEl.innerHTML = '<span class="hero-face">🧭</span><span class="hero-shadow"></span>';
+    trail.appendChild(heroEl);
+    positionHero(false);
   }
 
-  // Clear stale V2 data if version mismatch
-  if (localStorage.getItem('hocvui_v2_ver') !== '5') {
-    localStorage.removeItem('hocvui_v2');
-    localStorage.setItem('hocvui_v2_ver', '5');
-    // Also clear server progress and wait for it
-    const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
-    if (profile?.id) {
-      try {
-        await fetch(`/api/players/${profile.id}/progress/v2`, {
-          method: 'PUT', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ level: 1, stars: {}, coins: 0, plants: ['sunflower'], powerups: { eliminate: 3, freeze: 2, double: 2 } }),
-        });
-      } catch {}
-    }
+  function positionHero(animate) {
+    const trail = $('trail');
+    const tile = trail.querySelector(`.tile[data-idx="${pos}"]`);
+    if (!tile || !heroEl) return;
+    const x = tile.offsetLeft + tile.offsetWidth / 2 - heroEl.offsetWidth / 2;
+    const y = tile.offsetTop - heroEl.offsetHeight + 14;
+    if (!animate) heroEl.style.transition = 'none';
+    else heroEl.style.transition = '';
+    heroEl.style.left = x + 'px';
+    heroEl.style.top = y + 'px';
+    if (!animate) { void heroEl.offsetWidth; heroEl.style.transition = ''; }
   }
 
-  await loadGame();
-  // Auto-fill from profile if exists
-  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
-  if (profile?.name && !G.save.name) G.save.name = profile.name;
-
-  if (G.save.name) {
-    document.getElementById('player-name').value = G.save.name;
-    enterMap();
+  function hopHero(times) {
+    heroEl.classList.add('hopping');
+    setTimeout(() => heroEl.classList.remove('hopping'), 450 + times * 60);
   }
-})();
 
-// === WORLD MAP ===
-function enterMap() {
-  showScreen('map-screen');
-  document.getElementById('player-display').textContent = `👤 ${G.save.name}`;
-  document.getElementById('coins-display').textContent = `💰 ${G.save.coins}`;
-  const totalStars = Object.values(G.save.stars).reduce((a, b) => a + b, 0);
-  document.getElementById('stars-total').textContent = `⭐ ${totalStars}`;
-  renderMap();
-  renderPlantSelector();
-}
+  // ── HUD / storm ───────────────────────────────────────────────────────────
+  function renderHud() {
+    $('step-text').textContent = `${pos}/${STEPS}`;
+    $('danger-text').textContent = `${danger}/${MAX_DANGER}`;
+    $('progress-text').textContent = `${served}/${MAX_Q}`;
+  }
+  function renderStorm() {
+    const storm = $('storm');
+    storm.dataset.danger = String(danger);
+  }
 
-function renderMap() {
-  const map = document.getElementById('world-map');
-  map.innerHTML = '';
-  let levelNum = 0;
+  // ── Game flow ───────────────────────────────────────────────────────────────
+  async function startRun() {
+    cache = []; used.clear(); combo = 0; maxCombo = 0; fbId = -1;
+    pos = 0; danger = 0; served = 0; correct = 0; wrong = 0; outcome = null;
+    ss('game-screen');
+    buildTrail(); renderHud(); renderStorm();
+    $('q-text').textContent = '⏳ Đang tải...';
+    $('q-options').innerHTML = '';
+    $('feedback').style.display = 'none';
+    await fetchQ();
+    setTimeout(() => positionHero(false), 30);
+    showNextQ();
+  }
 
-  ZONES.forEach((zone, zi) => {
-    const zoneEl = document.createElement('div');
-    zoneEl.className = 'map-zone';
-    zoneEl.innerHTML = `<div class="zone-title">${zone.name}</div><div class="zone-levels"></div>`;
-    const levelsEl = zoneEl.querySelector('.zone-levels');
+  function isFinished() {
+    return outcome !== null || pos >= STEPS || danger >= MAX_DANGER || served >= MAX_Q;
+  }
 
-    for (let i = 0; i < zone.levels; i++) {
-      levelNum++;
-      const isBoss = (i === zone.levels - 1);
-      const stars = G.save.stars[levelNum] || 0;
-      const isCompleted = stars > 0;
-      const isCurrent = levelNum === G.save.level;
-      const isLocked = levelNum > G.save.level;
+  function showNextQ() {
+    if (pos >= STEPS) { outcome = 'won'; }
+    if (danger >= MAX_DANGER) { outcome = 'storm'; }
+    if (outcome || served >= MAX_Q) { finish(); return; }
 
-      const node = document.createElement('div');
-      node.className = `level-node ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''} ${isBoss ? 'boss' : ''}`;
-      node.textContent = isBoss ? '👑' : levelNum;
-      if (isCompleted) node.innerHTML += `<div class="level-stars">${'⭐'.repeat(stars)}</div>`;
-
-      if (!isLocked) {
-        const lvl = levelNum;
-        node.addEventListener('click', () => startLevel(lvl));
-      }
-      levelsEl.appendChild(node);
-    }
-    map.appendChild(zoneEl);
-  });
-
-  // Scroll to current level
-  setTimeout(() => {
-    const current = map.querySelector('.level-node.current');
-    if (current) current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 100);
-}
-
-function renderPlantSelector() {
-  const sel = document.getElementById('plant-selector');
-  sel.innerHTML = PLANTS.map(p => {
-    const unlocked = G.save.plants.includes(p.id);
-    const selected = G.selectedPlant === p.id;
-    return `<div class="plant-item ${selected ? 'selected' : ''} ${!unlocked ? 'locked' : ''}" 
-      data-plant="${p.id}" title="${p.name} ${!unlocked ? '(Level ' + p.unlockLevel + ')' : ''}">
-      ${p.emoji}
-    </div>`;
-  }).join('');
-
-  sel.querySelectorAll('.plant-item:not(.locked)').forEach(el => {
-    el.addEventListener('click', () => {
-      G.selectedPlant = el.dataset.plant;
-      renderPlantSelector();
+    curQ = nextQ();
+    served++;
+    locked = false;
+    qStart = Date.now();
+    const subj = curQ.subject || subject;
+    $('q-badge').textContent = subj === 'vietnamese' ? '📖' : subj === 'english' ? '🔤' : '🔢';
+    $('q-text').textContent = curQ.question_text;
+    $('feedback').style.display = 'none';
+    const opts = $('q-options');
+    opts.innerHTML = '';
+    ['a', 'b', 'c', 'd'].forEach(k => {
+      const t = curQ[`option_${k}`];
+      if (t == null) return;
+      const btn = document.createElement('button');
+      btn.className = 'option-btn'; btn.dataset.key = k; btn.textContent = t;
+      btn.addEventListener('click', () => handleAns(k));
+      opts.appendChild(btn);
     });
-  });
-}
-
-// === BATTLE ENGINE ===
-function startLevel(level) {
-  G.currentLevel = level;
-  const zone = getZone(level);
-  const localLevel = level - getZoneStartLevel(zone);
-  const isBoss = (localLevel === ZONES[zone].levels - 1);
-
-  // Determine difficulty mix based on level
-  const difficulty = level <= 20 ? 'easy' : level <= 50 ? 'medium' : 'hard';
-  const questionsNeeded = isBoss ? 8 : 5;
-
-  G.battle = {
-    level, zone, isBoss, difficulty,
-    hp: 3,
-    score: 0,
-    combo: 0,
-    maxCombo: 0,
-    correct: 0,
-    total: 0,
-    zombies: [],
-    currentZombie: null,
-    questions: [],
-    qIndex: 0,
-    timer: null,
-    timeLeft: 100,
-    frozen: false,
-    doubleNext: false,
-  };
-
-  // Setup UI
-  document.getElementById('level-label').textContent = `Level ${level}`;
-  document.getElementById('zone-label').textContent = ZONES[zone].name;
-  document.getElementById('hp-display').textContent = `❤️ ${G.battle.hp}`;
-  document.getElementById('battle-score').textContent = `💰 0`;
-  document.getElementById('active-plant').textContent = PLANTS.find(p => p.id === G.selectedPlant).emoji;
-  updatePowerupUI();
-
-  showScreen('battle-screen');
-  fetchAndStartBattle(difficulty, questionsNeeded);
-}
-
-async function fetchAndStartBattle(difficulty, count) {
-  // Mix subjects
-  const mathCount = Math.ceil(count * 0.6);
-  const vietCount = count - mathCount;
-
-  try {
-    const [mathRes, vietRes] = await Promise.all([
-      fetch(`/api/questions?subject=math&difficulty=${difficulty}&limit=${mathCount}`),
-      fetch(`/api/questions?subject=vietnamese&difficulty=${vietCount > 0 ? difficulty : 'easy'}&limit=${vietCount}`),
-    ]);
-    const mathQs = await mathRes.json();
-    const vietQs = await vietRes.json();
-    G.battle.questions = shuffle([...mathQs, ...vietQs]);
-  } catch {
-    G.battle.questions = generateFallback(count);
+    renderHud();
+    startTimer();
   }
 
-  if (G.battle.questions.length === 0) G.battle.questions = generateFallback(count);
+  function startTimer() {
+    clearInterval(tH);
+    const total = TIMER_SECONDS * 1000;
+    const fill = $('timer-fill'); fill.classList.remove('warning');
+    tH = setInterval(() => {
+      const rem = Math.max(0, total - (Date.now() - qStart));
+      fill.style.width = (rem / total) * 100 + '%';
+      if (rem <= total / 3) fill.classList.add('warning');
+      if (rem <= 0) { clearInterval(tH); handleTimeout(); }
+    }, 100);
+  }
 
-  // Spawn zombies
-  spawnZombies();
-  nextZombie();
-}
-
-function spawnZombies() {
-  const level = G.battle.level;
-  const count = G.battle.questions.length;
-
-  // Pick random emojis for this battle's variety
-  G.battle.bulletEmoji = BULLET_SET[Math.floor(Math.random() * BULLET_SET.length)];
-  G.battle.explosionEmoji = EXPLOSION_SET[Math.floor(Math.random() * EXPLOSION_SET.length)];
-
-  G.battle.zombies = G.battle.questions.map((_, i) => {
-    let type;
-    if (G.battle.isBoss && i === count - 1) {
-      type = ZOMBIE_TYPES[4]; // boss
-    } else if (level > 70 && Math.random() < 0.4) {
-      type = ZOMBIE_TYPES[3]; // shield
-    } else if (level > 40 && Math.random() < 0.3) {
-      type = ZOMBIE_TYPES[1]; // strong
-    } else if (level > 20 && Math.random() < 0.25) {
-      type = ZOMBIE_TYPES[2]; // fast
+  function handleAns(sel) {
+    if (locked) return;
+    locked = true; clearInterval(tH);
+    const ck = (curQ.correct_answer || '').toLowerCase();
+    const ok = sel.toLowerCase() === ck;
+    document.querySelectorAll('.option-btn').forEach(b => {
+      b.classList.add('disabled');
+      if (b.dataset.key === ck) b.classList.add('correct');
+      else if (b.dataset.key === sel && !ok) b.classList.add('wrong');
+    });
+    const fb = $('feedback'); fb.style.display = 'block';
+    if (ok) {
+      correct++;
+      combo++; if (combo > maxCombo) maxCombo = combo;
+      let advance = 1;
+      if (combo > 0 && combo % 3 === 0) advance = 2;   // combo bonus hop
+      const before = pos;
+      pos = Math.min(STEPS, pos + advance);
+      hopHero(advance);
+      positionHero(true);
+      const hopped = pos - before;
+      if (advance >= 2) { fb.className = 'feedback bonus'; fb.textContent = `✨ Combo! Nhảy ${hopped} chặng!`; }
+      else { fb.className = 'feedback good'; fb.textContent = '✅ Đúng! Tiến 1 chặng.'; }
+      spawnParticles(heroEl, 'sparkle', 8);
     } else {
-      type = ZOMBIE_TYPES[0]; // normal
+      wrong++; combo = 0;
+      danger++;
+      renderStorm();
+      flashStorm();
+      fb.className = 'feedback bad'; fb.textContent = '❌ Sai! Cơn bão tiến gần hơn.';
     }
-    // Assign random emoji from ZOMBIE_SET for visual variety
-    const randomEmoji = ZOMBIE_SET[Math.floor(Math.random() * ZOMBIE_SET.length)];
-    return { ...type, emoji: randomEmoji, currentHp: type.hp, position: 0, alive: true };
-  });
-
-  document.getElementById('wave-display').textContent = `👾 1/${count}`;
-}
-
-function nextZombie() {
-  const idx = G.battle.zombies.findIndex(z => z.alive);
-  if (idx === -1) { winLevel(); return; }
-
-  G.battle.currentZombie = G.battle.zombies[idx];
-  renderZombie();
-  showQuestion();
-}
-
-// === ZOMBIE RENDERING ===
-function renderZombie() {
-  const container = document.getElementById('zombies-container');
-  const z = G.battle.currentZombie;
-  const variantClass = z.id === 'boss' ? 'boss' : z.id === 'fast' ? 'fast' : z.id === 'strong' ? 'strong' : z.id === 'shield' ? 'shield' : '';
-  container.innerHTML = `
-    <div class="zombie-entity ${variantClass}" id="active-zombie" style="right:${z.position}%">
-      ${z.hp > 1 ? `<div class="zombie-hp"><div class="zombie-hp-fill" style="width:${100 * z.currentHp / z.hp}%"></div></div>` : ''}
-      ${z.emoji}
-    </div>
-  `;
-}
-
-function animateZombieHit() {
-  const el = document.getElementById('active-zombie');
-  if (el) { el.classList.add('hit'); setTimeout(() => el.classList.remove('hit'), 300); }
-}
-
-function animateZombieDead() {
-  const el = document.getElementById('active-zombie');
-  if (el) {
-    el.classList.add('dead');
-    // Death particles
-    const container = document.getElementById('projectiles-container');
-    const deathEmojis = ['💀', '👻', '💨', '✨', '🌟'];
-    for (let i = 0; i < 8; i++) {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      p.textContent = deathEmojis[Math.floor(Math.random() * deathEmojis.length)];
-      p.style.cssText = `right: ${el.style.right}; top: 50%; font-size: ${12 + Math.random() * 16}px; animation: particleFly ${0.5 + Math.random() * 0.5}s forwards; --dx: ${(Math.random() - 0.5) * 120}px; --dy: ${-40 - Math.random() * 80}px;`;
-      container.appendChild(p);
-      setTimeout(() => p.remove(), 1000);
-    }
+    logAns(sel, ck, ok, Date.now() - qStart);
+    renderHud();
+    setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1100);
   }
-}
 
-function moveZombieCloser() {
-  G.battle.currentZombie.position += 15;
-  const el = document.getElementById('active-zombie');
-  if (el) el.style.right = Math.min(G.battle.currentZombie.position, 80) + '%';
-
-  if (G.battle.currentZombie.position >= 80) {
-    G.battle.hp--;
-    document.getElementById('hp-display').textContent = `❤️ ${G.battle.hp}`;
-    if (G.battle.hp <= 0) { loseLevel(); return; }
-    // Reset zombie position
-    G.battle.currentZombie.position = 0;
-    if (el) el.style.right = '0%';
-    playSound('wrong');
+  function handleTimeout() {
+    if (locked) return;
+    locked = true;
+    wrong++; combo = 0; danger++;
+    renderStorm(); flashStorm();
+    const fb = $('feedback'); fb.style.display = 'block';
+    fb.className = 'feedback bad'; fb.textContent = '⏰ Hết giờ! Cơn bão tiến gần hơn.';
+    renderHud();
+    setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1100);
   }
-}
 
-// === QUESTION FLOW ===
-function showQuestion() {
-  if (G.battle.qIndex >= G.battle.questions.length) { winLevel(); return; }
+  function flashStorm() {
+    const storm = $('storm');
+    storm.classList.add('flash');
+    setTimeout(() => storm.classList.remove('flash'), 500);
+  }
 
-  const q = G.battle.questions[G.battle.qIndex];
-  const badge = document.getElementById('q-type-badge');
-  badge.textContent = q.subject === 'math' ? '🔢 Toán' : '📖 Tiếng Việt';
+  function finish() {
+    clearInterval(tH);
+    if (!outcome) outcome = pos >= STEPS ? 'won' : (danger >= MAX_DANGER ? 'storm' : 'end');
+    const total = correct + wrong;
+    const acc = total > 0 ? Math.round((correct / total) * 100) : 0;
+    let stars = 0;
+    if (outcome === 'won') stars = danger === 0 ? 3 : (danger <= 2 ? 2 : 1);
+    else if (pos >= STEPS - 3) stars = 1;
+    if (outcome === 'won') { userData.totalWins += 1; userData.totalTreasure += 1; }
+    saveData();
+    saveSession({ stars, acc, total });
 
-  document.getElementById('q-text').innerHTML = formatQuestionText(q.question_text);
-  const btns = document.querySelectorAll('.q-btn');
-  btns[0].textContent = `A. ${q.option_a}`;
-  btns[1].textContent = `B. ${q.option_b}`;
-  btns[2].textContent = `C. ${q.option_c}`;
-  btns[3].textContent = `D. ${q.option_d}`;
-  btns.forEach(b => { b.className = 'q-btn'; b.disabled = false; b.blur(); });
-
-  G.battle.questionStart = Date.now();
-  startTimer();
-}
-
-function startTimer() {
-  G.battle.timeLeft = 100;
-  const fill = document.querySelector('.q-timer-fill');
-  fill.style.width = '100%';
-  fill.className = 'q-timer-fill';
-
-  clearInterval(G.battle.timer);
-  clearInterval(G.battle.creepTimer);
-  const speedMultiplier = G.save.timerSpeed === 'slow' ? 1.5 : G.save.timerSpeed === 'fast' ? 0.6 : 1;
-  const baseSpeed = G.battle.frozen ? 300 : G.battle.level > 30 ? 120 : G.battle.level > 15 ? 150 : 200;
-  const speed = Math.round(baseSpeed * speedMultiplier);
-
-  G.battle.timer = setInterval(() => {
-    G.battle.timeLeft -= 1;
-    fill.style.width = G.battle.timeLeft + '%';
-    if (G.battle.timeLeft <= 20) fill.className = 'q-timer-fill danger';
-    else if (G.battle.timeLeft <= 50) fill.className = 'q-timer-fill warn';
-
-    if (G.battle.timeLeft <= 0) {
-      clearInterval(G.battle.timer);
-      clearInterval(G.battle.creepTimer);
-      handleWrong(null);
-    }
-  }, speed);
-
-  // Zombie auto-creep: slowly moves toward house based on zombie speed
-  const z = G.battle.currentZombie;
-  const creepInterval = G.battle.frozen ? 3000 : Math.round(2000 / (z ? z.speed : 1));
-  G.battle.creepTimer = setInterval(() => {
-    if (!G.battle.currentZombie || !G.battle.currentZombie.alive) { clearInterval(G.battle.creepTimer); return; }
-    G.battle.currentZombie.position += 3;
-    const el = document.getElementById('active-zombie');
-    if (el) el.style.right = Math.min(G.battle.currentZombie.position, 80) + '%';
-
-    if (G.battle.currentZombie.position >= 80) {
-      clearInterval(G.battle.creepTimer);
-      G.battle.hp--;
-      document.getElementById('hp-display').textContent = `❤️ ${G.battle.hp}`;
-      if (G.battle.hp <= 0) { clearInterval(G.battle.timer); loseLevel(); return; }
-      G.battle.currentZombie.position = 0;
-      if (el) el.style.right = '0%';
-      playSound('wrong');
-    }
-  }, creepInterval);
-}
-
-// === ANSWER HANDLING ===
-document.querySelectorAll('.q-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (btn.disabled || btn.classList.contains('eliminated')) return;
-    clearInterval(G.battle.timer);
-
-    const q = G.battle.questions[G.battle.qIndex];
-    const selected = btn.dataset.opt;
-    const isCorrect = selected.toLowerCase() === q.correct_answer.toLowerCase();
-
-    document.querySelectorAll('.q-btn').forEach(b => b.disabled = true);
-
-    if (isCorrect) {
-      btn.classList.add('correct');
-      handleCorrect(q);
-    } else {
-      btn.classList.add('wrong');
-      document.querySelectorAll('.q-btn').forEach(b => {
-        if (b.dataset.opt.toLowerCase() === q.correct_answer.toLowerCase()) b.classList.add('correct');
-      });
-      handleWrong(selected);
-    }
-
-    // Log answer
-    logAnswer(q, selected, isCorrect);
-
-    G.battle.total++;
-    G.battle.qIndex++;
-    document.getElementById('wave-display').textContent = `👾 ${G.battle.qIndex}/${G.battle.questions.length}`;
+    const stage = $('adventure-stage');
+    let delay = 0;
+    if (outcome === 'won') { spawnConfetti(stage, 36); delay = 1100; }
+    else if (outcome === 'storm') { $('storm').classList.add('is-bursting'); delay = 1200; }
 
     setTimeout(() => {
-      const z = G.battle.currentZombie;
-      if (!z.alive) {
-        animateZombieDead();
-        setTimeout(() => nextZombie(), 400);
-      } else {
-        showQuestion();
-      }
-    }, 1200);
-  });
-});
-
-function handleCorrect(q) {
-  G.battle.combo++;
-  G.battle.maxCombo = Math.max(G.battle.maxCombo, G.battle.combo);
-  G.battle.correct++;
-
-  const plant = PLANTS.find(p => p.id === G.selectedPlant);
-  let damage = plant.damage;
-  if (G.battle.doubleNext) { damage *= 2; G.battle.doubleNext = false; }
-
-  // Damage zombie
-  G.battle.currentZombie.currentHp -= damage;
-  if (G.battle.currentZombie.currentHp <= 0) {
-    G.battle.currentZombie.alive = false;
+      let title = '🗺️ Kết Thúc', emoji = '🗺️';
+      if (outcome === 'won') { title = '🏴‍☠️ Tìm Thấy Kho Báu!'; emoji = '💎'; }
+      else if (outcome === 'storm') { title = '⛈️ Bão Đã Ập Tới!'; emoji = '⛈️'; }
+      $('result-title').textContent = title;
+      $('result-emoji').textContent = emoji;
+      const stars = (outcome === 'won') ? (danger === 0 ? 3 : danger <= 2 ? 2 : 1) : (pos >= STEPS - 3 ? 1 : 0);
+      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}">⭐</span>`).join('');
+      $('result-detail').innerHTML = `
+        🧭 Chặng đi: ${pos}/${STEPS}<br>
+        ⛈️ Nguy hiểm: ${danger}/${MAX_DANGER}<br>
+        ✅ Đúng: ${correct}/${total} (${acc}%)<br>
+        ✨ Combo cao nhất: ${maxCombo}
+      `;
+      ss('result-screen');
+      $('storm').classList.remove('is-bursting');
+      if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch (e) {} }
+    }, delay);
   }
 
-  // Score
-  const bonus = G.battle.combo * 5 + Math.floor(G.battle.timeLeft / 10);
-  G.battle.score += 10 + bonus;
-  document.getElementById('battle-score').textContent = `💰 ${G.battle.score}`;
-
-  // Effects
-  playSound('correct');
-  shootProjectile();
-  animateZombieHit();
-  renderZombie(); // update HP bar
-
-  if (G.battle.combo >= 3) showCombo();
-}
-
-function handleWrong(selected) {
-  G.battle.combo = 0;
-  moveZombieCloser();
-  playSound('wrong');
-  document.querySelector('.battlefield').classList.add('damage-flash');
-  setTimeout(() => document.querySelector('.battlefield').classList.remove('damage-flash'), 200);
-}
-
-function showCombo() {
-  const popup = document.createElement('div');
-  popup.className = 'combo-popup';
-  popup.textContent = `🔥 x${G.battle.combo}!`;
-  document.querySelector('.battle-arena').appendChild(popup);
-  setTimeout(() => popup.remove(), 1000);
-  if (G.battle.combo >= 5) playSound('combo');
-}
-
-function shootProjectile() {
-  const container = document.getElementById('projectiles-container');
-  const z = G.battle.currentZombie;
-  const isMobile = window.innerWidth <= 600;
-  const targetLeft = isMobile
-    ? 'calc(' + (100 - (z ? z.position : 0) - 15) + '% - 20px)'
-    : 'calc(' + (100 - (z ? z.position : 0) - 15) + '% + 20px)';
-
-  // Plant attack animation
-  const plantEl = document.getElementById('active-plant');
-  plantEl.classList.add('attack');
-  setTimeout(() => plantEl.classList.remove('attack'), 300);
-
-  // Use random bullet emoji from this battle's set
-  const bulletEmoji = G.battle.bulletEmoji || '☄️';
-  const explosionEmoji = G.battle.explosionEmoji || '💥';
-
-  const proj = document.createElement('div');
-  proj.className = 'projectile';
-  proj.textContent = bulletEmoji;
-  proj.style.left = '0%';
-  proj.style.setProperty('--ztarget', targetLeft);
-  proj.style.animation = 'projFly 0.5s forwards';
-  container.appendChild(proj);
-  playSound('shoot');
-
-  // After reaching zombie → explode at position with particles
-  setTimeout(() => {
-    proj.style.left = targetLeft;
-    proj.textContent = explosionEmoji;
-    proj.style.animation = 'projExplode 0.4s forwards';
-    createParticles(container, targetLeft);
-    setTimeout(() => proj.remove(), 400);
-  }, 500);
-}
-
-function createParticles(container, targetLeft) {
-  const emojis = ['⭐', '✨', '💫', '🔥', '💥'];
-  for (let i = 0; i < 6; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    p.style.cssText = `left: ${targetLeft}; top: 50%; font-size: ${10 + Math.random() * 14}px; animation: particleFly ${0.4 + Math.random() * 0.4}s forwards; --dx: ${(Math.random() - 0.5) * 80}px; --dy: ${-30 - Math.random() * 60}px;`;
-    container.appendChild(p);
-    setTimeout(() => p.remove(), 800);
+  async function saveSession({ stars, acc, total }) {
+    try {
+      const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+      if (!p.id) return;
+      await fetch('/api/sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        player_id: p.id, subject: subject === 'mix' ? 'math' : subject, difficulty,
+        score: pos, total_questions: total, correct_answers: correct,
+        stars_earned: stars, combo_max: maxCombo, mode: 'v2', accuracy: acc,
+      }) });
+    } catch (e) {}
   }
-}
 
-// === WIN / LOSE ===
-function winLevel() {
-  clearInterval(G.battle.timer);
-  clearInterval(G.battle.creepTimer);
-  const pct = G.battle.correct / G.battle.total;
-  const stars = pct >= 0.9 ? 3 : pct >= 0.7 ? 2 : 1;
-  const coins = G.battle.score + (stars * 10);
-
-  // Save progress
-  const prevStars = G.save.stars[G.currentLevel] || 0;
-  G.save.stars[G.currentLevel] = Math.max(prevStars, stars);
-  // Only advance to next level (never skip levels)
-  if (Number(G.currentLevel) === Number(G.save.level)) {
-    G.save.level = Math.min(G.save.level + 1, G.maxLevel);
+  function logAns(sel, ck, ok, ms) {
+    if (!curQ || curQ.id < 0) return;
+    try {
+      const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+      if (!p.id) return;
+      fetch('/api/answers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        player_id: p.id, question_id: curQ.id, selected_answer: sel, correct_answer: ck,
+        is_correct: ok, time_spent_ms: ms, difficulty,
+      }) }).catch(() => {});
+    } catch (e) {}
   }
-  G.save.coins += coins;
 
-  // Check plant unlock
-  let unlockMsg = '';
-  PLANTS.forEach(p => {
-    if (p.unlockLevel === G.currentLevel + 1 && !G.save.plants.includes(p.id)) {
-      G.save.plants.push(p.id);
-      unlockMsg = `🎁 Mở khóa: ${p.emoji} ${p.name}!`;
+  // ── Particles ───────────────────────────────────────────────────────────────
+  function spawnParticles(parent, kind, count) {
+    if (!parent) return;
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-' + kind;
+      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
+      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
     }
-  });
-
-  saveGame().then(() => {
-    // Save game session for admin stats (after progress is saved)
-    const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
-    if (profile?.id) {
-      fetch('/api/sessions', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({
-          player_id: profile.id,
-          subject: 'mixed',
-          difficulty: G.battle.difficulty || 'easy',
-          correct_answers: G.battle.correct,
-          total_questions: G.battle.total,
-          score: G.battle.score,
-          stars_earned: stars,
-          combo_max: G.battle.maxCombo,
-        }),
-      }).then(() => {
-        // Check and show parent linking prompt after session save
-        if (window.checkAndShowPrompt && profile?.id) {
-          window.checkAndShowPrompt(profile.id);
-        }
-      }).catch(() => {});
+  }
+  function spawnConfetti(parent, count) {
+    if (!parent) return;
+    const colors = ['#ffd54f', '#ff7043', '#81c784', '#64b5f6', '#ba68c8', '#fff'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'pfx pfx-confetti';
+      p.style.setProperty('--x', Math.random() * 100 + '%');
+      p.style.setProperty('--delay', (Math.random() * 0.6) + 's');
+      p.style.setProperty('--rot', Math.floor(Math.random() * 360) + 'deg');
+      p.style.background = colors[i % colors.length];
+      parent.appendChild(p);
+      p.addEventListener('animationend', () => p.remove(), { once: true });
     }
-  });
-  updateDailyProgress(G.battle.correct, G.battle.maxCombo, pct >= 1);
-
-  // UI
-  document.getElementById('complete-title').textContent = stars === 3 ? '🏆 Xuất sắc!' : stars === 2 ? '👏 Giỏi lắm!' : '👍 Qua level!';
-  document.getElementById('complete-stars').textContent = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
-  document.getElementById('cs-correct').textContent = `${G.battle.correct}/${G.battle.total}`;
-  document.getElementById('cs-combo').textContent = G.battle.maxCombo;
-  document.getElementById('cs-coins').textContent = `+${coins} 💰`;
-
-  const unlockEl = document.getElementById('complete-unlock');
-  if (unlockMsg) { unlockEl.textContent = unlockMsg; unlockEl.classList.remove('hidden'); }
-  else { unlockEl.classList.add('hidden'); }
-
-  // Celebration effect
-  if (stars === 3) { showCelebration('🏆 Hoàn hảo!'); }
-  else if (stars >= 2) { playSound('celebrate'); }
-  else { playSound('win'); }
-  showScreen('complete-screen');
-}
-
-function loseLevel() {
-  clearInterval(G.battle.timer);
-  clearInterval(G.battle.creepTimer);
-  playSound('gameover');
-  showScreen('gameover-screen');
-}
-
-// Navigation
-document.getElementById('btn-next-level').addEventListener('click', () => {
-  if (G.currentLevel < G.maxLevel) startLevel(G.currentLevel + 1);
-  else enterMap();
-});
-document.getElementById('btn-back-map').addEventListener('click', enterMap);
-document.getElementById('btn-back-map2').addEventListener('click', enterMap);
-document.getElementById('btn-retry').addEventListener('click', () => startLevel(G.currentLevel));
-
-// === POWER-UPS ===
-function updatePowerupUI() {
-  document.querySelector('#pu-eliminate .pu-count').textContent = G.save.powerups.eliminate;
-  document.querySelector('#pu-freeze .pu-count').textContent = G.save.powerups.freeze;
-  document.querySelector('#pu-double .pu-count').textContent = G.save.powerups.double;
-}
-
-document.getElementById('pu-eliminate').addEventListener('click', () => {
-  if (G.save.powerups.eliminate <= 0) return;
-  const q = G.battle.questions[G.battle.qIndex];
-  const btns = [...document.querySelectorAll('.q-btn')];
-  const wrongBtns = btns.filter(b => b.dataset.opt.toLowerCase() !== q.correct_answer.toLowerCase() && !b.classList.contains('eliminated'));
-  if (wrongBtns.length > 0) {
-    wrongBtns[Math.floor(Math.random() * wrongBtns.length)].classList.add('eliminated');
-    G.save.powerups.eliminate--;
-    updatePowerupUI();
-    saveGame();
   }
-});
 
-document.getElementById('pu-freeze').addEventListener('click', () => {
-  if (G.save.powerups.freeze <= 0 || G.battle.frozen) return;
-  G.battle.frozen = true;
-  G.save.powerups.freeze--;
-  updatePowerupUI();
-  saveGame();
-  // Slow timer for 5 seconds
-  setTimeout(() => { G.battle.frozen = false; }, 5000);
-});
-
-document.getElementById('pu-double').addEventListener('click', () => {
-  if (G.save.powerups.double <= 0) return;
-  G.battle.doubleNext = true;
-  G.save.powerups.double--;
-  updatePowerupUI();
-  saveGame();
-});
-
-// === DAILY QUESTS ===
-function getDailyQuests() {
-  return [
-    { text: 'Trả lời đúng 15 câu', target: 15, icon: '✅' },
-    { text: 'Combo 5 liên tiếp', target: 5, icon: '🔥' },
-    { text: 'Hoàn thành 1 level không sai', target: 1, icon: '💯' },
-  ];
-}
-
-function updateDailyProgress(correct, maxCombo, perfect) {
-  const today = new Date().toDateString();
-  if (G.save.dailyDate !== today) { G.save.dailyDate = today; G.save.dailyProgress = [0, 0, 0]; }
-  G.save.dailyProgress[0] += correct;
-  G.save.dailyProgress[1] = Math.max(G.save.dailyProgress[1], maxCombo);
-  if (perfect) G.save.dailyProgress[2]++;
-  saveGame();
-}
-
-document.getElementById('btn-daily').addEventListener('click', () => {
-  const quests = getDailyQuests();
-  const today = new Date().toDateString();
-  if (G.save.dailyDate !== today) { G.save.dailyDate = today; G.save.dailyProgress = [0, 0, 0]; }
-
-  document.getElementById('daily-quests').innerHTML = quests.map((q, i) => {
-    const progress = G.save.dailyProgress[i] || 0;
-    const done = progress >= q.target;
-    return `<div class="quest-item ${done ? 'done' : ''}">
-      <span>${q.icon}</span>
-      <span>${q.text}</span>
-      <span class="quest-progress">${Math.min(progress, q.target)}/${q.target}</span>
-    </div>`;
-  }).join('');
-
-  document.getElementById('daily-modal').classList.remove('hidden');
-});
-document.getElementById('close-daily').addEventListener('click', () => {
-  document.getElementById('daily-modal').classList.add('hidden');
-});
-
-// === UTILITIES ===
-function getZone(level) { let acc = 0; for (let i = 0; i < ZONES.length; i++) { acc += ZONES[i].levels; if (level <= acc) return i; } return ZONES.length - 1; }
-function getZoneStartLevel(zoneIdx) { let acc = 0; for (let i = 0; i < zoneIdx; i++) acc += ZONES[i].levels; return acc; }
-function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
-
-// === FORMAT QUESTION TEXT (vertical math) ===
-function formatQuestionText(text) {
-  if (!text.startsWith('Đặt tính:')) return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const lines = text.split('\n');
-  const num1 = lines[1] ? lines[1].trim() : '';
-  const opLine = lines[2] ? lines[2].trim() : '';
-  const op = opLine.charAt(0);
-  const num2 = opLine.substring(1).trim();
-  return `<div class="vertical-math"><div class="vm-num">${num1}</div><div class="vm-op">${op}</div><div class="vm-num">${num2}</div><div class="vm-line"></div></div>`;
-}
-
-// === AUDIO ===
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let audioCtx;
-function initAudio() { if (!audioCtx) audioCtx = new AudioCtx(); }
-
-function showCelebration(text) {
-  const el = document.createElement('div');
-  el.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;pointer-events:none;animation:celebFade 2.5s forwards;';
-  el.innerHTML = `<div style="text-align:center"><div style="font-size:3rem;animation:celebBounce 0.6s infinite alternate">🎉🎊👏✨🌟</div><div style="font-size:1.8rem;font-weight:900;color:#FFD700;text-shadow:2px 2px 8px rgba(0,0,0,0.5);margin-top:10px">${text}</div></div>`;
-  if (!document.getElementById('celeb-style')) {
-    const s = document.createElement('style');
-    s.id = 'celeb-style';
-    s.textContent = '@keyframes celebFade{0%{opacity:0}10%{opacity:1}80%{opacity:1}100%{opacity:0}}@keyframes celebBounce{from{transform:scale(1) rotate(-3deg)}to{transform:scale(1.2) rotate(3deg)}}';
-    document.head.appendChild(s);
+  // ── TTS ─────────────────────────────────────────────────────────────────────
+  function speakQ() {
+    if (!curQ) return;
+    if (window.HocVuiTTS && window.HocVuiTTS.speak) { window.HocVuiTTS.speak(curQ.question_text); return; }
+    try { const u = new SpeechSynthesisUtterance(curQ.question_text); u.lang = 'vi-VN'; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
   }
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2500);
-}
 
-function playSound(type) {
-  try {
-    initAudio();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    switch (type) {
-      case 'correct':
-        osc.frequency.setValueAtTime(523, audioCtx.currentTime);
-        osc.frequency.setValueAtTime(784, audioCtx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.3); break;
-      case 'wrong':
-        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-        osc.type = 'sawtooth';
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.25); break;
-      case 'shoot':
-        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.1);
-        osc.type = 'square';
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.1); break;
-      case 'combo':
-        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-        osc.frequency.setValueAtTime(1319, audioCtx.currentTime + 0.15);
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.3); break;
-      case 'win':
-        [523, 659, 784, 1047].forEach((f, i) => {
-          const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-          o.connect(g); g.connect(audioCtx.destination);
-          o.frequency.setValueAtTime(f, audioCtx.currentTime + i * 0.12);
-          g.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.12);
-          g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.12 + 0.25);
-          o.start(audioCtx.currentTime + i * 0.12); o.stop(audioCtx.currentTime + i * 0.12 + 0.25);
-        }); break;
-      case 'gameover':
-        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-        osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.3);
-        osc.type = 'sawtooth';
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.5); break;
-      case 'celebrate':
-        [523, 659, 784, 1047, 1319].forEach((f, i) => {
-          const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-          o.connect(g); g.connect(audioCtx.destination);
-          o.type = i % 2 === 0 ? 'triangle' : 'sine';
-          o.frequency.setValueAtTime(f, audioCtx.currentTime + i * 0.12);
-          g.gain.setValueAtTime(0.25, audioCtx.currentTime + i * 0.12);
-          g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.12 + 0.35);
-          o.start(audioCtx.currentTime + i * 0.12); o.stop(audioCtx.currentTime + i * 0.12 + 0.35);
-        }); break;
-    }
-  } catch (e) {}
-}
-
-// === ANSWER LOGGING ===
-async function logAnswer(question, selected, isCorrect) {
-  if (!question.id) return;
-  try {
-    await fetch('/api/answers', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session_id: 0, player_id: 0, question_id: question.id,
-        selected_answer: selected || 'timeout', correct_answer: question.correct_answer,
-        is_correct: isCorrect, time_spent_ms: Date.now() - (G.battle.questionStart || Date.now()),
-      }),
-    });
-  } catch {}
-}
-
-// === FALLBACK QUESTIONS ===
-function generateFallback(count) {
-  const qs = [];
-  for (let i = 0; i < count; i++) {
-    const a = Math.floor(Math.random() * 15) + 3;
-    const b = Math.floor(Math.random() * 10) + 1;
-    const answer = a + b;
-    const opts = [answer, answer + 1, answer - 1, answer + 2].sort(() => Math.random() - 0.5);
-    const correct = ['a', 'b', 'c', 'd'][opts.indexOf(answer)];
-    qs.push({ question_text: `${a} + ${b} = ?`, option_a: String(opts[0]), option_b: String(opts[1]), option_c: String(opts[2]), option_d: String(opts[3]), correct_answer: correct, subject: 'math' });
+  // ── Init ──────────────────────────────────────────────────────────────────
+  function init() {
+    loadData(); renderStart(); wireSel();
+    $('btn-start').addEventListener('click', startRun);
+    $('btn-replay').addEventListener('click', startRun);
+    $('btn-speak').addEventListener('click', speakQ);
+    const guideModal = $('guide-modal');
+    $('btn-guide').addEventListener('click', () => { guideModal.style.display = 'flex'; });
+    $('btn-guide-close').addEventListener('click', () => { guideModal.style.display = 'none'; });
+    guideModal.addEventListener('click', e => { if (e.target === guideModal) guideModal.style.display = 'none'; });
+    $('btn-exit').addEventListener('click', () => { $('exit-modal').style.display = 'flex'; });
+    const exitModal = $('exit-modal');
+    $('btn-exit-cancel').addEventListener('click', () => { exitModal.style.display = 'none'; });
+    $('btn-exit-confirm').addEventListener('click', () => { exitModal.style.display = 'none'; clearInterval(tH); window.location.reload(); });
+    exitModal.addEventListener('click', e => { if (e.target === exitModal) exitModal.style.display = 'none'; });
+    window.addEventListener('resize', () => { if ($('game-screen').classList.contains('active')) positionHero(false); });
   }
-  return qs;
-}
-
-// EXIT BATTLE with custom popup
-document.getElementById('btn-exit-battle').addEventListener('click', () => {
-  const overlay = document.createElement('div');
-  overlay.className = 'confirm-overlay';
-  overlay.innerHTML = `
-    <div class="confirm-box">
-      <div class="confirm-icon">😢</div>
-      <div class="confirm-text">Bạn có muốn thoát\ntrò chơi không?</div>
-      <div class="confirm-btns">
-        <button class="confirm-btn confirm-btn-yes">Thoát</button>
-        <button class="confirm-btn confirm-btn-no">Chơi tiếp</button>
-      </div>
-    </div>
-  `;
-  // Inject CSS if not exists
-  if (!document.getElementById('confirm-style')) {
-    const s = document.createElement('style'); s.id = 'confirm-style';
-    s.textContent = `.confirm-overlay{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;animation:fadeIn .2s}@keyframes fadeIn{from{opacity:0}to{opacity:1}}.confirm-box{background:#fff;border-radius:20px;padding:30px 25px;text-align:center;max-width:300px;width:85%;box-shadow:0 20px 50px rgba(0,0,0,.3);animation:popIn .3s}@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}.confirm-icon{font-size:3rem;margin-bottom:10px}.confirm-text{font-size:1.15rem;font-weight:700;color:#333;margin-bottom:20px;line-height:1.4}.confirm-btns{display:flex;gap:10px}.confirm-btn{flex:1;padding:14px;border:none;border-radius:12px;font-size:1.05rem;font-weight:700;cursor:pointer}.confirm-btn:active{transform:scale(.95)}.confirm-btn-yes{background:#f44336;color:#fff}.confirm-btn-no{background:#e8e8e8;color:#333}`;
-    document.head.appendChild(s);
-  }
-  document.body.appendChild(overlay);
-  overlay.querySelector('.confirm-btn-yes').addEventListener('click', () => { overlay.remove(); clearInterval(G.battle?.timer); window.location.reload(); });
-  overlay.querySelector('.confirm-btn-no').addEventListener('click', () => overlay.remove());
-});
-
-// TTS speak button
-document.getElementById('btn-speak-v2')?.addEventListener('click', () => {
-  if (!G.battle || G.battle.qIndex >= G.battle.questions.length) return;
-  const q = G.battle.questions[G.battle.qIndex];
-  window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, G.settings?.subject);
-});
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();

@@ -1,185 +1,126 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
   <script src="../api-config.js"></script>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>🌻 vs 🧟 - Đấu Trí 2 Người</title>
+  <title>💪 Kéo Co Trí Tuệ - Học Vui</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    .help-btn { position: fixed; top: 12px; right: 12px; width: 40px; height: 40px; border-radius: 50%; border: none; background: rgba(0,0,0,0.15); color: #fff; font-size: 1.3rem; cursor: pointer; z-index: 50; display: flex; align-items: center; justify-content: center; }
-    .help-popup { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
-    .help-popup.active { display: flex; }
-    .help-content { background: #fff; color: #333; border-radius: 20px; padding: 24px 20px; max-width: 340px; width: 90%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-    .help-content h3 { margin-bottom: 14px; font-size: 1.1rem; }
-    .help-content p { text-align: left; line-height: 2; font-size: 0.95rem; margin-bottom: 18px; }
-    .help-content button { padding: 12px 28px; background: #4CAF50; color: #fff; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; }
-  </style>
 </head>
 <body>
   <div id="app">
-    <!-- LOBBY -->
-    <div id="lobby-screen" class="screen active">
-      <div class="lobby-box">
-        <h1>🌻 vs 🧟</h1>
-        <p class="lobby-sub">Đấu trí 2 người!</p>
-        <button class="help-btn" id="help-btn-open">❓</button>
-        <div class="help-popup" id="help-popup">
-          <div class="help-content">
-            <h3>👫 Cách chơi Đấu 2 Bạn</h3>
-            <p>• 2 người cùng 1 điện thoại<br>
-            • Cùng xem 1 câu hỏi, ai bấm nhanh hơn<br>
-            • Đúng + nhanh hơn = bonus điểm<br>
-            • Bàn phím: P1 dùng 1-2-3-4, P2 dùng 7-8-9-0<br>
-            • Chơi 5/10/15/20 câu hỏi<br>
-            • Ai nhiều điểm hơn thắng!</p>
-            <button onclick="document.getElementById('help-popup').classList.remove('active')">Hiểu rồi!</button>
-          </div>
+    <!-- START -->
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <div class="logo-scene" aria-hidden="true">
+          <span class="tug-left">🧒</span>
+          <span class="tug-rope"></span>
+          <span class="tug-right">👧</span>
         </div>
+        <h1 class="main-title">💪 Kéo Co Trí Tuệ</h1>
+        <p class="subtitle">Trả lời đúng nhanh hơn để kéo dây về phía mình!</p>
 
-        <div class="players-setup">
-          <div class="player-setup p1">
-            <span class="setup-icon">🌻</span>
-            <span id="p1-name-label" style="display:none;font-weight:700;font-size:1rem;"></span>
-            <input type="text" id="p1-name" placeholder="Tên Plant..." maxlength="10">
-          </div>
-          <div class="vs-badge">VS</div>
-          <div class="player-setup p2">
-            <span class="setup-icon">🧟</span>
-            <input type="text" id="p2-name" placeholder="Tên Zombie..." maxlength="10">
-          </div>
-        </div>
-
-        <div class="lobby-settings">
-          <div class="setting-row">
-            <label>📚 Môn:</label>
-            <select id="set-subject">
-              <option value="mix">Mix cả hai</option>
-              <option value="math">Toán</option>
-              <option value="vietnamese">Tiếng Việt</option>
-            </select>
-          </div>
-          <div class="setting-row">
-            <label>📊 Mức độ:</label>
-            <select id="set-difficulty">
-              <option value="easy">Dễ</option>
-              <option value="medium" selected>Trung bình</option>
-              <option value="hard">Khó</option>
-            </select>
-          </div>
-          <div class="setting-row">
-            <label>🔢 Số câu:</label>
-            <select id="set-rounds">
-              <option value="5">5 câu</option>
-              <option value="10" selected>10 câu</option>
-              <option value="15">15 câu</option>
-              <option value="20">20 câu</option>
-            </select>
-          </div>
-          <div class="setting-row">
-            <label>⏱️ Tốc độ:</label>
-            <select id="set-speed">
-              <option value="slow">Chậm (30s)</option>
-              <option value="normal" selected>Bình thường (20s)</option>
-              <option value="fast">Nhanh (12s)</option>
-            </select>
-          </div>
-        </div>
-
-        <button id="btn-start-duel" class="btn-duel">⚔️ Bắt đầu đấu!</button>
+        <div class="selector-group"><label class="selector-label">👥 Đối thủ:</label><div class="selector-options" data-group="mode">
+          <button type="button" class="sel-btn active" data-value="duo">👫 2 Người</button>
+          <button type="button" class="sel-btn" data-value="bot">🤖 Đấu Máy</button>
+        </div></div>
+        <div class="selector-group"><label class="selector-label">📚 Môn học:</label><div class="selector-options" data-group="subject">
+          <button type="button" class="sel-btn active" data-value="mix">🎲 Trộn</button>
+          <button type="button" class="sel-btn" data-value="math">🔢 Toán</button>
+          <button type="button" class="sel-btn" data-value="vietnamese">📖 T.Việt</button>
+          <button type="button" class="sel-btn" data-value="english">🔤 Anh</button>
+        </div></div>
+        <div class="selector-group"><label class="selector-label">⚡ Độ khó:</label><div class="selector-options" data-group="difficulty">
+          <button type="button" class="sel-btn active" data-value="easy">🌱 Dễ</button>
+          <button type="button" class="sel-btn" data-value="medium">🌿 Vừa</button>
+          <button type="button" class="sel-btn" data-value="hard">🌳 Khó</button>
+        </div></div>
+        <button class="btn-primary" id="btn-start">💪 Bắt Đầu!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
-    </div>
+    </section>
 
-    <!-- BATTLE -->
-    <div id="battle-screen" class="screen">
-      <!-- P1 Zone (top - rotated for opponent facing) -->
-      <div class="answer-zone p1-zone">
-        <div class="zone-inner">
-          <div class="zone-q" id="p1-question"></div>
-          <div class="zone-buttons" id="p1-buttons">
-            <button class="ans-btn p1-btn" data-opt="a"></button>
-            <button class="ans-btn p1-btn" data-opt="b"></button>
-            <button class="ans-btn p1-btn" data-opt="c"></button>
-            <button class="ans-btn p1-btn" data-opt="d"></button>
-          </div>
-          <div class="zone-status" id="p1-status"></div>
-          <div class="zone-header">
-            <span class="zone-name">🌻 <span id="az-p1-name">Plant</span></span>
-            <span class="zone-score" id="sb-p1-score">0</span>
-          </div>
+    <!-- GAME -->
+    <section id="game-screen" class="screen">
+      <!-- Player 2 panel (top, flipped) -->
+      <div class="player-panel panel-top" id="panel-2">
+        <div class="panel-tag">👧 Bạn 2</div>
+        <p class="q-text" id="q-text-2"></p>
+        <div class="q-options" id="q-options-2"></div>
+      </div>
+
+      <!-- Arena: rope + flag + crowd -->
+      <div class="arena" id="arena">
+        <div class="ground"></div>
+        <div class="rope" id="rope">
+          <span class="puller puller-l">🧒</span>
+          <span class="rope-line"></span>
+          <span class="flag" id="flag">🚩</span>
+          <span class="rope-line"></span>
+          <span class="puller puller-r">👧</span>
+        </div>
+        <div class="mud-pit"></div>
+        <div class="score-line">
+          <span class="score-pill score-l" id="score-1">0</span>
+          <span class="vs-round" id="round-text">Câu 1</span>
+          <span class="score-pill score-r" id="score-2">0</span>
         </div>
       </div>
 
-      <!-- Question (middle) -->
-      <div class="duel-middle">
-        <div class="duel-round" id="round-display">1/10</div>
-        <div class="dq-timer"><div id="dq-timer-fill" class="dq-timer-fill"></div></div>
-        <div class="dq-badge" id="dq-badge">🔢 Toán</div>
+      <!-- Player 1 panel (bottom) -->
+      <div class="player-panel panel-bottom" id="panel-1">
+        <div class="panel-tag">🧒 Bạn 1</div>
+        <p class="q-text" id="q-text-1"></p>
+        <div class="q-options" id="q-options-1"></div>
       </div>
 
-      <!-- P2 Zone (bottom - normal orientation) -->
-      <div class="answer-zone p2-zone">
-        <div class="zone-inner">
-          <div class="zone-header">
-            <span class="zone-name">🧟 <span id="az-p2-name">Zombie</span></span>
-            <span class="zone-score" id="sb-p2-score">0</span>
-          </div>
-          <div class="zone-q" id="p2-question"></div>
-          <div class="zone-buttons" id="p2-buttons">
-            <button class="ans-btn p2-btn" data-opt="a"></button>
-            <button class="ans-btn p2-btn" data-opt="b"></button>
-            <button class="ans-btn p2-btn" data-opt="c"></button>
-            <button class="ans-btn p2-btn" data-opt="d"></button>
-          </div>
-          <div class="zone-status" id="p2-status"></div>
-        </div>
-      </div>
-    </div>
+      <button class="btn-exit" id="btn-exit" title="Thoát">🚪</button>
+    </section>
 
     <!-- RESULT -->
-    <div id="result-screen" class="screen">
-      <div class="result-box">
-        <div id="result-winner-icon" class="winner-icon"></div>
-        <h2 id="result-title"></h2>
-        <div class="result-detail">
-          <div class="rd-player">
-            <span>🌻 <span id="rd-p1-name">Plant</span></span>
-            <div class="rd-stats">
-              <span>Đúng: <strong id="rd-p1-correct">0</strong></span>
-              <span>Nhanh hơn: <strong id="rd-p1-faster">0</strong></span>
-              <span>Điểm: <strong id="rd-p1-score">0</strong></span>
-            </div>
-          </div>
-          <div class="rd-vs">VS</div>
-          <div class="rd-player">
-            <span>🧟 <span id="rd-p2-name">Zombie</span></span>
-            <div class="rd-stats">
-              <span>Đúng: <strong id="rd-p2-correct">0</strong></span>
-              <span>Nhanh hơn: <strong id="rd-p2-faster">0</strong></span>
-              <span>Điểm: <strong id="rd-p2-score">0</strong></span>
-            </div>
-          </div>
-        </div>
-        <div class="result-btns">
-          <button class="btn-rematch" id="btn-rematch">🔄 Đấu lại</button>
-          <button class="btn-lobby" id="btn-lobby">🏠 Về phòng</button>
-        </div>
+    <section id="result-screen" class="screen">
+      <div class="container">
+        <div class="result-emoji" id="result-emoji">🏆</div>
+        <h2 class="result-title" id="result-title">Kết Thúc</h2>
+        <div class="result-detail" id="result-detail"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Chơi Lại</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
+      </div>
+    </section>
+  </div>
+
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>💪 Hai bạn ngồi đối diện, mỗi bạn 1 đầu màn hình.</li>
+        <li>❓ Cùng một câu hỏi hiện cho cả hai.</li>
+        <li>⚡ Ai bấm <b>đúng trước</b> = kéo dây 🚩 về phía mình.</li>
+        <li>❌ Bấm sai = bị khoá tới câu sau.</li>
+        <li>🏆 Kéo cờ qua vạch của đối thủ = thắng!</li>
+      </ul>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-card">
+      <div class="exit-icon">🚪</div>
+      <p class="exit-text">Thoát game?</p>
+      <div class="exit-actions">
+        <button class="exit-cancel" id="btn-exit-cancel">Tiếp tục</button>
+        <button class="exit-confirm" id="btn-exit-confirm">🚪 Thoát</button>
       </div>
     </div>
   </div>
 
-  <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
-  <script src="game.js"></script>
   <script src="/link-gate.js"></script>
-  <script>
-    document.getElementById('help-btn-open')?.addEventListener('click', () => {
-      document.getElementById('help-popup').classList.toggle('active');
-    });
-  </script>
+  <script src="game.js"></script>
   <script src="/help-rules.js"></script>
 </body>
 </html>

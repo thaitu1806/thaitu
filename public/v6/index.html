@@ -7,196 +7,85 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <title>🏎️ Đua Xe Trí Tuệ - Học Vui</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="app">
-    <!-- SETUP SCREEN -->
-    <section id="setup-screen" class="screen active">
-      <div class="setup-container">
-        <h1 class="setup-title">🏎️ Đua Xe Trí Tuệ</h1>
-        <p class="setup-subtitle">Ai về đích trước thắng!</p>
-
-        <button class="help-btn" onclick="document.getElementById('help-popup').classList.toggle('active')">❓</button>
-        <div class="help-popup" id="help-popup">
-          <div class="help-content">
-            <h3>Cách chơi Đua Xe</h3>
-            <p>• Trả lời đúng = xe tiến 2 ô<br>• Không cần đợi đối thủ<br>• Ô 🍌 = chướng ngại vật<br>• Ai về 🏁 trước thắng!</p>
-            <button onclick="this.parentElement.parentElement.classList.remove('active')">Hiểu rồi!</button>
-          </div>
+    <!-- START -->
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <div class="logo-scene" aria-hidden="true">
+          <div class="logo-track"></div>
+          <span class="logo-car">🏎️</span>
         </div>
+        <h1 class="main-title">🏎️ Đua Xe Trí Tuệ</h1>
+        <p class="subtitle">Trả lời đúng để tăng tốc, combo để bơm nitro!</p>
+        <div class="hero-card"><div class="hero-stats"><span>🏆 Thắng: <span id="total-wins">0</span></span><span>🏁 Đua: <span id="total-races">0</span></span></div></div>
 
-        <!-- Player Names -->
-        <div class="setup-section">
-          <label class="setup-label">🎮 Người chơi</label>
-          <div class="player-inputs">
-            <div class="player-input-row">
-              <span class="car-icon car-p1">🚗</span>
-              <input type="text" id="p1-name" placeholder="Bot" maxlength="12" value="Bot">
-              <button class="btn-toggle-type is-bot" id="p1-type" data-type="bot">🤖</button>
-            </div>
-            <div class="player-input-row">
-              <span class="car-icon car-p2">🚙</span>
-              <input type="text" id="p2-name" placeholder="Xe Xanh" maxlength="12">
-              <button class="btn-toggle-type is-human" id="p2-type" data-type="human">👤</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Subject Selector -->
-        <div class="setup-section">
-          <label class="setup-label">📚 Môn học</label>
-          <div class="btn-group" id="subject-group">
-            <button class="btn-option active" data-value="math">Toán</button>
-            <button class="btn-option" data-value="vietnamese">Tiếng Việt</button>
-            <button class="btn-option" data-value="english">English</button>
-            <button class="btn-option" data-value="mix">Trộn</button>
-          </div>
-        </div>
-
-        <!-- Difficulty Selector -->
-        <div class="setup-section">
-          <label class="setup-label">📊 Mức độ</label>
-          <div class="btn-group" id="difficulty-group">
-            <button class="btn-option" data-value="easy">Dễ</button>
-            <button class="btn-option active" data-value="medium">Vừa</button>
-            <button class="btn-option" data-value="hard">Khó</button>
-          </div>
-        </div>
-
-        <!-- Track Length Selector -->
-        <div class="setup-section">
-          <label class="setup-label">🛣️ Chiều dài đường đua</label>
-          <div class="btn-group" id="track-length-group">
-            <button class="btn-option" data-value="10">Ngắn (10)</button>
-            <button class="btn-option active" data-value="15">Vừa (15)</button>
-            <button class="btn-option" data-value="20">Dài (20)</button>
-          </div>
-        </div>
-
-        <!-- Start Button -->
-        <button class="btn-start" id="btn-start">🏁 Bắt đầu đua!</button>
-        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
-
+        <div class="selector-group"><label class="selector-label">👥 Đối thủ:</label><div class="selector-options" data-group="mode">
+          <button type="button" class="sel-btn active" data-value="bot">🤖 Đấu Máy</button>
+          <button type="button" class="sel-btn" data-value="duo">👫 2 Người</button>
+        </div></div>
+        <div class="selector-group"><label class="selector-label">📚 Môn học:</label><div class="selector-options" data-group="subject">
+          <button type="button" class="sel-btn active" data-value="mix">🎲 Trộn</button>
+          <button type="button" class="sel-btn" data-value="math">🔢 Toán</button>
+          <button type="button" class="sel-btn" data-value="vietnamese">📖 T.Việt</button>
+          <button type="button" class="sel-btn" data-value="english">🔤 Anh</button>
+        </div></div>
+        <div class="selector-group"><label class="selector-label">⚡ Độ khó:</label><div class="selector-options" data-group="difficulty">
+          <button type="button" class="sel-btn active" data-value="easy">🌱 Dễ</button>
+          <button type="button" class="sel-btn" data-value="medium">🌿 Vừa</button>
+          <button type="button" class="sel-btn" data-value="hard">🌳 Khó</button>
+        </div></div>
+        <button class="btn-primary" id="btn-start">🏁 Vào Đường Đua!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn</button>
         <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
 
-    <!-- RACE SCREEN -->
-    <section id="race-screen" class="screen">
-      <!-- P1 Zone (Top - rotated 180° for player sitting opposite) -->
-      <div class="answer-zone zone-p1" id="zone-p1">
-        <div class="zone-inner">
-          <div class="zone-header">
-            <span class="zone-name">🚗 <span id="az-p1-name">Xe Đỏ</span></span>
-          </div>
-          <div class="zone-q" id="p1-question"></div>
-          <div class="zone-buttons" id="p1-buttons">
-            <button class="ans-btn p1-btn" data-opt="a">A</button>
-            <button class="ans-btn p1-btn" data-opt="b">B</button>
-            <button class="ans-btn p1-btn" data-opt="c">C</button>
-            <button class="ans-btn p1-btn" data-opt="d">D</button>
-          </div>
-          <div class="zone-status" id="p1-status"></div>
-        </div>
+    <!-- GAME -->
+    <section id="game-screen" class="screen">
+      <div class="game-hud">
+        <button class="btn-exit" id="btn-exit" title="Thoát">🚪</button>
+        <span class="hud-item">🏁 <span id="lap-text">0/15</span></span>
+        <span class="hud-item nitro-hud">🔥 <span id="nitro-text">0</span></span>
+        <span class="hud-item">❓ <span id="progress-text">0</span></span>
       </div>
 
-      <!-- Exit + Round info bar (separate from track) -->
-      <div class="race-info-bar">
-        <button class="btn-exit-race" id="btn-exit-race" title="Thoát">✕</button>
-        <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
-        <span class="round-counter" id="round-counter">Vòng 1</span>
+      <!-- Race track -->
+      <div class="race-stage" id="race-stage">
+        <div class="sky-strip"></div>
+        <div class="track" id="track">
+          <div class="lane lane-1">
+            <div class="racer racer-1" id="racer-1"><span class="car">🏎️</span><span class="nitro-flame"></span></div>
+          </div>
+          <div class="lane lane-2">
+            <div class="racer racer-2" id="racer-2"><span class="car">🚗</span><span class="nitro-flame"></span></div>
+          </div>
+          <div class="finish-line"></div>
+        </div>
+        <div class="track-deco" id="track-deco"></div>
       </div>
 
-      <!-- Middle Area: Track + Timer -->
-      <div class="race-middle">
-        <div class="track-area">
-          <div class="track-wrapper">
-            <div class="race-track" id="race-track">
-              <div class="lane lane-p1" id="lane-p1">
-                <div class="car car-p1" id="car-p1">🚗</div>
-              </div>
-              <div class="lane lane-p2" id="lane-p2">
-                <div class="car car-p2" id="car-p2">🚙</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="timer-bar-container">
-          <div class="timer-bar" id="timer-bar"></div>
-        </div>
-      </div>
-
-      <!-- Exit confirm popup -->
-      <div class="exit-confirm-overlay" id="exit-confirm-overlay">
-        <div class="exit-confirm-card">
-          <div class="exit-confirm-icon">🚪</div>
-          <div class="exit-confirm-text">Bạn muốn thoát trò chơi?</div>
-          <div class="exit-confirm-buttons">
-            <button class="exit-confirm-btn cancel" id="exit-cancel">Tiếp tục</button>
-            <button class="exit-confirm-btn confirm" id="exit-confirm">Thoát</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- P2 Zone (Bottom - normal orientation) -->
-      <div class="answer-zone zone-p2" id="zone-p2">
-        <div class="zone-inner">
-          <div class="zone-header">
-            <span class="zone-name">🚙 <span id="az-p2-name">Xe Xanh</span></span>
-          </div>
-          <div class="zone-q" id="p2-question"></div>
-          <div class="zone-buttons" id="p2-buttons">
-            <button class="ans-btn p2-btn" data-opt="a">A</button>
-            <button class="ans-btn p2-btn" data-opt="b">B</button>
-            <button class="ans-btn p2-btn" data-opt="c">C</button>
-            <button class="ans-btn p2-btn" data-opt="d">D</button>
-          </div>
-          <div class="zone-status" id="p2-status"></div>
-        </div>
+      <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+      <div class="question-card">
+        <div class="q-top"><span class="q-badge" id="q-badge">🔢</span><button class="btn-speak" id="btn-speak" title="Đọc câu hỏi">🔊</button></div>
+        <p class="q-text" id="q-text"></p>
+        <div class="q-options" id="q-options"></div>
+        <div class="feedback" id="feedback" style="display:none;"></div>
       </div>
     </section>
 
-    <!-- RESULT SCREEN -->
+    <!-- RESULT -->
     <section id="result-screen" class="screen">
-      <div class="result-container">
-        <div class="result-celebration" id="result-celebration"></div>
-        <div class="result-trophy">🏆</div>
-        <h2 class="result-title" id="result-title">Người chiến thắng!</h2>
-        <p class="result-winner" id="result-winner"></p>
-
-        <div class="stats-table">
-          <table>
-            <thead>
-              <tr>
-                <th></th>
-                <th id="stats-p1-name">🚗 Xe Đỏ</th>
-                <th id="stats-p2-name">🚙 Xe Xanh</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Số vòng</td>
-                <td id="stats-rounds" colspan="2">-</td>
-              </tr>
-              <tr>
-                <td>Trả lời đúng</td>
-                <td id="stats-p1-correct">-</td>
-                <td id="stats-p2-correct">-</td>
-              </tr>
-              <tr>
-                <td>Thời gian TB</td>
-                <td id="stats-p1-time">-</td>
-                <td id="stats-p2-time">-</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="result-buttons">
-          <button class="btn-play-again" id="btn-play-again">🔄 Chơi lại</button>
-          <a href="/" class="btn-home">🏠 Về trang chủ</a>
-        </div>
+      <div class="container">
+        <div class="result-emoji" id="result-emoji">🏎️</div>
+        <h2 class="result-title" id="result-title">Kết Thúc</h2>
+        <div class="star-row" id="result-stars"></div>
+        <div class="result-detail" id="result-detail"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Đua Lại</button>
+        <a href="/" class="home-link">🏠 Về trang chủ</a>
       </div>
     </section>
   </div>
@@ -205,35 +94,30 @@
     <div class="modal-card">
       <h3 class="modal-title">📖 Cách Chơi</h3>
       <ul class="modal-rules">
-        <li>🏎️ Trả lời <b>đúng</b> = xe của bạn <b>tiến 1 ô</b> ngay lập tức.</li>
-        <li>⚡ Không cần đợi đối thủ — trả lời càng nhanh càng tốt!</li>
-        <li>🍌 Ô có <b>vỏ chuối</b> là chướng ngại: có thể trượt lùi, vượt qua, hoặc phải trả lời <b>câu thử thách</b>.</li>
-        <li>🤖 Có thể đấu với <b>máy (Bot)</b> hoặc <b>người</b> ngồi đối diện.</li>
-        <li>⏱️ Mỗi vòng có <b>đồng hồ đếm giờ</b> — hết giờ thì sang vòng mới.</li>
-        <li>🏁 Ai về <b>vạch đích</b> trước sẽ <b>thắng cuộc</b>!</li>
+        <li>🏎️ Trả lời <b>đúng</b> = xe tăng tốc về đích.</li>
+        <li>🔥 <b>Combo 3 câu</b> đúng = nạp Nitro, vọt thêm 1 ô!</li>
+        <li>🍌 Cẩn thận vỏ chuối trên đường = trượt lùi.</li>
+        <li>❌ Sai hoặc hết giờ = xe đứng yên, đối thủ vượt lên.</li>
+        <li>🏁 Về đích trước = thắng!</li>
       </ul>
-      <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
     </div>
   </div>
 
   <div id="exit-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-card exit-modal-card">
-      <div class="exit-modal-icon">🚪</div>
-      <p class="exit-modal-text">Thoát game?</p>
-      <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
-      <div class="exit-modal-actions">
-        <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
-        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+    <div class="modal-card exit-card">
+      <div class="exit-icon">🚪</div>
+      <p class="exit-text">Thoát game?</p>
+      <div class="exit-actions">
+        <button class="exit-cancel" id="btn-exit-cancel">Tiếp tục</button>
+        <button class="exit-confirm" id="btn-exit-confirm">🚪 Thoát</button>
       </div>
     </div>
   </div>
 
-  <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="/link-gate.js"></script>
-  <script src="/lib/character.js"></script>
-  <script src="/lib/sprites/racers.js"></script>
-  <script type="module" src="game.js"></script>
+  <script src="game.js"></script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
   <script src="/help-rules.js"></script>

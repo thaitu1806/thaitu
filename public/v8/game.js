@@ -1,574 +1,284 @@
-// V8 Xây Lâu Đài - Castle Builder
-// Cooperative/Solo/Versus quiz game with block stacking
-
-const THEMES = [
-  { id: 'wood', name: 'Nhà Gỗ', icon: '🏠', unlock: 0, blocks: [ '🕷️', '🦂', '🐍', '🦎', '🐲', '🐉', '🦖', '🦕'], milestones: ['🌸','🌷','🌺','🏡'] },
-  { id: 'stone', name: 'Lâu Đài Đá', icon: '🏰', unlock: 3, blocks: ['🧱','🔱', '💎', '🧨', '🎱', '🪓'], milestones: ['🏳️','⚔️','👑','🏰'] },
-  { id: 'tree', name: 'Nhà Trên Cây', icon: '🌳', unlock: 6, blocks: ['🌿','🍃','🌻','🌹','🍄','🌲'], milestones: ['🐦','🦜','🌺','🌳'] },
-  { id: 'space', name: 'Tháp Không Gian', icon: '🚀', unlock: 10, blocks: ['🔩','⚙️','🛸','🌟','🔩','⚙️'], milestones: ['🛰️','🌙','⭐','🚀'] },
-  { id: 'candy', name: 'Nhà Kẹo', icon: '🍭', unlock: 15, blocks: ['🍫','🍪','🧁','🎂','🍫','🍪'], milestones: ['🍬','🍩','🎂','🍭'] },
-];
-
-const EARTHQUAKE_CHANCE = 0.08; // 8% mỗi câu
-const TIMER_SECONDS = 12;
-
-// ===== STATE =====
-const State = {
-  config: { mode: 'solo', theme: 'wood', subject: 'math', difficulty: 'easy' },
-  gamesPlayed: 0,
-  towerHeight: 0,
-  maxHeight: 0,
-  combo: 0,
-  stats: { correct: 0, incorrect: 0, earthquakes: 0 },
-  questions: [],
-  questionIndex: 0,
-  currentPlayer: 0, // for coop/versus
-  players: [{ name: 'Bạn', score: 0 }],
-  gameOver: false,
-};
-
-// Load progress
-function loadProgress() {
-  try {
-    const data = JSON.parse(localStorage.getItem('v8_progress') || '{}');
-    State.gamesPlayed = data.gamesPlayed || 0;
-  } catch { State.gamesPlayed = 0; }
-}
-
-function saveProgress() {
-  const data = { gamesPlayed: State.gamesPlayed };
-  localStorage.setItem('v8_progress', JSON.stringify(data));
-}
-
-loadProgress();
-
-// ===== SETUP =====
-function renderThemes() {
-  const grid = document.getElementById('theme-grid');
-  grid.innerHTML = THEMES.map(t => {
-    const unlocked = State.gamesPlayed >= t.unlock;
-    return `<div class="theme-card ${t.id === State.config.theme ? 'active' : ''} ${!unlocked ? 'locked' : ''}" data-theme="${t.id}" ${!unlocked ? 'title="Chơi thêm để mở khoá"' : ''}>
-      <span class="theme-icon">${t.icon}</span>
-      <span class="theme-name">${t.name}</span>
-      ${!unlocked ? `<span class="theme-lock">🔒 ${t.unlock} ván</span>` : ''}
-    </div>`;
-  }).join('');
-}
-renderThemes();
-
-document.getElementById('theme-grid').addEventListener('click', e => {
-  const card = e.target.closest('.theme-card');
-  if (!card || card.classList.contains('locked')) return;
-  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
-  card.classList.add('active');
-  State.config.theme = card.dataset.theme;
-});
-
-document.getElementById('mode-group').addEventListener('click', e => {
-  const btn = e.target.closest('.btn-option');
-  if (!btn) return;
-  document.querySelectorAll('#mode-group .btn-option').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  State.config.mode = btn.dataset.mode;
-});
-
-document.getElementById('subject-group').addEventListener('click', e => {
-  const btn = e.target.closest('.btn-option');
-  if (!btn) return;
-  document.querySelectorAll('#subject-group .btn-option').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  State.config.subject = btn.dataset.subject;
-});
-
-document.getElementById('difficulty-group').addEventListener('click', e => {
-  const btn = e.target.closest('.btn-option');
-  if (!btn) return;
-  document.querySelectorAll('#difficulty-group .btn-option').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  State.config.difficulty = btn.dataset.difficulty;
-});
-
-document.getElementById('btn-start').addEventListener('click', startGame);
-
-// ===== GAME =====
-async function startGame() {
-  State.towerHeight = 0;
-  State.maxHeight = 0;
-  State.combo = 0;
-  State.stats = { correct: 0, incorrect: 0, earthquakes: 0 };
-  State.gameOver = false;
-  State.questionIndex = 0;
-
-  if (State.config.mode === 'versus') {
-    State.players = [{ name: 'P1', score: 0 }, { name: 'P2', score: 0 }];
-    State.currentPlayer = 0;
-  } else if (State.config.mode === 'coop') {
-    State.players = [{ name: 'P1', score: 0 }, { name: 'P2', score: 0 }];
-    State.currentPlayer = 0;
-  } else {
-    State.players = [{ name: 'Bạn', score: 0 }];
-    State.currentPlayer = 0;
-  }
-
-  await fetchQuestions();
-  showScreen('game-screen');
-
-  const area = document.getElementById('castle-area');
-  area.className = `castle-area theme-${State.config.theme}`;
-  document.getElementById('castle-tower').innerHTML = '';
-  updateGameInfo();
-  nextQuestion();
-}
-
-async function fetchQuestions() {
-  const { subject, difficulty } = State.config;
-  try {
-    let qs;
-    if (subject === 'mix') {
-      const [m, v] = await Promise.all([
-        fetch(`/api/questions?subject=math&difficulty=${difficulty}&limit=25`).then(r => r.json()),
-        fetch(`/api/questions?subject=vietnamese&difficulty=${difficulty}&limit=25`).then(r => r.json()),
-      ]);
-      qs = [...m, ...v];
-    } else {
-      qs = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=50`).then(r => r.json());
-    }
-    State.questions = Array.isArray(qs) && qs.length > 0 ? shuffle(qs) : fallbackQs(40);
-  } catch { State.questions = fallbackQs(40); }
-}
-
-function getQuestion() {
-  if (State.questionIndex >= State.questions.length) {
-    State.questions = [...State.questions, ...fallbackQs(20)];
-  }
-  return State.questions[State.questionIndex++];
-}
-
-function fallbackQs(n) {
-  const qs = [];
-  for (let i = 0; i < n; i++) {
-    const a = Math.floor(Math.random() * 50) + 1, b = Math.floor(Math.random() * 50) + 1;
-    const c = a + b;
-    const opts = shuffle([c, c+1, c-1, c+2]);
-    qs.push({ id: 8000+i, question_text: `${a} + ${b} = ?`, option_a: String(opts[0]), option_b: String(opts[1]), option_c: String(opts[2]), option_d: String(opts[3]), correct_answer: 'abcd'[opts.indexOf(c)] });
-  }
-  return qs;
-}
-
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
-}
-
-// ===== QUESTION FLOW =====
-let timerId = null;
-
-function nextQuestion() {
-  if (State.gameOver) return;
-
-  // Earthquake random check
-  if (State.towerHeight > 3 && Math.random() < EARTHQUAKE_CHANCE) {
-    triggerEarthquake();
-    return;
-  }
-
-  const q = getQuestion();
-  const player = State.players[State.currentPlayer];
-  document.getElementById('q-text').textContent = q.question_text;
-  document.getElementById('status-text').textContent = State.config.mode !== 'solo' ? `🎮 ${player.name}` : '';
-
-  const opts = [q.option_a, q.option_b, q.option_c, q.option_d];
-  const btns = document.querySelectorAll('#answer-grid .ans-btn');
-  btns.forEach((btn, i) => {
-    btn.textContent = `${'ABCD'[i]}. ${opts[i]}`;
-    btn.className = 'ans-btn';
-    btn.disabled = false;
-    btn.dataset.opt = 'abcd'[i];
-  });
-
-  State._q = q;
-  startTimer();
-}
-
-function startTimer() {
-  clearInterval(timerId);
-  const bar = document.getElementById('timer-bar');
-  bar.style.width = '100%';
-  bar.className = 'timer-bar';
-  const start = Date.now();
-  timerId = setInterval(() => {
-    const elapsed = (Date.now() - start) / 1000;
-    const pct = Math.max(0, 1 - elapsed / TIMER_SECONDS);
-    bar.style.width = (pct * 100) + '%';
-    if (pct <= 0.2) bar.className = 'timer-bar danger';
-    else if (pct <= 0.5) bar.className = 'timer-bar warn';
-    if (elapsed >= TIMER_SECONDS) {
-      clearInterval(timerId);
-      handleTimeout();
-    }
-  }, 100);
-}
-
-function handleTimeout() {
-  document.querySelectorAll('#answer-grid .ans-btn').forEach(b => b.disabled = true);
-  document.getElementById('status-text').textContent = '⏰ Hết giờ!';
-  State.combo = 0;
-  // Remove top block
-  removeTopBlock();
-  setTimeout(() => advanceTurn(), 1000);
-}
-
-// ===== ANSWER =====
-document.getElementById('answer-grid').addEventListener('click', e => {
-  const btn = e.target.closest('.ans-btn');
-  if (!btn || btn.disabled || State.gameOver) return;
-  clearInterval(timerId);
-
-  const q = State._q;
-  const isCorrect = btn.dataset.opt.toLowerCase() === q.correct_answer.toLowerCase();
-  document.querySelectorAll('#answer-grid .ans-btn').forEach(b => b.disabled = true);
-  btn.classList.add(isCorrect ? 'correct' : 'wrong');
-  if (!isCorrect) {
-    const cb = document.querySelector(`#answer-grid .ans-btn[data-opt="${q.correct_answer}"]`);
-    if (cb) cb.classList.add('correct');
-  }
-
-  if (isCorrect) {
-    State.stats.correct++;
-    State.combo++;
-    State.players[State.currentPlayer].score++;
-    addBlock();
-    document.getElementById('status-text').textContent = State.combo >= 3 ? `🔥 Combo x${State.combo}!` : '✅ Đúng!';
-    // Combo bonus: extra block at x5
-    if (State.combo % 5 === 0 && State.combo > 0) {
-      setTimeout(() => addBlock(), 300);
-      document.getElementById('status-text').textContent = `🔥🔥 Combo x${State.combo}! +2 gạch!`;
-    }
-  } else {
-    State.stats.incorrect++;
-    State.combo = 0;
-    removeTopBlock();
-    document.getElementById('status-text').textContent = '❌ Sai! Mất 1 gạch!';
-  }
-
-  updateGameInfo();
-  setTimeout(() => advanceTurn(), 1000);
-});
-
-function advanceTurn() {
-  if (State.gameOver) return;
-  // Versus: check if one player hit 20
-  if (State.config.mode === 'versus') {
-    if (State.players.some(p => p.score >= 20)) {
-      endGame();
-      return;
-    }
-  }
-  // Coop/Solo: game over when tower falls to 0 after reaching 5+, or reaches 30
-  if (State.towerHeight >= 30) { endGame(); return; }
-
-  if (State.config.mode !== 'solo') {
-    State.currentPlayer = (State.currentPlayer + 1) % State.players.length;
-  }
-  nextQuestion();
-}
-
-// ===== CASTLE BLOCKS =====
-function addBlock() {
-  const theme = THEMES.find(t => t.id === State.config.theme);
-  const blocks = theme.blocks;
-  const emoji = blocks[Math.floor(Math.random() * blocks.length)];
-
-  State.towerHeight++;
-  State.maxHeight = Math.max(State.maxHeight, State.towerHeight);
-
-  const tower = document.getElementById('castle-tower');
-  const block = document.createElement('div');
-  block.className = 'castle-block';
-  block.style.background = getBlockColor(State.towerHeight);
-  // Fill block with repeating emojis
-  block.textContent = emoji.repeat(8);
-  block.dataset.level = State.towerHeight;
-
-  // Milestone every 5 blocks
-  if (State.towerHeight % 5 === 0) {
-    const milestones = theme.milestones;
-    const badge = document.createElement('span');
-    badge.className = 'milestone-badge';
-    badge.textContent = milestones[Math.min(Math.floor(State.towerHeight / 5) - 1, milestones.length - 1)];
-    block.appendChild(badge);
-  }
-
-  tower.appendChild(block);
-  const area = document.getElementById('castle-area');
-  area.scrollTop = 0;
-}
-
-function removeTopBlock() {
-  if (State.towerHeight <= 0) return;
-  const tower = document.getElementById('castle-tower');
-  const last = tower.lastElementChild;
-  if (last) {
-    last.classList.add('fall');
-    setTimeout(() => last.remove(), 500);
-  }
-  State.towerHeight = Math.max(0, State.towerHeight - 1);
-}
-
-function getBlockColor(height) {
-  // Warm gradient from bottom (earth tones) to top (sky tones)
-  const warmColors = [
-    '#f8d7a4', '#f5c78e', '#f2b878', '#efaa63', '#edb35b',
-    '#f0c27f', '#fce38a', '#a8e6cf', '#dcedc1', '#ffd3b6',
-    '#ffaaa5', '#ff8b94', '#b5ead7', '#c7ceea', '#e2f0cb',
-    '#ffdac1', '#e8d5b7', '#b8e994', '#78e08f', '#38ada9',
-  ];
-  return warmColors[(height - 1) % warmColors.length];
-}
-
-// ===== EARTHQUAKE =====
-function triggerEarthquake() {
-  State.stats.earthquakes++;
-  const tower = document.getElementById('castle-tower');
-  // Shake all blocks
-  tower.querySelectorAll('.castle-block').forEach(b => b.classList.add('shake'));
-
-  document.getElementById('q-text').textContent = '🌋 ĐỘNG ĐẤT!';
-  document.getElementById('status-text').textContent = 'Mất 2 tầng!';
-  document.querySelectorAll('#answer-grid .ans-btn').forEach(b => b.disabled = true);
-
-  setTimeout(() => {
-    removeTopBlock();
-    setTimeout(() => removeTopBlock(), 200);
-    tower.querySelectorAll('.castle-block').forEach(b => b.classList.remove('shake'));
-    updateGameInfo();
-    setTimeout(() => advanceTurn(), 800);
-  }, 1000);
-}
-
-// ===== GAME INFO =====
-function updateGameInfo() {
-  const info = document.getElementById('game-info');
-  const theme = THEMES.find(t => t.id === State.config.theme);
-  info.innerHTML = `<span>${theme.icon} ${State.towerHeight} tầng</span><span>🔥 x${State.combo}</span><span>✅ ${State.stats.correct}</span>`;
-}
-
-// ===== END GAME =====
-function endGame() {
-  State.gameOver = true;
-  clearInterval(timerId);
-  State.gamesPlayed++;
-  saveProgress();
-
-  showScreen('result-screen');
-  const container = document.getElementById('result-container');
-
-  let winnerText = '';
-  if (State.config.mode === 'versus') {
-    const winner = State.players[0].score >= State.players[1].score ? State.players[0] : State.players[1];
-    winnerText = `<div class="result-height">${winner.name} thắng! (${winner.score} điểm)</div>`;
-  } else {
-    winnerText = `<div class="result-height">Cao nhất: ${State.maxHeight} tầng!</div>`;
-  }
-
-  container.innerHTML = `
-    <div class="result-trophy">🏰</div>
-    <div class="result-title">Hoàn thành!</div>
-    ${winnerText}
-    <div class="result-stats">
-      <div class="result-stat"><span>✅ Đúng</span><span>${State.stats.correct}</span></div>
-      <div class="result-stat"><span>❌ Sai</span><span>${State.stats.incorrect}</span></div>
-      <div class="result-stat"><span>🌋 Động đất</span><span>${State.stats.earthquakes}</span></div>
-      <div class="result-stat"><span>🏆 Tổng ván đã chơi</span><span>${State.gamesPlayed}</span></div>
-    </div>
-    <div class="result-btns">
-      <button class="result-btn again" onclick="location.reload()">🔄 Chơi lại</button>
-      <button class="result-btn home" onclick="location.href='/'">🏠 Về trang chủ</button>
-    </div>
-  `;
-
-  // Check and show parent linking prompt after game ends
-  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
-  if (window.checkAndShowPrompt && profile?.id) {
-    window.checkAndShowPrompt(profile.id);
-  }
-}
-
-// ===== EXIT =====
-document.getElementById('btn-exit').addEventListener('click', () => document.getElementById('exit-overlay').classList.add('active'));
-document.getElementById('exit-cancel').addEventListener('click', () => document.getElementById('exit-overlay').classList.remove('active'));
-document.getElementById('exit-confirm').addEventListener('click', () => { window.location.reload(); });
-
-// ===== SCREEN =====
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-// TTS speak button
-document.getElementById('btn-speak-v8')?.addEventListener('click', () => {
-  const q = State._q;
-  if (!q) return;
-  window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, State.config?.subject);
-});
-
-// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
+// V8 — Xếp Tháp Thăng Bằng (Balance Tower)
+// Answer a question correctly to earn a block, which then swings on a crane.
+// Tap "THẢ KHỐI" to drop it; the closer to center, the more stable the tower
+// and the higher the score. Too many off-center drops tip the tower over.
 (function () {
   'use strict';
-  let mascotChar = null;
-  let happyTimer = null;
 
-  // Pick a mascot species that fits the chosen castle theme.
-  function mascotSpeciesFor(theme) {
-    switch (theme) {
-      case 'stone': return 'knight';
-      case 'space': return 'king';
-      case 'candy': return 'princess';
-      default: return 'builder';
-    }
+  const GOAL = 15;            // floors to win
+  const TIMER_SECONDS = 18;
+  const MAX_Q = 20;
+  const TIP_LIMIT = 100;      // accumulated lean before collapse
+
+  let userData = { bestTower: 0, totalPerfect: 0 };
+  function loadData() { try { const r = localStorage.getItem('v8_tower'); if (r) Object.assign(userData, JSON.parse(r)); } catch (e) {} }
+  function saveData() { try { localStorage.setItem('v8_tower', JSON.stringify(userData)); } catch (e) {} }
+
+  let cache = [], used = new Set();
+  let curQ = null, combo = 0, maxCombo = 0;
+  let subject = 'mix', difficulty = 'easy';
+  let floors = 0, lean = 0, served = 0, correct = 0, wrong = 0, perfects = 0, outcome = null;
+  let qStart = 0, tH = null, locked = false, fbId = -1;
+  let swinging = false, swingRAF = null, swingDir = 1, swingPos = 0;
+
+  const $ = id => document.getElementById(id);
+  const ss = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); $(id).classList.add('active'); };
+
+  function renderStart() { $('best-tower').textContent = userData.bestTower; $('total-perfect').textContent = userData.totalPerfect; }
+  function wireSel() {
+    document.querySelectorAll('.selector-options').forEach(g => g.addEventListener('click', e => {
+      const b = e.target.closest('.sel-btn'); if (!b) return;
+      g.querySelectorAll('.sel-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      if (g.dataset.group === 'subject') subject = b.dataset.value;
+      else difficulty = b.dataset.value;
+    }));
   }
 
-  function mountMascot() {
-    const host = document.getElementById('builder-mascot');
-    if (!host) return;
-    host.innerHTML = '';
-    mascotChar = null;
-    const C = window.HocVuiCharacters;
-    const id = mascotSpeciesFor(State.config && State.config.theme);
-    if (C && C.hasSpecies(id)) {
-      mascotChar = C.createCharacter(id, host, { state: 'idle' });
+  async function fetchQ() {
+    const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+    const g = p.grade || 2;
+    try {
+      if (subject === 'mix') {
+        const subs = ['math', 'vietnamese', 'english'];
+        const r = await Promise.all(subs.map(s => fetch(`/api/questions?subject=${s}&difficulty=${difficulty}&limit=7&grade=${g}`).then(x => x.ok ? x.json() : []).catch(() => [])));
+        cache = r.flat();
+      } else {
+        const r = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=${MAX_Q}&grade=${g}`);
+        cache = r.ok ? await r.json() : [];
+      }
+    } catch (e) { cache = []; }
+    if (!Array.isArray(cache)) cache = [];
+    for (let i = cache.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cache[i], cache[j]] = [cache[j], cache[i]]; }
+  }
+  function nextQ() { const q = cache.find(x => x && !used.has(x.id)); if (q) { used.add(q.id); return q; } return mkFallback(); }
+  function mkFallback() {
+    const a = 1 + Math.floor(Math.random() * 20), b = 1 + Math.floor(Math.random() * 20);
+    const c = a + b, d = new Set();
+    while (d.size < 3) { const off = [-3, -2, -1, 1, 2, 3][Math.floor(Math.random() * 6)]; const w = c + off; if (w > 0 && w !== c) d.add(w); }
+    const nums = [c, ...d].sort(() => Math.random() - 0.5);
+    fbId--;
+    return { id: fbId, question_text: `${a} + ${b} = ?`, option_a: String(nums[0]), option_b: String(nums[1]), option_c: String(nums[2]), option_d: String(nums[3]), correct_answer: 'abcd'[nums.indexOf(c)] };
+  }
+
+  const BLOCK_COLORS = ['#ff8f6b', '#ffc24a', '#7ed957', '#4aa3e0', '#b07ce0', '#ff6f91'];
+
+  async function startRun() {
+    cache = []; used.clear(); combo = 0; maxCombo = 0; fbId = -1;
+    floors = 0; lean = 0; served = 0; correct = 0; wrong = 0; perfects = 0; outcome = null;
+    ss('game-screen');
+    $('tower').innerHTML = ''; $('tower').style.transform = 'rotate(0deg)';
+    renderHud();
+    $('q-text').textContent = '⏳ Đang tải...'; $('q-options').innerHTML = ''; $('feedback').style.display = 'none';
+    await fetchQ();
+    showNextQ();
+  }
+
+  function renderHud() {
+    $('floor-text').textContent = floors;
+    const absLean = Math.abs(lean);
+    $('balance-text').textContent = absLean < 30 ? 'Vững' : absLean < 65 ? 'Hơi nghiêng' : 'Nguy hiểm!';
+    $('progress-text').textContent = `${served}/${MAX_Q}`;
+  }
+
+  function isFinished() { return outcome !== null || floors >= GOAL || Math.abs(lean) >= TIP_LIMIT || served >= MAX_Q; }
+
+  function showNextQ() {
+    if (floors >= GOAL) outcome = 'won';
+    else if (Math.abs(lean) >= TIP_LIMIT) outcome = 'collapse';
+    if (outcome || served >= MAX_Q) { finish(); return; }
+    curQ = nextQ(); served++; locked = false; qStart = Date.now();
+    const subj = curQ.subject || subject;
+    $('q-badge').textContent = subj === 'vietnamese' ? '📖' : subj === 'english' ? '🔤' : '🔢';
+    $('q-text').textContent = curQ.question_text;
+    $('feedback').style.display = 'none';
+    $('btn-drop').style.display = 'none';
+    const opts = $('q-options'); opts.innerHTML = '';
+    ['a', 'b', 'c', 'd'].forEach(k => {
+      const t = curQ[`option_${k}`]; if (t == null) return;
+      const btn = document.createElement('button'); btn.className = 'option-btn'; btn.dataset.key = k; btn.textContent = t;
+      btn.addEventListener('click', () => handleAns(k));
+      opts.appendChild(btn);
+    });
+    renderHud(); startTimer();
+  }
+
+  function startTimer() {
+    clearInterval(tH);
+    const total = TIMER_SECONDS * 1000;
+    const fill = $('timer-fill'); fill.classList.remove('warning');
+    tH = setInterval(() => {
+      const rem = Math.max(0, total - (Date.now() - qStart));
+      fill.style.width = (rem / total) * 100 + '%';
+      if (rem <= total / 3) fill.classList.add('warning');
+      if (rem <= 0) { clearInterval(tH); handleTimeout(); }
+    }, 100);
+  }
+
+  function handleAns(sel) {
+    if (locked) return;
+    locked = true; clearInterval(tH);
+    const ck = (curQ.correct_answer || '').toLowerCase();
+    const ok = sel.toLowerCase() === ck;
+    document.querySelectorAll('.option-btn').forEach(b => {
+      b.classList.add('disabled');
+      if (b.dataset.key === ck) b.classList.add('correct');
+      else if (b.dataset.key === sel && !ok) b.classList.add('wrong');
+    });
+    logAns(sel, ck, ok, Date.now() - qStart);
+    const fb = $('feedback'); fb.style.display = 'block';
+    if (ok) {
+      correct++; combo++; if (combo > maxCombo) maxCombo = combo;
+      fb.className = 'feedback good'; fb.textContent = '✅ Đúng! Căn thời điểm thả khối.';
+      startSwing();
     } else {
-      host.textContent = '👷';
+      wrong++; combo = 0;
+      fb.className = 'feedback bad'; fb.textContent = '❌ Sai! Mất lượt khối này.';
+      setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1100);
     }
   }
 
-  function cheer() {
-    if (!mascotChar) return;
-    mascotChar.setState('happy');
-    if (happyTimer) clearTimeout(happyTimer);
-    happyTimer = setTimeout(() => { if (mascotChar) mascotChar.setState('idle'); }, 700);
+  function handleTimeout() {
+    if (locked) return; locked = true;
+    wrong++; combo = 0;
+    const fb = $('feedback'); fb.style.display = 'block'; fb.className = 'feedback bad'; fb.textContent = '⏰ Hết giờ! Mất lượt khối.';
+    setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1100);
   }
 
-  function tremble() {
-    if (!mascotChar) return;
-    mascotChar.setState('scared');
-    if (happyTimer) clearTimeout(happyTimer);
-    happyTimer = setTimeout(() => { if (mascotChar) mascotChar.setState('idle'); }, 900);
-  }
-
-  // Particle helper — sparkles burst around a host element.
-  function spawnParticles(parent, kind, count) {
-    if (!parent) return;
-    for (let i = 0; i < count; i++) {
-      const p = document.createElement('span');
-      p.className = 'pfx pfx-' + kind;
-      p.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
-      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
-      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
-      parent.appendChild(p);
-      p.addEventListener('animationend', () => p.remove(), { once: true });
+  // ── Crane swing + drop ──────────────────────────────────────────────────────
+  function startSwing() {
+    const block = $('swing-block');
+    block.style.background = BLOCK_COLORS[floors % BLOCK_COLORS.length];
+    block.style.display = 'block';
+    $('btn-drop').style.display = 'block';
+    swinging = true; swingPos = 0; swingDir = 1;
+    const speed = difficulty === 'hard' ? 2.4 : difficulty === 'medium' ? 1.8 : 1.3;
+    function frame() {
+      if (!swinging) return;
+      swingPos += swingDir * speed;
+      if (swingPos > 100) { swingPos = 100; swingDir = -1; }
+      else if (swingPos < -100) { swingPos = -100; swingDir = 1; }
+      block.style.transform = `translateX(${swingPos}%)`;
+      $('crane').style.transform = `translateX(${swingPos * 0.4}%)`;
+      swingRAF = requestAnimationFrame(frame);
     }
+    swingRAF = requestAnimationFrame(frame);
+  }
+
+  function dropBlock() {
+    if (!swinging) return;
+    swinging = false;
+    cancelAnimationFrame(swingRAF);
+    $('btn-drop').style.display = 'none';
+    const offset = swingPos;               // -100..100, 0 = perfect
+    const absOff = Math.abs(offset);
+    const block = $('swing-block');
+    block.style.display = 'none';
+
+    // add a floor block to the tower at the landed offset
+    floors++;
+    const b = document.createElement('div');
+    b.className = 'block';
+    b.style.background = BLOCK_COLORS[(floors - 1) % BLOCK_COLORS.length];
+    b.style.setProperty('--off', (offset * 0.32) + 'px');
+    $('tower').insertBefore(b, $('tower').firstChild);
+    // grow lean according to how off-center the drop was (perfect reduces lean)
+    if (absOff < 12) { perfects++; lean *= 0.7; popPerfect(); }
+    else { lean += (offset / 100) * 26; }
+    $('tower').style.transform = `rotate(${lean * 0.12}deg)`;
+
+    const fb = $('feedback'); fb.style.display = 'block';
+    if (absOff < 12) { fb.className = 'feedback bonus'; fb.textContent = '🎯 HOÀN HẢO! Tháp vững thêm!'; }
+    else if (absOff < 45) { fb.className = 'feedback good'; fb.textContent = '🏗️ Khá tốt! Xây thêm 1 tầng.'; }
+    else { fb.className = 'feedback bad'; fb.textContent = '⚠️ Lệch nhiều! Tháp nghiêng.'; }
+
+    if (floors > userData.bestTower) userData.bestTower = floors;
+    renderHud();
+    setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1000);
+  }
+
+  function popPerfect() { const t = $('tower'); t.classList.add('perfect-flash'); setTimeout(() => t.classList.remove('perfect-flash'), 400); }
+
+  function finish() {
+    clearInterval(tH); swinging = false; cancelAnimationFrame(swingRAF);
+    if (!outcome) outcome = floors >= GOAL ? 'won' : (Math.abs(lean) >= TIP_LIMIT ? 'collapse' : 'end');
+    const total = correct + wrong;
+    const acc = total > 0 ? Math.round((correct / total) * 100) : 0;
+    let stars = 0;
+    if (outcome === 'won') stars = perfects >= 8 ? 3 : perfects >= 4 ? 2 : 1;
+    else if (floors >= GOAL - 4) stars = 1;
+    userData.totalPerfect += perfects;
+    saveData();
+    saveSession({ stars, acc, total });
+
+    if (outcome === 'collapse') $('tower').classList.add('collapsing');
+    else if (outcome === 'won') spawnConfetti($('tower-stage'), 40);
+
+    setTimeout(() => {
+      $('result-emoji').textContent = outcome === 'won' ? '🏰' : outcome === 'collapse' ? '🧱' : '🏗️';
+      $('result-title').textContent = outcome === 'won' ? '🏰 Lâu Đài Hoàn Thành!' : outcome === 'collapse' ? '🧱 Tháp Sụp Đổ!' : '🏗️ Kết Thúc';
+      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}">⭐</span>`).join('');
+      $('result-detail').innerHTML = `🏰 Số tầng: ${floors}<br>🎯 Thả hoàn hảo: ${perfects}<br>✅ Đúng: ${correct}/${total} (${acc}%)<br>✨ Combo cao nhất: ${maxCombo}`;
+      ss('result-screen');
+      $('tower').classList.remove('collapsing');
+      if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch (e) {} }
+    }, outcome === 'end' ? 200 : 1200);
+  }
+
+  async function saveSession({ stars, acc, total }) {
+    try {
+      const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+      if (!p.id) return;
+      await fetch('/api/sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        player_id: p.id, subject: subject === 'mix' ? 'math' : subject, difficulty,
+        score: floors, total_questions: total, correct_answers: correct,
+        stars_earned: stars, combo_max: maxCombo, mode: 'v8', accuracy: acc,
+      }) });
+    } catch (e) {}
+  }
+  function logAns(sel, ck, ok, ms) {
+    if (!curQ || curQ.id < 0) return;
+    try {
+      const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+      if (!p.id) return;
+      fetch('/api/answers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        player_id: p.id, question_id: curQ.id, selected_answer: sel, correct_answer: ck, is_correct: ok, time_spent_ms: ms, difficulty,
+      }) }).catch(() => {});
+    } catch (e) {}
   }
 
   function spawnConfetti(parent, count) {
     if (!parent) return;
     const colors = ['#ffd54f', '#ff7043', '#81c784', '#64b5f6', '#ba68c8', '#fff'];
     for (let i = 0; i < count; i++) {
-      const p = document.createElement('span');
-      p.className = 'pfx pfx-confetti';
-      p.style.setProperty('--x', Math.random() * 100 + '%');
-      p.style.setProperty('--delay', (Math.random() * 0.6) + 's');
-      p.style.setProperty('--rot', Math.floor(Math.random() * 360) + 'deg');
-      p.style.background = colors[i % colors.length];
-      parent.appendChild(p);
-      p.addEventListener('animationend', () => p.remove(), { once: true });
+      const p = document.createElement('span'); p.className = 'pfx pfx-confetti';
+      p.style.setProperty('--x', Math.random() * 100 + '%'); p.style.setProperty('--delay', (Math.random() * 0.6) + 's');
+      p.style.setProperty('--rot', Math.floor(Math.random() * 360) + 'deg'); p.style.background = colors[i % colors.length];
+      parent.appendChild(p); p.addEventListener('animationend', () => p.remove(), { once: true });
     }
   }
-  window.__v8_spawnParticles = spawnParticles;
-  window.__v8_spawnConfetti = spawnConfetti;
-
-  // Mount the mascot at the start of each game. updateGameInfo() is called by
-  // global name inside startGame() (after the tower is cleared), so wrapping it
-  // mounts the sprite reliably; the btn-start listener captured the original
-  // startGame reference, so wrapping startGame itself would not fire.
-  if (typeof updateGameInfo === 'function') {
-    const origInfo = updateGameInfo;
-    let mounted = false;
-    updateGameInfo = function () {
-      const r = origInfo.apply(this, arguments);
-      const host = document.getElementById('builder-mascot');
-      if (host && (!mounted || !host.firstChild)) {
-        mountMascot();
-        mounted = true;
-      }
-      return r;
-    };
-    // Reset the mount guard whenever a fresh game begins.
-    if (typeof startGame === 'function') {
-      const origStart = startGame;
-      startGame = function () { mounted = false; return origStart.apply(this, arguments); };
-    }
+  function speakQ() {
+    if (!curQ) return;
+    if (window.HocVuiTTS && window.HocVuiTTS.speak) { window.HocVuiTTS.speak(curQ.question_text); return; }
+    try { const u = new SpeechSynthesisUtterance(curQ.question_text); u.lang = 'vi-VN'; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
   }
 
-  // Cheer + sparkle on each block built.
-  if (typeof addBlock === 'function') {
-    const origAdd = addBlock;
-    addBlock = function () {
-      const r = origAdd.apply(this, arguments);
-      cheer();
-      const host = document.getElementById('builder-mascot');
-      if (host) spawnParticles(host, 'sparkle', 6);
-      return r;
-    };
+  function init() {
+    loadData(); renderStart(); wireSel();
+    $('btn-start').addEventListener('click', startRun);
+    $('btn-replay').addEventListener('click', startRun);
+    $('btn-speak').addEventListener('click', speakQ);
+    $('btn-drop').addEventListener('click', dropBlock);
+    const guideModal = $('guide-modal');
+    $('btn-guide').addEventListener('click', () => { guideModal.style.display = 'flex'; });
+    $('btn-guide-close').addEventListener('click', () => { guideModal.style.display = 'none'; });
+    guideModal.addEventListener('click', e => { if (e.target === guideModal) guideModal.style.display = 'none'; });
+    $('btn-exit').addEventListener('click', () => { $('exit-modal').style.display = 'flex'; });
+    const exitModal = $('exit-modal');
+    $('btn-exit-cancel').addEventListener('click', () => { exitModal.style.display = 'none'; });
+    $('btn-exit-confirm').addEventListener('click', () => { exitModal.style.display = 'none'; clearInterval(tH); swinging = false; cancelAnimationFrame(swingRAF); window.location.reload(); });
+    exitModal.addEventListener('click', e => { if (e.target === exitModal) exitModal.style.display = 'none'; });
   }
-
-  // Tremble when the tower shakes from an earthquake.
-  if (typeof triggerEarthquake === 'function') {
-    const origQuake = triggerEarthquake;
-    triggerEarthquake = function () {
-      tremble();
-      return origQuake.apply(this, arguments);
-    };
-  }
-
-  // Confetti celebration on a win.
-  if (typeof endGame === 'function') {
-    const origEnd = endGame;
-    endGame = function () {
-      const r = origEnd.apply(this, arguments);
-      const host = document.getElementById('result-container');
-      if (host) spawnConfetti(host, 36);
-      return r;
-    };
-  }
-
-  // Modals (guide + styled exit) -------------------------------------------
-  function ready(fn) {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
-    else fn();
-  }
-  ready(function () {
-    const $ = id => document.getElementById(id);
-    const guide = $('guide-modal');
-    const guideBtn = $('btn-guide');
-    if (guide && guideBtn) {
-      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
-      const close = $('btn-guide-close');
-      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
-      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
-    }
-    // Exit modal: overlay-click closes; confirm stops loops/timers then leaves.
-    const exit = $('exit-overlay');
-    if (exit) {
-      exit.addEventListener('click', e => { if (e.target === exit) exit.classList.remove('active'); });
-    }
-    const confirmBtn = $('exit-confirm');
-    if (confirmBtn) {
-      confirmBtn.addEventListener('click', () => {
-        try { clearInterval(timerId); } catch (e) {}
-        try { State.gameOver = true; } catch (e) {}
-      });
-    }
-  });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();

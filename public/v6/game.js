@@ -1,963 +1,264 @@
-// V6 Đua Xe Trí Tuệ - Game Engine
-// State machine, question flow, track controller, audio, input handling
-
-import {
-  calculateMovement,
-  generateObstacles,
-  generateFallbackQuestions,
-  shuffleArray,
-  calculateStats,
-  checkWinCondition,
-} from './game-logic.js';
-
-// ===== CONSTANTS =====
-const TIMER_DURATION = 15; // seconds
-const TIMER_INTERVAL = 100; // ms
-const TILE_WIDTH = 42; // px (tile width + gap)
-const ANIMATION_DURATION = 600; // ms for car movement
-
-// ===== GAME STATE =====
-const State = {
-  current: 'SETUP', // SETUP | LOADING | RACING | ROUND_ACTIVE | ROUND_RESOLVING | ANIMATING | RACE_OVER | RESULT
-  settings: {
-    p1Name: 'Xe Đỏ',
-    p2Name: 'Xe Xanh',
-    subject: 'math',
-    difficulty: 'medium',
-    trackLength: 15,
-  },
-  track: {
-    p1Position: 0,
-    p2Position: 0,
-    obstacles: [],
-    finishLine: 15,
-  },
-  round: {
-    number: 0,
-    question: null,
-    p1: { answered: false, answer: null, time: 0 },
-    p2: { answered: false, answer: null, time: 0 },
-    timerStart: 0,
-    timerId: null,
-  },
-  questions: [],
-  questionIndex: 0,
-  roundResults: [], // Array of { p1Correct, p2Correct, p1Time, p2Time }
-};
-
-// ===== STATE MACHINE =====
-const VALID_TRANSITIONS = {
-  SETUP: ['LOADING'],
-  LOADING: ['RACING'],
-  RACING: ['ROUND_ACTIVE'],
-  ROUND_ACTIVE: ['RACING', 'RACE_OVER'],
-  RACE_OVER: ['RESULT'],
-  RESULT: ['SETUP'],
-};
-
-function transition(newState) {
-  if (!VALID_TRANSITIONS[State.current]?.includes(newState)) {
-    console.warn(`Invalid transition: ${State.current} → ${newState}`);
-    return false;
-  }
-  State.current = newState;
-
-  // Show/hide screens
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  if (newState === 'SETUP') {
-    document.getElementById('setup-screen').classList.add('active');
-  } else if (newState === 'RESULT') {
-    document.getElementById('result-screen').classList.add('active');
-  } else {
-    document.getElementById('race-screen').classList.add('active');
-  }
-
-  return true;
-}
-
-// ===== PROFILE CHECK =====
-(function checkProfile() {
-  const profile = localStorage.getItem('hocvui_profile');
-  if (!profile) {
-    window.location.href = '/';
-    return;
-  }
-  try {
-    const p = JSON.parse(profile);
-    if (p && p.name) {
-      document.getElementById('p2-name').value = p.name;
-    }
-  } catch {
-    localStorage.removeItem('hocvui_profile');
-    window.location.href = '/';
-  }
-})();
-
-// ===== SETUP SCREEN LOGIC =====
-// Button group selection
-document.querySelectorAll('.btn-group').forEach(group => {
-  group.addEventListener('click', (e) => {
-    const btn = e.target.closest('.btn-option');
-    if (!btn) return;
-    group.querySelectorAll('.btn-option').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-
-// Player type toggle (Human/Bot)
-document.querySelectorAll('.btn-toggle-type').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (btn.dataset.type === 'human') {
-      btn.dataset.type = 'bot';
-      btn.textContent = '🤖';
-      btn.classList.remove('is-human');
-      btn.classList.add('is-bot');
-    } else {
-      btn.dataset.type = 'human';
-      btn.textContent = '👤';
-      btn.classList.remove('is-bot');
-      btn.classList.add('is-human');
-    }
-  });
-});
-
-// Start button
-document.getElementById('btn-start').addEventListener('click', async () => {
-  if (State.current !== 'SETUP') return;
-
-  // Read settings
-  State.settings.p1Name = document.getElementById('p1-name').value.trim() || 'Bot';
-  State.settings.p2Name = document.getElementById('p2-name').value.trim() || 'Xe Xanh';
-  State.settings.p1Type = document.getElementById('p1-type').dataset.type || 'human';
-  State.settings.p2Type = document.getElementById('p2-type').dataset.type || 'bot';
-  State.settings.subject = document.querySelector('#subject-group .btn-option.active')?.dataset.value || 'math';
-  State.settings.difficulty = document.querySelector('#difficulty-group .btn-option.active')?.dataset.value || 'medium';
-  State.settings.trackLength = parseInt(document.querySelector('#track-length-group .btn-option.active')?.dataset.value) || 15;
-
-  // Update UI names
-  document.getElementById('az-p1-name').textContent = State.settings.p1Name;
-  document.getElementById('az-p2-name').textContent = State.settings.p2Name;
-
-  // Initialize race state
-  State.track.p1Position = 0;
-  State.track.p2Position = 0;
-  State.track.finishLine = State.settings.trackLength;
-  State.track.obstacles = generateObstacles(State.settings.trackLength);
-  State.round.number = 0;
-  State.questionIndex = 0;
-  State.roundResults = [];
-
-  // Initialize audio on user gesture
-  AudioEngine.init();
-
-  transition('LOADING');
-  await fetchQuestions();
-  transition('RACING');
-
-  // Initialize track DOM
-  TrackController.initTrack(State.settings.trackLength, State.track.obstacles);
-
-  // Play start sound
-  AudioEngine.play('start');
-
-  // Start first round
-  startRound();
-});
-
-// ===== QUESTION MANAGER =====
-async function fetchQuestions() {
-  const { subject, difficulty } = State.settings;
-  try {
-    let questions;
-    if (subject === 'mix') {
-      const [math, viet] = await Promise.all([
-        fetch(`/api/questions?subject=math&difficulty=${difficulty}&limit=15`).then(r => r.json()),
-        fetch(`/api/questions?subject=vietnamese&difficulty=${difficulty}&limit=15`).then(r => r.json()),
-      ]);
-      questions = [...math, ...viet];
-    } else {
-      const res = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=30`);
-      questions = await res.json();
-    }
-    if (Array.isArray(questions) && questions.length > 0) {
-      State.questions = questions;
-    } else {
-      throw new Error('Empty response');
-    }
-  } catch {
-    State.questions = generateFallbackQuestions(30);
-  }
-  // Same pool, different order for each player
-  State.p1Questions = shuffleArray([...State.questions]);
-  State.p2Questions = shuffleArray([...State.questions]);
-  State.p1QuestionIndex = 0;
-  State.p2QuestionIndex = 0;
-}
-
-function getNextQuestion(player) {
-  if (player === 'p2') {
-    if (State.p2QuestionIndex >= State.p2Questions.length) {
-      State.p2Questions = [...State.p2Questions, ...shuffleArray(generateFallbackQuestions(15))];
-    }
-    return State.p2Questions[State.p2QuestionIndex++];
-  }
-  // Default: p1
-  if (State.p1QuestionIndex >= State.p1Questions.length) {
-    State.p1Questions = [...State.p1Questions, ...shuffleArray(generateFallbackQuestions(15))];
-  }
-  return State.p1Questions[State.p1QuestionIndex++];
-}
-
-// ===== ROUND LIFECYCLE =====
-function startRound() {
-  if (State.current !== 'RACING') return;
-
-  State.round.number++;
-  State.round.p1 = { answered: false, answer: null, time: 0 };
-  State.round.p2 = { answered: false, answer: null, time: 0 };
-
-  // Give each player their own independent question
-  State.round.p1Question = getNextQuestion('p1');
-  State.round.p2Question = getNextQuestion('p2');
-  // Keep backward-compat reference
-  State.round.question = State.round.p1Question;
-
-  // Update round counter
-  document.getElementById('round-counter').textContent = `Vòng ${State.round.number}`;
-
-  // Display question in each zone independently
-  renderPlayerQuestion('p1', State.round.p1Question);
-  renderPlayerQuestion('p2', State.round.p2Question);
-
-  // Clear statuses
-  document.getElementById('p1-status').textContent = '';
-  document.getElementById('p2-status').textContent = '';
-
-  // Transition and start timer
-  transition('ROUND_ACTIVE');
-  State.round.timerStart = Date.now();
-  startTimer();
-}
-
-function renderPlayerQuestion(player, q) {
-  document.getElementById(`${player}-question`).textContent = q.question_text;
-  const opts = [q.option_a, q.option_b, q.option_c, q.option_d];
-  const btns = document.querySelectorAll(`#${player}-buttons .ans-btn`);
-  btns.forEach((btn, i) => {
-    btn.textContent = `${'ABCD'[i]}. ${opts[i]}`;
-    btn.className = `ans-btn ${player}-btn`;
-    btn.disabled = false;
-    btn.dataset.opt = 'abcd'[i];
-  });
-
-  // Bot auto-answer
-  const playerType = player === 'p1' ? State.settings.p1Type : State.settings.p2Type;
-  if (playerType === 'bot') {
-    const delay = 1500 + Math.random() * 2500; // 1.5-4s random delay
-    setTimeout(() => {
-      if (State.current !== 'ROUND_ACTIVE') return;
-      const pState = State.round[player];
-      if (pState.answered) return;
-
-      // Bot has 70% chance to answer correctly
-      const isCorrect = Math.random() < 0.7;
-      let opt;
-      if (isCorrect) {
-        opt = q.correct_answer;
-      } else {
-        const wrongs = ['a','b','c','d'].filter(o => o !== q.correct_answer);
-        opt = wrongs[Math.floor(Math.random() * wrongs.length)];
-      }
-      const btn = document.querySelector(`#${player}-buttons .ans-btn[data-opt="${opt}"]`);
-      if (btn && !btn.disabled) handleAnswer(player, opt, btn);
-    }, delay);
-  }
-}
-
-// ===== TIMER =====
-function startTimer() {
-  const timerBar = document.getElementById('timer-bar');
-  timerBar.style.width = '100%';
-  timerBar.className = 'timer-bar';
-
-  clearInterval(State.round.timerId);
-
-  State.round.timerId = setInterval(() => {
-    if (State.current !== 'ROUND_ACTIVE') {
-      clearInterval(State.round.timerId);
-      return;
-    }
-
-    const elapsed = (Date.now() - State.round.timerStart) / 1000;
-    const remaining = Math.max(0, 1 - elapsed / TIMER_DURATION);
-    timerBar.style.width = (remaining * 100) + '%';
-
-    // Color coding
-    if (remaining <= 0.2) {
-      timerBar.className = 'timer-bar danger';
-    } else if (remaining <= 0.5) {
-      timerBar.className = 'timer-bar warn';
-    }
-
-    // Time's up — go to next round
-    if (elapsed >= TIMER_DURATION) {
-      clearInterval(State.round.timerId);
-      // Show timeout for players who didn't answer
-      if (!State.round.p1.answered) document.getElementById('p1-status').textContent = '⏰ Hết giờ!';
-      if (!State.round.p2.answered) document.getElementById('p2-status').textContent = '⏰ Hết giờ!';
-      setTimeout(() => nextRound(), 800);
-    }
-  }, TIMER_INTERVAL);
-}
-
-// ===== INPUT HANDLING =====
-// Click/touch handlers for answer buttons
-document.getElementById('p1-buttons').addEventListener('click', (e) => {
-  const btn = e.target.closest('.ans-btn');
-  if (!btn || State.current !== 'ROUND_ACTIVE' || State.round.p1.answered) return;
-  handleAnswer('p1', btn.dataset.opt, btn);
-});
-
-document.getElementById('p2-buttons').addEventListener('click', (e) => {
-  const btn = e.target.closest('.ans-btn');
-  if (!btn || State.current !== 'ROUND_ACTIVE' || State.round.p2.answered) return;
-  handleAnswer('p2', btn.dataset.opt, btn);
-});
-
-// Keyboard support: P1 = 1234, P2 = 7890
-document.addEventListener('keydown', (e) => {
-  if (State.current !== 'ROUND_ACTIVE') return;
-
-  const p1Keys = { '1': 'a', '2': 'b', '3': 'c', '4': 'd' };
-  const p2Keys = { '7': 'a', '8': 'b', '9': 'c', '0': 'd' };
-
-  if (p1Keys[e.key] && !State.round.p1.answered) {
-    const opt = p1Keys[e.key];
-    const btn = document.querySelector(`#p1-buttons .ans-btn[data-opt="${opt}"]`);
-    if (btn) handleAnswer('p1', opt, btn);
-  }
-
-  if (p2Keys[e.key] && !State.round.p2.answered) {
-    const opt = p2Keys[e.key];
-    const btn = document.querySelector(`#p2-buttons .ans-btn[data-opt="${opt}"]`);
-    if (btn) handleAnswer('p2', opt, btn);
-  }
-});
-
-function handleAnswer(player, opt, btn) {
-  const pState = State.round[player];
-  pState.answered = true;
-  pState.answer = opt;
-  pState.time = Date.now() - State.round.timerStart;
-
-  // Use each player's own question
-  const q = player === 'p1' ? State.round.p1Question : State.round.p2Question;
-  const isCorrect = opt.toLowerCase() === q.correct_answer.toLowerCase();
-
-  // Lock buttons for this player
-  const buttons = document.querySelectorAll(`#${player}-buttons .ans-btn`);
-  buttons.forEach(b => {
-    b.disabled = true;
-  });
-
-  // Show correct/wrong immediately
-  btn.classList.add(isCorrect ? 'correct' : 'wrong');
-  if (!isCorrect) {
-    const correctBtn = document.querySelector(`#${player}-buttons .ans-btn[data-opt="${q.correct_answer}"]`);
-    if (correctBtn) correctBtn.classList.add('correct');
-  }
-
-  if (isCorrect) {
-    document.getElementById(`${player}-status`).textContent = '✅ Đúng! Tiến!';
-    AudioEngine.play('correct');
-    moveCarForward(player, 1);
-  } else {
-    document.getElementById(`${player}-status`).textContent = '❌ Sai!';
-    AudioEngine.play('wrong');
-  }
-
-  // Record for stats
-  if (player === 'p1') State.round._p1Correct = isCorrect;
-  else State.round._p2Correct = isCorrect;
-
-  // Auto-load next question for THIS player immediately after short delay
-  setTimeout(() => {
-    if (State.current !== 'ROUND_ACTIVE') return;
-    const nextQ = getNextQuestion(player);
-    if (player === 'p1') {
-      State.round.p1Question = nextQ;
-      State.round.p1.answered = false;
-    } else {
-      State.round.p2Question = nextQ;
-      State.round.p2.answered = false;
-    }
-    document.getElementById(`${player}-status`).textContent = '';
-    renderPlayerQuestion(player, nextQ);
-  }, 800);
-}
-
-// Obstacle outcomes: random when hitting an obstacle
-const OBSTACLE_OUTCOMES = ['lose', 'win', 'challenge']; // 1/3 each
-
-// Move a car forward immediately (racing style)
-function moveCarForward(player, tiles) {
-  const pos = player === 'p1' ? 'p1Position' : 'p2Position';
-  let newPos = State.track[pos] + tiles;
-
-  // Check obstacle — random outcome
-  if (State.track.obstacles.includes(newPos) && newPos < State.track.finishLine) {
-    const outcome = OBSTACLE_OUTCOMES[Math.floor(Math.random() * OBSTACLE_OUTCOMES.length)];
-    
-    if (outcome === 'lose') {
-      // Trượt: xe dừng ở ô TRƯỚC vỏ chuối
-      newPos = newPos - 1;
-      showObstacleNotify(player, '🍌', 'Trượt chuối! Dừng lại!');
-      setTimeout(() => {
-        TrackController.showObstacleHit(player);
-        AudioEngine.play('obstacle');
-      }, 300);
-    } else if (outcome === 'win') {
-      // Thắng: xe ở luôn chỗ vỏ chuối
-      showObstacleNotify(player, '💪', 'Vượt qua!');
-      // newPos stays the same (on the obstacle tile)
-    } else {
-      // Hòa: thử thách — popup câu hỏi
-      // Tạm đặt xe ở ô chuối, chờ kết quả
-      State.track[pos] = newPos;
-      TrackController.moveCar(player, newPos);
-      showObstacleChallenge(player, newPos);
-      return; // exit early, challenge handles the rest
-    }
-  }
-
-  // Clamp to finish
-  newPos = Math.min(newPos, State.track.finishLine);
-  State.track[pos] = newPos;
-
-  // Animate
-  TrackController.moveCar(player, newPos);
-  TrackController.showCorrectEffect(player);
-
-  // Check win
-  setTimeout(() => checkForWinner(), ANIMATION_DURATION + 100);
-}
-
-function checkForWinner() {
-  const winner = checkWinCondition(
-    { p1: State.track.p1Position, p2: State.track.p2Position },
-    State.track.finishLine
-  );
-
-  if (winner && State.current === 'ROUND_ACTIVE') {
-    clearInterval(State.round.timerId);
-    let finalWinner = winner;
-    if (winner === 'tie') {
-      finalWinner = (State.round.p1.time || 99999) <= (State.round.p2.time || 99999) ? 'p1' : 'p2';
-    }
-
-    // Record final round stats
-    State.roundResults.push({
-      p1Correct: State.round._p1Correct || false,
-      p2Correct: State.round._p2Correct || false,
-      p1Time: State.round.p1.time || TIMER_DURATION * 1000,
-      p2Time: State.round.p2.time || TIMER_DURATION * 1000,
-    });
-
-    transition('RACE_OVER');
-    AudioEngine.play('win');
-    TrackController.showFinishAnimation(finalWinner);
-
-    setTimeout(() => {
-      showResult(finalWinner);
-    }, 1500);
-  }
-}
-
-// Timer expired → go to next round (no one gains)
-function nextRound() {
-  if (State.current !== 'ROUND_ACTIVE') return;
-
-  // Record round result for stats
-  State.roundResults.push({
-    p1Correct: State.round._p1Correct || false,
-    p2Correct: State.round._p2Correct || false,
-    p1Time: State.round.p1.time || TIMER_DURATION * 1000,
-    p2Time: State.round.p2.time || TIMER_DURATION * 1000,
-  });
-
-  // Check if someone won already
-  const winner = checkWinCondition(
-    { p1: State.track.p1Position, p2: State.track.p2Position },
-    State.track.finishLine
-  );
-  if (winner) return; // checkForWinner already handled it
-
-  // Transition to RACING then start next round
-  transition('RACING');
-  startRound();
-}
-
-// ===== RESULT SCREEN =====
-function showResult(winner) {
-  transition('RESULT');
-
-  const winnerName = winner === 'p1' ? State.settings.p1Name : State.settings.p2Name;
-  const winnerCar = winner === 'p1' ? '🚗' : '🚙';
-
-  document.getElementById('result-title').textContent = `${winnerCar} ${winnerName} thắng!`;
-  document.getElementById('result-winner').textContent = 'Về đích trước đối thủ!';
-
-  // Stats
-  const stats = calculateStats(State.roundResults);
-
-  document.getElementById('stats-p1-name').textContent = `🚗 ${State.settings.p1Name}`;
-  document.getElementById('stats-p2-name').textContent = `🚙 ${State.settings.p2Name}`;
-  document.getElementById('stats-rounds').textContent = stats.p1.rounds;
-  document.getElementById('stats-p1-correct').textContent = stats.p1.correct;
-  document.getElementById('stats-p2-correct').textContent = stats.p2.correct;
-
-  const p1Avg = stats.p1.rounds > 0 ? (stats.p1.totalTime / stats.p1.rounds / 1000).toFixed(1) + 's' : '-';
-  const p2Avg = stats.p2.rounds > 0 ? (stats.p2.totalTime / stats.p2.rounds / 1000).toFixed(1) + 's' : '-';
-  document.getElementById('stats-p1-time').textContent = p1Avg;
-  document.getElementById('stats-p2-time').textContent = p2Avg;
-
-  // Confetti
-  showConfetti();
-
-  // Check and show parent linking prompt after game ends
-  const profile = JSON.parse(localStorage.getItem('hocvui_profile') || 'null');
-  if (window.checkAndShowPrompt && profile?.id) {
-    window.checkAndShowPrompt(profile.id);
-  }
-}
-
-// Play Again
-document.getElementById('btn-play-again').addEventListener('click', () => {
-  if (State.current !== 'RESULT') return;
-  transition('SETUP');
-});
-
-// Exit button with confirm
-document.getElementById('btn-exit-race').addEventListener('click', () => {
-  document.getElementById('exit-confirm-overlay').classList.add('active');
-});
-document.getElementById('exit-cancel').addEventListener('click', () => {
-  document.getElementById('exit-confirm-overlay').classList.remove('active');
-});
-document.getElementById('exit-confirm').addEventListener('click', () => {
-  window.location.reload();
-});
-
-// ===== TRACK CONTROLLER =====
-const TrackController = {
-  initTrack(trackLength, obstacles) {
-    const lanes = ['lane-p1', 'lane-p2'];
-    lanes.forEach(laneId => {
-      const lane = document.getElementById(laneId);
-      // Keep only the car element
-      const car = lane.querySelector('.car');
-      lane.innerHTML = '';
-      lane.appendChild(car);
-
-      // Create tiles
-      for (let i = 0; i <= trackLength; i++) {
-        const tile = document.createElement('div');
-        tile.className = 'tile';
-        tile.dataset.index = i;
-
-        if (i === 0) {
-          tile.classList.add('tile-start');
-        } else if (i === trackLength) {
-          tile.classList.add('tile-finish');
-        } else if (obstacles.includes(i)) {
-          tile.classList.add('tile-obstacle');
-        }
-
-        lane.appendChild(tile);
-      }
-    });
-
-    // Reset car positions
-    this.moveCar('p1', 0);
-    this.moveCar('p2', 0);
-
-    // Scroll to start (left edge)
-    const wrapper = document.querySelector('.track-wrapper');
-    if (wrapper) wrapper.scrollLeft = 0;
-  },
-
-  moveCar(player, toTile) {
-    const car = document.getElementById(`car-${player}`);
-    // Calculate actual tile width from DOM
-    const lane = document.getElementById(`lane-${player}`);
-    const tiles = lane.querySelectorAll('.tile');
-    let xPos = 0;
-    if (tiles.length > 0 && toTile > 0) {
-      const firstTile = tiles[0];
-      const targetTile = tiles[Math.min(toTile, tiles.length - 1)];
-      xPos = targetTile.offsetLeft - firstTile.offsetLeft;
-    }
-
-    car.style.setProperty('--car-x', `${xPos}px`);
-    car.style.left = `${xPos}px`;
-    car.style.transform = `translateY(-50%) scaleX(-1)`;
-
-    // Scroll track to keep cars visible
-    this.scrollToView();
-  },
-
-  scrollToView() {
-    const wrapper = document.querySelector('.track-wrapper');
-    if (!wrapper) return;
-
-    const maxPos = Math.max(State.track.p1Position, State.track.p2Position);
-
-    // Don't scroll if cars are still in the first visible portion
-    const lane = document.getElementById('lane-p1');
-    if (!lane) return;
-    const tiles = lane.querySelectorAll('.tile');
-    if (tiles.length === 0 || maxPos === 0) return;
-
-    const targetTile = tiles[Math.min(maxPos, tiles.length - 1)];
-    if (!targetTile) return;
-
-    const tileLeft = targetTile.offsetLeft;
-    const halfView = wrapper.clientWidth / 2;
-
-    // Only scroll when car goes beyond half the visible width
-    if (tileLeft > halfView) {
-      const scrollTarget = tileLeft - halfView + 40;
-      wrapper.scrollTo({ left: scrollTarget, behavior: 'smooth' });
-    }
-  },
-
-  showObstacleHit(player) {
-    const car = document.getElementById(`car-${player}`);
-    car.classList.add('shake');
-    setTimeout(() => car.classList.remove('shake'), 400);
-  },
-
-  showBoostEffect(player) {
-    const car = document.getElementById(`car-${player}`);
-    car.classList.add('boost');
-    setTimeout(() => car.classList.remove('boost'), 500);
-  },
-
-  showCorrectEffect(player) {
-    const car = document.getElementById(`car-${player}`);
-    car.classList.add('star');
-    setTimeout(() => car.classList.remove('star'), 400);
-  },
-
-  showFinishAnimation(winner) {
-    const car = document.getElementById(`car-${winner}`);
-    car.style.fontSize = '2.5rem';
-    setTimeout(() => { car.style.fontSize = ''; }, 2000);
-  },
-};
-
-// ===== AUDIO ENGINE =====
-const AudioEngine = {
-  ctx: null,
-
-  init() {
-    if (this.ctx) return;
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      this.ctx = new AudioCtx();
-    } catch {
-      // Audio not available
-    }
-  },
-
-  play(type) {
-    try {
-      if (!this.ctx) return;
-      if (this.ctx.state === 'suspended') this.ctx.resume();
-
-      switch (type) {
-        case 'correct':
-          this._tone(523, 0.1, 784, 0.25, 0.3);
-          break;
-        case 'wrong':
-          this._toneSaw(200, 0.15, 0.2);
-          break;
-        case 'boost':
-          this._sweep(400, 800, 0.2, 0.3);
-          break;
-        case 'obstacle':
-          this._tone(100, 0.08, 80, 0.1, 0.2);
-          break;
-        case 'win':
-          this._fanfare();
-          break;
-        case 'start':
-          this._tone(440, 0.05, 880, 0.2, 0.15);
-          break;
-      }
-    } catch {
-      // Audio failure never blocks gameplay
-    }
-  },
-
-  _tone(f1, t1, f2, vol, dur) {
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.frequency.setValueAtTime(f1, this.ctx.currentTime);
-    osc.frequency.setValueAtTime(f2, this.ctx.currentTime + t1);
-    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
-    osc.start();
-    osc.stop(this.ctx.currentTime + dur);
-  },
-
-  _toneSaw(freq, vol, dur) {
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = 'sawtooth';
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
-    osc.start();
-    osc.stop(this.ctx.currentTime + dur);
-  },
-
-  _sweep(startF, endF, vol, dur) {
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.frequency.setValueAtTime(startF, this.ctx.currentTime);
-    osc.frequency.linearRampToValueAtTime(endF, this.ctx.currentTime + dur);
-    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
-    osc.start();
-    osc.stop(this.ctx.currentTime + dur);
-  },
-
-  _fanfare() {
-    [523, 659, 784, 1047].forEach((f, i) => {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.frequency.setValueAtTime(f, this.ctx.currentTime + i * 0.12);
-      gain.gain.setValueAtTime(0.2, this.ctx.currentTime + i * 0.12);
-      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.12 + 0.25);
-      osc.start(this.ctx.currentTime + i * 0.12);
-      osc.stop(this.ctx.currentTime + i * 0.12 + 0.25);
-    });
-  },
-};
-
-// ===== CONFETTI =====
-function showConfetti() {
-  const container = document.getElementById('result-celebration');
-  container.innerHTML = '';
-  const colors = ['#e74c3c', '#3498db', '#27ae60', '#f39c12', '#9b59b6', '#1abc9c'];
-
-  for (let i = 0; i < 30; i++) {
-    const piece = document.createElement('div');
-    piece.className = 'confetti-piece';
-    piece.style.left = Math.random() * 100 + '%';
-    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-    piece.style.animationDelay = (Math.random() * 1.5) + 's';
-    piece.style.animationDuration = (2 + Math.random() * 1) + 's';
-    container.appendChild(piece);
-  }
-
-  setTimeout(() => { container.innerHTML = ''; }, 4000);
-}
-
-// ===== UTILITY =====
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// ===== NOTIFICATION POPUP =====
-function showObstacleNotify(player, emoji, text) {
-  const zone = document.getElementById(`zone-${player}`);
-  if (!zone) return;
-
-  const notify = document.createElement('div');
-  notify.className = 'obstacle-notify';
-  notify.innerHTML = `
-    <span class="obstacle-notify-emoji">${emoji}</span>
-    <span class="obstacle-notify-text">${text}</span>
-  `;
-  zone.appendChild(notify);
-
-  requestAnimationFrame(() => notify.classList.add('show'));
-
-  setTimeout(() => {
-    notify.classList.remove('show');
-    setTimeout(() => notify.remove(), 300);
-  }, 1500);
-}
-
-// ===== OBSTACLE CHALLENGE (Hòa case) =====
-function showObstacleChallenge(player, obstaclePos) {
-  const q = getNextQuestion(player);
-  const zone = document.getElementById(`zone-${player}`);
-  if (!zone) return;
-  // Append inside zone-inner so it inherits the 180° rotation for P1
-  const zoneInner = zone.querySelector('.zone-inner');
-  if (!zoneInner) return;
-
-  const popup = document.createElement('div');
-  popup.className = 'obstacle-challenge-popup';
-  const opts = [q.option_a, q.option_b, q.option_c, q.option_d];
-  popup.innerHTML = `
-    <div class="obstacle-challenge-card">
-      <div class="obstacle-challenge-title">⚡ Thử thách vượt chướng ngại!</div>
-      <div class="obstacle-challenge-q">${q.question_text}</div>
-      <div class="obstacle-challenge-btns">
-        ${opts.map((o, i) => `<button class="obstacle-challenge-btn" data-opt="${'abcd'[i]}">${'ABCD'[i]}. ${o}</button>`).join('')}
-      </div>
-    </div>
-  `;
-  zoneInner.appendChild(popup);
-  requestAnimationFrame(() => popup.classList.add('show'));
-
-  // Handle answer
-  popup.addEventListener('click', (e) => {
-    const btn = e.target.closest('.obstacle-challenge-btn');
-    if (!btn) return;
-
-    const selected = btn.dataset.opt;
-    const isCorrect = selected.toLowerCase() === q.correct_answer.toLowerCase();
-
-    // Disable all buttons
-    popup.querySelectorAll('.obstacle-challenge-btn').forEach(b => b.disabled = true);
-    btn.classList.add(isCorrect ? 'correct' : 'wrong');
-    if (!isCorrect) {
-      const correctBtn = popup.querySelector(`.obstacle-challenge-btn[data-opt="${q.correct_answer}"]`);
-      if (correctBtn) correctBtn.classList.add('correct');
-    }
-
-    const pos = player === 'p1' ? 'p1Position' : 'p2Position';
-
-    setTimeout(() => {
-      popup.classList.remove('show');
-      setTimeout(() => popup.remove(), 300);
-
-      if (isCorrect) {
-        // Thắng: ở lại ô chuối
-        showObstacleNotify(player, '✅', 'Vượt qua!');
-        AudioEngine.play('correct');
-      } else {
-        // Thua: về ô trước vỏ chuối
-        const backPos = Math.max(0, obstaclePos - 1);
-        State.track[pos] = backPos;
-        TrackController.moveCar(player, backPos);
-        showObstacleNotify(player, '❌', 'Trượt chuối! Lùi lại!');
-        AudioEngine.play('wrong');
-      }
-
-      // Check win after challenge resolves
-      setTimeout(() => checkForWinner(), 400);
-    }, 800);
-  });
-}
-
-// ===== CHARACTER SYSTEM INTEGRATION (presentation only, additive) =====
-// Mounts animated car/driver sprites where the 🚗/🚙 emoji were rendered and
-// mirrors the game's existing car effects (.star / .boost / .shake) onto the
-// sprite via a MutationObserver. No game logic is modified here.
+// V6 — Đua Xe Trí Tuệ (Brain Racing)
+// You race a rival car (Bot or 2nd player turn) down an animated track. Correct
+// answers advance your car; a 3-combo charges Nitro for an extra boost. Banana
+// peels on the track can slip you back. First to the finish line wins.
 (function () {
   'use strict';
-  const C = window.HocVuiCharacters;
-  const chars = {};
-  const SPECIES = { p1: 'car-red', p2: 'car-blue' };
-  const FALLBACK = { p1: '🚗', p2: '🚙' };
 
-  function mountCar(player) {
-    const host = document.getElementById('car-' + player);
-    if (!host || host.dataset.spriteMounted === '1') return;
-    const id = SPECIES[player];
-    if (C && C.hasSpecies(id)) {
-      host.textContent = '';
-      chars[player] = C.createCharacter(id, host, { state: 'idle' });
-      host.dataset.spriteMounted = '1';
-    } else if (!host.textContent) {
-      host.textContent = FALLBACK[player];
-    }
+  const TRACK = 15;          // cells to finish
+  const TIMER_SECONDS = 16;
+  const MAX_Q = 40;
+
+  let userData = { totalWins: 0, totalRaces: 0 };
+  function loadData() { try { const r = localStorage.getItem('v6_racing'); if (r) Object.assign(userData, JSON.parse(r)); } catch (e) {} }
+  function saveData() { try { localStorage.setItem('v6_racing', JSON.stringify(userData)); } catch (e) {} }
+
+  let cache = [], used = new Set();
+  let curQ = null, combo = 0, maxCombo = 0, nitro = 0;
+  let mode = 'bot', subject = 'mix', difficulty = 'easy';
+  let p1 = 0, p2 = 0, served = 0, correct = 0, wrong = 0, outcome = null;
+  let turn = 1;              // whose question it is (duo mode alternates)
+  let qStart = 0, tH = null, locked = false, fbId = -1;
+  let bananas = new Set();
+
+  const $ = id => document.getElementById(id);
+  const ss = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); $(id).classList.add('active'); };
+
+  function renderStart() { $('total-wins').textContent = userData.totalWins; $('total-races').textContent = userData.totalRaces; }
+  function wireSel() {
+    document.querySelectorAll('.selector-options').forEach(g => g.addEventListener('click', e => {
+      const b = e.target.closest('.sel-btn'); if (!b) return;
+      g.querySelectorAll('.sel-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      const grp = g.dataset.group;
+      if (grp === 'mode') mode = b.dataset.value;
+      else if (grp === 'subject') subject = b.dataset.value;
+      else difficulty = b.dataset.value;
+    }));
   }
 
-  function mountCars() { mountCar('p1'); mountCar('p2'); }
-
-  // Particle helper — sparkle on correct, confetti burst on a boost/overtake.
-  function spawnParticles(parent, kind, count) {
-    if (!parent) return;
-    for (let i = 0; i < count; i++) {
-      const p = document.createElement('span');
-      p.className = 'pfx pfx-' + kind;
-      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
-      p.style.setProperty('--ty', -(Math.random() * 36 + 18) + 'px');
-      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
-      parent.appendChild(p);
-      p.addEventListener('animationend', () => p.remove(), { once: true });
-    }
-  }
-  window.__v6_spawnParticles = spawnParticles;
-
-  // Mirror the car's CSS effect classes onto the sprite state.
-  function watchCar(player) {
-    const host = document.getElementById('car-' + player);
-    if (!host) return;
-    const obs = new MutationObserver(() => {
-      const ch = chars[player];
-      if (!ch) return;
-      if (host.classList.contains('shake')) {
-        ch.setState('bump');
-      } else if (host.classList.contains('boost')) {
-        ch.setState('drive');
-        spawnParticles(host, 'confetti', 5);
-      } else if (host.classList.contains('star')) {
-        ch.setState('happy');
-        spawnParticles(host, 'sparkle', 6);
+  async function fetchQ() {
+    const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+    const g = p.grade || 2;
+    try {
+      if (subject === 'mix') {
+        const subs = ['math', 'vietnamese', 'english'];
+        const r = await Promise.all(subs.map(s => fetch(`/api/questions?subject=${s}&difficulty=${difficulty}&limit=14&grade=${g}`).then(x => x.ok ? x.json() : []).catch(() => [])));
+        cache = r.flat();
       } else {
-        ch.setState('idle');
+        const r = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=${MAX_Q}&grade=${g}`);
+        cache = r.ok ? await r.json() : [];
       }
+    } catch (e) { cache = []; }
+    if (!Array.isArray(cache)) cache = [];
+    for (let i = cache.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cache[i], cache[j]] = [cache[j], cache[i]]; }
+  }
+  function nextQ() { const q = cache.find(x => x && !used.has(x.id)); if (q) { used.add(q.id); return q; } return mkFallback(); }
+  function mkFallback() {
+    const a = 1 + Math.floor(Math.random() * 20), b = 1 + Math.floor(Math.random() * 20);
+    const c = a + b, d = new Set();
+    while (d.size < 3) { const off = [-3, -2, -1, 1, 2, 3][Math.floor(Math.random() * 6)]; const w = c + off; if (w > 0 && w !== c) d.add(w); }
+    const nums = [c, ...d].sort(() => Math.random() - 0.5);
+    fbId--;
+    return { id: fbId, question_text: `${a} + ${b} = ?`, option_a: String(nums[0]), option_b: String(nums[1]), option_c: String(nums[2]), option_d: String(nums[3]), correct_answer: 'abcd'[nums.indexOf(c)] };
+  }
+
+  function buildTrack() {
+    // place 3 random banana peels (not at start/finish)
+    bananas = new Set();
+    while (bananas.size < 3) { const b = 3 + Math.floor(Math.random() * (TRACK - 4)); bananas.add(b); }
+    const deco = $('track-deco');
+    deco.innerHTML = '';
+    bananas.forEach(b => {
+      const el = document.createElement('span');
+      el.className = 'banana'; el.textContent = '🍌';
+      el.style.left = (b / TRACK * 100) + '%';
+      deco.appendChild(el);
     });
-    obs.observe(host, { attributes: true, attributeFilter: ['class'] });
+    placeCars();
+  }
+  function placeCars() {
+    $('racer-1').style.left = (p1 / TRACK * 100) + '%';
+    $('racer-2').style.left = (p2 / TRACK * 100) + '%';
   }
 
-  // Modals (guide + styled exit) -------------------------------------------
-  function wireModals() {
-    const $ = id => document.getElementById(id);
-    const guide = $('guide-modal');
-    const guideBtn = $('btn-guide');
-    if (guide && guideBtn) {
-      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
-      const gc = $('btn-guide-close');
-      if (gc) gc.addEventListener('click', () => { guide.style.display = 'none'; });
-      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
-    }
-    const exit = $('exit-modal');
-    const exitBtn = $('btn-exit');
-    if (exit && exitBtn) {
-      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
-      const ec = $('btn-exit-cancel');
-      if (ec) ec.addEventListener('click', () => { exit.style.display = 'none'; });
-      const cf = $('btn-exit-confirm');
-      if (cf) cf.addEventListener('click', () => {
-        exit.style.display = 'none';
-        // Stop the active round timer/loops before leaving.
-        try { if (State && State.round && State.round.timerId) clearInterval(State.round.timerId); } catch (e) {}
-        window.location.href = '/';
-      });
-      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
-    }
+  async function startRun() {
+    cache = []; used.clear(); combo = 0; maxCombo = 0; nitro = 0; fbId = -1;
+    p1 = 0; p2 = 0; served = 0; correct = 0; wrong = 0; outcome = null; turn = 1;
+    ss('game-screen');
+    buildTrack(); renderHud();
+    $('q-text').textContent = '⏳ Đang tải...'; $('q-options').innerHTML = ''; $('feedback').style.display = 'none';
+    await fetchQ();
+    showNextQ();
   }
 
-  // game.js is a deferred module, so the DOM is already parsed here.
-  mountCars();
-  watchCar('p1');
-  watchCar('p2');
-  wireModals();
+  function renderHud() {
+    $('lap-text').textContent = `${p1}/${TRACK}`;
+    $('nitro-text').textContent = nitro;
+    $('progress-text').textContent = served;
+    $('nitro-text').parentElement.classList.toggle('charged', nitro >= 3);
+  }
+
+  function isFinished() { return outcome !== null || p1 >= TRACK || p2 >= TRACK || served >= MAX_Q; }
+
+  function showNextQ() {
+    if (p1 >= TRACK) outcome = 'won';
+    else if (p2 >= TRACK) outcome = 'lost';
+    if (outcome || served >= MAX_Q) { finish(); return; }
+    curQ = nextQ(); served++; locked = false; qStart = Date.now();
+    const subj = curQ.subject || subject;
+    $('q-badge').textContent = subj === 'vietnamese' ? '📖' : subj === 'english' ? '🔤' : '🔢';
+    $('q-text').textContent = curQ.question_text;
+    $('feedback').style.display = 'none';
+    const opts = $('q-options'); opts.innerHTML = '';
+    ['a', 'b', 'c', 'd'].forEach(k => {
+      const t = curQ[`option_${k}`]; if (t == null) return;
+      const btn = document.createElement('button'); btn.className = 'option-btn'; btn.dataset.key = k; btn.textContent = t;
+      btn.addEventListener('click', () => handleAns(k));
+      opts.appendChild(btn);
+    });
+    renderHud(); startTimer();
+  }
+
+  function startTimer() {
+    clearInterval(tH);
+    const total = TIMER_SECONDS * 1000;
+    const fill = $('timer-fill'); fill.classList.remove('warning');
+    tH = setInterval(() => {
+      const rem = Math.max(0, total - (Date.now() - qStart));
+      fill.style.width = (rem / total) * 100 + '%';
+      if (rem <= total / 3) fill.classList.add('warning');
+      if (rem <= 0) { clearInterval(tH); handleTimeout(); }
+    }, 100);
+  }
+
+  function moveRival() {
+    // Rival car moves on each question regardless, at a difficulty-scaled pace.
+    const chance = difficulty === 'hard' ? 0.85 : difficulty === 'medium' ? 0.65 : 0.5;
+    if (Math.random() < chance) { p2 = Math.min(TRACK, p2 + 1); }
+  }
+
+  function handleAns(sel) {
+    if (locked) return;
+    locked = true; clearInterval(tH);
+    const ck = (curQ.correct_answer || '').toLowerCase();
+    const ok = sel.toLowerCase() === ck;
+    document.querySelectorAll('.option-btn').forEach(b => {
+      b.classList.add('disabled');
+      if (b.dataset.key === ck) b.classList.add('correct');
+      else if (b.dataset.key === sel && !ok) b.classList.add('wrong');
+    });
+    const fb = $('feedback'); fb.style.display = 'block';
+    if (ok) {
+      correct++; combo++; if (combo > maxCombo) maxCombo = combo;
+      let move = 1;
+      nitro = combo % 3 === 0 ? Math.min(9, nitro + 1) : nitro;
+      const usedNitro = combo > 0 && combo % 3 === 0;
+      if (usedNitro) { move = 2; revNitro(); }
+      p1 = Math.min(TRACK, p1 + move);
+      // banana check
+      if (bananas.has(p1)) { p1 = Math.max(0, p1 - 1); bananaSlip(); fb.className = 'feedback bad'; fb.textContent = '🍌 Trượt vỏ chuối! Lùi 1 ô.'; }
+      else if (usedNitro) { fb.className = 'feedback bonus'; fb.textContent = '🔥 NITRO! Vọt 2 ô!'; }
+      else { fb.className = 'feedback good'; fb.textContent = '✅ Đúng! Tăng tốc!'; }
+      $('racer-1').classList.add('boost'); setTimeout(() => $('racer-1').classList.remove('boost'), 450);
+    } else {
+      wrong++; combo = 0;
+      fb.className = 'feedback bad'; fb.textContent = '❌ Sai! Xe đứng yên.';
+    }
+    moveRival();
+    placeCars(); renderHud();
+    logAns(sel, ck, ok, Date.now() - qStart);
+    setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1100);
+  }
+
+  function handleTimeout() {
+    if (locked) return; locked = true;
+    wrong++; combo = 0;
+    moveRival(); placeCars(); renderHud();
+    const fb = $('feedback'); fb.style.display = 'block'; fb.className = 'feedback bad'; fb.textContent = '⏰ Hết giờ! Đối thủ vượt lên.';
+    setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1100);
+  }
+
+  function revNitro() { const f = $('racer-1').querySelector('.nitro-flame'); f.classList.add('on'); setTimeout(() => f.classList.remove('on'), 600); }
+  function bananaSlip() { $('racer-1').classList.add('slip'); setTimeout(() => $('racer-1').classList.remove('slip'), 500); }
+
+  function finish() {
+    clearInterval(tH);
+    if (!outcome) outcome = p1 >= TRACK ? 'won' : (p2 >= TRACK ? 'lost' : (p1 >= p2 ? 'won' : 'lost'));
+    const total = correct + wrong;
+    const acc = total > 0 ? Math.round((correct / total) * 100) : 0;
+    let stars = 0;
+    if (outcome === 'won') stars = acc >= 85 ? 3 : acc >= 60 ? 2 : 1;
+    else if (p1 >= TRACK - 3) stars = 1;
+    userData.totalRaces += 1; if (outcome === 'won') userData.totalWins += 1;
+    saveData();
+    saveSession({ stars, acc, total });
+
+    if (outcome === 'won') spawnConfetti($('race-stage'), 36);
+    setTimeout(() => {
+      $('result-emoji').textContent = outcome === 'won' ? '🏆' : '🏁';
+      $('result-title').textContent = outcome === 'won' ? '🏆 Về Đích Đầu Tiên!' : '🏁 Về Đích Sau!';
+      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}">⭐</span>`).join('');
+      $('result-detail').innerHTML = `🏎️ Bạn: ${p1}/${TRACK}<br>🚗 Đối thủ: ${p2}/${TRACK}<br>✅ Đúng: ${correct}/${total} (${acc}%)<br>✨ Combo cao nhất: ${maxCombo}`;
+      ss('result-screen');
+      if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch (e) {} }
+    }, outcome === 'won' ? 1100 : 200);
+  }
+
+  async function saveSession({ stars, acc, total }) {
+    try {
+      const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+      if (!p.id) return;
+      await fetch('/api/sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        player_id: p.id, subject: subject === 'mix' ? 'math' : subject, difficulty,
+        score: p1, total_questions: total, correct_answers: correct,
+        stars_earned: stars, combo_max: maxCombo, mode: 'v6', accuracy: acc,
+      }) });
+    } catch (e) {}
+  }
+  function logAns(sel, ck, ok, ms) {
+    if (!curQ || curQ.id < 0) return;
+    try {
+      const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+      if (!p.id) return;
+      fetch('/api/answers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        player_id: p.id, question_id: curQ.id, selected_answer: sel, correct_answer: ck, is_correct: ok, time_spent_ms: ms, difficulty,
+      }) }).catch(() => {});
+    } catch (e) {}
+  }
+
+  function spawnConfetti(parent, count) {
+    if (!parent) return;
+    const colors = ['#ffd54f', '#ff7043', '#81c784', '#64b5f6', '#ba68c8', '#fff'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span'); p.className = 'pfx pfx-confetti';
+      p.style.setProperty('--x', Math.random() * 100 + '%'); p.style.setProperty('--delay', (Math.random() * 0.6) + 's');
+      p.style.setProperty('--rot', Math.floor(Math.random() * 360) + 'deg'); p.style.background = colors[i % colors.length];
+      parent.appendChild(p); p.addEventListener('animationend', () => p.remove(), { once: true });
+    }
+  }
+  function speakQ() {
+    if (!curQ) return;
+    if (window.HocVuiTTS && window.HocVuiTTS.speak) { window.HocVuiTTS.speak(curQ.question_text); return; }
+    try { const u = new SpeechSynthesisUtterance(curQ.question_text); u.lang = 'vi-VN'; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
+  }
+
+  function init() {
+    loadData(); renderStart(); wireSel();
+    $('btn-start').addEventListener('click', startRun);
+    $('btn-replay').addEventListener('click', startRun);
+    $('btn-speak').addEventListener('click', speakQ);
+    const guideModal = $('guide-modal');
+    $('btn-guide').addEventListener('click', () => { guideModal.style.display = 'flex'; });
+    $('btn-guide-close').addEventListener('click', () => { guideModal.style.display = 'none'; });
+    guideModal.addEventListener('click', e => { if (e.target === guideModal) guideModal.style.display = 'none'; });
+    $('btn-exit').addEventListener('click', () => { $('exit-modal').style.display = 'flex'; });
+    const exitModal = $('exit-modal');
+    $('btn-exit-cancel').addEventListener('click', () => { exitModal.style.display = 'none'; });
+    $('btn-exit-confirm').addEventListener('click', () => { exitModal.style.display = 'none'; clearInterval(tH); window.location.reload(); });
+    exitModal.addEventListener('click', e => { if (e.target === exitModal) exitModal.style.display = 'none'; });
+    window.addEventListener('resize', () => { if ($('game-screen').classList.contains('active')) placeCars(); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();

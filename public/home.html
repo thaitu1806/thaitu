@@ -117,8 +117,18 @@
     }
     .chip.active { background: linear-gradient(135deg,#4facfe,#00f2fe); color: #fff; box-shadow: 0 5px 14px var(--ring); }
 
+    /* ===== RECENT PANEL (tách biệt khỏi menu) ===== */
+    #recent-section { margin-bottom: 24px; }
+    .recent-panel {
+      background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(236,244,255,0.85));
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.85);
+      border-radius: 22px; padding: 12px;
+      box-shadow: 0 8px 24px rgba(40,80,160,0.14);
+    }
+    .recent-grid { grid-template-columns: repeat(2,1fr); }
+
     /* ===== GAME GRID ===== */
-    .fav-head { display: none; align-items: center; gap: 6px; margin: 4px 2px 10px; font-weight: 900; font-size: 0.95rem; color: var(--ink); }
     .game-grid {
       display: grid; grid-template-columns: repeat(2,1fr); gap: 11px;
     }
@@ -213,6 +223,14 @@
       </a>
     </div>
 
+    <!-- CHƠI GẦN ĐÂY (tách biệt khỏi menu) -->
+    <section id="recent-section" style="display:none;">
+      <div class="section-head"><h2>🕘 Chơi gần đây</h2></div>
+      <div class="recent-panel">
+        <div class="game-grid recent-grid" id="recent-grid"></div>
+      </div>
+    </section>
+
     <!-- TRÒ CHƠI -->
     <div class="section-head"><h2>🎮 Trò chơi</h2><span class="count" id="game-count"></span></div>
 
@@ -224,10 +242,7 @@
       <div class="chips" id="chips"></div>
     </div>
 
-    <div class="fav-head" id="fav-head">⭐ Yêu thích</div>
-    <div class="game-grid" id="fav-grid"></div>
-
-    <div class="game-grid" id="game-grid" style="margin-top:14px;"></div>
+    <div class="game-grid" id="game-grid"></div>
     <p class="empty-msg" id="empty-msg" style="display:none;">Không tìm thấy trò chơi nào 🔍</p>
 
     <div class="footer-links">
@@ -264,15 +279,15 @@
      Plain "/vNN/" path strings are kept here so routing-consistency.test.js (which
      scans the raw HTML for /v2/.. /v40/) still passes. */
   const GAMES = [
-    { p:'/v2/',  i:'🗺️', n:'Phiêu Lưu', d:'50 level, chinh phục bản đồ!', c:'phieu', bg:'#fff1e0' },
-    { p:'/v3/',  i:'👫', n:'Đấu 2 Bạn', d:'Ai nhanh hơn thắng!', c:'dau', bg:'#e9f7ec' },
+    { p:'/v2/',  i:'🗺️', n:'Phiêu Lưu Kho Báu', d:'Băng qua đảo hoang tới rương vàng!', c:'phieu', bg:'#fff1e0' },
+    { p:'/v3/',  i:'💪', n:'Kéo Co Trí Tuệ', d:'Đáp đúng nhanh hơn để kéo dây thắng!', c:'dau', bg:'#e9f7ec' },
     { p:'/v4/',  i:'📱', n:'Đấu Online', d:'Mỗi bạn 1 điện thoại!', c:'dau', bg:'#fdeaea' },
     { p:'/v5/',  i:'🎲', n:'Cờ Cá Ngựa', d:'Lắc xúc xắc, trả lời đúng để tiến!', c:'dau', bg:'#f3edff' },
-    { p:'/v6/',  i:'🏎️', n:'Đua Xe Trí Tuệ', d:'Ai về đích trước thắng!', c:'dau', bg:'#fdeef5' },
-    { p:'/v7/',  i:'🧗', n:'Leo Núi Trí Tuệ', d:'Ai lên đỉnh trước thắng!', c:'phieu', bg:'#e7f6ff' },
-    { p:'/v8/',  i:'🏰', n:'Xây Lâu Đài', d:'Xây cao bằng trí tuệ!', c:'sangtao', bg:'#fff1e0' },
-    { p:'/v9/',  i:'♟️', n:'Đấu Tướng', d:'Cờ vua mini + quiz!', c:'dau', bg:'#eef0f5' },
-    { p:'/v10/', i:'💣', n:'Dò Mìn Trí Tuệ', d:'Mở ô bằng trí tuệ, tránh mìn!', c:'giaitri', bg:'#eef0f5' },
+    { p:'/v6/',  i:'🏎️', n:'Đua Xe Trí Tuệ', d:'Tăng tốc, combo bơm nitro về đích!', c:'dau', bg:'#fdeef5' },
+    { p:'/v7/',  i:'🧗', n:'Leo Vách Đá', d:'Chọn đúng mỏm đá để leo lên đỉnh!', c:'phieu', bg:'#e7f6ff' },
+    { p:'/v8/',  i:'🏰', n:'Xếp Tháp Thăng Bằng', d:'Căn thời điểm thả khối, xây tháp cao!', c:'sangtao', bg:'#fff1e0' },
+    { p:'/v9/',  i:'⚔️', n:'Phá Đảo Boss', d:'Tung chiêu hạ gục 3 con boss!', c:'dau', bg:'#eef0f5' },
+    { p:'/v10/', i:'💎', n:'Đào Vàng Dò Mìn', d:'Đào ô tìm báu vật, tránh mìn!', c:'giaitri', bg:'#eef0f5' },
     { p:'/v11/', i:'💰', n:'Tỉ Phú Trí Tuệ', d:'Mua tỉnh thành, thu tiền thuê!', c:'kinhdoanh', bg:'#fff8e0' },
     { p:'/v12/', i:'🧩', n:'Lật Hình Trí Tuệ', d:'Ghép câu hỏi với đáp án!', c:'giaitri', bg:'#f3edff' },
     { p:'/v13/', i:'🌊', n:'Thám Hiểm Đại Dương', d:'Lặn sâu, khám phá sinh vật biển!', c:'phieu', bg:'#e7f6ff' },
@@ -362,21 +377,17 @@
     ).join('');
   }
 
-  function renderFavRow() {
-    const favs = getFavs();
+  function renderRecentRow() {
     const recent = getRecent();
-    const head = $('fav-head');
-    const grid = $('fav-grid');
-    // Only show the quick row on the "all" tab with no active search.
-    if (activeCat !== 'all' || query) { head.style.display = 'none'; grid.innerHTML = ''; grid.style.display = 'none'; return; }
-    const pinned = [];
-    favs.forEach(p => { const g = GAMES.find(x => x.p === p); if (g) pinned.push(g); });
-    recent.forEach(p => { if (!favs.includes(p)) { const g = GAMES.find(x => x.p === p); if (g) pinned.push(g); } });
-    const top = pinned.slice(0, 6);
-    if (!top.length) { head.style.display = 'none'; grid.innerHTML = ''; grid.style.display = 'none'; return; }
-    head.style.display = 'flex';
-    head.textContent = favs.length ? '⭐ Yêu thích & gần đây' : '🕘 Chơi gần đây';
-    grid.style.display = 'grid';
+    const section = $('recent-section');
+    const grid = $('recent-grid');
+    // Only show the recent panel on the "all" tab with no active search.
+    if (activeCat !== 'all' || query) { section.style.display = 'none'; grid.innerHTML = ''; return; }
+    // Show the 2 most recently played games, distinct from the full menu.
+    const top = [];
+    recent.forEach(p => { if (top.length < 2) { const g = GAMES.find(x => x.p === p); if (g) top.push(g); } });
+    if (!top.length) { section.style.display = 'none'; grid.innerHTML = ''; return; }
+    section.style.display = 'block';
     grid.innerHTML = top.map(cardHtml).join('');
   }
 
@@ -390,7 +401,7 @@
     $('game-grid').innerHTML = list.map(cardHtml).join('');
     $('empty-msg').style.display = list.length ? 'none' : 'block';
     $('game-count').textContent = GAMES.length + ' trò';
-    renderFavRow();
+    renderRecentRow();
   }
 
   // Event delegation on the whole document so dynamically rendered cards work.

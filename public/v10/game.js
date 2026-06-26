@@ -1,706 +1,325 @@
-// V10 - Dò Mìn Trí Tuệ (Minesweeper Quiz Game)
-(function() {
+// V10 — Đào Vàng Dò Mìn (Treasure-Dig Minesweeper)
+// Tap a covered cell to open a quiz; answer correctly to safely dig it, revealing
+// the adjacent-mine count, a gem 💎 or coin 💰. Wrong answers cost a life. Toggle
+// flag mode to mark suspected mines. Clear all safe cells to win.
+(function () {
   'use strict';
 
-  // --- Profile Check ---
-  const profile = localStorage.getItem('hocvui_profile');
-  if (!profile) { window.location.href = '/'; return; }
-  const player = JSON.parse(profile);
+  const TIMER_SECONDS = 20;
+  const MAX_LIVES = 3;
 
-  // --- State ---
-  let gridSize = 6;
-  let subject = 'toan';
-  let difficulty = 'easy';
-  let board = [];       // 2D array: { mine, treasure, number, opened, flagged }
-  let lives = 3;
-  let score = 0;
-  let timerSeconds = 0;
-  let timerInterval = null;
-  let questions = [];
-  let questionIndex = 0;
-  let totalMines = 0;
-  let flagCount = 0;
-  let minesHit = 0;
-  let treasuresFound = 0;
-  let correctAnswers = 0;
-  let totalNonMine = 0;
-  let openedCount = 0;
-  let gameOver = false;
-  let pendingCell = null;
-  let longPressTimer = null;
+  let userData = { totalGems: 0, totalWins: 0 };
+  function loadData() { try { const r = localStorage.getItem('v10_dig'); if (r) Object.assign(userData, JSON.parse(r)); } catch (e) {} }
+  function saveData() { try { localStorage.setItem('v10_dig', JSON.stringify(userData)); } catch (e) {} }
 
-  // --- DOM ---
-  const setupScreen = document.getElementById('setup-screen');
-  const gameScreen = document.getElementById('game-screen');
-  const resultScreen = document.getElementById('result-screen');
-  const quizOverlay = document.getElementById('quiz-overlay');
-  const gridContainer = document.getElementById('grid-container');
-  const livesDisplay = document.getElementById('lives-display');
-  const scoreDisplay = document.getElementById('score-display');
-  const timerDisplay = document.getElementById('timer-display');
-  const minesDisplay = document.getElementById('mines-display');
-  const quizQuestion = document.getElementById('quiz-question');
-  const quizOptions = document.getElementById('quiz-options');
-  const quizFeedback = document.getElementById('quiz-feedback');
+  let cache = [], used = new Set();
+  let curQ = null, fbId = -1;
+  let size = 5, subject = 'mix', difficulty = 'easy';
+  let board = [], lives = MAX_LIVES, gems = 0, dug = 0, safeTotal = 0, outcome = null;
+  let served = 0, correct = 0, wrong = 0, maxCombo = 0, combo = 0;
+  let flagMode = false, activeCell = null, qStart = 0, tH = null, locked = false;
 
-  // --- Audio (Web Audio API) ---
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const $ = id => document.getElementById(id);
+  const ss = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); $(id).classList.add('active'); };
 
-  function playSound(type) {
+  function renderStart() { $('total-gems').textContent = userData.totalGems; $('total-wins').textContent = userData.totalWins; }
+  function wireSel() {
+    document.querySelectorAll('.selector-options').forEach(g => g.addEventListener('click', e => {
+      const b = e.target.closest('.sel-btn'); if (!b) return;
+      g.querySelectorAll('.sel-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      const grp = g.dataset.group;
+      if (grp === 'size') size = parseInt(b.dataset.value);
+      else if (grp === 'subject') subject = b.dataset.value;
+      else difficulty = b.dataset.value;
+    }));
+  }
+
+  async function fetchQ() {
+    const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+    const g = p.grade || 2;
+    const need = size * size + 10;
     try {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      gain.gain.value = 0.15;
-
-      switch (type) {
-        case 'correct':
-          osc.frequency.value = 523; osc.type = 'sine';
-          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-          osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-          break;
-        case 'wrong':
-          osc.frequency.value = 200; osc.type = 'sawtooth';
-          gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-          osc.start(); osc.stop(audioCtx.currentTime + 0.4);
-          break;
-        case 'mine':
-          osc.frequency.value = 80; osc.type = 'square';
-          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-          osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-          break;
-        case 'treasure':
-          osc.frequency.value = 880; osc.type = 'sine';
-          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-          // Second note
-          setTimeout(() => {
-            const o2 = audioCtx.createOscillator();
-            const g2 = audioCtx.createGain();
-            o2.connect(g2); g2.connect(audioCtx.destination);
-            o2.frequency.value = 1100; o2.type = 'sine';
-            g2.gain.setValueAtTime(0.15, audioCtx.currentTime);
-            g2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-            o2.start(); o2.stop(audioCtx.currentTime + 0.3);
-          }, 150);
-          osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-          break;
-        case 'win':
-          [523, 659, 784, 1047].forEach((freq, i) => {
-            setTimeout(() => {
-              const o = audioCtx.createOscillator();
-              const g = audioCtx.createGain();
-              o.connect(g); g.connect(audioCtx.destination);
-              o.frequency.value = freq; o.type = 'sine';
-              g.gain.setValueAtTime(0.12, audioCtx.currentTime);
-              g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-              o.start(); o.stop(audioCtx.currentTime + 0.3);
-            }, i * 150);
-          });
-          return;
-      }
-    } catch (e) { /* audio not critical */ }
-  }
-
-  // --- Setup Screen ---
-  document.querySelectorAll('.opt-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const group = btn.dataset.opt;
-      document.querySelectorAll(`.opt-btn[data-opt="${group}"]`).forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
-  });
-
-  document.getElementById('start-btn').addEventListener('click', startGame);
-  document.getElementById('quit-btn').addEventListener('click', () => showScreen('setup'));
-  document.getElementById('replay-btn').addEventListener('click', startGame);
-  document.getElementById('home-btn').addEventListener('click', () => { window.location.href = '/'; });
-
-  function showScreen(name) {
-    [setupScreen, gameScreen, resultScreen].forEach(s => s.classList.remove('active'));
-    if (name === 'setup') setupScreen.classList.add('active');
-    else if (name === 'game') gameScreen.classList.add('active');
-    else if (name === 'result') resultScreen.classList.add('active');
-  }
-
-  // --- Start Game ---
-  async function startGame() {
-    // Read options
-    gridSize = parseInt(document.querySelector('.opt-btn.active[data-opt="size"]').dataset.val);
-    subject = document.querySelector('.opt-btn.active[data-opt="subject"]').dataset.val;
-    difficulty = document.querySelector('.opt-btn.active[data-opt="difficulty"]').dataset.val;
-
-    // Reset state
-    lives = 3; score = 0; timerSeconds = 0; questionIndex = 0;
-    minesHit = 0; treasuresFound = 0; correctAnswers = 0; openedCount = 0;
-    flagCount = 0; gameOver = false; pendingCell = null;
-
-    // Fetch questions
-    const subjectParam = subject === 'mix' ? '' : (subject === 'toan' ? 'math' : 'vietnamese');
-    const url = `/api/questions?difficulty=${difficulty}&limit=50${subjectParam ? '&subject=' + subjectParam : ''}`;
-    try {
-      const res = await fetch(url);
-      questions = await res.json();
-      if (!questions.length) { alert('Không tải được câu hỏi!'); return; }
-    } catch (e) { alert('Lỗi kết nối!'); return; }
-
-    // Resume audio context (mobile)
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-
-    // Generate board
-    generateBoard();
-    renderGrid();
-    updateHeader();
-    startTimer();
-    showScreen('game');
-  }
-
-  // --- Board Generation ---
-  function generateBoard() {
-    const total = gridSize * gridSize;
-    totalMines = Math.round(total * 0.17); // ~17% mines
-    const totalTreasures = Math.round(total * 0.10); // ~10% treasures
-    totalNonMine = total - totalMines;
-
-    // Create flat array of cell types
-    const cells = [];
-    for (let i = 0; i < totalMines; i++) cells.push('mine');
-    for (let i = 0; i < totalTreasures; i++) cells.push('treasure');
-    while (cells.length < total) cells.push('empty');
-
-    // Shuffle
-    for (let i = cells.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [cells[i], cells[j]] = [cells[j], cells[i]];
-    }
-
-    // Build 2D board
-    board = [];
-    for (let r = 0; r < gridSize; r++) {
-      board[r] = [];
-      for (let c = 0; c < gridSize; c++) {
-        const type = cells[r * gridSize + c];
-        board[r][c] = {
-          mine: type === 'mine',
-          treasure: type === 'treasure',
-          number: 0,
-          opened: false,
-          flagged: false
-        };
-      }
-    }
-
-    // Calculate numbers (count adjacent mines)
-    for (let r = 0; r < gridSize; r++) {
-      for (let c = 0; c < gridSize; c++) {
-        if (board[r][c].mine) continue;
-        let count = 0;
-        for (let dr = -1; dr <= 1; dr++) {
-          for (let dc = -1; dc <= 1; dc++) {
-            if (dr === 0 && dc === 0) continue;
-            const nr = r + dr, nc = c + dc;
-            if (nr >= 0 && nr < gridSize && nc >= 0 && nc < gridSize && board[nr][nc].mine) {
-              count++;
-            }
-          }
-        }
-        board[r][c].number = count;
-      }
-    }
-  }
-
-  // --- Render Grid ---
-  function renderGrid() {
-    gridContainer.innerHTML = '';
-    gridContainer.className = `grid-container grid-${gridSize}`;
-
-    for (let r = 0; r < gridSize; r++) {
-      for (let c = 0; c < gridSize; c++) {
-        const cellEl = document.createElement('div');
-        cellEl.className = 'cell closed';
-        cellEl.dataset.row = r;
-        cellEl.dataset.col = c;
-
-        // Touch events for long press (flag) and tap (open)
-        cellEl.addEventListener('pointerdown', (e) => onCellPointerDown(e, r, c));
-        cellEl.addEventListener('pointerup', (e) => onCellPointerUp(e, r, c));
-        cellEl.addEventListener('pointerleave', cancelLongPress);
-        cellEl.addEventListener('contextmenu', (e) => e.preventDefault());
-
-        gridContainer.appendChild(cellEl);
-      }
-    }
-  }
-
-  // --- Cell Interaction ---
-  function onCellPointerDown(e, r, c) {
-    if (gameOver) return;
-    e.preventDefault();
-    longPressTimer = setTimeout(() => {
-      longPressTimer = null;
-      toggleFlag(r, c);
-    }, 500);
-  }
-
-  function onCellPointerUp(e, r, c) {
-    if (gameOver) return;
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      longPressTimer = null;
-      onCellTap(r, c);
-    }
-  }
-
-  function cancelLongPress() {
-    if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
-  }
-
-  function toggleFlag(r, c) {
-    const cell = board[r][c];
-    if (cell.opened) return;
-    cell.flagged = !cell.flagged;
-    flagCount += cell.flagged ? 1 : -1;
-    updateCellVisual(r, c);
-    updateHeader();
-  }
-
-  function onCellTap(r, c) {
-    const cell = board[r][c];
-    if (cell.opened || cell.flagged) return;
-
-    // Show quiz
-    pendingCell = { r, c };
-    showQuiz();
-  }
-
-  // --- Quiz ---
-  function showQuiz() {
-    if (questionIndex >= questions.length) questionIndex = 0;
-    const q = questions[questionIndex];
-    questionIndex++;
-
-    quizQuestion.textContent = q.question_text || q.question || '';
-    // Store current question for TTS
-    window._v10CurrentQ = q;
-    quizFeedback.textContent = '';
-    quizOptions.innerHTML = '';
-
-    const options = [
-      { key: 'A', text: q.option_a },
-      { key: 'B', text: q.option_b },
-      { key: 'C', text: q.option_c },
-      { key: 'D', text: q.option_d },
-    ];
-
-    options.forEach(opt => {
-      const btn = document.createElement('button');
-      btn.className = 'quiz-opt-btn';
-      btn.textContent = `${opt.key}. ${opt.text}`;
-      btn.addEventListener('click', () => handleAnswer(opt.key, q.correct_answer.toUpperCase(), btn));
-      quizOptions.appendChild(btn);
-    });
-
-    quizOverlay.classList.add('active');
-  }
-
-  function handleAnswer(selected, correct, btnEl) {
-    const allBtns = quizOptions.querySelectorAll('.quiz-opt-btn');
-    allBtns.forEach(b => b.classList.add('disabled'));
-
-    if (selected === correct) {
-      btnEl.classList.add('correct');
-      quizFeedback.textContent = '✅ Đúng rồi!';
-      quizFeedback.style.color = '#27ae60';
-      playSound('correct');
-      correctAnswers++;
-      score += 10;
-
-      setTimeout(() => {
-        quizOverlay.classList.remove('active');
-        revealCell(pendingCell.r, pendingCell.c);
-      }, 700);
-    } else {
-      btnEl.classList.add('wrong');
-      // Highlight correct
-      allBtns.forEach(b => {
-        if (b.textContent.startsWith(correct + '.')) b.classList.add('correct');
-      });
-      quizFeedback.textContent = '❌ Sai rồi! Mất 1 mạng';
-      quizFeedback.style.color = '#e74c3c';
-      playSound('wrong');
-      lives--;
-      updateHeader();
-
-      setTimeout(() => {
-        quizOverlay.classList.remove('active');
-        if (lives <= 0) endGame(false);
-      }, 1000);
-    }
-  }
-
-  // --- Reveal Cell ---
-  function revealCell(r, c) {
-    const cell = board[r][c];
-    if (cell.opened) return;
-
-    cell.opened = true;
-    cell.flagged = false;
-
-    if (cell.mine) {
-      // Hit a mine!
-      minesHit++;
-      lives--;
-      playSound('mine');
-      updateCellVisual(r, c);
-      updateHeader();
-      if (lives <= 0) { setTimeout(() => endGame(false), 500); }
-    } else if (cell.treasure) {
-      treasuresFound++;
-      score += 50;
-      openedCount++;
-      playSound('treasure');
-      updateCellVisual(r, c);
-      updateHeader();
-      checkWin();
-    } else if (cell.number === 0) {
-      // Flood fill empty cells
-      openedCount++;
-      updateCellVisual(r, c);
-      floodFill(r, c);
-      updateHeader();
-      checkWin();
-    } else {
-      openedCount++;
-      updateCellVisual(r, c);
-      updateHeader();
-      checkWin();
-    }
-  }
-
-  // --- Flood Fill ---
-  function floodFill(startR, startC) {
-    const queue = [[startR, startC]];
-    const visited = new Set();
-    visited.add(`${startR},${startC}`);
-
-    while (queue.length > 0) {
-      const [r, c] = queue.shift();
-
-      for (let dr = -1; dr <= 1; dr++) {
-        for (let dc = -1; dc <= 1; dc++) {
-          if (dr === 0 && dc === 0) continue;
-          const nr = r + dr, nc = c + dc;
-          const key = `${nr},${nc}`;
-          if (nr < 0 || nr >= gridSize || nc < 0 || nc >= gridSize) continue;
-          if (visited.has(key)) continue;
-          visited.add(key);
-
-          const neighbor = board[nr][nc];
-          if (neighbor.opened || neighbor.mine || neighbor.flagged) continue;
-
-          neighbor.opened = true;
-          neighbor.flagged = false;
-          openedCount++;
-          updateCellVisual(nr, nc);
-
-          if (neighbor.number === 0 && !neighbor.treasure) {
-            queue.push([nr, nc]);
-          }
-        }
-      }
-    }
-  }
-
-  // --- Update Cell Visual ---
-  function updateCellVisual(r, c) {
-    const cell = board[r][c];
-    const el = gridContainer.children[r * gridSize + c];
-
-    if (!cell.opened) {
-      if (cell.flagged) {
-        el.className = 'cell flagged';
-        el.textContent = '🚩';
+      if (subject === 'mix') {
+        const subs = ['math', 'vietnamese', 'english'];
+        const per = Math.ceil(need / 3);
+        const r = await Promise.all(subs.map(s => fetch(`/api/questions?subject=${s}&difficulty=${difficulty}&limit=${per}&grade=${g}`).then(x => x.ok ? x.json() : []).catch(() => [])));
+        cache = r.flat();
       } else {
-        el.className = 'cell closed';
+        const r = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=${need}&grade=${g}`);
+        cache = r.ok ? await r.json() : [];
+      }
+    } catch (e) { cache = []; }
+    if (!Array.isArray(cache)) cache = [];
+    for (let i = cache.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cache[i], cache[j]] = [cache[j], cache[i]]; }
+  }
+  function nextQ() { const q = cache.find(x => x && !used.has(x.id)); if (q) { used.add(q.id); return q; } return mkFallback(); }
+  function mkFallback() {
+    const a = 1 + Math.floor(Math.random() * 20), b = 1 + Math.floor(Math.random() * 20);
+    const c = a + b, d = new Set();
+    while (d.size < 3) { const off = [-3, -2, -1, 1, 2, 3][Math.floor(Math.random() * 6)]; const w = c + off; if (w > 0 && w !== c) d.add(w); }
+    const nums = [c, ...d].sort(() => Math.random() - 0.5);
+    fbId--;
+    return { id: fbId, question_text: `${a} + ${b} = ?`, option_a: String(nums[0]), option_b: String(nums[1]), option_c: String(nums[2]), option_d: String(nums[3]), correct_answer: 'abcd'[nums.indexOf(c)] };
+  }
+
+  // ── Board generation ────────────────────────────────────────────────────────
+  function buildBoard() {
+    const total = size * size;
+    const mineCount = difficulty === 'hard' ? Math.round(total * 0.25) : difficulty === 'medium' ? Math.round(total * 0.18) : Math.round(total * 0.12);
+    const gemCount = Math.max(2, Math.round(total * 0.12));
+    board = [];
+    for (let i = 0; i < total; i++) board.push({ mine: false, gem: false, count: 0, dug: false, flag: false });
+    // place mines
+    let placed = 0;
+    while (placed < mineCount) { const i = Math.floor(Math.random() * total); if (!board[i].mine) { board[i].mine = true; placed++; } }
+    // place gems on non-mine cells
+    let gp = 0;
+    while (gp < gemCount) { const i = Math.floor(Math.random() * total); if (!board[i].mine && !board[i].gem) { board[i].gem = true; gp++; } }
+    // counts
+    for (let i = 0; i < total; i++) {
+      if (board[i].mine) continue;
+      board[i].count = neighbors(i).filter(n => board[n].mine).length;
+    }
+    safeTotal = total - mineCount;
+    renderBoard();
+  }
+  function neighbors(i) {
+    const r = Math.floor(i / size), c = i % size, out = [];
+    for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+      if (dr === 0 && dc === 0) continue;
+      const nr = r + dr, nc = c + dc;
+      if (nr >= 0 && nr < size && nc >= 0 && nc < size) out.push(nr * size + nc);
+    }
+    return out;
+  }
+
+  const NUM_COLORS = ['', '#1976d2', '#388e3c', '#d32f2f', '#7b1fa2', '#ef6c00', '#0097a7', '#5d4037', '#455a64'];
+  function renderBoard() {
+    const grid = $('grid');
+    grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    grid.innerHTML = '';
+    board.forEach((cell, i) => {
+      const el = document.createElement('button');
+      el.className = 'cell';
+      el.dataset.idx = String(i);
+      if (cell.dug) {
+        el.classList.add('dug');
+        if (cell.gem) { el.textContent = '💎'; el.classList.add('gem'); }
+        else if (cell.count > 0) { el.textContent = cell.count; el.style.color = NUM_COLORS[cell.count]; }
+        else { el.textContent = ''; }
+      } else if (cell.flag) {
+        el.textContent = '🚩'; el.classList.add('flagged');
+      } else {
         el.textContent = '';
       }
-      return;
-    }
-
-    if (cell.mine) {
-      el.className = 'cell mine-hit';
-      el.textContent = '💣';
-    } else if (cell.treasure) {
-      el.className = 'cell treasure-found';
-      el.textContent = '💎';
-    } else if (cell.number > 0) {
-      el.className = `cell opened num-${cell.number}`;
-      el.textContent = cell.number;
-    } else {
-      el.className = 'cell opened';
-      el.textContent = '';
-    }
+      el.addEventListener('click', () => onCell(i));
+      grid.appendChild(el);
+    });
   }
 
-  // --- Win Check ---
-  function checkWin() {
-    if (openedCount >= totalNonMine) {
-      endGame(true);
-    }
+  function renderHud() {
+    $('lives-text').textContent = lives;
+    $('gems-text').textContent = gems;
+    $('dug-text').textContent = `${dug}/${safeTotal}`;
   }
 
-  // --- Update Header ---
-  function updateHeader() {
-    const hearts = '❤️'.repeat(Math.max(0, lives)) + '🖤'.repeat(Math.max(0, 3 - lives));
-    livesDisplay.textContent = hearts;
-    scoreDisplay.textContent = score;
-    minesDisplay.textContent = Math.max(0, totalMines - flagCount);
+  async function startRun() {
+    cache = []; used.clear(); fbId = -1; combo = 0; maxCombo = 0;
+    lives = MAX_LIVES; gems = 0; dug = 0; outcome = null; served = 0; correct = 0; wrong = 0; flagMode = false;
+    $('flag-toggle').classList.remove('on');
+    ss('game-screen');
+    buildBoard(); renderHud();
+    await fetchQ();
   }
 
-  // --- Timer ---
+  function onCell(i) {
+    if (outcome || locked) return;
+    const cell = board[i];
+    if (cell.dug) return;
+    if (flagMode) { cell.flag = !cell.flag; renderBoard(); return; }
+    if (cell.flag) return; // can't dig a flagged cell until unflagged
+    activeCell = i;
+    openQuestion();
+  }
+
+  function openQuestion() {
+    curQ = nextQ(); served++; locked = false; qStart = Date.now();
+    const subj = curQ.subject || subject;
+    $('q-badge').textContent = subj === 'vietnamese' ? '📖' : subj === 'english' ? '🔤' : '🔢';
+    $('q-text').textContent = curQ.question_text;
+    $('feedback').style.display = 'none';
+    const opts = $('q-options'); opts.innerHTML = '';
+    ['a', 'b', 'c', 'd'].forEach(k => {
+      const t = curQ[`option_${k}`]; if (t == null) return;
+      const btn = document.createElement('button'); btn.className = 'option-btn'; btn.dataset.key = k; btn.textContent = t;
+      btn.addEventListener('click', () => handleAns(k));
+      opts.appendChild(btn);
+    });
+    $('q-popup').style.display = 'flex';
+    startTimer();
+  }
+  function closeQuestion() { $('q-popup').style.display = 'none'; clearInterval(tH); }
+
   function startTimer() {
-    if (timerInterval) clearInterval(timerInterval);
-    timerSeconds = 0;
-    timerInterval = setInterval(() => {
-      timerSeconds++;
-      const mins = Math.floor(timerSeconds / 60);
-      const secs = timerSeconds % 60;
-      timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+    clearInterval(tH);
+    const total = TIMER_SECONDS * 1000;
+    const fill = $('timer-fill'); fill.classList.remove('warning');
+    tH = setInterval(() => {
+      const rem = Math.max(0, total - (Date.now() - qStart));
+      fill.style.width = (rem / total) * 100 + '%';
+      if (rem <= total / 3) fill.classList.add('warning');
+      if (rem <= 0) { clearInterval(tH); handleTimeout(); }
+    }, 100);
+  }
+
+  function handleAns(sel) {
+    if (locked) return;
+    locked = true; clearInterval(tH);
+    const ck = (curQ.correct_answer || '').toLowerCase();
+    const ok = sel.toLowerCase() === ck;
+    document.querySelectorAll('#q-options .option-btn').forEach(b => {
+      b.classList.add('disabled');
+      if (b.dataset.key === ck) b.classList.add('correct');
+      else if (b.dataset.key === sel && !ok) b.classList.add('wrong');
+    });
+    logAns(sel, ck, ok, Date.now() - qStart);
+    const fb = $('feedback'); fb.style.display = 'block';
+    const cell = board[activeCell];
+    if (ok) {
+      correct++; combo++; if (combo > maxCombo) maxCombo = combo;
+      if (cell.mine) {
+        // answered right but the cell was a mine → defused safely, still dig it
+        cell.dug = true; lives = Math.min(MAX_LIVES, lives); // no penalty: skill defused it
+        fb.className = 'feedback bonus'; fb.textContent = '🧨 Gỡ mìn an toàn nhờ trả lời đúng!';
+      } else {
+        cell.dug = true; dug++;
+        if (cell.gem) { gems += 5; fb.className = 'feedback bonus'; fb.textContent = '💎 Tìm thấy kim cương! +5 báu vật'; }
+        else { gems += 1; fb.className = 'feedback good'; fb.textContent = '✅ Đào an toàn! +1 báu vật'; }
+        // auto-flood reveal of adjacent empty cells (count 0)
+        if (cell.count === 0 && !cell.gem) floodReveal(activeCell);
+      }
+    } else {
+      wrong++; combo = 0;
+      lives--;
+      fb.className = 'feedback bad'; fb.textContent = lives > 0 ? '❌ Sai! Mất 1 mạng.' : '❌ Sai! Hết mạng rồi!';
+    }
+    renderBoard(); renderHud();
+    setTimeout(() => {
+      closeQuestion();
+      checkEnd();
     }, 1000);
   }
 
-  function stopTimer() {
-    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  function handleTimeout() {
+    if (locked) return; locked = true;
+    wrong++; combo = 0; lives--;
+    const fb = $('feedback'); fb.style.display = 'block'; fb.className = 'feedback bad'; fb.textContent = '⏰ Hết giờ! Mất 1 mạng.';
+    renderHud();
+    setTimeout(() => { closeQuestion(); checkEnd(); }, 1000);
   }
 
-  // --- End Game ---
-  function endGame(won) {
-    if (gameOver) return;
-    gameOver = true;
-    stopTimer();
-
-    if (won) {
-      score += 100; // All cleared bonus
-      // Time bonus: <60s = +50, <120s = +30, <180s = +10
-      if (timerSeconds < 60) score += 50;
-      else if (timerSeconds < 120) score += 30;
-      else if (timerSeconds < 180) score += 10;
-      playSound('win');
-    } else {
-      playSound('mine');
-      // Reveal all mines
-      for (let r = 0; r < gridSize; r++) {
-        for (let c = 0; c < gridSize; c++) {
-          if (board[r][c].mine && !board[r][c].opened) {
-            board[r][c].opened = true;
-            updateCellVisual(r, c);
-          }
-        }
-      }
+  function floodReveal(start) {
+    const queue = [start];
+    const seen = new Set([start]);
+    while (queue.length) {
+      const i = queue.shift();
+      neighbors(i).forEach(n => {
+        if (seen.has(n)) return; seen.add(n);
+        const c = board[n];
+        if (c.dug || c.mine || c.flag) return;
+        c.dug = true; dug++;
+        if (c.gem) gems += 5; else gems += 1;
+        if (c.count === 0 && !c.gem) queue.push(n);
+      });
     }
-
-    // Show result after short delay
-    setTimeout(() => showResult(won), won ? 500 : 1200);
-
-    // Save session
-    saveSession(won);
   }
 
-  // --- Show Result ---
-  function showResult(won) {
-    document.getElementById('result-icon').textContent = won ? '🏆' : '💥';
-    document.getElementById('result-title').textContent = won ? 'Thắng rồi! 🎉' : 'Thua rồi! 😢';
-    document.getElementById('result-score').textContent = score;
-    const mins = Math.floor(timerSeconds / 60);
-    const secs = timerSeconds % 60;
-    document.getElementById('result-time').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    document.getElementById('result-correct').textContent = correctAnswers;
-    document.getElementById('result-treasures').textContent = treasuresFound;
-    document.getElementById('result-mines').textContent = minesHit;
-    showScreen('result');
+  function checkEnd() {
+    if (lives <= 0) { outcome = 'dead'; finish(); return; }
+    if (dug >= safeTotal) { outcome = 'won'; finish(); return; }
   }
 
-  // --- Save Session ---
-  async function saveSession(won) {
+  function finish() {
+    clearInterval(tH);
+    // reveal all mines
+    board.forEach(c => { if (c.mine) c.dug = true; });
+    renderBoard();
+    const total = correct + wrong;
+    const acc = total > 0 ? Math.round((correct / total) * 100) : 0;
+    let stars = 0;
+    if (outcome === 'won') stars = lives === MAX_LIVES ? 3 : lives >= 1 ? 2 : 1;
+    else if (dug >= safeTotal * 0.6) stars = 1;
+    userData.totalGems += gems;
+    if (outcome === 'won') userData.totalWins += 1;
+    saveData();
+    saveSession({ stars, acc, total });
+
+    if (outcome === 'won') spawnConfetti($('mine-stage'), 40);
+    setTimeout(() => {
+      $('result-emoji').textContent = outcome === 'won' ? '💎' : '💣';
+      $('result-title').textContent = outcome === 'won' ? '💎 Dọn Sạch Mỏ Vàng!' : '💣 Hết Mạng Rồi!';
+      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}">⭐</span>`).join('');
+      $('result-detail').innerHTML = `⛏️ Đã đào: ${dug}/${safeTotal}<br>💎 Báu vật: ${gems}<br>❤️ Mạng còn: ${Math.max(0, lives)}/${MAX_LIVES}<br>✅ Đúng: ${correct}/${total} (${acc}%)`;
+      ss('result-screen');
+      if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch (e) {} }
+    }, outcome === 'won' ? 1100 : 400);
+  }
+
+  async function saveSession({ stars, acc, total }) {
     try {
-      await fetch('/api/sessions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          player_id: player.id,
-          mode: 'minesweeper',
-          score: score,
-          total_questions: correctAnswers + (lives < 3 ? 3 - lives : 0),
-          correct_answers: correctAnswers,
-          subject: subject === 'mix' ? 'mixed' : (subject === 'toan' ? 'math' : 'vietnamese'),
-          difficulty: difficulty,
-          completed: won
-        })
-      });
-    } catch (e) { /* non-critical */ }
-    // Check and show parent linking prompt after session save
-    if (window.checkAndShowPrompt && player?.id) {
-      window.checkAndShowPrompt(player.id);
-    }
+      const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+      if (!p.id) return;
+      await fetch('/api/sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        player_id: p.id, subject: subject === 'mix' ? 'math' : subject, difficulty,
+        score: gems, total_questions: total, correct_answers: correct,
+        stars_earned: stars, combo_max: maxCombo, mode: 'v10', accuracy: acc,
+      }) });
+    } catch (e) {}
+  }
+  function logAns(sel, ck, ok, ms) {
+    if (!curQ || curQ.id < 0) return;
+    try {
+      const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+      if (!p.id) return;
+      fetch('/api/answers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        player_id: p.id, question_id: curQ.id, selected_answer: sel, correct_answer: ck, is_correct: ok, time_spent_ms: ms, difficulty,
+      }) }).catch(() => {});
+    } catch (e) {}
   }
 
-})();
-
-
-// TTS speak button
-document.getElementById('btn-speak-v10')?.addEventListener('click', () => {
-  const q = window._v10CurrentQ;
-  if (!q) return;
-  window.ttsSpeakQuestion(q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, 'mix');
-});
-
-
-// ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
-// V10's game logic lives inside an IIFE, so internal functions are not
-// reachable. Instead we observe the DOM (feedback text + grid cell classes)
-// to mirror the gameplay onto animated character sprites — fully additive.
-(function () {
-  'use strict';
-  let sapperChar = null;
-  let bombChar = null;
-  let happyTimer = null;
-  let scaredTimer = null;
-
-  function mountMascots() {
-    const C = window.HocVuiCharacters;
-    const sHost = document.getElementById('sapper-mascot');
-    const bHost = document.getElementById('bomb-mascot');
-    if (sHost) {
-      sHost.innerHTML = '';
-      if (C && C.hasSpecies('sapper')) {
-        sapperChar = C.createCharacter('sapper', sHost, { state: 'idle' });
-      } else {
-        sHost.textContent = '🧑‍🚒';
-      }
-    }
-    if (bHost) {
-      bHost.innerHTML = '';
-      if (C && C.hasSpecies('bomb')) {
-        bombChar = C.createCharacter('bomb', bHost, { state: 'idle' });
-      } else {
-        bHost.textContent = '💣';
-      }
-    }
-  }
-
-  function setSapper(state, holdMs) {
-    if (!sapperChar) return;
-    sapperChar.setState(state);
-    if (state === 'happy') {
-      if (happyTimer) clearTimeout(happyTimer);
-      happyTimer = setTimeout(() => { if (sapperChar) sapperChar.setState('idle'); }, holdMs || 800);
-    } else if (state === 'scared') {
-      if (scaredTimer) clearTimeout(scaredTimer);
-      scaredTimer = setTimeout(() => { if (sapperChar) sapperChar.setState('idle'); }, holdMs || 1000);
-    }
-  }
-
-  // Particle helper — sparkles around a host element.
-  function spawnParticles(parent, kind, count) {
+  function spawnConfetti(parent, count) {
     if (!parent) return;
+    const colors = ['#ffd54f', '#ff7043', '#81c784', '#64b5f6', '#ba68c8', '#fff'];
     for (let i = 0; i < count; i++) {
-      const p = document.createElement('span');
-      p.className = 'pfx pfx-' + kind;
-      p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
-      p.style.setProperty('--ty', -(Math.random() * 40 + 20) + 'px');
-      p.style.setProperty('--delay', (Math.random() * 0.15) + 's');
-      parent.appendChild(p);
-      p.addEventListener('animationend', () => p.remove(), { once: true });
+      const p = document.createElement('span'); p.className = 'pfx pfx-confetti';
+      p.style.setProperty('--x', Math.random() * 100 + '%'); p.style.setProperty('--delay', (Math.random() * 0.6) + 's');
+      p.style.setProperty('--rot', Math.floor(Math.random() * 360) + 'deg'); p.style.background = colors[i % colors.length];
+      parent.appendChild(p); p.addEventListener('animationend', () => p.remove(), { once: true });
     }
   }
-  window.__v10_spawnParticles = spawnParticles;
-
-  function celebrate() {
-    setSapper('happy');
-    const host = document.getElementById('sapper-mascot');
-    if (host) spawnParticles(host, 'sparkle', 7);
+  function speakQ() {
+    if (!curQ) return;
+    if (window.HocVuiTTS && window.HocVuiTTS.speak) { window.HocVuiTTS.speak(curQ.question_text); return; }
+    try { const u = new SpeechSynthesisUtterance(curQ.question_text); u.lang = 'vi-VN'; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {}
   }
 
-  function panic() {
-    setSapper('scared');
-    if (bombChar) {
-      bombChar.setState('scared');
-      setTimeout(() => { if (bombChar) bombChar.setState('idle'); }, 900);
-    }
-    const host = document.getElementById('bomb-mascot');
-    if (host) spawnParticles(host, 'ember', 8);
+  function init() {
+    loadData(); renderStart(); wireSel();
+    $('btn-start').addEventListener('click', startRun);
+    $('btn-replay').addEventListener('click', startRun);
+    $('btn-speak').addEventListener('click', speakQ);
+    $('flag-toggle').addEventListener('click', () => { flagMode = !flagMode; $('flag-toggle').classList.toggle('on', flagMode); });
+    const guideModal = $('guide-modal');
+    $('btn-guide').addEventListener('click', () => { guideModal.style.display = 'flex'; });
+    $('btn-guide-close').addEventListener('click', () => { guideModal.style.display = 'none'; });
+    guideModal.addEventListener('click', e => { if (e.target === guideModal) guideModal.style.display = 'none'; });
+    $('btn-exit').addEventListener('click', () => { $('exit-modal').style.display = 'flex'; });
+    const exitModal = $('exit-modal');
+    $('btn-exit-cancel').addEventListener('click', () => { exitModal.style.display = 'none'; });
+    $('btn-exit-confirm').addEventListener('click', () => { exitModal.style.display = 'none'; clearInterval(tH); window.location.reload(); });
+    exitModal.addEventListener('click', e => { if (e.target === exitModal) exitModal.style.display = 'none'; });
   }
-
-  function ready(fn) {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
-    else fn();
-  }
-
-  ready(function () {
-    mountMascots();
-
-    // Observe quiz feedback text → happy on a correct answer.
-    const feedback = document.getElementById('quiz-feedback');
-    if (feedback) {
-      new MutationObserver(() => {
-        const t = feedback.textContent || '';
-        if (t.indexOf('Đúng') !== -1) celebrate();
-      }).observe(feedback, { childList: true, characterData: true, subtree: true });
-    }
-
-    // Observe the grid → scared when a mine opens, happy when treasure found.
-    const grid = document.getElementById('grid-container');
-    if (grid) {
-      new MutationObserver(muts => {
-        for (const m of muts) {
-          const el = m.target;
-          if (!el || el.nodeType !== 1 || !el.classList) continue;
-          if (el.classList.contains('mine-hit')) panic();
-          else if (el.classList.contains('treasure-found')) celebrate();
-        }
-      }).observe(grid, { attributes: true, attributeFilter: ['class'], subtree: true });
-    }
-
-    // Re-mount mascots whenever the game screen becomes active (new game).
-    const gameScreen = document.getElementById('game-screen');
-    if (gameScreen) {
-      new MutationObserver(() => {
-        if (gameScreen.classList.contains('active') && !document.querySelector('#sapper-mascot .hv-char')) {
-          mountMascots();
-        }
-      }).observe(gameScreen, { attributes: true, attributeFilter: ['class'] });
-    }
-
-    // Modals (guide + exit) ------------------------------------------------
-    const $ = id => document.getElementById(id);
-    const guide = $('guide-modal');
-    const guideBtn = $('btn-guide');
-    if (guide && guideBtn) {
-      guideBtn.addEventListener('click', () => { guide.style.display = 'flex'; });
-      const close = $('btn-guide-close');
-      if (close) close.addEventListener('click', () => { guide.style.display = 'none'; });
-      guide.addEventListener('click', e => { if (e.target === guide) guide.style.display = 'none'; });
-    }
-    const exit = $('exit-modal');
-    const exitBtn = $('btn-exit');
-    if (exit && exitBtn) {
-      exitBtn.addEventListener('click', () => { exit.style.display = 'flex'; });
-      const cancel = $('btn-exit-cancel');
-      if (cancel) cancel.addEventListener('click', () => { exit.style.display = 'none'; });
-      const confirm = $('btn-exit-confirm');
-      if (confirm) confirm.addEventListener('click', () => {
-        exit.style.display = 'none';
-        // Pause the visible timer loop and freeze mascots, then navigate away.
-        // (Navigating to "/" unloads the page, which stops all interval timers.)
-        if (sapperChar) try { sapperChar.setState('idle'); } catch (e) {}
-        if (bombChar) try { bombChar.setState('idle'); } catch (e) {}
-        window.location.reload();
-      });
-      exit.addEventListener('click', e => { if (e.target === exit) exit.style.display = 'none'; });
-    }
-  });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();

@@ -145,10 +145,27 @@ async function handleRequest(req, res) {
     }
     if (req.method === 'DELETE' && id && action === 'delete') {
       const playerId = parseInt(id);
-      // Delete related data first
-      await db.execute({ sql: `DELETE FROM answer_logs WHERE player_id = ?`, args: [playerId] });
-      await db.execute({ sql: `DELETE FROM game_sessions WHERE player_id = ?`, args: [playerId] });
-      await db.execute({ sql: `DELETE FROM player_progress WHERE player_id = ?`, args: [playerId] });
+      // Delete ALL related data first to satisfy foreign key constraints.
+      // Every table that references players(id) must be cleared before the player row.
+      const relatedTables = [
+        'answer_logs',
+        'game_sessions',
+        'player_progress',
+        'daily_quests',
+        'player_inventory',
+        'diamond_transactions',
+        'reward_vouchers',
+        'parent_children',
+        'ai_usage_logs',
+      ];
+      for (const table of relatedTables) {
+        try {
+          await db.execute({ sql: `DELETE FROM ${table} WHERE player_id = ?`, args: [playerId] });
+        } catch (e) {
+          // Table may not exist in older databases — ignore "no such table" and continue.
+          if (!/no such table/i.test(e.message || '')) throw e;
+        }
+      }
       await db.execute({ sql: `DELETE FROM players WHERE id = ?`, args: [playerId] });
       return res.json({ ok: true });
     }
