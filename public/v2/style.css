@@ -12,8 +12,8 @@ body {
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
 }
-#app { height: 100vh; width: 100vw; position: relative; }
-.screen { display: none; height: 100vh; width: 100vw; position: absolute; inset: 0; }
+#app { height: 100vh; height: 100dvh; width: 100vw; position: relative; }
+.screen { display: none; height: 100vh; height: 100dvh; width: 100vw; position: absolute; inset: 0; }
 .screen.active { display: flex; flex-direction: column; }
 
 /* ── Containers (start/result) ── */
