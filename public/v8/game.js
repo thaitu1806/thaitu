@@ -267,7 +267,7 @@
     loadData(); renderStart(); wireSel();
     $('btn-start').addEventListener('click', startRun);
     $('btn-replay').addEventListener('click', startRun);
-    $('btn-speak').addEventListener('click', speakQ);
+    // TTS speaker button is auto-injected by shared /tts.js — no custom button needed.
     $('btn-drop').addEventListener('click', dropBlock);
     const guideModal = $('guide-modal');
     $('btn-guide').addEventListener('click', () => { guideModal.style.display = 'flex'; });
