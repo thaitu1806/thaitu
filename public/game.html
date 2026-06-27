@@ -126,10 +126,28 @@
 </head>
 <body>
   <div id="app">
+    <!-- Animated garden backdrop (decorative) -->
+    <div class="garden-bg" aria-hidden="true">
+      <div class="gb-sun"></div>
+      <div class="gb-cloud c1"></div>
+      <div class="gb-cloud c2"></div>
+      <div class="gb-grass"></div>
+      <span class="gb-flower" style="left:8%;">🌻</span>
+      <span class="gb-flower" style="left:24%;animation-delay:.4s;">🌷</span>
+      <span class="gb-flower" style="left:46%;animation-delay:.8s;">🌼</span>
+      <span class="gb-flower" style="left:68%;animation-delay:.3s;">🌹</span>
+      <span class="gb-flower" style="left:88%;animation-delay:.6s;">🌸</span>
+    </div>
+
     <!-- MENU SCREEN -->
     <div id="menu-screen" class="screen active">
       <div class="menu-container">
-        <h1 class="game-title">🌻 HỌC VUI 🧟</h1>
+        <div class="menu-mascots" aria-hidden="true">
+          <span class="mm mm-plant">🌻</span>
+          <span class="mm mm-vs">⚔️</span>
+          <span class="mm mm-zombie">🧟</span>
+        </div>
+        <h1 class="game-title">HỌC VUI</h1>
         <p class="subtitle">Bảo vệ vườn hoa bằng trí tuệ!</p>
         <button class="help-btn" id="help-btn-open">❓</button>
         <div class="help-popup" id="help-popup">
