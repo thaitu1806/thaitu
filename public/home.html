@@ -67,6 +67,39 @@
     .chip-stat#rb-shop:active { transform: scale(0.95); }
     #reward-bar .separator { display: none; }
 
+    /* ===== CONTINUE BANNER (1-tap resume) ===== */
+    .continue-banner {
+      display: flex; align-items: center; gap: 14px;
+      margin: 0 0 22px; padding: 14px 16px; border-radius: 22px; text-decoration: none;
+      background: linear-gradient(135deg, #ff9a3c, #ff5e8a);
+      box-shadow: 0 10px 26px rgba(255,94,138,0.38);
+      color: #fff; position: relative; overflow: hidden;
+      animation: cbIn 0.45s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes cbIn { from { opacity: 0; transform: translateY(-8px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .continue-banner::after {
+      content: ''; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%;
+      background: linear-gradient(100deg, transparent, rgba(255,255,255,0.35), transparent);
+      animation: cbShine 3.2s ease-in-out infinite;
+    }
+    @keyframes cbShine { 0% { left: -60%; } 55%,100% { left: 130%; } }
+    .continue-banner:active { transform: scale(0.98); }
+    .cb-icon {
+      flex: 0 0 56px; width: 56px; height: 56px; border-radius: 16px;
+      background: rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.35);
+    }
+    .cb-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .cb-label { font-size: 0.82rem; font-weight: 800; opacity: 0.95; letter-spacing: 0.5px; }
+    .cb-name { font-size: 1.25rem; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cb-play {
+      flex: 0 0 auto; width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,0.95); color: #ff5e8a; font-size: 1.2rem; font-weight: 900;
+      display: flex; align-items: center; justify-content: center; padding-left: 3px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2); animation: cbPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes cbPulse { 50% { transform: scale(1.1); } }
+
     /* ===== SECTION HEADINGS ===== */
     .section-head {
       display: flex; align-items: baseline; gap: 8px;
@@ -202,6 +235,16 @@
       <span class="separator">|</span>
       <a class="chip-stat" id="rb-shop" href="/shop.html">🛒 Shop</a>
     </div>
+
+    <!-- CHƠI TIẾP (1 chạm vào game gần nhất) -->
+    <a id="continue-banner" class="continue-banner" href="#" style="display:none;">
+      <span class="cb-icon" id="cb-icon">🎮</span>
+      <span class="cb-text">
+        <span class="cb-label">▶ Chơi tiếp</span>
+        <span class="cb-name" id="cb-name"></span>
+      </span>
+      <span class="cb-play">▶</span>
+    </a>
 
     <!-- HỌC TẬP -->
     <div class="section-head"><h2>📘 Học tập</h2></div>
@@ -378,7 +421,24 @@
     ).join('');
   }
 
+  function renderContinueBanner() {
+    const banner = $('continue-banner');
+    if (!banner) return;
+    // Only show on the default home view (no search, "all" tab).
+    if (activeCat !== 'all' || query) { banner.style.display = 'none'; return; }
+    const recent = getRecent();
+    let game = null;
+    for (const p of recent) { const g = GAMES.find(x => x.p === p); if (g) { game = g; break; } }
+    if (!game) { banner.style.display = 'none'; return; }
+    banner.href = game.p;
+    banner.dataset.path = game.p;
+    $('cb-icon').textContent = game.i;
+    $('cb-name').textContent = game.n;
+    banner.style.display = 'flex';
+  }
+
   function renderRecentRow() {
+    renderContinueBanner();
     const recent = getRecent();
     const section = $('recent-section');
     const grid = $('recent-grid');
@@ -421,7 +481,7 @@
     const chip = e.target.closest('.chip');
     if (chip) { activeCat = chip.dataset.cat; renderChips(); renderGames(); return; }
     // Record recently played + enforce profile gate on any game/mode card.
-    const card = e.target.closest('.game-card, .mode-card');
+    const card = e.target.closest('.game-card, .mode-card, .continue-banner');
     if (card) {
       if (!localStorage.getItem('hocvui_profile')) { e.preventDefault(); $('profile-gate').style.display = 'flex'; return; }
       const p = card.dataset.path;
