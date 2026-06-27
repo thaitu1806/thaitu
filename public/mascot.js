@@ -54,6 +54,13 @@
       <path class="m-arm-l" d="M20 58 Q10 54 12 46" fill="none" stroke="#e8a91e" stroke-width="5" stroke-linecap="round"/>
       <path class="m-arm-r" d="M80 58 Q90 54 88 46" fill="none" stroke="#e8a91e" stroke-width="5" stroke-linecap="round"/>
     </g>
+    <g class="m-deco">
+      <text class="m-crown" x="50" y="14" text-anchor="middle" font-size="18">👑</text>
+      <text class="m-medal" x="64" y="74" text-anchor="middle" font-size="14">🏅</text>
+      <circle class="m-spark m-spark-1" cx="22" cy="34" r="2.5" fill="#fff7a8"/>
+      <circle class="m-spark m-spark-2" cx="80" cy="40" r="2" fill="#fff7a8"/>
+      <circle class="m-spark m-spark-3" cx="74" cy="22" r="2.2" fill="#fff7a8"/>
+    </g>
   </svg>`;
 
   function injectStyles() {
@@ -102,6 +109,23 @@
       transition: transform .12s;
     }
     #hv-mascot-toggle:active { transform: scale(0.88); }
+    /* Pet evolution: bigger + decorations + color as stage grows */
+    #hv-mascot .m-deco > * { opacity: 0; transition: opacity .3s; }
+    #hv-mascot[data-stage="0"] .m-stage { transform: scale(0.82); }
+    #hv-mascot[data-stage="1"] .m-stage { transform: scale(0.9); }
+    #hv-mascot[data-stage="2"] .m-stage { transform: scale(1); }
+    #hv-mascot[data-stage="2"] .m-spark-1 { opacity: 1; animation: mSpark 1.6s ease-in-out infinite; }
+    #hv-mascot[data-stage="3"] .m-stage { transform: scale(1.06); }
+    #hv-mascot[data-stage="3"] .m-medal { opacity: 1; }
+    #hv-mascot[data-stage="3"] .m-spark-1, #hv-mascot[data-stage="3"] .m-spark-2 { opacity: 1; animation: mSpark 1.6s ease-in-out infinite; }
+    #hv-mascot[data-stage="4"] .m-stage { transform: scale(1.12); }
+    #hv-mascot[data-stage="4"] .m-body { fill: #ffe27a; }
+    #hv-mascot[data-stage="4"] .m-crown { opacity: 1; }
+    #hv-mascot[data-stage="4"] .m-spark { opacity: 1; animation: mSpark 1.4s ease-in-out infinite; }
+    #hv-mascot[data-stage="4"] .m-svg { filter: drop-shadow(0 4px 5px rgba(0,0,0,0.2)) drop-shadow(0 0 6px #ffe27a); }
+    @keyframes mSpark { 0%,100% { opacity: 0.2; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.2); } }
+    #hv-mascot.evolve .m-svg { animation: mEvolve 1.1s ease; }
+    @keyframes mEvolve { 0% { transform: scale(1); } 30% { transform: scale(1.3) rotate(-8deg); filter: brightness(1.6); } 60% { transform: scale(1.1) rotate(6deg); } 100% { transform: scale(1); } }
     @media (max-width: 360px) { #hv-mascot { width: 72px; height: 88px; } #hv-mascot .m-stage { width: 64px; height: 64px; } }
     `;
     document.head.appendChild(s);
@@ -152,11 +176,35 @@
   }
 
   // Public API
+  let curStage = -1;
+  function petStage() {
+    try { return (window.HocVuiProgress && window.HocVuiProgress.petStage) ? window.HocVuiProgress.petStage() : 0; } catch (e) { return 0; }
+  }
+  const STAGE_NAMES = ['Mầm Non', 'Chồi Xanh', 'Cây Nhỏ', 'Cây Khỏe', 'Cây Thần Kỳ'];
+  function refreshStage(announce) {
+    if (!root) return;
+    const st = petStage();
+    root.dataset.stage = String(st);
+    if (st !== curStage) {
+      const leveledUp = curStage >= 0 && st > curStage;
+      curStage = st;
+      if (leveledUp) {
+        setState('happy');
+        say('Mình lớn lên rồi! 🌟 ' + STAGE_NAMES[st], 'good');
+        if (window.HocVuiSound) window.HocVuiSound.play('win');
+        root.classList.add('evolve');
+        setTimeout(() => root && root.classList.remove('evolve'), 1200);
+      }
+    }
+  }
+
   window.HocVuiMascot = {
     cheer() { streak++; setState('happy'); say(streak >= 3 ? pick(COMBO) : pick(CHEER), 'good'); },
     encourage() { streak = 0; setState('sad'); say(pick(ENCOURAGE), 'bad'); },
     say(text, kind) { say(text, kind || ''); },
     setState,
+    refreshStage,
+    petStage,
     isOn: () => enabled,
     setOn(on) { enabled = !!on; try { localStorage.setItem(STORE_KEY, enabled ? '1' : '0'); } catch (e) {} applyVisibility(); },
     toggle() { this.setOn(!enabled); },
@@ -186,6 +234,7 @@
   function init() {
     if (!isGamePage()) return;
     build();
+    refreshStage(false);
     try { mo.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {}
     // a friendly greeting shortly after entering a game
     setTimeout(() => { if (enabled) say('Chào bạn! Cùng học nha! 👋', ''); }, 900);
