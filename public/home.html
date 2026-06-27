@@ -234,6 +234,7 @@
       <span class="chip-stat" id="rb-quests">📋 0/0 NV</span>
       <span class="separator">|</span>
       <a class="chip-stat" id="rb-shop" href="/shop.html">🛒 Shop</a>
+      <button class="chip-stat" id="rb-album" type="button" style="border:none;cursor:pointer;background:linear-gradient(135deg,#a06bff,#7a3bd6);color:#fff;">📔 Sưu tập</button>
     </div>
 
     <!-- CHƠI TIẾP (1 chạm vào game gần nhất) -->
@@ -497,6 +498,11 @@
 
   renderChips();
   renderGames();
+
+  // Sticker album entry point (collection.js is injected on every page).
+  document.getElementById('rb-album')?.addEventListener('click', function () {
+    if (window.HocVuiCollection) window.HocVuiCollection.showAlbum();
+  });
   </script>
 
   <script>
@@ -594,5 +600,6 @@
   </script>
   <script src="/sounds.js"></script>
   <script src="/mascot.js"></script>
+  <script src="/collection.js"></script>
 </body>
 </html>

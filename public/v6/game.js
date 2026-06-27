@@ -196,6 +196,7 @@
 
     if (outcome === 'won') spawnConfetti($('race-stage'), 36);
     if (window.HocVuiSound) window.HocVuiSound.play(outcome === 'won' ? 'win' : 'lose');
+    if (window.HocVuiCollection) window.HocVuiCollection.reward(stars);
     setTimeout(() => {
       $('result-emoji').textContent = outcome === 'won' ? '🏆' : '🏁';
       $('result-title').textContent = outcome === 'won' ? '🏆 Về Đích Đầu Tiên!' : '🏁 Về Đích Sau!';

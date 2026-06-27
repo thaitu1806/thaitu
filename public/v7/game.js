@@ -194,6 +194,7 @@
 
     if (outcome === 'won') { $('climber').classList.add('cheer'); spawnConfetti($('cliff-stage'), 36); }
     if (window.HocVuiSound) window.HocVuiSound.play(outcome === 'won' ? 'win' : 'lose');
+    if (window.HocVuiCollection) window.HocVuiCollection.reward(stars);
     setTimeout(() => {
       $('result-emoji').textContent = outcome === 'won' ? '🏔️' : outcome === 'fell' ? '😵' : '🧗';
       $('result-title').textContent = outcome === 'won' ? '🏔️ Chinh Phục Đỉnh Núi!' : outcome === 'fell' ? '😵 Trượt Chân Rồi!' : '🧗 Kết Thúc';

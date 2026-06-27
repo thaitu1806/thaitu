@@ -464,6 +464,9 @@ function endGame() {
   // Save session
   saveSession(stars);
 
+  // Reward a collectible sticker based on performance.
+  if (window.HocVuiCollection) window.HocVuiCollection.reward(stars);
+
   showScreen('result');
 }
 

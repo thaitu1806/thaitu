@@ -257,6 +257,7 @@
 
     if (outcome === 'won') spawnConfetti($('mine-stage'), 40);
     if (window.HocVuiSound) window.HocVuiSound.play(outcome === 'won' ? 'win' : 'lose');
+    if (window.HocVuiCollection) window.HocVuiCollection.reward(stars);
     setTimeout(() => {
       $('result-emoji').textContent = outcome === 'won' ? '💎' : '💣';
       $('result-title').textContent = outcome === 'won' ? '💎 Dọn Sạch Mỏ Vàng!' : '💣 Hết Mạng Rồi!';

@@ -193,6 +193,7 @@
     ss('result-screen');
     spawnConfetti($('result-screen'), 40);
     if (window.HocVuiSound) window.HocVuiSound.play(p1won ? 'win' : 'lose');
+    if (window.HocVuiCollection) window.HocVuiCollection.reward(p1won ? 2 : 1);
     if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch (e) {} }
   }
 
