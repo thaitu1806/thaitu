@@ -213,6 +213,9 @@
   }
 
   function injectButton() {
+    // If the page already provides its own speak button, don't auto-inject
+    // a second one (avoids duplicate 🔊 buttons, e.g. game.html).
+    if (document.querySelector('.btn-speak:not(.tts-auto-btn)')) return;
     const el = findQuestionElement();
     if (!el) return;
     const text = el.textContent.trim();

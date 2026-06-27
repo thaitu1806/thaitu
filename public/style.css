@@ -11,6 +11,7 @@ body {
     radial-gradient(circle at 82% 8%, rgba(255,236,120,0.30), transparent 42%),
     linear-gradient(180deg, #6fd36f 0%, #2d8a2d 45%, #1a5c1a 100%);
   min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
   font-size: 18px;
 }
@@ -243,6 +244,8 @@ body {
 /* GAME SCREEN */
 #game-screen {
   flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
   background: linear-gradient(180deg, #87CEEB 0%, #90EE90 60%, #228B22 100%);
 }
 
@@ -267,9 +270,10 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 20px;
+  gap: 18px;
+  padding: 24px 20px;
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
@@ -379,6 +383,10 @@ body {
   padding: 25px;
   width: 100%;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .question-text {
