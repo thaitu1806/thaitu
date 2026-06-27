@@ -214,6 +214,24 @@
     }
 
     @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    /* ===== PET SHOWCASE ===== */
+    .pet-card {
+      display: flex; align-items: center; gap: 14px; margin: 0 0 22px; padding: 14px 16px; border-radius: 22px;
+      background: linear-gradient(135deg, #d6f5d0, #aef0c8);
+      box-shadow: 0 10px 26px rgba(52,170,100,0.28); position: relative; overflow: hidden;
+    }
+    .pet-stage { flex: 0 0 64px; width: 64px; height: 64px; }
+    .pet-stage svg { width: 100%; height: 100%; display: block; animation: petBob 2.6s ease-in-out infinite; transform-origin: 50% 90%; }
+    @keyframes petBob { 50% { transform: translateY(-5px) rotate(-2deg); } }
+    .pet-info { flex: 1; min-width: 0; }
+    .pet-name { font-size: 1.15rem; font-weight: 900; color: #1f7a44; }
+    .pet-progress-txt { font-size: 0.82rem; font-weight: 800; color: #3a8f5a; margin: 2px 0 6px; }
+    .pet-bar { height: 9px; background: rgba(255,255,255,0.7); border-radius: 999px; overflow: hidden; }
+    .pet-bar-fill { height: 100%; background: linear-gradient(90deg,#34c77b,#7ee27e); border-radius: 999px; transition: width .5s; }
+    .pet-album-btn { flex: 0 0 auto; width: 44px; height: 44px; border-radius: 14px; border: none; background: rgba(255,255,255,0.85);
+      font-size: 1.4rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+    .pet-album-btn:active { transform: scale(0.92); }
   </style>
 </head>
 <body>
@@ -235,6 +253,17 @@
       <span class="separator">|</span>
       <a class="chip-stat" id="rb-shop" href="/shop.html">🛒 Shop</a>
       <button class="chip-stat" id="rb-album" type="button" style="border:none;cursor:pointer;background:linear-gradient(135deg,#a06bff,#7a3bd6);color:#fff;">📔 Sưu tập</button>
+    </div>
+
+    <!-- PET SHOWCASE (evolving buddy + progress) -->
+    <div id="pet-card" class="pet-card" style="display:none;">
+      <div class="pet-stage" id="pet-stage-svg"></div>
+      <div class="pet-info">
+        <div class="pet-name" id="pet-name">Mầm Non</div>
+        <div class="pet-progress-txt" id="pet-progress-txt">0 câu đúng</div>
+        <div class="pet-bar"><div class="pet-bar-fill" id="pet-bar-fill"></div></div>
+      </div>
+      <button class="pet-album-btn" id="pet-album-btn" type="button">📔</button>
     </div>
 
     <!-- CHƠI TIẾP (1 chạm vào game gần nhất) -->
@@ -503,6 +532,54 @@
   document.getElementById('rb-album')?.addEventListener('click', function () {
     if (window.HocVuiCollection) window.HocVuiCollection.showAlbum();
   });
+  document.getElementById('pet-album-btn')?.addEventListener('click', function () {
+    if (window.HocVuiCollection) window.HocVuiCollection.showAlbum();
+  });
+
+  // ===== PET SHOWCASE on home =====
+  (function renderPetShowcase() {
+    const STAGE_NAMES = ['Mầm Non', 'Chồi Xanh', 'Cây Nhỏ', 'Cây Khỏe', 'Cây Thần Kỳ'];
+    const THRESH = [0, 15, 60, 200, 500];
+    function petSvg(stage) {
+      const bodyFill = stage >= 4 ? '#ffe27a' : '#ffd24d';
+      const crown = stage >= 4 ? '<text x="50" y="14" text-anchor="middle" font-size="18">👑</text>' : '';
+      const medal = stage >= 3 ? '<text x="66" y="74" text-anchor="middle" font-size="13">🏅</text>' : '';
+      const sparks = stage >= 2 ? '<circle cx="22" cy="34" r="2.4" fill="#fff7a8"/><circle cx="80" cy="40" r="2" fill="#fff7a8"/>' : '';
+      const glow = stage >= 4 ? 'filter:drop-shadow(0 0 5px #ffe27a);' : '';
+      const scale = [0.82, 0.9, 1, 1.05, 1.1][stage] || 1;
+      return `<svg viewBox="0 0 100 100" style="${glow}" aria-hidden="true"><g transform="translate(50 56) scale(${scale}) translate(-50 -56)">
+        <ellipse cx="50" cy="92" rx="24" ry="5" fill="rgba(0,0,0,0.15)"/>
+        <path d="M50 16 Q42 2 32 8 Q40 14 50 20 Z" fill="#5fce6b"/><path d="M50 16 Q58 2 68 8 Q60 14 50 20 Z" fill="#49b857"/><rect x="48.5" y="14" width="3" height="10" rx="1.5" fill="#3a9a47"/>
+        <circle cx="50" cy="56" r="32" fill="${bodyFill}" stroke="#e8a91e" stroke-width="3"/>
+        <circle cx="50" cy="60" r="20" fill="#fff1c2"/>
+        <circle cx="32" cy="60" r="5" fill="#ff9fdb" opacity="0.7"/><circle cx="68" cy="60" r="5" fill="#ff9fdb" opacity="0.7"/>
+        <circle cx="40" cy="50" r="6" fill="#3a2b1a"/><circle cx="60" cy="50" r="6" fill="#3a2b1a"/>
+        <circle cx="42" cy="48" r="2" fill="#fff"/><circle cx="62" cy="48" r="2" fill="#fff"/>
+        <path d="M42 64 Q50 72 58 64" fill="none" stroke="#3a2b1a" stroke-width="3" stroke-linecap="round"/>
+        ${sparks}${medal}${crown}</g></svg>`;
+    }
+    function update() {
+      const card = document.getElementById('pet-card');
+      if (!card || !window.HocVuiProgress) return;
+      const c = window.HocVuiProgress.lifetimeCorrect || 0;
+      const stage = window.HocVuiProgress.petStage();
+      document.getElementById('pet-stage-svg').innerHTML = petSvg(stage);
+      document.getElementById('pet-name').textContent = STAGE_NAMES[stage];
+      const next = THRESH[stage + 1];
+      if (next) {
+        document.getElementById('pet-progress-txt').textContent = `${c} câu đúng • còn ${next - c} câu để lớn lên!`;
+        const prev = THRESH[stage];
+        document.getElementById('pet-bar-fill').style.width = Math.min(100, Math.round((c - prev) / (next - prev) * 100)) + '%';
+      } else {
+        document.getElementById('pet-progress-txt').textContent = `${c} câu đúng • Tối đa rồi! 🌟`;
+        document.getElementById('pet-bar-fill').style.width = '100%';
+      }
+      card.style.display = 'flex';
+    }
+    // HocVuiProgress is defined by engagement.js (injected before </body>); retry until ready.
+    let tries = 0;
+    (function wait() { if (window.HocVuiProgress) update(); else if (tries++ < 40) setTimeout(wait, 100); })();
+  })();
   </script>
 
   <script>
