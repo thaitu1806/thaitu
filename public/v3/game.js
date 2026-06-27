@@ -192,6 +192,7 @@
     `;
     ss('result-screen');
     spawnConfetti($('result-screen'), 40);
+    if (window.HocVuiSound) window.HocVuiSound.play(p1won ? 'win' : 'lose');
     if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch (e) {} }
   }
 

@@ -256,6 +256,7 @@
     saveSession({ stars, acc, total });
 
     if (outcome === 'won') spawnConfetti($('mine-stage'), 40);
+    if (window.HocVuiSound) window.HocVuiSound.play(outcome === 'won' ? 'win' : 'lose');
     setTimeout(() => {
       $('result-emoji').textContent = outcome === 'won' ? '💎' : '💣';
       $('result-title').textContent = outcome === 'won' ? '💎 Dọn Sạch Mỏ Vàng!' : '💣 Hết Mạng Rồi!';

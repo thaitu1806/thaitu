@@ -213,6 +213,7 @@
 
     if (outcome === 'collapse') $('tower').classList.add('collapsing');
     else if (outcome === 'won') spawnConfetti($('tower-stage'), 40);
+    if (window.HocVuiSound) window.HocVuiSound.play(outcome === 'won' ? 'win' : 'lose');
 
     setTimeout(() => {
       $('result-emoji').textContent = outcome === 'won' ? '🏰' : outcome === 'collapse' ? '🧱' : '🏗️';

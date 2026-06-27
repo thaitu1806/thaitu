@@ -248,8 +248,8 @@
 
     const stage = $('adventure-stage');
     let delay = 0;
-    if (outcome === 'won') { spawnConfetti(stage, 36); delay = 1100; }
-    else if (outcome === 'storm') { $('storm').classList.add('is-bursting'); delay = 1200; }
+    if (outcome === 'won') { spawnConfetti(stage, 36); delay = 1100; if (window.HocVuiSound) window.HocVuiSound.play('win'); }
+    else if (outcome === 'storm') { $('storm').classList.add('is-bursting'); delay = 1200; if (window.HocVuiSound) window.HocVuiSound.play('lose'); }
 
     setTimeout(() => {
       let title = '🗺️ Kết Thúc', emoji = '🗺️';
