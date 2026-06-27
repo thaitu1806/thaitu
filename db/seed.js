@@ -9,6 +9,7 @@ import { extraMathEasy, extraMathMedium, extraMathHard, extraVietEasy, extraViet
 import { englishQuestionsEasy } from './questions/english-easy.js';
 import { englishQuestionsMedium } from './questions/english-medium.js';
 import { englishQuestionsHard } from './questions/english-hard.js';
+import { pictureMathEasy } from './questions/picture-math.js';
 
 async function seed() {
   console.log('Initializing database...');
@@ -21,6 +22,7 @@ async function seed() {
   const allQuestions = [
     ...mathQuestionsEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
     ...extraMathEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
+    ...pictureMathEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
     ...mathQuestionsMedium.map(q => ({ ...q, subject: 'math', difficulty: 'medium', grade: 2 })),
     ...extraMathMedium.map(q => ({ ...q, subject: 'math', difficulty: 'medium', grade: 2 })),
     ...mathQuestionsHard.map(q => ({ ...q, subject: 'math', difficulty: 'hard', grade: 2 })),
