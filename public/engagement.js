@@ -29,6 +29,8 @@
       g.n++;
       if (!g.done && g.n >= DAILY_GOAL) { g.done = true; save('goal', g); onGoalDone(); }
       else save('goal', g);
+      // weekly tally (for the report card)
+      bumpWeekly();
       updateGoalWidget();
       // let the mascot know (may trigger evolution)
       if (window.HocVuiMascot && window.HocVuiMascot.refreshStage) window.HocVuiMascot.refreshStage();
@@ -42,8 +44,28 @@
       if (c >= 15) return 1;
       return 0;
     },
+    weekly() { return getWeekly(); },
   };
   window.HocVuiProgress = Progress;
+
+  // ── Weekly tally (ISO-ish week key) for the report card ──
+  function weekKey(d) {
+    d = d || new Date();
+    const onejan = new Date(d.getFullYear(), 0, 1);
+    const week = Math.ceil((((d - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+    return d.getFullYear() + '-W' + week;
+  }
+  function getWeekly() {
+    const w = load('weekly', null);
+    if (!w || w.week !== weekKey()) return { week: weekKey(), correct: 0, days: {} };
+    return w;
+  }
+  function bumpWeekly() {
+    const w = getWeekly();
+    w.correct++;
+    w.days[today()] = (w.days[today()] || 0) + 1;
+    save('weekly', w);
+  }
 
   function isGamePage() {
     const p = location.pathname;
@@ -116,6 +138,18 @@
     #hv-goal .g-fill { height: 100%; background: linear-gradient(90deg,#7ee27e,#34c77b); border-radius: 999px; transition: width .4s; }
     #hv-goal .g-txt { font-size: 0.78rem; font-weight: 900; color: #2e7d32; }
     #hv-goal.done .g-txt { color: #ff8f1f; }
+    /* weekly report card */
+    .hv-report { position: relative; background: linear-gradient(180deg,#fffdf5,#fff3d6); border: 3px solid #ffd57a; }
+    .hv-rep-ribbon { background: linear-gradient(135deg,#ff8f3c,#ff5e8a); color: #fff; font-weight: 900; letter-spacing: 1px; font-size: 0.95rem; padding: 7px 0; border-radius: 12px; margin-bottom: 6px; box-shadow: 0 4px 10px rgba(255,94,138,0.3); }
+    .hv-rep-week { font-size: 0.78rem; color: #b59030; font-weight: 800; }
+    .hv-rep-name { font-size: 1.6rem; font-weight: 900; color: #7a4a10; margin: 2px 0; }
+    .hv-rep-stars { font-size: 1.5rem; letter-spacing: 2px; color: #ffb300; }
+    .hv-rep-rank { font-size: 1.1rem; font-weight: 900; color: #d2691e; margin: 4px 0 10px; }
+    .hv-rep-stats { display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; }
+    .hv-rep-stats > div { flex: 1; background: #fff; border: 2px solid #ffe3a8; border-radius: 14px; padding: 8px 4px; display: flex; flex-direction: column; }
+    .hv-rep-stats b { font-size: 1.3rem; color: #e07b1a; }
+    .hv-rep-stats span { font-size: 0.7rem; color: #a8884a; font-weight: 800; }
+    .hv-rep-note { font-size: 0.85rem; color: #8a6a2a; font-weight: 800; margin-bottom: 6px; }
     `;
     document.head.appendChild(s);
   }
@@ -250,6 +284,47 @@
     goalEl.classList.toggle('done', g.done);
     goalEl.classList.add('show');
   }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Weekly "Phiếu Bé Ngoan" report card (home). A printable-style certificate
+  // summarizing the week so parents can praise the child.
+  function showReportCard() {
+    ensureOverlay();
+    const w = getWeekly();
+    const days = Object.keys(w.days).length;
+    const total = w.correct;
+    const profile = (() => { try { return JSON.parse(localStorage.getItem('hocvui_profile') || '{}'); } catch (e) { return {}; } })();
+    const name = profile.name || 'Bé';
+    const stickers = (window.HocVuiCollection && window.HocVuiCollection.count) ? window.HocVuiCollection.count() : 0;
+    // rating by weekly correct count
+    let rank = '🌱 Chăm Học', stars = 1;
+    if (total >= 120) { rank = '🏆 Siêu Sao Học Tập'; stars = 5; }
+    else if (total >= 70) { rank = '🌟 Học Trò Giỏi'; stars = 4; }
+    else if (total >= 35) { rank = '⭐ Tiến Bộ Tốt'; stars = 3; }
+    else if (total >= 12) { rank = '😊 Cố Gắng'; stars = 2; }
+    const starRow = '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
+    overlay.innerHTML = `
+      <div class="hv-eng-card hv-report">
+        <div class="hv-rep-ribbon">PHIẾU BÉ NGOAN</div>
+        <div class="hv-rep-week">Tuần này</div>
+        <div class="hv-rep-name">${name}</div>
+        <div class="hv-rep-stars">${starRow}</div>
+        <div class="hv-rep-rank">${rank}</div>
+        <div class="hv-rep-stats">
+          <div><b>${total}</b><span>câu đúng</span></div>
+          <div><b>${days}</b><span>ngày học</span></div>
+          <div><b>${stickers}</b><span>nhãn dán</span></div>
+        </div>
+        <div class="hv-rep-note">Bố mẹ ơi, khen con một câu nhé! 💛</div>
+        <button class="hv-eng-btn" id="hv-rep-close">Đóng</button>
+      </div>`;
+    overlay.classList.add('show');
+    document.getElementById('hv-rep-close').addEventListener('click', () => overlay.classList.remove('show'));
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('show'); });
+    if (window.HocVuiSound) window.HocVuiSound.play('star');
+    burstConfetti();
+  }
+  window.HocVuiProgress.showReportCard = showReportCard;
 
   // ─────────────────────────────────────────────────────────────────────────
   function init() {
