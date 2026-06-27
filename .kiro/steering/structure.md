@@ -19,7 +19,7 @@
 │   ├── seed.js          # Local seeder
 │   ├── seed-turso.js    # Production seeder
 │   ├── local.db         # Local SQLite database file
-│   └── questions/       # Seed data files organized by subject-difficulty
+│   └── questions/       # Seed data files organized by subject-difficulty (incl. picture-math.js: emoji-based visual questions for grade 2)
 ├── public/              # Static frontend files
 │   ├── index.html       # Capacitor entry — redirects to home.html
 │   ├── api-config.js    # Runtime API base URL patch for native shell
