@@ -218,16 +218,56 @@
   }
 
   // ── Public API ──
+  let lastReward = 0;
+  function rewardOnce(stars, minGap) {
+    // Guard against double rewards when a game both posts a session AND calls
+    // reward() directly. Only one unlock per `minGap` ms.
+    const now = Date.now();
+    if (now - lastReward < (minGap || 2500)) return null;
+    lastReward = now;
+    const s = roll(Math.max(0, Math.min(3, stars | 0)));
+    if (s) { setTimeout(() => showReveal(s), 600); return s; }
+    return null;
+  }
+
   window.HocVuiCollection = {
     // Call on game finish with stars earned (0..3). Shows a reveal if unlocked.
-    reward(stars) {
-      const s = roll(Math.max(0, Math.min(3, stars | 0)));
-      if (s) { setTimeout(() => showReveal(s), 600); return s; }
-      return null;
-    },
+    reward(stars) { return rewardOnce(stars); },
     showAlbum,
     owned: () => getOwned().slice(),
     total: () => STICKERS.length,
     count: () => getOwned().length,
   };
+
+  // ── Universal hook: any game that saves a session earns a sticker chance ──
+  // Wraps window.fetch so a POST to /api/sessions auto-rewards based on
+  // `stars_earned`. This covers every game version (incl. v4, v5, v11–v60)
+  // without per-game edits. The cooldown above dedupes with direct reward() calls.
+  if (!window.__hvSessionHook) {
+    window.__hvSessionHook = true;
+    const origFetch = window.fetch ? window.fetch.bind(window) : null;
+    if (origFetch) {
+      window.fetch = function (input, init) {
+        let url = '';
+        try { url = typeof input === 'string' ? input : (input && input.url) || ''; } catch (e) {}
+        const method = ((init && init.method) || (typeof input === 'object' && input && input.method) || 'GET').toUpperCase();
+        let stars = null;
+        if (/\/api\/sessions/.test(url) && method === 'POST') {
+          try {
+            const body = init && init.body;
+            if (typeof body === 'string') {
+              const data = JSON.parse(body);
+              if (data && data.stars_earned != null) stars = Number(data.stars_earned);
+            }
+          } catch (e) {}
+        }
+        const p = origFetch(input, init);
+        if (stars != null) {
+          // Fire after the request kicks off; doesn't block the save.
+          setTimeout(() => { try { rewardOnce(stars); } catch (e) {} }, 50);
+        }
+        return p;
+      };
+    }
+  }
 })();
