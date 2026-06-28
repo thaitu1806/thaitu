@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <script src="../api-config.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>🧪 Lab Học Vui - Trò Chơi Kiểu Mới</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Nunito', system-ui, sans-serif; min-height: 100vh; min-height: 100dvh; color: #1e2742;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255,255,255,0.2), transparent 40%),
+        radial-gradient(circle at 85% 8%, rgba(120,220,255,0.3), transparent 42%),
+        linear-gradient(160deg, #5b8def 0%, #6a5cf0 50%, #9b5cf0 100%);
+      padding: env(safe-area-inset-top, 16px) 16px 40px;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    .lab-header { text-align: center; color: #fff; margin: 10px 0 24px; }
+    .lab-badge { display: inline-block; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35); padding: 5px 14px; border-radius: 999px; font-weight: 800; font-size: 0.8rem; margin-bottom: 8px; }
+    .lab-header h1 { font-size: 1.9rem; font-weight: 900; text-shadow: 0 3px 10px rgba(0,0,0,0.2); }
+    .lab-header p { opacity: 0.9; font-weight: 700; margin-top: 4px; }
+    .lab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 14px; }
+    .lab-card {
+      position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 6px;
+      background: #fff; border-radius: 22px; padding: 20px 16px; text-decoration: none; color: #1e2742;
+      box-shadow: 0 10px 26px rgba(40,40,120,0.22); transition: transform 0.18s, box-shadow 0.18s;
+      border-top: 5px solid var(--c, #6a5cf0);
+    }
+    .lab-card:active { transform: scale(0.97); }
+    .lab-card:hover { transform: translateY(-5px); box-shadow: 0 16px 34px rgba(40,40,120,0.3); }
+    .lab-card .lc-ic { font-size: 2.6rem; }
+    .lab-card .lc-name { font-size: 1.15rem; font-weight: 900; }
+    .lab-card .lc-verb { font-size: 0.72rem; font-weight: 800; color: #fff; background: var(--c,#6a5cf0); padding: 2px 9px; border-radius: 999px; align-self: flex-start; }
+    .lab-card .lc-desc { font-size: 0.82rem; color: #6a6f87; font-weight: 700; line-height: 1.3; }
+    .lab-card.soon { opacity: 0.6; pointer-events: none; }
+    .lab-card.soon .lc-verb { background: #aaa; }
+    .home-link { display: inline-block; margin-top: 22px; color: #fff; font-weight: 800; text-decoration: none; background: rgba(255,255,255,0.18); padding: 9px 16px; border-radius: 999px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="lab-header">
+      <span class="lab-badge">🧪 PHÒNG THÍ NGHIỆM</span>
+      <h1>Trò Chơi Kiểu Mới</h1>
+      <p>Mỗi game một cách chơi khác nhau — không chỉ chọn đáp án!</p>
+    </div>
+    <div class="lab-grid">
+      <a class="lab-card" style="--c:#34c77b" href="/lab/match/">
+        <span class="lc-ic">🔗</span>
+        <span class="lc-verb">Nối cặp</span>
+        <span class="lc-name">Nối Cặp Thông Minh</span>
+        <span class="lc-desc">Nối phép tính với kết quả đúng!</span>
+      </a>
+      <a class="lab-card" style="--c:#ff7a45" href="/lab/pop/">
+        <span class="lc-ic">🎯</span>
+        <span class="lc-verb">Bắn nhanh</span>
+        <span class="lc-name">Bắn Bong Bóng</span>
+        <span class="lc-desc">Chạm trúng bong bóng đáp án đúng đang bay!</span>
+      </a>
+      <a class="lab-card" style="--c:#4a90e2" href="/lab/swipe/">
+        <span class="lc-ic">👆</span>
+        <span class="lc-verb">Vuốt</span>
+        <span class="lc-name">Vuốt Đúng Sai</span>
+        <span class="lc-desc">Vuốt phải nếu Đúng, vuốt trái nếu Sai!</span>
+      </a>
+    </div>
+    <a href="/" class="home-link">🏠 Về trang chủ</a>
+  </div>
+</body>
+</html>
