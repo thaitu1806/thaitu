@@ -37,6 +37,8 @@
 
 ## Architecture Notes
 
+- **Lab branch (`public/lab/`)**: experimental new-mechanic games kept separate from v2–v60. Goal is interaction variety (drag-to-match, tap-to-pop, swipe) instead of the multiple-choice reskins of v2–v60. Each lab game lives in `public/lab/<name>/` with its own `index.html + game.js + game-logic.js + style.css`; pure logic is unit-tested (e.g. `tests/lab-match.unit.test.js` loads the IIFE via `new Function('window', src)` since the project is ESM). Lab menu at `public/lab/index.html`; routed in `vercel.json` (`/lab/...`) and served by the root static handler locally. The cross-version test contracts (game-versions/script-includes/routing) only scan v2–v60, so lab is unaffected. First lab game: `lab/match` ("Nối Cặp", drag-to-match, mode `lab-match`).
+
 - Local dev: single `server.js` serves both API and static files, plus WebSocket
 - Production (Vercel): API routes are serverless functions in `api/`, static files served from `public/`
 - Each game version (v1+) is a self-contained HTML/JS/CSS bundle with no build step
