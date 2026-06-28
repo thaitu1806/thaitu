@@ -37,6 +37,8 @@
 
 ## Architecture Notes
 
+- **Quiz answer engine (`public/quiz-modes.js`)**: shared module `window.HocVuiQuiz.render({ questionEl, optionsEl, question, onResult })` that renders the *answer input* in a randomized mode per question — classic multiple-choice, true/false ("statement → answer, Đúng/Sai"), or type-in (numeric keypad / text). It applies `.option-btn`/`.correct`/`.wrong` classes so the shared sounds/mascot/collection/engagement observers still fire. `onResult(ok, text)` is called once; `handle.revealTimeout()` reveals the answer on timeout. Lets a graphics game keep its scene while varying how the child answers. Piloted in **v48** (keeps dino-rescue graphics; `handleAns` now takes a boolean). To apply to another game: load `/quiz-modes.js` before its `game.js`, call `HocVuiQuiz.render(...)` in place of the hand-built option buttons, and make the game's answer handler accept `ok`.
+
 - **Lab branch (`public/lab/`)**: experimental new-mechanic games kept separate from v2–v60. Goal is interaction variety (drag-to-match, tap-to-pop, swipe) instead of the multiple-choice reskins of v2–v60. Each lab game lives in `public/lab/<name>/` with its own `index.html + game.js + game-logic.js + style.css`; pure logic is unit-tested (e.g. `tests/lab-match.unit.test.js` loads the IIFE via `new Function('window', src)` since the project is ESM). Lab menu at `public/lab/index.html`; routed in `vercel.json` (`/lab/...`) and served by the root static handler locally. The cross-version test contracts (game-versions/script-includes/routing) only scan v2–v60, so lab is unaffected. First lab game: `lab/match` ("Nối Cặp", drag-to-match, mode `lab-match`).
 
 - Local dev: single `server.js` serves both API and static files, plus WebSocket
