@@ -13,6 +13,9 @@
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/v(\\d+)", "status": 308, "headers": { "Location": "/v$1/" } },
+    { "src": "/lab/([^/.]+)", "status": 308, "headers": { "Location": "/lab/$1/" } },
+    { "src": "/lab", "status": 308, "headers": { "Location": "/lab/" } },
     { "src": "/api/ai/status", "dest": "/api/ai.js?action=status" },
     { "src": "/api/ai/explain", "dest": "/api/ai.js?action=explain" },
     { "src": "/api/ai/hint", "dest": "/api/ai.js?action=hint" },
