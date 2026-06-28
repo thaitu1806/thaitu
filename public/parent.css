@@ -446,3 +446,18 @@ body {
 .claim-title { font-weight: 800; }
 .claim-meta { font-size: 0.78rem; color: #888; }
 .claim-done { flex: 0 0 auto; }
+
+
+/* Reward history list */
+.reward-history-title { font-size: 1rem; color: #555; margin: 16px 0 8px; }
+.reward-history { display: flex; flex-direction: column; gap: 6px; }
+.rh-item { display: flex; align-items: center; gap: 10px; background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: 8px 10px; }
+.rh-icon { font-size: 1.4rem; }
+.rh-info { flex: 1; min-width: 0; }
+.rh-title { font-weight: 700; font-size: 0.9rem; }
+.rh-meta { font-size: 0.75rem; color: #999; }
+.rh-status { font-size: 0.75rem; font-weight: 800; flex: 0 0 auto; }
+.rh-status.done { color: #16a34a; }
+.rh-status.pending { color: #d97706; }
+.reward-price-row label { white-space: nowrap; }
+#reward-maxweek { width: 56px; padding: 10px 6px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 0.95rem; outline: none; font-family: inherit; text-align: center; }

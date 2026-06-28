@@ -236,6 +236,7 @@ CREATE TABLE IF NOT EXISTS parent_rewards (
   title TEXT NOT NULL,
   icon TEXT DEFAULT '🎁',
   price_diamonds INTEGER NOT NULL DEFAULT 50,
+  max_per_week INTEGER DEFAULT NULL,
   is_active INTEGER DEFAULT 1,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (parent_id) REFERENCES parents(id),

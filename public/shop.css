@@ -426,3 +426,5 @@ body {
 .pr-buy { margin-top: 4px; width: 100%; padding: 9px; border: none; border-radius: 10px; background: linear-gradient(135deg,#ffb347,#ff8f1f); color: #fff; font-weight: 800; cursor: pointer; font-family: inherit; }
 .pr-buy.cannot-buy { background: #d8d2c4; color: #fff; cursor: not-allowed; }
 .pr-buy:not(.cannot-buy):active { transform: scale(0.96); }
+
+.pr-limit { font-size: 0.72rem; font-weight: 800; color: #9a7a3a; }

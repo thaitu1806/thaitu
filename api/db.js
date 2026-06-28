@@ -35,6 +35,7 @@ export function getDb() {
       is_active INTEGER DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`, args: [] }).catch(() => {});
+    db.execute({ sql: `ALTER TABLE parent_rewards ADD COLUMN max_per_week INTEGER DEFAULT NULL`, args: [] }).catch(() => {});
     db.execute({ sql: `CREATE TABLE IF NOT EXISTS parent_reward_claims (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       reward_id INTEGER NOT NULL,

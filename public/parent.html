@@ -113,12 +113,16 @@
             <div class="reward-price-row">
               <label>Giá 💎</label>
               <input type="number" id="reward-price" value="50" min="1" max="9999">
+              <label>Lần/tuần</label>
+              <input type="number" id="reward-maxweek" placeholder="∞" min="1" max="99" title="Để trống = không giới hạn">
               <button id="btn-create-reward" class="btn-small btn-accent">+ Thêm quà</button>
             </div>
             <span id="reward-create-msg" class="error-msg"></span>
           </div>
         </div>
         <div class="reward-list" id="reward-list"></div>
+        <h3 class="reward-history-title">🧾 Lịch sử quà đã đổi</h3>
+        <div class="reward-history" id="reward-history"></div>
       </div>
     </div>
   </div>

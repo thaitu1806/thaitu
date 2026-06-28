@@ -67,12 +67,18 @@
       rewards.forEach(r => {
         const card = document.createElement('div');
         card.className = 'pr-card';
-        const canAfford = playerDiamonds >= r.price_diamonds;
+        const soldOut = r.remaining === 0;
+        const canAfford = playerDiamonds >= r.price_diamonds && !soldOut;
+        const limitTxt = (r.max_per_week != null) ? `<div class="pr-limit">${soldOut ? 'Hết lượt tuần này' : 'Còn ' + r.remaining + ' lần/tuần'}</div>` : '';
+        let btnLabel = 'Đổi quà 🎁';
+        if (soldOut) btnLabel = 'Hết lượt tuần';
+        else if (playerDiamonds < r.price_diamonds) btnLabel = 'Chưa đủ 💎';
         card.innerHTML = `
           <div class="pr-icon">${r.icon || '🎁'}</div>
           <div class="pr-name">${escapeHtml(r.title)}</div>
           <div class="pr-price">💎 ${r.price_diamonds}</div>
-          <button class="pr-buy ${canAfford ? '' : 'cannot-buy'}" ${canAfford ? '' : 'disabled'}>${canAfford ? 'Đổi quà 🎁' : 'Chưa đủ 💎'}</button>`;
+          ${limitTxt}
+          <button class="pr-buy ${canAfford ? '' : 'cannot-buy'}" ${canAfford ? '' : 'disabled'}>${btnLabel}</button>`;
         const btn = card.querySelector('.pr-buy');
         if (canAfford) btn.addEventListener('click', () => redeemParentReward(r, card));
         prGrid.appendChild(card);

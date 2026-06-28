@@ -27,6 +27,17 @@ export function checkRateLimit(ip) {
 // Exported for testing purposes
 export { rateLimitMap, RATE_LIMIT_WINDOW, RATE_LIMIT_MAX };
 
+// Start of the current week (Monday 00:00) as a SQL-comparable ISO-ish string.
+function weekStartISO() {
+  const d = new Date();
+  const day = (d.getDay() + 6) % 7; // 0 = Monday
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - day);
+  // 'YYYY-MM-DD HH:MM:SS' to compare against SQLite CURRENT_TIMESTAMP (UTC-ish).
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} 00:00:00`;
+}
+
 export default async function handler(req, res) {
   const db = getDb();
   const action = req.query.action || '';
@@ -256,39 +267,54 @@ export default async function handler(req, res) {
 
   // ── Parent-created rewards ("Quà từ bố mẹ") ──
 
-  // POST /api/parent?action=create-reward  { parent_id, player_id, title, icon, price_diamonds }
+  // POST /api/parent?action=create-reward  { parent_id, player_id, title, icon, price_diamonds, max_per_week }
   if (req.method === 'POST' && action === 'create-reward') {
-    const { parent_id, player_id, title, icon, price_diamonds } = req.body;
+    const { parent_id, player_id, title, icon, price_diamonds, max_per_week } = req.body;
     if (!parent_id || !player_id || !title) return res.status(400).json({ error: 'Thiếu thông tin' });
     const price = Math.max(1, parseInt(price_diamonds) || 50);
+    const maxWk = (max_per_week === '' || max_per_week == null) ? null : Math.max(1, parseInt(max_per_week));
     try {
       // Verify parent owns this child
       const link = await db.execute({ sql: `SELECT id FROM parent_children WHERE parent_id = ? AND player_id = ?`, args: [parseInt(parent_id), parseInt(player_id)] });
       if (link.rows.length === 0) return res.status(403).json({ error: 'Không có quyền' });
       const r = await db.execute({
-        sql: `INSERT INTO parent_rewards (parent_id, player_id, title, icon, price_diamonds) VALUES (?, ?, ?, ?, ?)`,
-        args: [parseInt(parent_id), parseInt(player_id), String(title).slice(0, 60), icon || '🎁', price],
+        sql: `INSERT INTO parent_rewards (parent_id, player_id, title, icon, price_diamonds, max_per_week) VALUES (?, ?, ?, ?, ?, ?)`,
+        args: [parseInt(parent_id), parseInt(player_id), String(title).slice(0, 60), icon || '🎁', price, maxWk],
       });
       return res.json({ ok: true, id: Number(r.lastInsertRowid) });
     } catch (err) { return res.status(500).json({ error: err.message }); }
   }
 
   // GET /api/parent?action=rewards&parent_id=X&player_id=Y  (parent view: all)
-  // GET /api/parent?action=rewards&player_id=Y              (child view: active only)
+  // GET /api/parent?action=rewards&player_id=Y              (child view: active only, with weekly remaining)
   if (req.method === 'GET' && action === 'rewards') {
     const { parent_id, player_id } = req.query;
     if (!player_id) return res.status(400).json({ error: 'Thiếu player_id' });
     try {
-      let sql, args;
       if (parent_id) {
-        sql = `SELECT id, title, icon, price_diamonds, is_active, created_at FROM parent_rewards WHERE parent_id = ? AND player_id = ? ORDER BY created_at DESC`;
-        args = [parseInt(parent_id), parseInt(player_id)];
-      } else {
-        sql = `SELECT id, title, icon, price_diamonds FROM parent_rewards WHERE player_id = ? AND is_active = 1 ORDER BY price_diamonds ASC`;
-        args = [parseInt(player_id)];
+        const r = await db.execute({
+          sql: `SELECT id, title, icon, price_diamonds, max_per_week, is_active, created_at FROM parent_rewards WHERE parent_id = ? AND player_id = ? ORDER BY created_at DESC`,
+          args: [parseInt(parent_id), parseInt(player_id)],
+        });
+        return res.json(r.rows);
       }
-      const r = await db.execute({ sql, args });
-      return res.json(r.rows);
+      // child view: include how many redemptions remain this week per reward
+      const r = await db.execute({
+        sql: `SELECT id, title, icon, price_diamonds, max_per_week FROM parent_rewards WHERE player_id = ? AND is_active = 1 ORDER BY price_diamonds ASC`,
+        args: [parseInt(player_id)],
+      });
+      const rows = r.rows;
+      const since = weekStartISO();
+      for (const row of rows) {
+        if (row.max_per_week == null) { row.remaining = null; continue; }
+        const c = await db.execute({
+          sql: `SELECT COUNT(*) AS n FROM parent_reward_claims WHERE reward_id = ? AND player_id = ? AND claimed_at >= ?`,
+          args: [row.id, parseInt(player_id), since],
+        });
+        const used = Number(c.rows[0]?.n || 0);
+        row.remaining = Math.max(0, row.max_per_week - used);
+      }
+      return res.json(rows);
     } catch (err) { return res.status(500).json({ error: err.message }); }
   }
 
@@ -313,6 +339,17 @@ export default async function handler(req, res) {
       const pl = await db.execute({ sql: `SELECT total_diamonds FROM players WHERE id = ?`, args: [parseInt(player_id)] });
       const bal = pl.rows[0]?.total_diamonds || 0;
       if (bal < reward.price_diamonds) return res.status(400).json({ error: 'Chưa đủ kim cương' });
+      // Enforce weekly redemption limit if set.
+      if (reward.max_per_week != null) {
+        const since = weekStartISO();
+        const c = await db.execute({
+          sql: `SELECT COUNT(*) AS n FROM parent_reward_claims WHERE reward_id = ? AND player_id = ? AND claimed_at >= ?`,
+          args: [reward.id, parseInt(player_id), since],
+        });
+        if (Number(c.rows[0]?.n || 0) >= reward.max_per_week) {
+          return res.status(400).json({ error: 'Tuần này đã hết lượt đổi quà này rồi!' });
+        }
+      }
       await db.batch([
         { sql: `UPDATE players SET total_diamonds = total_diamonds - ? WHERE id = ?`, args: [reward.price_diamonds, parseInt(player_id)] },
         { sql: `INSERT INTO diamond_transactions (player_id, amount, type, source, reference_id, description) VALUES (?, ?, 'spend', 'shop', ?, ?)`, args: [parseInt(player_id), reward.price_diamonds, reward.id, `Đổi quà bố mẹ: ${reward.title}`] },
@@ -333,6 +370,20 @@ export default async function handler(req, res) {
           FROM parent_reward_claims c JOIN players p ON p.id = c.player_id
           WHERE c.parent_id = ? ORDER BY (c.status = 'pending') DESC, c.claimed_at DESC LIMIT 50`,
         args: [parseInt(parent_id)],
+      });
+      return res.json(r.rows);
+    } catch (err) { return res.status(500).json({ error: err.message }); }
+  }
+
+  // GET /api/parent?action=reward-history&parent_id=X&player_id=Y  (gift history for one child)
+  if (req.method === 'GET' && action === 'reward-history') {
+    const { parent_id, player_id } = req.query;
+    if (!parent_id || !player_id) return res.status(400).json({ error: 'Thiếu thông tin' });
+    try {
+      const r = await db.execute({
+        sql: `SELECT id, title, icon, price_diamonds, status, claimed_at, fulfilled_at
+          FROM parent_reward_claims WHERE parent_id = ? AND player_id = ? ORDER BY claimed_at DESC LIMIT 40`,
+        args: [parseInt(parent_id), parseInt(player_id)],
       });
       return res.json(r.rows);
     } catch (err) { return res.status(500).json({ error: err.message }); }

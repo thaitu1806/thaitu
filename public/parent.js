@@ -469,7 +469,7 @@
           <span class="reward-item-icon">${r.icon || '🎁'}</span>
           <div class="reward-item-info">
             <div class="reward-item-title">${escapeHtml(r.title)}</div>
-            <div class="reward-item-price">💎 ${r.price_diamonds}</div>
+            <div class="reward-item-price">💎 ${r.price_diamonds}${r.max_per_week ? ` · tối đa ${r.max_per_week} lần/tuần` : ''}</div>
           </div>
           <button class="btn-small reward-del" data-id="${r.id}" style="background:#dc2626;">🗑️</button>
         </div>
@@ -480,6 +480,30 @@
     } catch (err) {
       listEl.innerHTML = '<p style="color:#dc2626;">Không thể tải quà</p>';
     }
+    loadRewardHistory(playerId);
+  }
+
+  async function loadRewardHistory(playerId) {
+    const el = document.getElementById('reward-history');
+    if (!el) return;
+    try {
+      const res = await fetch(`/api/parent?action=reward-history&parent_id=${currentParent.id}&player_id=${playerId}`);
+      const items = await res.json();
+      if (!Array.isArray(items) || items.length === 0) {
+        el.innerHTML = '<p style="color:#999;font-size:0.85rem;padding:6px 0;">Chưa có quà nào được đổi.</p>';
+        return;
+      }
+      el.innerHTML = items.map(c => `
+        <div class="rh-item">
+          <span class="rh-icon">${c.icon || '🎁'}</span>
+          <div class="rh-info">
+            <div class="rh-title">${escapeHtml(c.title)}</div>
+            <div class="rh-meta">💎 ${c.price_diamonds} · ${c.claimed_at ? new Date(c.claimed_at).toLocaleDateString('vi-VN') : ''}</div>
+          </div>
+          <span class="rh-status ${c.status === 'fulfilled' ? 'done' : 'pending'}">${c.status === 'fulfilled' ? '✅ Đã tặng' : '⏳ Chờ tặng'}</span>
+        </div>
+      `).join('');
+    } catch (err) { el.innerHTML = ''; }
   }
 
   async function createReward() {
@@ -492,15 +516,18 @@
     if (!title) { msgEl.textContent = 'Nhập tên quà'; return; }
     if (price < 1) { msgEl.textContent = 'Giá phải lớn hơn 0'; return; }
     if (!rewardPlayerId) { msgEl.textContent = 'Chưa chọn con'; return; }
+    const maxWeekEl = document.getElementById('reward-maxweek');
+    const maxWeek = maxWeekEl && maxWeekEl.value ? parseInt(maxWeekEl.value) : null;
     try {
       const res = await fetch('/api/parent?action=create-reward', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ parent_id: currentParent.id, player_id: rewardPlayerId, title, icon: rewardIcon, price_diamonds: price }),
+        body: JSON.stringify({ parent_id: currentParent.id, player_id: rewardPlayerId, title, icon: rewardIcon, price_diamonds: price, max_per_week: maxWeek }),
       });
       const data = await res.json();
       if (!res.ok) { msgEl.textContent = data.error || 'Lỗi'; return; }
       titleEl.value = '';
       priceEl.value = '50';
+      if (maxWeekEl) maxWeekEl.value = '';
       loadRewards(rewardPlayerId);
     } catch (err) { msgEl.textContent = 'Lỗi kết nối'; }
   }
