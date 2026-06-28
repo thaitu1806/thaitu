@@ -399,6 +399,62 @@ async function handleParent(req, res) {
     return res.json({ ok: true });
   }
 
+  // ── Parent-created rewards ("Quà từ bố mẹ") ──
+  if (req.method === 'POST' && action === 'create-reward') {
+    const { parent_id, player_id, title, icon, price_diamonds } = req.body;
+    if (!parent_id || !player_id || !title) return res.status(400).json({ error: 'Thiếu thông tin' });
+    const price = Math.max(1, parseInt(price_diamonds) || 50);
+    const link = await db.execute({ sql: `SELECT id FROM parent_children WHERE parent_id = ? AND player_id = ?`, args: [parseInt(parent_id), parseInt(player_id)] });
+    if (link.rows.length === 0) return res.status(403).json({ error: 'Không có quyền' });
+    const r = await db.execute({ sql: `INSERT INTO parent_rewards (parent_id, player_id, title, icon, price_diamonds) VALUES (?, ?, ?, ?, ?)`, args: [parseInt(parent_id), parseInt(player_id), String(title).slice(0, 60), icon || '🎁', price] });
+    return res.json({ ok: true, id: Number(r.lastInsertRowid) });
+  }
+  if (req.method === 'GET' && action === 'rewards') {
+    const { parent_id, player_id } = req.query;
+    if (!player_id) return res.status(400).json({ error: 'Thiếu player_id' });
+    let sql, args;
+    if (parent_id) { sql = `SELECT id, title, icon, price_diamonds, is_active, created_at FROM parent_rewards WHERE parent_id = ? AND player_id = ? ORDER BY created_at DESC`; args = [parseInt(parent_id), parseInt(player_id)]; }
+    else { sql = `SELECT id, title, icon, price_diamonds FROM parent_rewards WHERE player_id = ? AND is_active = 1 ORDER BY price_diamonds ASC`; args = [parseInt(player_id)]; }
+    const r = await db.execute({ sql, args });
+    return res.json(r.rows);
+  }
+  if (req.method === 'DELETE' && action === 'delete-reward') {
+    const { parent_id, reward_id } = req.query;
+    if (!parent_id || !reward_id) return res.status(400).json({ error: 'Thiếu thông tin' });
+    await db.execute({ sql: `DELETE FROM parent_rewards WHERE id = ? AND parent_id = ?`, args: [parseInt(reward_id), parseInt(parent_id)] });
+    return res.json({ ok: true });
+  }
+  if (req.method === 'POST' && action === 'redeem-reward') {
+    const { player_id, reward_id } = req.body;
+    if (!player_id || !reward_id) return res.status(400).json({ error: 'Thiếu thông tin' });
+    const rw = await db.execute({ sql: `SELECT * FROM parent_rewards WHERE id = ? AND player_id = ? AND is_active = 1`, args: [parseInt(reward_id), parseInt(player_id)] });
+    if (rw.rows.length === 0) return res.status(404).json({ error: 'Quà không tồn tại' });
+    const reward = rw.rows[0];
+    const pl = await db.execute({ sql: `SELECT total_diamonds FROM players WHERE id = ?`, args: [parseInt(player_id)] });
+    const bal = pl.rows[0]?.total_diamonds || 0;
+    if (bal < reward.price_diamonds) return res.status(400).json({ error: 'Chưa đủ kim cương' });
+    await db.batch([
+      { sql: `UPDATE players SET total_diamonds = total_diamonds - ? WHERE id = ?`, args: [reward.price_diamonds, parseInt(player_id)] },
+      { sql: `INSERT INTO diamond_transactions (player_id, amount, type, source, reference_id, description) VALUES (?, ?, 'spend', 'shop', ?, ?)`, args: [parseInt(player_id), reward.price_diamonds, reward.id, `Đổi quà bố mẹ: ${reward.title}`] },
+      { sql: `INSERT INTO parent_reward_claims (reward_id, player_id, parent_id, title, icon, price_diamonds) VALUES (?, ?, ?, ?, ?, ?)`, args: [reward.id, parseInt(player_id), reward.parent_id, reward.title, reward.icon, reward.price_diamonds] },
+    ]);
+    return res.json({ ok: true, new_balance: bal - reward.price_diamonds, title: reward.title });
+  }
+  if (req.method === 'GET' && action === 'claims') {
+    const { parent_id } = req.query;
+    if (!parent_id) return res.status(400).json({ error: 'Thiếu parent_id' });
+    const r = await db.execute({ sql: `SELECT c.id, c.title, c.icon, c.price_diamonds, c.status, c.claimed_at, c.player_id, p.name as player_name FROM parent_reward_claims c JOIN players p ON p.id = c.player_id WHERE c.parent_id = ? ORDER BY (c.status = 'pending') DESC, c.claimed_at DESC LIMIT 50`, args: [parseInt(parent_id)] });
+    return res.json(r.rows);
+  }
+  if (req.method === 'PUT' && action === 'fulfill-claim') {
+    const { parent_id, claim_id } = req.body;
+    if (!parent_id || !claim_id) return res.status(400).json({ error: 'Thiếu thông tin' });
+    const c = await db.execute({ sql: `SELECT id FROM parent_reward_claims WHERE id = ? AND parent_id = ?`, args: [parseInt(claim_id), parseInt(parent_id)] });
+    if (c.rows.length === 0) return res.status(403).json({ error: 'Không có quyền' });
+    await db.execute({ sql: `UPDATE parent_reward_claims SET status = 'fulfilled', fulfilled_at = CURRENT_TIMESTAMP WHERE id = ?`, args: [parseInt(claim_id)] });
+    return res.json({ ok: true });
+  }
+
   res.status(404).json({ error: 'Action không hợp lệ' });
 }
 

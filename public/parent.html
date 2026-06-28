@@ -41,6 +41,9 @@
       <button id="btn-logout" class="btn-small">Đăng xuất</button>
     </header>
 
+    <!-- Pending reward claims (child redeemed a parent gift) -->
+    <div id="claims-banner" class="claims-banner hidden"></div>
+
     <section class="children-section">
       <div class="section-header">
         <h2>🧒 Con của bạn</h2>
@@ -84,12 +87,39 @@
         <button class="tab" data-tab="tab-sessions">Lịch sử chơi</button>
         <button class="tab" data-tab="tab-exams">Bài thi</button>
         <button class="tab" data-tab="tab-vouchers">Đổi thưởng</button>
+        <button class="tab" data-tab="tab-rewards">🎁 Quà của con</button>
       </div>
 
       <div id="tab-performance" class="tab-content active"></div>
       <div id="tab-sessions" class="tab-content"></div>
       <div id="tab-exams" class="tab-content"></div>
       <div id="tab-vouchers" class="tab-content"></div>
+      <div id="tab-rewards" class="tab-content">
+        <div class="reward-create">
+          <h3>🎁 Tạo quà cho con</h3>
+          <p class="reward-hint">Con dùng kim cương 💎 kiếm được khi học để đổi quà thật do bạn đặt ra.</p>
+          <div class="reward-form">
+            <div class="reward-icon-row" id="reward-icon-row">
+              <button type="button" class="ri-btn active" data-icon="🎁">🎁</button>
+              <button type="button" class="ri-btn" data-icon="🍦">🍦</button>
+              <button type="button" class="ri-btn" data-icon="🎮">🎮</button>
+              <button type="button" class="ri-btn" data-icon="📺">📺</button>
+              <button type="button" class="ri-btn" data-icon="🎡">🎡</button>
+              <button type="button" class="ri-btn" data-icon="🧸">🧸</button>
+              <button type="button" class="ri-btn" data-icon="🍕">🍕</button>
+              <button type="button" class="ri-btn" data-icon="⚽">⚽</button>
+            </div>
+            <input type="text" id="reward-title" placeholder="Tên quà (VD: Đi công viên)" maxlength="50">
+            <div class="reward-price-row">
+              <label>Giá 💎</label>
+              <input type="number" id="reward-price" value="50" min="1" max="9999">
+              <button id="btn-create-reward" class="btn-small btn-accent">+ Thêm quà</button>
+            </div>
+            <span id="reward-create-msg" class="error-msg"></span>
+          </div>
+        </div>
+        <div class="reward-list" id="reward-list"></div>
+      </div>
     </div>
   </div>
 

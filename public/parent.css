@@ -412,3 +412,37 @@ body {
   .link-code-form { flex-direction: column; }
   .link-code-form input { font-size: 1.4rem; }
 }
+
+
+/* ===== PARENT-CREATED REWARDS ("Quà từ bố mẹ") ===== */
+.reward-create { background: #fff7ef; border: 1px solid #ffe0c2; border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+.reward-create h3 { font-size: 1.05rem; margin-bottom: 4px; color: #c2641b; }
+.reward-hint { font-size: 0.82rem; color: #8a7a5a; margin-bottom: 10px; }
+.reward-form { display: flex; flex-direction: column; gap: 10px; }
+.reward-icon-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.ri-btn { width: 40px; height: 40px; border: 2px solid #eee; border-radius: 10px; background: #fff; font-size: 1.3rem; cursor: pointer; transition: all .15s; }
+.ri-btn.active { border-color: #ff8f1f; background: #fff0db; transform: scale(1.05); }
+.reward-form input[type="text"] { padding: 11px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; outline: none; font-family: inherit; }
+.reward-form input[type="text"]:focus { border-color: #ff8f1f; }
+.reward-price-row { display: flex; align-items: center; gap: 8px; }
+.reward-price-row label { font-weight: 800; color: #777; font-size: 0.9rem; }
+.reward-price-row input { width: 80px; padding: 10px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; outline: none; font-family: inherit; text-align: center; }
+.reward-price-row .btn-small { margin-left: auto; }
+.reward-list { display: flex; flex-direction: column; gap: 8px; }
+.reward-item { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid #f0e6d6; border-radius: 12px; padding: 10px 12px; }
+.reward-item-icon { font-size: 1.8rem; }
+.reward-item-info { flex: 1; min-width: 0; }
+.reward-item-title { font-weight: 800; }
+.reward-item-price { font-size: 0.85rem; color: #d2691e; font-weight: 800; }
+
+/* Pending claims banner */
+.claims-banner { background: linear-gradient(135deg, #fff3cd, #ffe69a); border: 2px solid #ffd257; border-radius: 16px; padding: 12px 14px; margin-bottom: 16px; }
+.claims-banner.hidden { display: none; }
+.claims-title { font-weight: 900; color: #a05a00; margin-bottom: 8px; }
+.claim-item { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
+.claim-item:last-child { margin-bottom: 0; }
+.claim-icon { font-size: 1.8rem; }
+.claim-info { flex: 1; min-width: 0; }
+.claim-title { font-weight: 800; }
+.claim-meta { font-size: 0.78rem; color: #888; }
+.claim-done { flex: 0 0 auto; }

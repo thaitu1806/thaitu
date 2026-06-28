@@ -46,7 +46,67 @@
     setupTabs();
     setupModal();
     loadPlayerInfo();
+    loadParentRewards();
     loadItems(currentCategory);
+  }
+
+  // Load parent-created rewards ("Quà từ bố mẹ") and render a special section.
+  async function loadParentRewards() {
+    try {
+      const res = await fetch(`/api/parent?action=rewards&player_id=${playerId}`);
+      if (!res.ok) return;
+      const rewards = await res.json();
+      if (!Array.isArray(rewards) || rewards.length === 0) return;
+      const wrap = document.createElement('div');
+      wrap.className = 'parent-rewards-section';
+      wrap.innerHTML = `<h2 class="pr-title">🎁 Quà từ bố mẹ</h2><p class="pr-sub">Quà thật do bố mẹ tặng — đổi bằng kim cương con kiếm được!</p><div class="pr-grid" id="pr-grid"></div>`;
+      const container = document.querySelector('.shop-container');
+      const grid = container.querySelector('.items-grid');
+      container.insertBefore(wrap, grid);
+      const prGrid = wrap.querySelector('#pr-grid');
+      rewards.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'pr-card';
+        const canAfford = playerDiamonds >= r.price_diamonds;
+        card.innerHTML = `
+          <div class="pr-icon">${r.icon || '🎁'}</div>
+          <div class="pr-name">${escapeHtml(r.title)}</div>
+          <div class="pr-price">💎 ${r.price_diamonds}</div>
+          <button class="pr-buy ${canAfford ? '' : 'cannot-buy'}" ${canAfford ? '' : 'disabled'}>${canAfford ? 'Đổi quà 🎁' : 'Chưa đủ 💎'}</button>`;
+        const btn = card.querySelector('.pr-buy');
+        if (canAfford) btn.addEventListener('click', () => redeemParentReward(r, card));
+        prGrid.appendChild(card);
+      });
+    } catch (e) {}
+  }
+
+  function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+  async function redeemParentReward(reward, card) {
+    if (!confirm(`Đổi "${reward.title}" với 💎 ${reward.price_diamonds}?`)) return;
+    try {
+      const res = await fetch('/api/parent?action=redeem-reward', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ player_id: playerId, reward_id: reward.id }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        playerDiamonds = data.new_balance;
+        diamondCountEl.textContent = playerDiamonds;
+        if (window.HocVuiSound) window.HocVuiSound.play('win');
+        showToast(`🎉 Đã đổi "${reward.title}"! Bố mẹ sẽ tặng con nhé!`);
+        // refresh affordability across the section
+        loadParentRewardsRefresh();
+      } else {
+        showToast(`❌ ${data.error || 'Lỗi khi đổi quà'}`);
+      }
+    } catch (e) { showToast('❌ Lỗi kết nối!'); }
+  }
+
+  function loadParentRewardsRefresh() {
+    const existing = document.querySelector('.parent-rewards-section');
+    if (existing) existing.remove();
+    loadParentRewards();
   }
 
   // Setup category tabs

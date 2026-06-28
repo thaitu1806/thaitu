@@ -159,6 +159,7 @@
     }
 
     loadChildren();
+    loadClaims();
   }
 
   function setupDashboardListeners() {
@@ -207,6 +208,18 @@
         document.getElementById(tab.dataset.tab).classList.add('active');
       });
     });
+
+    // Reward icon picker + create button
+    const iconRow = document.getElementById('reward-icon-row');
+    if (iconRow) {
+      iconRow.addEventListener('click', (e) => {
+        const b = e.target.closest('.ri-btn'); if (!b) return;
+        iconRow.querySelectorAll('.ri-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        rewardIcon = b.dataset.icon;
+      });
+    }
+    document.getElementById('btn-create-reward')?.addEventListener('click', createReward);
   }
 
   // ─── Link by Code ──────────────────────────────────────────────
@@ -431,7 +444,113 @@
     } catch (err) {
       // Silently fail
     }
+
+    // Parent-created rewards tab
+    loadRewards(playerId);
   }
+
+  // ─── Parent-created rewards ───────────────────────────────────
+  let rewardIcon = '🎁';
+  let rewardPlayerId = null;
+
+  async function loadRewards(playerId) {
+    rewardPlayerId = playerId;
+    const listEl = document.getElementById('reward-list');
+    if (!listEl) return;
+    try {
+      const res = await fetch(`/api/parent?action=rewards&parent_id=${currentParent.id}&player_id=${playerId}`);
+      const rewards = await res.json();
+      if (!Array.isArray(rewards) || rewards.length === 0) {
+        listEl.innerHTML = '<p style="color:#999;font-size:0.9rem;padding:10px 0;">Chưa có quà nào. Thêm quà đầu tiên cho con nhé!</p>';
+        return;
+      }
+      listEl.innerHTML = rewards.map(r => `
+        <div class="reward-item">
+          <span class="reward-item-icon">${r.icon || '🎁'}</span>
+          <div class="reward-item-info">
+            <div class="reward-item-title">${escapeHtml(r.title)}</div>
+            <div class="reward-item-price">💎 ${r.price_diamonds}</div>
+          </div>
+          <button class="btn-small reward-del" data-id="${r.id}" style="background:#dc2626;">🗑️</button>
+        </div>
+      `).join('');
+      listEl.querySelectorAll('.reward-del').forEach(btn => {
+        btn.addEventListener('click', () => deleteReward(btn.dataset.id, playerId));
+      });
+    } catch (err) {
+      listEl.innerHTML = '<p style="color:#dc2626;">Không thể tải quà</p>';
+    }
+  }
+
+  async function createReward() {
+    const titleEl = document.getElementById('reward-title');
+    const priceEl = document.getElementById('reward-price');
+    const msgEl = document.getElementById('reward-create-msg');
+    msgEl.textContent = '';
+    const title = titleEl.value.trim();
+    const price = parseInt(priceEl.value) || 0;
+    if (!title) { msgEl.textContent = 'Nhập tên quà'; return; }
+    if (price < 1) { msgEl.textContent = 'Giá phải lớn hơn 0'; return; }
+    if (!rewardPlayerId) { msgEl.textContent = 'Chưa chọn con'; return; }
+    try {
+      const res = await fetch('/api/parent?action=create-reward', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ parent_id: currentParent.id, player_id: rewardPlayerId, title, icon: rewardIcon, price_diamonds: price }),
+      });
+      const data = await res.json();
+      if (!res.ok) { msgEl.textContent = data.error || 'Lỗi'; return; }
+      titleEl.value = '';
+      priceEl.value = '50';
+      loadRewards(rewardPlayerId);
+    } catch (err) { msgEl.textContent = 'Lỗi kết nối'; }
+  }
+
+  async function deleteReward(rewardId, playerId) {
+    try {
+      await fetch(`/api/parent?action=delete-reward&parent_id=${currentParent.id}&reward_id=${rewardId}`, { method: 'DELETE' });
+      loadRewards(playerId);
+    } catch (err) {}
+  }
+
+  // ─── Pending reward claims banner ──────────────────────────────
+  async function loadClaims() {
+    if (!currentParent) return;
+    const banner = document.getElementById('claims-banner');
+    if (!banner) return;
+    try {
+      const res = await fetch(`/api/parent?action=claims&parent_id=${currentParent.id}`);
+      const claims = await res.json();
+      const pending = (Array.isArray(claims) ? claims : []).filter(c => c.status === 'pending');
+      if (pending.length === 0) { banner.classList.add('hidden'); banner.innerHTML = ''; return; }
+      banner.classList.remove('hidden');
+      banner.innerHTML = `<div class="claims-title">🎁 Con đã đổi quà — hãy tặng con nhé!</div>` +
+        pending.map(c => `
+          <div class="claim-item">
+            <span class="claim-icon">${c.icon || '🎁'}</span>
+            <div class="claim-info">
+              <div class="claim-title">${escapeHtml(c.title)}</div>
+              <div class="claim-meta">${escapeHtml(c.player_name || '')} · 💎 ${c.price_diamonds} · ${c.claimed_at ? new Date(c.claimed_at).toLocaleDateString('vi-VN') : ''}</div>
+            </div>
+            <button class="btn-small btn-accent claim-done" data-id="${c.id}">✅ Đã tặng</button>
+          </div>
+        `).join('');
+      banner.querySelectorAll('.claim-done').forEach(btn => {
+        btn.addEventListener('click', () => fulfillClaim(btn.dataset.id));
+      });
+    } catch (err) { banner.classList.add('hidden'); }
+  }
+
+  async function fulfillClaim(claimId) {
+    try {
+      await fetch('/api/parent?action=fulfill-claim', {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ parent_id: currentParent.id, claim_id: claimId }),
+      });
+      loadClaims();
+    } catch (err) {}
+  }
+
+  function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
   // ─── Voucher Approval (global for inline onclick) ───────────────
   window.approveVoucher = async function (voucherId, status) {

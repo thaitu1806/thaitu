@@ -224,3 +224,41 @@ CREATE TABLE IF NOT EXISTS ai_usage_logs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_ai_usage_player_date ON ai_usage_logs(player_id, created_at);
+
+-- Parent-created Rewards ("Quà từ bố mẹ")
+-- Parents define real-life rewards (e.g. "Đi công viên") that their child can
+-- redeem with diamonds. A redemption creates a claim the parent fulfills.
+
+CREATE TABLE IF NOT EXISTS parent_rewards (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  parent_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  icon TEXT DEFAULT '🎁',
+  price_diamonds INTEGER NOT NULL DEFAULT 50,
+  is_active INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (parent_id) REFERENCES parents(id),
+  FOREIGN KEY (player_id) REFERENCES players(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_parent_rewards_player ON parent_rewards(player_id, is_active);
+
+CREATE TABLE IF NOT EXISTS parent_reward_claims (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  reward_id INTEGER NOT NULL,
+  player_id INTEGER NOT NULL,
+  parent_id INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  icon TEXT DEFAULT '🎁',
+  price_diamonds INTEGER NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'fulfilled')),
+  claimed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  fulfilled_at DATETIME DEFAULT NULL,
+  FOREIGN KEY (reward_id) REFERENCES parent_rewards(id),
+  FOREIGN KEY (player_id) REFERENCES players(id),
+  FOREIGN KEY (parent_id) REFERENCES parents(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_parent_reward_claims_parent ON parent_reward_claims(parent_id, status);
+CREATE INDEX IF NOT EXISTS idx_parent_reward_claims_player ON parent_reward_claims(player_id);
