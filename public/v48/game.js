@@ -9,6 +9,7 @@
 
   let state = null, cache = [], used = new Set();
   let curQ = null, combo = 0, maxCombo = 0;
+  let curQuiz = null;           // active quiz-engine handle for the current question
   let subject = 'mix', difficulty = 'easy';
   let qStart = 0, tH = null, locked = false, fbId = -1;
   let charRefs = [];            // [{ slot, char }] per dino index
@@ -134,18 +135,31 @@
     curQ = nextQ();
     locked = false;
     qStart = Date.now();
-    $('q-text').textContent = curQ.question_text;
     $('feedback').style.display = 'none';
     const opts = $('q-options');
-    opts.innerHTML = '';
-    ['a','b','c','d'].forEach(k => {
-      const t = curQ[`option_${k}`];
-      if (t == null) return;
-      const btn = document.createElement('button');
-      btn.className = 'option-btn'; btn.dataset.key = k; btn.textContent = t;
-      btn.addEventListener('click', () => handleAns(k));
-      opts.appendChild(btn);
-    });
+    // Use the shared quiz engine: each question may be answered via a different
+    // interaction (multiple choice / true-false / type-in) while the dino-rescue
+    // scene and rewards stay the same.
+    if (window.HocVuiQuiz) {
+      curQuiz = window.HocVuiQuiz.render({
+        questionEl: $('q-text'),
+        optionsEl: opts,
+        question: curQ,
+        onResult: (ok) => handleAns(ok),
+      });
+    } else {
+      // Fallback: classic buttons if the engine failed to load.
+      $('q-text').textContent = curQ.question_text;
+      opts.innerHTML = '';
+      ['a','b','c','d'].forEach(k => {
+        const t = curQ[`option_${k}`];
+        if (t == null) return;
+        const btn = document.createElement('button');
+        btn.className = 'option-btn'; btn.dataset.key = k; btn.textContent = t;
+        btn.addEventListener('click', () => handleAns(k === (curQ.correct_answer || '').toLowerCase()));
+        opts.appendChild(btn);
+      });
+    }
     startTimer();
   }
 
@@ -161,16 +175,10 @@
     }, 100);
   }
 
-  function handleAns(sel) {
+  function handleAns(ok) {
     if (locked) return;
     locked = true; clearInterval(tH);
-    const ck = (curQ.correct_answer || '').toLowerCase();
-    const ok = sel === ck;
-    document.querySelectorAll('.option-btn').forEach(b => {
-      b.classList.add('disabled');
-      if (b.dataset.key === ck) b.classList.add('correct');
-      else if (b.dataset.key === sel && !ok) b.classList.add('wrong');
-    });
+    ok = !!ok;
     const prevRescued = state.rescuedCount;
     if (ok) {
       state = window.V48Logic.applyCorrect(state);
@@ -179,7 +187,7 @@
       state = window.V48Logic.applyWrongOrTimeout(state);
       combo = 0;
     }
-    logAns(sel, ck, ok, Date.now() - qStart);
+    logAns(ok ? (curQ.correct_answer || '') : 'x', (curQ.correct_answer || '').toLowerCase(), ok, Date.now() - qStart);
     const fb = $('feedback');
     fb.style.display = 'block';
     const delta = state.rescuedCount - prevRescued;
@@ -214,6 +222,7 @@
   function handleTimeout() {
     if (locked) return;
     locked = true;
+    if (curQuiz && curQuiz.revealTimeout) curQuiz.revealTimeout();
     state = window.V48Logic.applyWrongOrTimeout(state);
     combo = 0;
     const fb = $('feedback'); fb.style.display = 'block';
