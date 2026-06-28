@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <script src="../../api-config.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>👆 Vuốt Đúng Sai</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/tts.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- START -->
+    <section id="start-screen" class="screen active">
+      <div class="container">
+        <div class="logo-scene" aria-hidden="true">
+          <span class="ls-x">❌</span><span class="ls-card">5+3=9</span><span class="ls-v">✅</span>
+        </div>
+        <h1 class="main-title">👆 Vuốt Đúng Sai</h1>
+        <p class="subtitle">Vuốt phải nếu ĐÚNG, vuốt trái nếu SAI!</p>
+        <div class="selector-group"><label class="selector-label">📚 Môn học:</label><div class="selector-options" data-group="subject">
+          <button type="button" class="sel-btn active" data-value="math">🔢 Toán</button>
+          <button type="button" class="sel-btn" data-value="vietnamese">📖 Tiếng Việt</button>
+          <button type="button" class="sel-btn" data-value="english">🔤 Anh</button>
+        </div></div>
+        <div class="selector-group"><label class="selector-label">⚡ Độ khó:</label><div class="selector-options" data-group="difficulty">
+          <button type="button" class="sel-btn active" data-value="easy">🌱 Dễ</button>
+          <button type="button" class="sel-btn" data-value="medium">🌿 Vừa</button>
+          <button type="button" class="sel-btn" data-value="hard">🌳 Khó</button>
+        </div></div>
+        <button class="btn-primary" id="btn-start">👆 Bắt Đầu!</button>
+        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn</button>
+        <a href="/lab/" class="home-link">← Về Lab</a>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section id="game-screen" class="screen">
+      <div class="game-hud">
+        <button class="btn-exit" id="btn-exit" title="Thoát">🚪</button>
+        <span class="hud-item">❓ <span id="round-text">1/12</span></span>
+        <span class="hud-item">✅ <span id="score-text">0</span></span>
+        <span class="hud-item">⭐ <span id="streak-text">0</span></span>
+      </div>
+      <div class="swipe-stage" id="swipe-stage">
+        <div class="swipe-zone left" id="zone-left">❌<br>SAI</div>
+        <div class="swipe-zone right" id="zone-right">✅<br>ĐÚNG</div>
+        <div class="card-deck" id="card-deck"></div>
+        <div class="swipe-feedback" id="swipe-feedback"></div>
+        <div class="swipe-controls">
+          <button class="ctrl-btn ctrl-no" id="btn-no">❌ Sai</button>
+          <button class="ctrl-btn ctrl-yes" id="btn-yes">Đúng ✅</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="result-screen" class="screen">
+      <div class="container">
+        <div class="result-emoji" id="result-emoji">👆</div>
+        <h2 class="result-title" id="result-title">Hoàn Thành!</h2>
+        <div class="star-row" id="result-stars"></div>
+        <div class="result-detail" id="result-detail"></div>
+        <button class="btn-primary" id="btn-replay">🔄 Chơi Lại</button>
+        <a href="/lab/" class="home-link">← Về Lab</a>
+      </div>
+    </section>
+  </div>
+
+  <div id="guide-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <ul class="modal-rules">
+        <li>👆 Mỗi thẻ hiện một câu (vd "5 + 3 = 9").</li>
+        <li>➡️ Vuốt phải (hoặc bấm ✅) nếu câu <b>ĐÚNG</b>.</li>
+        <li>⬅️ Vuốt trái (hoặc bấm ❌) nếu câu <b>SAI</b>.</li>
+        <li>⭐ Trả lời đúng liên tiếp để tăng chuỗi điểm!</li>
+        <li>🏆 Hoàn thành 12 thẻ để xem kết quả.</li>
+      </ul>
+      <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
+    </div>
+  </div>
+
+  <div id="exit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card exit-card">
+      <div class="exit-icon">🚪</div>
+      <p class="exit-text">Thoát game?</p>
+      <div class="exit-actions">
+        <button class="exit-cancel" id="btn-exit-cancel">Tiếp tục</button>
+        <button class="exit-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/tts.js"></script>
+  <script src="/link-gate.js"></script>
+  <script src="game-logic.js"></script>
+  <script src="game.js"></script>
+  <script src="/sounds.js"></script>
+  <script src="/mascot.js"></script>
+  <script src="/collection.js"></script>
+</body>
+</html>

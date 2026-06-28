@@ -1,0 +1,81 @@
+/* Lab / Swipe — Vuốt Đúng Sai */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --accent: #4a90e2; --ink: #1e2742; --yes: #34c77b; --no: #ff5a5a; }
+html, body { height: 100%; }
+body { font-family: 'Nunito', system-ui, sans-serif; color: var(--ink); background: linear-gradient(180deg,#e7efff,#dbe7ff); overflow: hidden; -webkit-tap-highlight-color: transparent; }
+#app { height: 100vh; height: 100dvh; width: 100vw; position: relative; }
+.screen { display: none; height: 100vh; height: 100dvh; width: 100vw; position: absolute; inset: 0; }
+.screen.active { display: flex; flex-direction: column; }
+
+.container { margin: auto; width: min(92%,460px); text-align: center; background: rgba(255,255,255,0.96); border-radius: 26px; padding: 28px 22px; box-shadow: 0 18px 50px rgba(40,80,160,0.2); max-height: 94vh; overflow-y: auto; }
+.main-title { font-size: 1.6rem; font-weight: 900; color: #2c5d9e; margin-bottom: 4px; }
+.subtitle { font-size: 0.95rem; color: #557; margin-bottom: 16px; }
+.logo-scene { display: flex; align-items: center; justify-content: center; gap: 10px; height: 60px; }
+.logo-scene .ls-card { font-weight: 900; font-size: 1.4rem; background: #fff; border: 2px solid #cfe0f5; border-radius: 12px; padding: 8px 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); animation: wiggle 2s ease-in-out infinite; }
+.logo-scene .ls-x, .logo-scene .ls-v { font-size: 1.6rem; }
+@keyframes wiggle { 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
+
+.selector-group { margin: 12px 0; text-align: left; }
+.selector-label { font-weight: 800; font-size: 0.9rem; display: block; margin-bottom: 6px; }
+.selector-options { display: flex; gap: 8px; flex-wrap: wrap; }
+.sel-btn { flex: 1 1 auto; padding: 9px 10px; border: 2px solid #dde6f0; border-radius: 12px; background: #fff; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: .15s; }
+.sel-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); transform: translateY(-2px); }
+.btn-primary { width: 100%; padding: 15px; margin-top: 10px; border: none; border-radius: 16px; background: linear-gradient(135deg,#5ba2f0,#2c6fd1); color: #fff; font-size: 1.1rem; font-weight: 900; cursor: pointer; box-shadow: 0 8px 0 #1f55a8; transition: .1s; }
+.btn-primary:active { transform: translateY(4px); box-shadow: 0 4px 0 #1f55a8; }
+.btn-guide { width: 100%; padding: 11px; margin-top: 10px; border: 2px solid #9bc; border-radius: 14px; background: #fff; color: #357; font-weight: 800; cursor: pointer; }
+.home-link { display: inline-block; margin-top: 14px; color: #557; font-weight: 800; text-decoration: none; }
+
+.game-hud { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: rgba(0,0,0,0.2); z-index: 6; }
+.hud-item { color: #fff; font-weight: 900; font-size: 0.95rem; background: rgba(255,255,255,0.18); padding: 5px 10px; border-radius: 10px; }
+.btn-exit { margin-right: auto; width: 38px; height: 38px; border: none; border-radius: 50%; background: rgba(255,255,255,0.25); color: #fff; font-size: 1.1rem; cursor: pointer; }
+
+.swipe-stage { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; padding: 16px; }
+.swipe-zone { position: absolute; top: 0; bottom: 0; width: 42%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; text-align: center; opacity: 0.25; pointer-events: none; line-height: 1.3; }
+.swipe-zone.left { left: 0; background: linear-gradient(90deg, rgba(255,90,90,0.35), transparent); color: var(--no); }
+.swipe-zone.right { right: 0; background: linear-gradient(270deg, rgba(52,199,123,0.35), transparent); color: var(--yes); }
+
+.card-deck { position: relative; width: min(88%, 340px); height: 220px; display: flex; align-items: center; justify-content: center; z-index: 2; }
+.card-deck .loading { opacity: .6; font-weight: 800; }
+.swipe-card {
+  position: absolute; width: 100%; min-height: 200px; background: #fff; border-radius: 22px;
+  box-shadow: 0 14px 36px rgba(40,80,160,0.25); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px; padding: 24px; cursor: grab; touch-action: none;
+  border: 3px solid #eef3fb; user-select: none; -webkit-user-select: none;
+}
+.swipe-card:active { cursor: grabbing; }
+.sc-q { font-size: 1.7rem; font-weight: 900; text-align: center; color: #234; white-space: pre-wrap; }
+.sc-hint { font-size: 0.85rem; color: #8a93a8; font-weight: 800; }
+.sc-stamp { position: absolute; top: 16px; font-size: 1.3rem; font-weight: 900; padding: 4px 12px; border-radius: 10px; border: 3px solid; opacity: 0; transform: rotate(-12deg); }
+.sc-yes { right: 14px; color: var(--yes); border-color: var(--yes); }
+.sc-no { left: 14px; color: var(--no); border-color: var(--no); }
+.swipe-card.tilt-yes .sc-yes { opacity: 1; }
+.swipe-card.tilt-no .sc-no { opacity: 1; }
+
+.swipe-feedback { min-height: 24px; margin-top: 14px; font-weight: 900; font-size: 1rem; z-index: 3; text-align: center; }
+.swipe-feedback.good { color: #1f9e4a; }
+.swipe-feedback.bad { color: #e23b3b; }
+
+.swipe-controls { display: flex; gap: 16px; margin-top: 16px; z-index: 3; }
+.ctrl-btn { padding: 14px 26px; border: none; border-radius: 16px; font-size: 1.1rem; font-weight: 900; cursor: pointer; color: #fff; box-shadow: 0 5px 0 rgba(0,0,0,0.2); }
+.ctrl-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+.ctrl-no { background: linear-gradient(135deg,#ff7a7a,#e23b3b); }
+.ctrl-yes { background: linear-gradient(135deg,#5ee29a,#22a35f); }
+
+.result-emoji { font-size: 3.6rem; animation: wiggle 1.8s ease-in-out infinite; }
+.result-title { font-size: 1.5rem; font-weight: 900; margin: 6px 0 10px; color: #2c5d9e; }
+.star-row { display: flex; justify-content: center; gap: 8px; margin: 8px 0; }
+.star { font-size: 2rem; filter: grayscale(1); opacity: .4; }
+.star.on { filter: none; opacity: 1; animation: starPop .4s; }
+@keyframes starPop { 50% { transform: scale(1.2); } }
+.result-detail { background: #f1f6fd; border-radius: 14px; padding: 14px; margin: 12px 0; font-weight: 700; line-height: 1.9; text-align: left; }
+
+.modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+.modal-card { background: #fff; border-radius: 22px; padding: 24px 20px; width: min(90%,360px); text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+.modal-title { font-size: 1.2rem; font-weight: 900; margin-bottom: 12px; color: #2c5d9e; }
+.modal-rules { text-align: left; line-height: 1.9; font-size: 0.93rem; margin-bottom: 16px; list-style: none; }
+.exit-card .exit-icon { font-size: 2.6rem; }
+.exit-text { font-size: 1.2rem; font-weight: 900; margin: 8px 0 16px; }
+.exit-actions { display: flex; gap: 10px; }
+.exit-cancel, .exit-confirm { flex: 1; padding: 12px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
+.exit-cancel { background: #e6eef6; color: #355; }
+.exit-confirm { background: #ff5a5a; color: #fff; }
