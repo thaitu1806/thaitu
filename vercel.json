@@ -98,8 +98,10 @@
     { "src": "/v58/(.*)", "dest": "/public/v58/$1" },
     { "src": "/v59/(.*)", "dest": "/public/v59/$1" },
     { "src": "/v60/(.*)", "dest": "/public/v60/$1" },
+    { "src": "/lab", "dest": "/public/lab/index.html" },
     { "src": "/lab/", "dest": "/public/lab/index.html" },
     { "src": "/lab/(?<g>[^/]+)/", "dest": "/public/lab/$g/index.html" },
+    { "src": "/lab/(?<g>[^/.]+)", "dest": "/public/lab/$g/index.html" },
     { "src": "/lab/(.*)", "dest": "/public/lab/$1" },
     { "src": "/", "dest": "/public/home.html" },
     { "src": "/(.*)", "dest": "/public/$1" }
