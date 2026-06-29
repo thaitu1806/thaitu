@@ -12,6 +12,7 @@ import { englishQuestionsHard } from './questions/english-hard.js';
 import { pictureMathEasy } from './questions/picture-math.js';
 import { preschoolPicture } from './questions/picture-preschool.js';
 import { grade1Picture } from './questions/picture-grade1.js';
+import { englishPreschool, englishGrade1 } from './questions/english-preschool-grade1.js';
 
 async function seed() {
   console.log('Initializing database...');
@@ -23,7 +24,9 @@ async function seed() {
 
   const allQuestions = [
     ...preschoolPicture.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 0 })),
+    ...englishPreschool.map(q => ({ ...q, subject: 'english', difficulty: 'easy', grade: 0 })),
     ...grade1Picture.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 1 })),
+    ...englishGrade1.map(q => ({ ...q, subject: 'english', difficulty: 'easy', grade: 1 })),
     ...mathQuestionsEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
     ...extraMathEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
     ...pictureMathEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),

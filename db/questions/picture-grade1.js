@@ -101,13 +101,66 @@ function genPrev() {
   return mkNum(`Số liền TRƯỚC số ${n} là số nào?`, n - 1, 2, `Trước ${n} là ${n - 1}.`);
 }
 
-const GENS = [genCount, genAdd, genSub, genMissing, genCompare, genShape, genNext, genPrev, genAdd, genCount];
+const GENS = [genCount, genAdd, genSub, genMissing, genCompare, genShape, genNext, genPrev, genAdd, genCount, genAnimal, genAnimalEn, genAnimal, genAnimalEn];
+
+// Con vật — nhận biết tiếng Việt.
+const ANIMALS = [
+  { name: 'con chó', icon: '🐶' },
+  { name: 'con mèo', icon: '🐱' },
+  { name: 'con gà', icon: '🐓' },
+  { name: 'con vịt', icon: '🦆' },
+  { name: 'con bò', icon: '🐮' },
+  { name: 'con lợn', icon: '🐷' },
+  { name: 'con cá', icon: '🐟' },
+  { name: 'con chim', icon: '🐦' },
+  { name: 'con thỏ', icon: '🐰' },
+  { name: 'con rùa', icon: '🐢' },
+  { name: 'con ong', icon: '🐝' },
+  { name: 'con bướm', icon: '🦋' },
+  { name: 'con voi', icon: '🐘' },
+  { name: 'con sư tử', icon: '🦁' },
+  { name: 'con khỉ', icon: '🐵' },
+];
+function genAnimal() {
+  const a = pick(ANIMALS);
+  const wrongs = shuffle(ANIMALS.filter(x => x !== a)).slice(0, 3).map(x => x.icon);
+  return mkIcon(`Đâu là ${a.name}? ${a.icon.slice(0,0)}`, [a.icon, ...wrongs], a.icon, `${a.icon} là ${a.name}.`);
+}
+
+// Con vật — tiếng Anh (grade 1 English).
+const ANIMALS_EN = [
+  { en: 'dog', vi: 'con chó', icon: '🐶' },
+  { en: 'cat', vi: 'con mèo', icon: '🐱' },
+  { en: 'fish', vi: 'con cá', icon: '🐟' },
+  { en: 'bird', vi: 'con chim', icon: '🐦' },
+  { en: 'rabbit', vi: 'con thỏ', icon: '🐰' },
+  { en: 'duck', vi: 'vịt', icon: '🦆' },
+  { en: 'cow', vi: 'con bò', icon: '🐮' },
+  { en: 'pig', vi: 'con lợn', icon: '🐷' },
+  { en: 'elephant', vi: 'con voi', icon: '🐘' },
+  { en: 'lion', vi: 'sư tử', icon: '🦁' },
+  { en: 'monkey', vi: 'con khỉ', icon: '🐵' },
+  { en: 'butterfly', vi: 'bướm', icon: '🦋' },
+  { en: 'turtle', vi: 'con rùa', icon: '🐢' },
+  { en: 'bee', vi: 'con ong', icon: '🐝' },
+];
+function genAnimalEn() {
+  const a = pick(ANIMALS_EN);
+  const mode = rnd(0, 1); // 0: which icon is "dog"?  1: this icon 🐶 is called...?
+  if (mode === 0) {
+    const wrongs = shuffle(ANIMALS_EN.filter(x => x !== a)).slice(0, 3).map(x => x.icon);
+    return mkIcon(`"${a.en}" là con nào?\n(${a.en} = ${a.vi})`, [a.icon, ...wrongs], a.icon, `${a.icon} là "${a.en}" (${a.vi}).`);
+  } else {
+    const wrongs = shuffle(ANIMALS_EN.filter(x => x !== a)).slice(0, 3).map(x => x.en);
+    return mkIcon(`${a.icon} tiếng Anh gọi là gì?`, [a.en, ...wrongs], a.en, `${a.icon} = "${a.en}".`);
+  }
+}
 
 function build(count) {
   const out = [];
   const seen = new Set();
   let guard = 0;
-  while (out.length < count && guard++ < count * 12) {
+  while (out.length < count && guard++ < count * 20) {
     const q = GENS[out.length % GENS.length]();
     if (seen.has(q.question_text)) continue;
     seen.add(q.question_text);
@@ -116,5 +169,5 @@ function build(count) {
   return out;
 }
 
-// Lớp 1 (grade 1) — toán bằng hình ảnh, mức "easy".
-export const grade1Picture = build(48);
+// Lớp 1 (grade 1) — toán + con vật + tiếng Anh bằng hình ảnh.
+export const grade1Picture = build(80);

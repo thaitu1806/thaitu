@@ -18,6 +18,7 @@ import { englishQuestionsHard } from './questions/english-hard.js';
 import { pictureMathEasy } from './questions/picture-math.js';
 import { preschoolPicture } from './questions/picture-preschool.js';
 import { grade1Picture } from './questions/picture-grade1.js';
+import { englishPreschool, englishGrade1 } from './questions/english-preschool-grade1.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -39,7 +40,9 @@ async function seed() {
   const allQuestions = [
     // Mầm non 5 tuổi (grade 0) + Lớp 1 (grade 1) — câu hỏi hình ảnh
     ...preschoolPicture.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 0 })),
+    ...englishPreschool.map(q => ({ ...q, subject: 'english', difficulty: 'easy', grade: 0 })),
     ...grade1Picture.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 1 })),
+    ...englishGrade1.map(q => ({ ...q, subject: 'english', difficulty: 'easy', grade: 1 })),
     ...mathQuestionsEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
     ...extraMathEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
     ...pictureMathEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
