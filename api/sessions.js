@@ -14,7 +14,7 @@ export default async function handler(req, res) {
         sql: `INSERT INTO game_sessions (player_id, subject, difficulty, score, total_questions, correct_answers, stars_earned, combo_max) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         args: [player_id, subject || 'math', difficulty || 'easy', score || 0, total_questions || 0, correct_answers || 0, stars_earned || 0, combo_max || 0],
       });
-      return res.json({ id: result.lastInsertRowid });
+      return res.json({ id: Number(result.lastInsertRowid) });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }

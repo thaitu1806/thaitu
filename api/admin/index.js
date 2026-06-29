@@ -113,7 +113,7 @@ async function handleRequest(req, res) {
         sql: `INSERT INTO questions (subject, difficulty, grade, source, question_text, option_a, option_b, option_c, option_d, correct_answer, explanation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         args: [q.subject, q.difficulty, q.grade || 2, q.source || 'manual', q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_answer, q.explanation || null],
       });
-      return res.json({ id: result.lastInsertRowid });
+      return res.json({ id: Number(result.lastInsertRowid) });
     }
     if (req.method === 'DELETE' && id) {
       await db.execute({ sql: `DELETE FROM questions WHERE id = ?`, args: [parseInt(id)] });
@@ -211,7 +211,7 @@ async function handleRequest(req, res) {
         sql: `INSERT INTO exams (title, subject, difficulty, total_questions, time_limit_minutes, question_ids) VALUES (?, ?, ?, ?, ?, ?)`,
         args: [title, subject, difficulty, total_questions, time_limit_minutes, JSON.stringify(qIds)],
       });
-      return res.json({ id: result.lastInsertRowid, question_ids: qIds });
+      return res.json({ id: Number(result.lastInsertRowid), question_ids: qIds });
     }
     if (req.method === 'PUT' && id) {
       const { title, subject, difficulty, total_questions, time_limit_minutes, question_ids, is_active } = req.body;
