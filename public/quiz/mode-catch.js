@@ -19,6 +19,7 @@
       optionsEl.appendChild(field);
       const colors = ['#ff7a59', '#4a90e2', '#34c77b', '#f4b73e'];
       const chips = [];
+      const isYoung = document.body.classList.contains('qz-young');
       const list = helpers.shuffle(helpers.optionList(q));
       const n = list.length;
       list.forEach((o, i) => {
@@ -27,8 +28,9 @@
         chip.style.background = colors[i % colors.length];
         // evenly spaced lanes, each chip centred on its lane
         chip.style.top = (((i + 0.5) / n) * 100) + '%';
-        // gentle drift; start staggered across the track so they don't overlap
-        chips.push({ el: chip, key: o.key, x: 15 + (i / Math.max(1, n - 1)) * 70, speed: 0.018 + Math.random() * 0.012, dir: i % 2 ? 1 : -1 });
+        // full-width bounce (2% → 98%); young = slightly slower
+        const spd = isYoung ? (0.012 + Math.random() * 0.008) : (0.018 + Math.random() * 0.012);
+        chips.push({ el: chip, key: o.key, x: 5 + (i / Math.max(1, n - 1)) * 90, speed: spd, dir: i % 2 ? 1 : -1 });
         chip.addEventListener('click', () => {
           const ok = o.key === ck;
           stop();
@@ -46,8 +48,8 @@
         const dt = Math.min(50, t - last); last = t;
         chips.forEach(c => {
           c.x += c.dir * c.speed * dt;
-          if (c.x > 88) { c.x = 88; c.dir = -1; }
-          else if (c.x < 12) { c.x = 12; c.dir = 1; }
+          if (c.x > 96) { c.x = 96; c.dir = -1; }
+          else if (c.x < 4) { c.x = 4; c.dir = 1; }
           c.el.style.left = c.x + '%';
         });
         raf = requestAnimationFrame(frame);
