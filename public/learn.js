@@ -134,6 +134,15 @@ count0: [
   <div class="visual">🐥 🐥 🐥 🐥 🐥</div>
   <p>1, 2, 3, 4, 5 — có <strong>5</strong> chú gà con!</p>
   <p class="tip">Con thử đếm ngón tay trên một bàn tay xem: cũng là 5 đó!</p>`,
+  `<h2>👆 Thực hành đếm</h2>
+  <div id="count0-practice" class="practice-zone">
+    <div class="practice-q" id="count0-q"></div>
+    <div class="practice-options" id="count0-opts"></div>
+    <div class="practice-result" id="count0-result"></div>
+    <button class="ln-btn" onclick="newCount0Practice()" style="margin-top:12px">🎲 Câu mới</button>
+    <div class="practice-score">✅ <span id="count0-score">0</span></div>
+  </div>
+  <script>newCount0Practice()</script>`,
 ],
 
 // ==================== 5 TUỔI — NHIỀU - ÍT ====================
@@ -142,12 +151,21 @@ compare0: [
   <div class="visual">🍓🍓🍓🍓</div>
   <div class="visual">🍌🍌</div>
   <p>Hàng dâu có <strong>4</strong>, hàng chuối có <strong>2</strong>.</p>
-  <div class="highlight">🍓 nhiều hơn 🍌</div>`,
+  <div class="highlight">🍓 nhiều hơn 🍌 (4 > 2)</div>`,
   `<h2>Bên nào ít hơn?</h2>
   <div class="visual">🐶🐶🐶</div>
   <div class="visual">🐱🐱🐱🐱🐱</div>
   <p>Chó có 3, mèo có 5. <strong>🐶 ít hơn 🐱</strong>.</p>
   <p class="tip">Ít hơn nghĩa là số lượng nhỏ hơn.</p>`,
+  `<h2>👆 Thực hành nhiều-ít</h2>
+  <div id="compare0-practice" class="practice-zone">
+    <div class="practice-q" id="compare0-q"></div>
+    <div class="practice-options" id="compare0-opts"></div>
+    <div class="practice-result" id="compare0-result"></div>
+    <button class="ln-btn" onclick="newCompare0Practice()" style="margin-top:12px">🎲 Câu mới</button>
+    <div class="practice-score">✅ <span id="compare0-score">0</span></div>
+  </div>
+  <script>newCompare0Practice()</script>`,
 ],
 
 // ==================== 5 TUỔI — TO - NHỎ ====================
@@ -158,8 +176,22 @@ size0: [
   <div class="highlight">To = lớn hơn &nbsp;|&nbsp; Nhỏ = bé hơn</div>`,
   `<h2>Cái nào to hơn?</h2>
   <div class="visual">🍉 và 🍒</div>
-  <p>Quả dưa hấu 🍉 to hơn quả anh đào 🍒.</p>
+  <p>Quả dưa hấu 🍉 to hơn quả anh đào 🍒.</p>`,
+  `<h2>Thêm ví dụ</h2>
+  <div class="visual">🌳 và 🌱</div>
+  <p>Cây 🌳 to hơn mầm cây 🌱.</p>
+  <div class="visual">🚌 và 🚲</div>
+  <p>Xe buýt 🚌 to hơn xe đạp 🚲.</p>
   <p class="tip">Nhìn xem cái nào chiếm nhiều chỗ hơn là cái đó to hơn.</p>`,
+  `<h2>👆 Thực hành to-nhỏ</h2>
+  <div id="size0-practice" class="practice-zone">
+    <div class="practice-q" id="size0-q"></div>
+    <div class="practice-options" id="size0-opts"></div>
+    <div class="practice-result" id="size0-result"></div>
+    <button class="ln-btn" onclick="newSize0Practice()" style="margin-top:12px">🎲 Câu mới</button>
+    <div class="practice-score">✅ <span id="size0-score">0</span></div>
+  </div>
+  <script>newSize0Practice()</script>`,
 ],
 
 // ==================== 5 TUỔI — MÀU SẮC ====================
@@ -171,7 +203,22 @@ colors0: [
   `<h2>Thêm vài màu nữa</h2>
   <div class="visual">🟢 🟠 🟣</div>
   <p><strong>Xanh lá - Cam - Tím</strong></p>
-  <p class="tip">🍀 xanh lá, 🍊 cam, 🍇 tím. Con tìm đồ vật quanh nhà cùng màu nhé!</p>`,
+  <p>🍀 xanh lá, 🍊 cam, 🍇 tím.</p>`,
+  `<h2>Tìm đồ vật cùng màu</h2>
+  <p>Đỏ: 🍎 🍓 🌹 ❤️</p>
+  <p>Vàng: 🍌 🌟 🌼 🧀</p>
+  <p>Xanh lá: 🍀 🥦 🐸 🌲</p>
+  <p>Cam: 🍊 🥕 🦊</p>
+  <p class="tip">Con tìm đồ vật quanh nhà cùng màu nhé!</p>`,
+  `<h2>👆 Thực hành chọn màu</h2>
+  <div id="colors0-practice" class="practice-zone">
+    <div class="practice-q" id="colors0-q"></div>
+    <div class="practice-options" id="colors0-opts"></div>
+    <div class="practice-result" id="colors0-result"></div>
+    <button class="ln-btn" onclick="newColors0Practice()" style="margin-top:12px">🎲 Câu mới</button>
+    <div class="practice-score">✅ <span id="colors0-score">0</span></div>
+  </div>
+  <script>newColors0Practice()</script>`,
 ],
 
 // ==================== 5 TUỔI — HÌNH DẠNG ====================
@@ -184,18 +231,46 @@ shapes0: [
   <div class="visual">🕐 ⬜ 🍕</div>
   <p>Đồng hồ tròn, cửa sổ vuông, miếng bánh tam giác.</p>
   <p class="tip">Hình tròn giống bánh xe, mặt trời!</p>`,
+  `<h2>👆 Thực hành hình dạng</h2>
+  <div id="shapes0-practice" class="practice-zone">
+    <div class="practice-q" id="shapes0-q"></div>
+    <div class="practice-options" id="shapes0-opts"></div>
+    <div class="practice-result" id="shapes0-result"></div>
+    <button class="ln-btn" onclick="newShapes0Practice()" style="margin-top:12px">🎲 Câu mới</button>
+    <div class="practice-score">✅ <span id="shapes0-score">0</span></div>
+  </div>
+  <script>newShapes0Practice()</script>`,
 ],
 
 // ==================== 5 TUỔI — CON VẬT ====================
 animals0: [
   `<h2>🐶 Con vật kêu thế nào?</h2>
-  <div class="visual">🐶 🐱 🐮</div>
+  <div class="visual" style="font-size:2.5rem">🐶 🐱 🐮</div>
   <p>🐶 "Gâu gâu" &nbsp; 🐱 "Meo meo" &nbsp; 🐮 "Bò ò"</p>
   <div class="highlight">Đọc to tiếng kêu cùng bố mẹ nhé!</div>`,
-  `<h2>Thêm vài bạn nữa</h2>
-  <div class="visual">🐓 🐷 🦆</div>
-  <p>🐓 "Ò ó o" &nbsp; 🐷 "Ụt ịt" &nbsp; 🦆 "Cạp cạp"</p>
-  <p class="tip">Con thử bắt chước tiếng kêu xem có giống không!</p>`,
+  `<h2>Tiếng kêu các bạn nhà nông</h2>
+  <div class="visual" style="font-size:2.5rem">🐓 🐷 🦆 🐑</div>
+  <p>🐓 "Ò ó o" &nbsp; 🐷 "Ụt ịt"<br>🦆 "Cạp cạp" &nbsp; 🐑 "Be be"</p>`,
+  `<h2>Con vật sống ở đâu?</h2>
+  <p>🐟 Cá — sống dưới <strong>nước</strong></p>
+  <p>🐦 Chim — bay trên <strong>trời</strong></p>
+  <p>🐰 Thỏ — sống trên <strong>đất</strong></p>
+  <p>🐢 Rùa — sống cả nước lẫn đất</p>`,
+  `<h2>Con vật có mấy chân?</h2>
+  <p>🐶🐱🐮🐷 — <strong>4 chân</strong> (thú)</p>
+  <p>🐓🦆🐦 — <strong>2 chân</strong> (chim)</p>
+  <p>🐟🐍 — <strong>0 chân</strong> (bơi / bò)</p>
+  <p>🐛🐜 — <strong>nhiều chân</strong> (côn trùng)</p>
+  <p class="tip">Con thử bắt chước tiếng kêu + đếm chân xem!</p>`,
+  `<h2>👆 Thực hành con vật</h2>
+  <div id="animals0-practice" class="practice-zone">
+    <div class="practice-q" id="animals0-q"></div>
+    <div class="practice-options" id="animals0-opts"></div>
+    <div class="practice-result" id="animals0-result"></div>
+    <button class="ln-btn" onclick="newAnimals0Practice()" style="margin-top:12px">🎲 Câu mới</button>
+    <div class="practice-score">✅ <span id="animals0-score">0</span></div>
+  </div>
+  <script>newAnimals0Practice()</script>`,
 ],
 
 // ==================== LỚP 1 — ĐẾM ĐẾN 20 ====================
@@ -2027,6 +2102,154 @@ function newMoneyPractice() {
   const t = types[Math.floor(Math.random() * types.length)]();
   const { options, correctIdx } = makePracticeOptions(t.ans, t.wrongs);
   renderPractice('money', t.q, options, correctIdx);
+}
+
+// === GRADE 0 (5 tuổi) PRACTICE ENGINES ===
+practiceScores.count0 = 0;
+practiceScores.compare0 = 0;
+practiceScores.size0 = 0;
+practiceScores.colors0 = 0;
+practiceScores.shapes0 = 0;
+practiceScores.animals0 = 0;
+
+// --- COUNT PRACTICE ---
+function newCount0Practice() {
+  const icons = ['🍎','🍌','🍓','⭐','🎈','🌸','🐥','🐟'];
+  const icon = icons[Math.floor(Math.random() * icons.length)];
+  const n = Math.floor(Math.random() * 5) + 1;
+  const display = Array.from({length: n}, () => icon).join(' ');
+  const wrongs = new Set();
+  while (wrongs.size < 3) { const w = Math.floor(Math.random() * 6) + 1; if (w !== n) wrongs.add(w); }
+  const { options, correctIdx } = makePracticeOptions(String(n), [...wrongs].map(String));
+  document.getElementById('count0-q').innerHTML = `Đếm xem có mấy ${icon}?<br><span style="font-size:1.6rem">${display}</span>`;
+  document.getElementById('count0-result').textContent = '';
+  document.getElementById('count0-result').className = 'practice-result';
+  const container = document.getElementById('count0-opts');
+  container.innerHTML = options.map((o, i) =>
+    `<button onclick="checkPractice('count0', ${i}, ${correctIdx})">${o}</button>`
+  ).join('');
+}
+
+// --- COMPARE PRACTICE ---
+function newCompare0Practice() {
+  const icons = ['🍎','🍌','🍓','⭐','🎈','🌸','🐥','🐟','🐶','🐱'];
+  const i1 = icons[Math.floor(Math.random() * icons.length)];
+  let i2 = icons[Math.floor(Math.random() * icons.length)]; while (i2 === i1) i2 = icons[Math.floor(Math.random() * icons.length)];
+  let a = Math.floor(Math.random() * 5) + 1, b = Math.floor(Math.random() * 5) + 1; while (b === a) b = Math.floor(Math.random() * 5) + 1;
+  const isMore = Math.random() > 0.5;
+  const q = isMore ? 'Hàng nào NHIỀU hơn?' : 'Hàng nào ÍT hơn?';
+  const correct = isMore ? (a > b ? i1 : i2) : (a < b ? i1 : i2);
+  const display = `${i1}: ${Array.from({length:a},()=>i1).join(' ')}\n${i2}: ${Array.from({length:b},()=>i2).join(' ')}`;
+  const wrongs = icons.filter(x => x !== correct).slice(0, 3);
+  const { options, correctIdx } = makePracticeOptions(correct, wrongs);
+  document.getElementById('compare0-q').innerHTML = `${q}<br><span style="font-size:1.3rem">${display.replace('\n','<br>')}</span>`;
+  document.getElementById('compare0-result').textContent = '';
+  document.getElementById('compare0-result').className = 'practice-result';
+  const container = document.getElementById('compare0-opts');
+  container.innerHTML = options.map((o, i) =>
+    `<button onclick="checkPractice('compare0', ${i}, ${correctIdx})" style="font-size:1.5rem">${o}</button>`
+  ).join('');
+}
+
+// --- SIZE PRACTICE ---
+function newSize0Practice() {
+  const pairs = [
+    { big: '🐘', small: '🐭', label: 'Voi và chuột' },
+    { big: '🐳', small: '🐟', label: 'Cá voi và cá' },
+    { big: '🌳', small: '🌱', label: 'Cây và mầm' },
+    { big: '🚌', small: '🚲', label: 'Xe buýt và xe đạp' },
+    { big: '🍉', small: '🍒', label: 'Dưa hấu và anh đào' },
+    { big: '🦁', small: '🐈', label: 'Sư tử và mèo' },
+    { big: '🏠', small: '🏕️', label: 'Nhà và lều' },
+  ];
+  const p = pairs[Math.floor(Math.random() * pairs.length)];
+  const isBig = Math.random() > 0.5;
+  const q = isBig ? `Cái nào TO hơn? ${p.big} và ${p.small}` : `Cái nào NHỎ hơn? ${p.big} và ${p.small}`;
+  const correct = isBig ? p.big : p.small;
+  const wrong = isBig ? p.small : p.big;
+  const others = ['⚽','🎈','🐝'];
+  const { options, correctIdx } = makePracticeOptions(correct, [wrong, others[0], others[1]]);
+  document.getElementById('size0-q').innerHTML = q;
+  document.getElementById('size0-result').textContent = '';
+  document.getElementById('size0-result').className = 'practice-result';
+  const container = document.getElementById('size0-opts');
+  container.innerHTML = options.map((o, i) =>
+    `<button onclick="checkPractice('size0', ${i}, ${correctIdx})" style="font-size:1.5rem">${o}</button>`
+  ).join('');
+}
+
+// --- COLORS PRACTICE ---
+function newColors0Practice() {
+  const colors = [
+    { name: 'ĐỎ', icon: '🔴', items: ['🍎','🍓','🌹','❤️'] },
+    { name: 'VÀNG', icon: '🟡', items: ['🍌','🌟','🌼'] },
+    { name: 'XANH LÁ', icon: '🟢', items: ['🍀','🥦','🐸'] },
+    { name: 'XANH DƯƠNG', icon: '🔵', items: ['💧','🐬','🌊'] },
+    { name: 'CAM', icon: '🟠', items: ['🍊','🥕','🦊'] },
+    { name: 'TÍM', icon: '🟣', items: ['🍇','🍆','🔮'] },
+  ];
+  const c = colors[Math.floor(Math.random() * colors.length)];
+  const others = colors.filter(x => x !== c);
+  const wrongs = others.sort(() => Math.random() - 0.5).slice(0, 3).map(x => x.icon);
+  const { options, correctIdx } = makePracticeOptions(c.icon, wrongs);
+  const example = c.items[Math.floor(Math.random() * c.items.length)];
+  document.getElementById('colors0-q').innerHTML = `Chấm nào màu <strong>${c.name}</strong>?<br><span style="font-size:1.3rem">(Gợi ý: giống ${example})</span>`;
+  document.getElementById('colors0-result').textContent = '';
+  document.getElementById('colors0-result').className = 'practice-result';
+  const container = document.getElementById('colors0-opts');
+  container.innerHTML = options.map((o, i) =>
+    `<button onclick="checkPractice('colors0', ${i}, ${correctIdx})" style="font-size:2rem">${o}</button>`
+  ).join('');
+}
+
+// --- SHAPES0 PRACTICE ---
+function newShapes0Practice() {
+  const shapes = [
+    { name: 'HÌNH TRÒN', icon: '⭕' },
+    { name: 'HÌNH VUÔNG', icon: '🟦' },
+    { name: 'HÌNH TAM GIÁC', icon: '🔺' },
+    { name: 'NGÔI SAO', icon: '⭐' },
+    { name: 'TRÁI TIM', icon: '❤️' },
+  ];
+  const s = shapes[Math.floor(Math.random() * shapes.length)];
+  const wrongs = shapes.filter(x => x !== s).sort(() => Math.random() - 0.5).slice(0, 3).map(x => x.icon);
+  const { options, correctIdx } = makePracticeOptions(s.icon, wrongs);
+  document.getElementById('shapes0-q').innerHTML = `Đâu là <strong>${s.name}</strong>?`;
+  document.getElementById('shapes0-result').textContent = '';
+  document.getElementById('shapes0-result').className = 'practice-result';
+  const container = document.getElementById('shapes0-opts');
+  container.innerHTML = options.map((o, i) =>
+    `<button onclick="checkPractice('shapes0', ${i}, ${correctIdx})" style="font-size:2rem">${o}</button>`
+  ).join('');
+}
+
+// --- ANIMALS PRACTICE ---
+function newAnimals0Practice() {
+  const animals = [
+    { q: 'Con gì kêu "Gâu gâu"?', a: '🐶' },
+    { q: 'Con gì kêu "Meo meo"?', a: '🐱' },
+    { q: 'Con gì kêu "Ò ó o"?', a: '🐓' },
+    { q: 'Con gì kêu "Ụt ịt"?', a: '🐷' },
+    { q: 'Con gì kêu "Cạp cạp"?', a: '🦆' },
+    { q: 'Con gì kêu "Bò ò"?', a: '🐮' },
+    { q: 'Con gì kêu "Be be"?', a: '🐑' },
+    { q: 'Con nào sống dưới nước?', a: '🐟' },
+    { q: 'Con nào bay được?', a: '🐦' },
+    { q: 'Con nào có 4 chân, trung thành?', a: '🐶' },
+    { q: 'Con nào bắt chuột giỏi?', a: '🐱' },
+    { q: 'Con nào có mai cứng, đi chậm?', a: '🐢' },
+  ];
+  const a = animals[Math.floor(Math.random() * animals.length)];
+  const allIcons = ['🐶','🐱','🐓','🐷','🦆','🐮','🐑','🐟','🐦','🐢','🐸','🐰'];
+  const wrongs = allIcons.filter(x => x !== a.a).sort(() => Math.random() - 0.5).slice(0, 3);
+  const { options, correctIdx } = makePracticeOptions(a.a, wrongs);
+  document.getElementById('animals0-q').innerHTML = a.q;
+  document.getElementById('animals0-result').textContent = '';
+  document.getElementById('animals0-result').className = 'practice-result';
+  const container = document.getElementById('animals0-opts');
+  container.innerHTML = options.map((o, i) =>
+    `<button onclick="checkPractice('animals0', ${i}, ${correctIdx})" style="font-size:2rem">${o}</button>`
+  ).join('');
 }
 
 // === AI TUTOR CHATBOT ===

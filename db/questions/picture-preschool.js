@@ -118,13 +118,42 @@ function genPattern() {
   return mkChoice(`Tiếp theo là hình gì?\n\n${i1} ${i2} ${i1} ${i2} ❓`, [next, d1, d2, d3], next, `Mẫu lặp lại: ${i1} ${i2}, nên tiếp theo là ${next}.`);
 }
 
-const GENS = [genCount, genMore, genFewer, genBigger, genSmaller, genColor, genSound, genPattern, genCount, genMore];
+const GENS = [genCount, genMore, genFewer, genBigger, genSmaller, genColor, genSound, genPattern, genAnimalLives, genAnimalLegs, genColor, genSound, genCount, genMore];
+
+// Con vật sống ở đâu?
+const HABITATS = [
+  { q: 'Con nào sống dưới NƯỚC?', a: '🐟', pool: ['🐟', '🐳', '🐬'] },
+  { q: 'Con nào BAY trên trời?', a: '🐦', pool: ['🐦', '🦋'] },
+  { q: 'Con nào sống trong RỪNG?', a: '🦁', pool: ['🦁', '🐘', '🐻'] },
+  { q: 'Con nào sống ở NÔNG TRẠI?', a: '🐮', pool: ['🐮', '🐷', '🐓'] },
+  { q: 'Con nào sống trong NHÀ (thú cưng)?', a: '🐶', pool: ['🐶', '🐱'] },
+];
+function genAnimalLives() {
+  const h = pick(HABITATS);
+  const correct = pick(h.pool);
+  const allAnimals = ['🐶','🐱','🐓','🐷','🦆','🐮','🐟','🐦','🦁','🐘','🐳','🐻','🐸','🐢','🐰','🦋'];
+  const wrongs = shuffle(allAnimals.filter(x => !h.pool.includes(x))).slice(0, 3);
+  return mkChoice(h.q, [correct, ...wrongs], correct, `${correct} ${h.q.toLowerCase()}`);
+}
+
+// Con vật có mấy chân?
+const LEGS = [
+  { q: 'Con nào có 4 chân?', pool: ['🐶','🐱','🐮','🐷','🐘','🦁'], nope: ['🐓','🦆','🐟','🐍'] },
+  { q: 'Con nào có 2 chân?', pool: ['🐓','🦆','🐦'], nope: ['🐶','🐱','🐟','🐍'] },
+  { q: 'Con nào KHÔNG có chân?', pool: ['🐟','🐍'], nope: ['🐶','🐱','🐓','🦆'] },
+];
+function genAnimalLegs() {
+  const l = pick(LEGS);
+  const correct = pick(l.pool);
+  const wrongs = shuffle(l.nope).slice(0, 3);
+  return mkChoice(l.q, [correct, ...wrongs], correct, `${correct} thuộc nhóm: ${l.q.toLowerCase()}`);
+}
 
 function build(count) {
   const out = [];
   const seen = new Set();
   let guard = 0;
-  while (out.length < count && guard++ < count * 12) {
+  while (out.length < count && guard++ < count * 20) {
     const q = GENS[out.length % GENS.length]();
     if (seen.has(q.question_text)) continue;
     seen.add(q.question_text);
@@ -134,4 +163,4 @@ function build(count) {
 }
 
 // Bé 5 tuổi (grade 0) — toán/nhận biết bằng hình ảnh, mức "easy".
-export const preschoolPicture = build(40);
+export const preschoolPicture = build(60);
