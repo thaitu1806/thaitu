@@ -10,7 +10,7 @@
   }
 
   reg('scratch', {
-    weight: 1,
+    weight: 1.5,
     canUse(q) { return window.HocVuiQuiz.helpers.optionList(q).length >= 2; },
     render(ctx) {
       const { question: q, questionEl, optionsEl, helpers, finish } = ctx;

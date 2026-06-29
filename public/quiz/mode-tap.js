@@ -9,7 +9,7 @@
   }
 
   reg('tap', {
-    weight: 1,
+    weight: 1.5,
     canUse(q) {
       // Needs 3-4 options to feel like a "find it" challenge.
       return window.HocVuiQuiz.helpers.optionList(q).length >= 3;

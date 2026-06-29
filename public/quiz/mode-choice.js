@@ -7,7 +7,7 @@
   }
 
   reg('choice', {
-    weight: 3,
+    weight: 2,
     canUse() { return true; },
     render(ctx) {
       const { question: q, questionEl, optionsEl, helpers, finish } = ctx;

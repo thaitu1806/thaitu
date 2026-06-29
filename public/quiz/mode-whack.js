@@ -10,7 +10,7 @@
   }
 
   reg('whack', {
-    weight: 1,
+    weight: 1.5,
     canUse(q) {
       const list = window.HocVuiQuiz.helpers.optionList(q);
       // Keep texts short so they fit on a mole sign.

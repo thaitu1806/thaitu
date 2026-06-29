@@ -8,7 +8,7 @@
   }
 
   reg('truefalse', {
-    weight: 2,
+    weight: 1.5,
     canUse(q) { return true; },
     render(ctx) {
       const { question: q, questionEl, optionsEl, helpers, finish } = ctx;

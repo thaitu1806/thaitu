@@ -10,7 +10,7 @@
   }
 
   reg('balloon', {
-    weight: 1,
+    weight: 1.5,
     canUse(q) { return window.HocVuiQuiz.helpers.optionList(q).length >= 3; },
     render(ctx) {
       const { question: q, questionEl, optionsEl, helpers, finish } = ctx;
@@ -26,7 +26,7 @@
         wrap.dataset.key = o.key;
         wrap.style.background = colors[i % colors.length];
         wrap.style.left = ((i + 0.5) * (100 / n)) + '%';
-        const y = 10 + (i % 3) * 30;            // staggered start heights (%)
+        const y = 8 + (i % 3) * 28;             // staggered start heights (%)
         wrap.addEventListener('click', () => {
           const ok = o.key === ck;
           stop();
@@ -36,7 +36,7 @@
           finish(ok, o.text);
         });
         field.appendChild(wrap);
-        return { el: wrap, y, speed: 0.012 + Math.random() * 0.016, sway: Math.random() * Math.PI * 2 };
+        return { el: wrap, y, speed: 0.01 + Math.random() * 0.012, sway: Math.random() * Math.PI * 2 };
       });
 
       let raf = null, last = 0;
@@ -45,10 +45,11 @@
         const dt = Math.min(50, t - last); last = t;
         balloons.forEach(b => {
           b.y += b.speed * dt;
-          if (b.y > 100) b.y = -10;             // loop back to bottom
+          if (b.y > 105) b.y = -12;             // loop back to bottom
           b.sway += dt * 0.003;
           b.el.style.bottom = b.y + '%';
-          b.el.style.transform = 'translateX(' + (Math.sin(b.sway) * 8) + 'px)';
+          // keep horizontal centering (-50%) while adding gentle sway
+          b.el.style.transform = 'translateX(calc(-50% + ' + (Math.sin(b.sway) * 8) + 'px))';
         });
         raf = requestAnimationFrame(frame);
       }

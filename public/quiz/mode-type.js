@@ -8,7 +8,7 @@
   }
 
   reg('type', {
-    weight: 2,
+    weight: 1.5,
     canUse(q) {
       if (!window.HocVuiQuiz.helpers.isShortAnswer(q)) return false;
       // Too hard for youngest kids — only enable for grade 2+
