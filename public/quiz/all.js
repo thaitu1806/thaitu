@@ -41,4 +41,10 @@
     s.async = false;          // preserve order, run before game.js continues
     document.head.appendChild(s);
   });
+
+  // Mark body for young learners so CSS can enlarge buttons/fonts
+  try {
+    const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+    if ((p.grade ?? 2) < 2) document.body.classList.add('qz-young');
+  } catch (e) {}
 })();

@@ -76,3 +76,61 @@
 .qz-scratch { position: relative; overflow: hidden; animation: qzChipIn .3s ease both; animation-delay: var(--d,0s); }
 .qz-scratch-cover { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; background: repeating-linear-gradient(45deg, #c0c8d4, #c0c8d4 8px, #aab4c2 8px, #aab4c2 16px); transition: opacity .3s, transform .3s; }
 .qz-scratch.revealed .qz-scratch-cover { opacity: 0; transform: scale(1.2); pointer-events: none; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+ * YOUNG LEARNERS (grade 0 + 1): bigger buttons, larger fonts, more spacing.
+ * Triggered by body.qz-young class set by all.js.
+ * ══════════════════════════════════════════════════════════════════════════════ */
+.qz-young .option-btn {
+  font-size: 1.5rem !important;
+  min-height: 56px !important;
+  padding: 14px 16px !important;
+  border-radius: 16px !important;
+}
+
+/* tap chips */
+.qz-young .qz-tap-chip {
+  font-size: 1.6rem !important;
+  min-width: 64px !important;
+  min-height: 56px !important;
+  padding: 12px 16px !important;
+}
+
+/* catch chips */
+.qz-young .qz-catch-chip {
+  font-size: 1.4rem !important;
+  min-width: 72px !important;
+  min-height: 52px !important;
+  padding: 10px 16px !important;
+}
+
+/* balloon */
+.qz-young .qz-balloon {
+  width: 80px !important;
+  height: 96px !important;
+  font-size: 1.5rem !important;
+}
+.qz-young .qz-balloon-field { height: 240px !important; }
+
+/* whack moles */
+.qz-young .qz-hole { height: 110px !important; }
+.qz-young .qz-mole-face { font-size: 2.6rem !important; }
+.qz-young .qz-mole-sign { font-size: 1.15rem !important; padding: 3px 12px !important; }
+
+/* mystery boxes */
+.qz-young .qz-box { min-height: 96px !important; }
+.qz-young .qz-box-lid { font-size: 3rem !important; }
+.qz-young .qz-box-val { font-size: 1.6rem !important; }
+
+/* scratch cards */
+.qz-young .qz-scratch { min-height: 64px !important; font-size: 1.5rem !important; }
+.qz-young .qz-scratch-cover { font-size: 2.2rem !important; }
+
+/* true/false buttons */
+.qz-young .tf-btn { font-size: 1.4rem !important; min-height: 56px !important; }
+
+/* Question text larger for young */
+.qz-young #q-text, .qz-young [id$="-text"] {
+  font-size: 1.4rem !important;
+  line-height: 1.4 !important;
+}
