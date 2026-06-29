@@ -4,7 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const TARGETS = [6, 7, 8, 9, 10, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60];
+const TARGETS = [2, 6, 7, 8, 9, 10, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60];
 const LINK = '<link rel="stylesheet" href="/quiz/quiz-modes.css">';
 const report = [];
 

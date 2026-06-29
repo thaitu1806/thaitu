@@ -405,7 +405,7 @@ app.post('/api/answers', async (req, res) => {
     const sid = (session_id && Number(session_id) > 0) ? session_id : null;
     await db.execute({
       sql: `INSERT INTO answer_logs (session_id, player_id, question_id, selected_answer, correct_answer, is_correct, time_spent_ms) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      args: [sid, player_id, question_id, selected_answer, correct_answer, is_correct ? 1 : 0, time_spent_ms || 0],
+      args: [sid, player_id, question_id, String(selected_answer ?? ''), String(correct_answer ?? ''), is_correct ? 1 : 0, time_spent_ms || 0],
     });
     res.json({ ok: true });
   } catch (err) {

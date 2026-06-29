@@ -22,10 +22,12 @@
       const list = helpers.shuffle(helpers.optionList(q));
       const n = list.length;
       const balloons = list.map((o, i) => {
-        const wrap = helpers.el('button', 'option-btn qz-balloon', o.text);
+        const wrap = helpers.el('button', 'option-btn qz-balloon');
         wrap.dataset.key = o.key;
-        wrap.style.background = colors[i % colors.length];
+        wrap.style.setProperty('--bln', colors[i % colors.length]);
         wrap.style.left = ((i + 0.5) * (100 / n)) + '%';
+        const label = helpers.el('span', 'qz-balloon-label', o.text);
+        wrap.appendChild(label);
         const y = 8 + (i % 3) * 28;             // staggered start heights (%)
         wrap.addEventListener('click', () => {
           const ok = o.key === ck;

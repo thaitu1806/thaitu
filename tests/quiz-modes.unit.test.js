@@ -22,6 +22,7 @@ function bootstrap() {
   load(read('mode-mystery.js'));
   load(read('mode-slider.js'));
   load(read('mode-eliminate.js'));
+  load(read('mode-catch.js'));
   load(read('mode-balloon.js'));
   load(read('mode-whack.js'));
   load(read('mode-scratch.js'));
@@ -48,9 +49,9 @@ describe('engine helpers', () => {
 });
 
 describe('mode registration', () => {
-  test('all ten modes register', () => {
+  test('all eleven modes register', () => {
     const ids = Q.listModes();
-    ['choice', 'truefalse', 'type', 'tap', 'mystery', 'slider', 'eliminate', 'balloon', 'whack', 'scratch'].forEach(id => {
+    ['choice', 'truefalse', 'type', 'tap', 'mystery', 'slider', 'eliminate', 'catch', 'balloon', 'whack', 'scratch'].forEach(id => {
       expect(ids).toContain(id);
     });
   });

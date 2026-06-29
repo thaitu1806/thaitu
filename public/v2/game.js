@@ -158,7 +158,7 @@
     const opts = $('q-options');
     opts.innerHTML = '';
     if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
-      window.HocVuiQuiz.render({ questionEl: $('q-text'), optionsEl: opts, question: curQ, onResult: (ok) => handleAns(ok) });
+      window.HocVuiQuiz.render({ questionEl: $('q-text'), optionsEl: opts, question: curQ, onResult: (ok, text) => handleAns(ok, text) });
     } else {
       ['a','b','c','d'].forEach(k => { const t = curQ[`option_${k}`]; if (t == null) return; const btn = document.createElement('button'); btn.className = 'option-btn'; btn.dataset.key = k; btn.textContent = t; btn.addEventListener('click', () => handleAns(k)); opts.appendChild(btn); });
     }
@@ -178,7 +178,7 @@
     }, 100);
   }
 
-  function handleAns(sel) {
+  function handleAns(sel, selText) {
     if (locked) return;
     locked = true; clearInterval(tH);
     const ck = (curQ.correct_answer || '').toLowerCase();
@@ -211,7 +211,7 @@
       flashStorm();
       fb.className = 'feedback bad'; fb.textContent = '❌ Sai! Cơn bão tiến gần hơn.';
     }
-    logAns(sel, ck, ok, Date.now() - qStart);
+    logAns((typeof sel === 'boolean') ? (selText || '') : sel, ck, ok, Date.now() - qStart);
     renderHud();
     setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1100);
   }
