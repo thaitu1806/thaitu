@@ -121,14 +121,11 @@
     $('feedback').style.display = 'none';
     const opts = $('q-options');
     opts.innerHTML = '';
-    ['a','b','c','d'].forEach(k => {
-      const t = curQ[`option_${k}`];
-      if (t == null) return;
-      const btn = document.createElement('button');
-      btn.className = 'option-btn'; btn.dataset.key = k; btn.textContent = t;
-      btn.addEventListener('click', () => handleAns(k));
-      opts.appendChild(btn);
-    });
+    if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+      window.HocVuiQuiz.render({ questionEl: $('q-text'), optionsEl: opts, question: curQ, onResult: (ok) => handleAns(ok) });
+    } else {
+      ['a','b','c','d'].forEach(k => { const t = curQ[`option_${k}`]; if (t == null) return; const btn = document.createElement('button'); btn.className = 'option-btn'; btn.dataset.key = k; btn.textContent = t; btn.addEventListener('click', () => handleAns(k)); opts.appendChild(btn); });
+    }
     startTimer();
   }
 
@@ -148,12 +145,14 @@
     if (locked) return;
     locked = true; clearInterval(tH);
     const ck = (curQ.correct_answer || '').toLowerCase();
-    const ok = sel === ck;
-    document.querySelectorAll('.option-btn').forEach(b => {
+    const ok = (typeof sel === 'boolean') ? sel : (String(sel).toLowerCase() === ck);
+    if (typeof sel !== 'boolean') {
+      document.querySelectorAll('.option-btn').forEach(b => {
       b.classList.add('disabled');
       if (b.dataset.key === ck) b.classList.add('correct');
       else if (b.dataset.key === sel && !ok) b.classList.add('wrong');
     });
+    }
     const prevCraft = state.slimesCrafted;
     if (ok) {
       state = window.V47Logic.applyCorrect(state);
