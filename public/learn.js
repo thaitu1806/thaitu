@@ -30,6 +30,21 @@ document.addEventListener('touchend', e => {
 });
 
 const TOPIC_NAMES = {
+  // 5 tuổi (mầm non)
+  count0: '🔢 Đếm 1-5',
+  compare0: '⚖️ Nhiều - Ít',
+  size0: '🐘 To - Nhỏ',
+  colors0: '🌈 Màu Sắc',
+  shapes0: '🔷 Hình Dạng',
+  animals0: '🐶 Con Vật',
+  // Lớp 1
+  count1: '🔢 Đếm Đến 20',
+  add1: '➕ Phép Cộng',
+  sub1: '➖ Phép Trừ',
+  compare1: '⚖️ So Sánh Số',
+  order1: '🔢 Thứ Tự Số',
+  shapes1: '🔷 Hình Khối',
+  // Grade 2
   clock: '🕐 Đồng Hồ',
   units: '📏 Đo Lường',
   multiply: '✖️ Bảng Nhân',
@@ -104,6 +119,152 @@ function clockWithLabel(hour, minute, size = 140) {
 
 // === LESSON CONTENT ===
 const LESSONS = {
+
+// ==================== 5 TUỔI — ĐẾM 1-5 ====================
+count0: [
+  `<h2>🔢 Tập đếm</h2>
+  <div class="visual">🍎</div>
+  <p>Đây là <strong>1</strong> quả táo. Đọc to: "Một!"</p>
+  <p class="tip">Mỗi đồ vật đếm 1 lần thôi nhé!</p>`,
+  `<h2>Đếm đến 3</h2>
+  <div class="visual">⭐ ⭐ ⭐</div>
+  <p>1... 2... 3! Có <strong>3</strong> ngôi sao.</p>
+  <div class="highlight">Chỉ tay vào từng ngôi sao và đếm: một, hai, ba.</div>`,
+  `<h2>Đếm đến 5</h2>
+  <div class="visual">🐥 🐥 🐥 🐥 🐥</div>
+  <p>1, 2, 3, 4, 5 — có <strong>5</strong> chú gà con!</p>
+  <p class="tip">Con thử đếm ngón tay trên một bàn tay xem: cũng là 5 đó!</p>`,
+],
+
+// ==================== 5 TUỔI — NHIỀU - ÍT ====================
+compare0: [
+  `<h2>⚖️ Bên nào nhiều hơn?</h2>
+  <div class="visual">🍓🍓🍓🍓</div>
+  <div class="visual">🍌🍌</div>
+  <p>Hàng dâu có <strong>4</strong>, hàng chuối có <strong>2</strong>.</p>
+  <div class="highlight">🍓 nhiều hơn 🍌</div>`,
+  `<h2>Bên nào ít hơn?</h2>
+  <div class="visual">🐶🐶🐶</div>
+  <div class="visual">🐱🐱🐱🐱🐱</div>
+  <p>Chó có 3, mèo có 5. <strong>🐶 ít hơn 🐱</strong>.</p>
+  <p class="tip">Ít hơn nghĩa là số lượng nhỏ hơn.</p>`,
+],
+
+// ==================== 5 TUỔI — TO - NHỎ ====================
+size0: [
+  `<h2>🐘 To và nhỏ</h2>
+  <div class="visual">🐘 ... 🐭</div>
+  <p>Con voi <strong>TO</strong>, con chuột <strong>NHỎ</strong>.</p>
+  <div class="highlight">To = lớn hơn &nbsp;|&nbsp; Nhỏ = bé hơn</div>`,
+  `<h2>Cái nào to hơn?</h2>
+  <div class="visual">🍉 và 🍒</div>
+  <p>Quả dưa hấu 🍉 to hơn quả anh đào 🍒.</p>
+  <p class="tip">Nhìn xem cái nào chiếm nhiều chỗ hơn là cái đó to hơn.</p>`,
+],
+
+// ==================== 5 TUỔI — MÀU SẮC ====================
+colors0: [
+  `<h2>🌈 Các màu cơ bản</h2>
+  <div class="visual">🔴 🟡 🔵</div>
+  <p><strong>Đỏ - Vàng - Xanh dương</strong></p>
+  <div class="highlight">🍎 màu đỏ &nbsp; 🍌 màu vàng &nbsp; 💧 màu xanh dương</div>`,
+  `<h2>Thêm vài màu nữa</h2>
+  <div class="visual">🟢 🟠 🟣</div>
+  <p><strong>Xanh lá - Cam - Tím</strong></p>
+  <p class="tip">🍀 xanh lá, 🍊 cam, 🍇 tím. Con tìm đồ vật quanh nhà cùng màu nhé!</p>`,
+],
+
+// ==================== 5 TUỔI — HÌNH DẠNG ====================
+shapes0: [
+  `<h2>🔷 Các hình quen thuộc</h2>
+  <div class="visual">⭕ 🟦 🔺</div>
+  <p><strong>Hình tròn - Hình vuông - Hình tam giác</strong></p>
+  <div class="highlight">Tròn không có góc, vuông có 4 góc, tam giác có 3 góc.</div>`,
+  `<h2>Tìm hình quanh em</h2>
+  <div class="visual">🕐 ⬜ 🍕</div>
+  <p>Đồng hồ tròn, cửa sổ vuông, miếng bánh tam giác.</p>
+  <p class="tip">Hình tròn giống bánh xe, mặt trời!</p>`,
+],
+
+// ==================== 5 TUỔI — CON VẬT ====================
+animals0: [
+  `<h2>🐶 Con vật kêu thế nào?</h2>
+  <div class="visual">🐶 🐱 🐮</div>
+  <p>🐶 "Gâu gâu" &nbsp; 🐱 "Meo meo" &nbsp; 🐮 "Bò ò"</p>
+  <div class="highlight">Đọc to tiếng kêu cùng bố mẹ nhé!</div>`,
+  `<h2>Thêm vài bạn nữa</h2>
+  <div class="visual">🐓 🐷 🦆</div>
+  <p>🐓 "Ò ó o" &nbsp; 🐷 "Ụt ịt" &nbsp; 🦆 "Cạp cạp"</p>
+  <p class="tip">Con thử bắt chước tiếng kêu xem có giống không!</p>`,
+],
+
+// ==================== LỚP 1 — ĐẾM ĐẾN 20 ====================
+count1: [
+  `<h2>🔢 Đếm đến 10</h2>
+  <div class="visual">1 2 3 4 5 6 7 8 9 10</div>
+  <p>Đọc xuôi: một, hai, ba... đến mười.</p>
+  <div class="highlight">🍎×10 = mười quả táo</div>`,
+  `<h2>Đếm từ 11 đến 20</h2>
+  <div class="visual">11 12 13 14 15<br>16 17 18 19 20</div>
+  <p>Mười một, mười hai... đến hai mươi.</p>
+  <p class="tip">Các số này đều bắt đầu bằng "mười..." (trừ hai mươi).</p>`,
+],
+
+// ==================== LỚP 1 — PHÉP CỘNG ====================
+add1: [
+  `<h2>➕ Phép cộng là gì?</h2>
+  <div class="visual">🍎🍎 + 🍎 = ?</div>
+  <p>2 quả thêm 1 quả là <strong>3</strong> quả. Viết: 2 + 1 = 3.</p>
+  <div class="highlight">Cộng = gộp lại, đếm tất cả.</div>`,
+  `<h2>Cộng trong phạm vi 10</h2>
+  <p style="font-size:1.4rem;text-align:center">3 + 4 = <strong>7</strong></p>
+  <div class="visual">🌸🌸🌸 + 🌸🌸🌸🌸</div>
+  <p class="tip">Đếm tất cả bông hoa: 1,2,3,4,5,6,7 → bằng 7!</p>`,
+],
+
+// ==================== LỚP 1 — PHÉP TRỪ ====================
+sub1: [
+  `<h2>➖ Phép trừ là gì?</h2>
+  <div class="visual">🍪🍪🍪🍪🍪</div>
+  <p>Có 5 cái bánh, ăn mất 2 cái, còn <strong>3</strong> cái.</p>
+  <div class="highlight">Viết: 5 - 2 = 3. Trừ = bớt đi.</div>`,
+  `<h2>Trừ trong phạm vi 10</h2>
+  <p style="font-size:1.4rem;text-align:center">8 - 3 = <strong>5</strong></p>
+  <p class="tip">Bắt đầu từ 8, đếm lùi 3 bước: 7, 6, 5 → còn 5!</p>`,
+],
+
+// ==================== LỚP 1 — SO SÁNH SỐ ====================
+compare1: [
+  `<h2>⚖️ Lớn hơn, bé hơn, bằng</h2>
+  <p style="font-size:1.3rem;text-align:center">7 <strong>></strong> 4 &nbsp;&nbsp; 3 <strong><</strong> 9 &nbsp;&nbsp; 5 <strong>=</strong> 5</p>
+  <div class="highlight">Dấu > là "lớn hơn", < là "bé hơn", = là "bằng nhau".</div>`,
+  `<h2>Mẹo nhớ dấu</h2>
+  <p>Miệng cá sấu luôn há về phía <strong>số lớn hơn</strong>!</p>
+  <p style="font-size:1.3rem;text-align:center">8 > 2 &nbsp;(cá sấu há về phía 8)</p>
+  <p class="tip">Số nào đếm sau (xa số 0 hơn) thì lớn hơn.</p>`,
+],
+
+// ==================== LỚP 1 — THỨ TỰ SỐ ====================
+order1: [
+  `<h2>🔢 Số liền trước, liền sau</h2>
+  <p style="font-size:1.3rem;text-align:center">... 5 &nbsp; <strong>6</strong> &nbsp; 7 ...</p>
+  <p>Số liền trước 6 là <strong>5</strong>. Số liền sau 6 là <strong>7</strong>.</p>
+  <div class="highlight">Liền sau = thêm 1. Liền trước = bớt 1.</div>`,
+  `<h2>Sắp xếp thứ tự</h2>
+  <p style="text-align:center">Từ bé đến lớn: 2 → 4 → 6 → 8</p>
+  <p class="tip">Đọc xuôi từ nhỏ đến lớn, đọc ngược từ lớn về nhỏ.</p>`,
+],
+
+// ==================== LỚP 1 — HÌNH KHỐI ====================
+shapes1: [
+  `<h2>🔷 Các hình phẳng</h2>
+  <div class="visual">⭕ 🟦 🔺 ▭</div>
+  <p>Hình tròn, hình vuông, hình tam giác, hình chữ nhật.</p>
+  <div class="highlight">Vuông: 4 cạnh bằng nhau. Chữ nhật: 2 cạnh dài, 2 cạnh ngắn.</div>`,
+  `<h2>Đếm cạnh và góc</h2>
+  <p>🔺 Tam giác: <strong>3</strong> cạnh, 3 góc.<br>🟦 Vuông: <strong>4</strong> cạnh, 4 góc.</p>
+  <p class="tip">Hình tròn không có cạnh, không có góc nào cả!</p>`,
+],
 
 // ==================== ĐỒNG HỒ ====================
 clock: [
@@ -1505,6 +1666,22 @@ ratio5: [
 
 // === GRADE TOPICS CONFIG ===
 const GRADE_TOPICS = {
+  0: [
+    { id: 'count0', icon: '🔢', name: 'Đếm 1-5', desc: 'Đếm số đồ vật' },
+    { id: 'compare0', icon: '⚖️', name: 'Nhiều - Ít', desc: 'So sánh số lượng' },
+    { id: 'size0', icon: '🐘', name: 'To - Nhỏ', desc: 'So sánh kích thước' },
+    { id: 'colors0', icon: '🌈', name: 'Màu Sắc', desc: 'Nhận biết màu' },
+    { id: 'shapes0', icon: '🔷', name: 'Hình Dạng', desc: 'Tròn, vuông, tam giác' },
+    { id: 'animals0', icon: '🐶', name: 'Con Vật', desc: 'Tiếng kêu con vật' },
+  ],
+  1: [
+    { id: 'count1', icon: '🔢', name: 'Đếm Đến 20', desc: 'Đếm và viết số' },
+    { id: 'add1', icon: '➕', name: 'Phép Cộng', desc: 'Cộng trong phạm vi 10' },
+    { id: 'sub1', icon: '➖', name: 'Phép Trừ', desc: 'Trừ trong phạm vi 10' },
+    { id: 'compare1', icon: '⚖️', name: 'So Sánh Số', desc: 'Lớn hơn, bé hơn, bằng' },
+    { id: 'order1', icon: '🔢', name: 'Thứ Tự Số', desc: 'Liền trước, liền sau' },
+    { id: 'shapes1', icon: '🔷', name: 'Hình Khối', desc: 'Nhận biết các hình' },
+  ],
   2: [
     { id: 'clock', icon: '🕐', name: 'Đồng Hồ', desc: 'Đọc giờ, phút, kéo kim' },
     { id: 'units', icon: '📏', name: 'Đo Lường', desc: 'cm, m, kg, lít' },
@@ -1540,6 +1717,8 @@ const GRADE_TOPICS = {
 };
 
 const GRADE_SUBTITLES = {
+  0: 'Bé 5 tuổi - Học qua hình ảnh vui nhộn!',
+  1: 'Toán lớp 1 - Đếm, cộng, trừ cơ bản!',
   2: 'Toán lớp 2 - Học qua hình ảnh!',
   3: 'Toán lớp 3 - Nâng cao hơn!',
   4: 'Toán lớp 4 - Khám phá số học!',
@@ -1571,7 +1750,7 @@ function renderTopicsGrid() {
 (function initGrade() {
   try {
     const p = JSON.parse(localStorage.getItem('hocvui_profile'));
-    if (p && p.grade >= 2 && p.grade <= 5) { currentGrade = p.grade; switchGrade(currentGrade); return; }
+    if (p && p.grade != null && p.grade >= 0 && p.grade <= 5) { currentGrade = p.grade; switchGrade(currentGrade); return; }
   } catch {}
   renderTopicsGrid();
 })();

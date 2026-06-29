@@ -46,13 +46,13 @@ body {
 
 /* Grade tabs */
 .grade-tabs {
-  display: flex; justify-content: center; gap: 8px; margin-bottom: 20px;
+  display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
   max-width: 470px; margin-left: auto; margin-right: auto; position: relative; z-index: 1;
 }
 .grade-tab {
-  padding: 9px 18px; border: 2px solid rgba(255,255,255,0.45); border-radius: 999px;
-  background: rgba(255,255,255,0.14); color: white; font-size: 0.92rem; font-weight: 800;
-  cursor: pointer; transition: all 0.2s; font-family: inherit; backdrop-filter: blur(6px);
+  padding: 9px 16px; border: 2px solid rgba(255,255,255,0.45); border-radius: 999px;
+  background: rgba(255,255,255,0.14); color: white; font-size: 0.9rem; font-weight: 800;
+  cursor: pointer; transition: all 0.2s; font-family: inherit; backdrop-filter: blur(6px); white-space: nowrap;
 }
 .grade-tab:hover { background: rgba(255,255,255,0.28); transform: translateY(-2px); }
 .grade-tab.active { background: #fff; color: #6c5ce7; border-color: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.2); transform: translateY(-2px); }
