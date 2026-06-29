@@ -52,3 +52,27 @@
 /* ── catch (drifting chips) ── */
 .qz-catch-field { grid-column: 1 / -1; position: relative; width: 100%; height: 150px; overflow: hidden; }
 .qz-catch-chip { position: absolute; width: 60px; height: 60px; border-radius: 50%; color: #fff; font-weight: 900; border: none; padding: 4px; box-shadow: inset -4px -4px 8px rgba(0,0,0,0.18); }
+
+/* ── balloon (🎈 tap drifting balloons) ── */
+.qz-balloon-field { grid-column: 1 / -1; position: relative; width: 100%; height: 200px; overflow: hidden; }
+.qz-balloon { position: absolute; bottom: 0; transform: translateX(-50%); width: 64px; height: 78px; border-radius: 50% 50% 48% 48%; color: #fff; font-weight: 900; font-size: 1.1rem; border: none; padding: 0; display: flex; align-items: center; justify-content: center; box-shadow: inset -6px -8px 10px rgba(0,0,0,0.18); cursor: pointer; }
+.qz-balloon::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 2px; height: 10px; background: rgba(0,0,0,0.25); }
+.qz-balloon.pop { animation: qzPop .3s ease forwards; }
+@keyframes qzPop { to { transform: translateX(-50%) scale(1.5); opacity: 0; } }
+
+/* ── whack (🔨 moles popping from holes) ── */
+.qz-whack-field { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.qz-hole { position: relative; height: 90px; background: radial-gradient(ellipse at 50% 100%, #8a5a2b 0%, #6b431f 70%); border-radius: 0 0 50% 50% / 0 0 60px 60px; overflow: hidden; }
+.qz-hole::after { content: ''; position: absolute; left: 8%; right: 8%; bottom: 6px; height: 14px; background: rgba(0,0,0,0.25); border-radius: 50%; }
+.qz-mole { position: absolute; left: 50%; bottom: 6px; transform: translate(-50%, 100%); transition: transform .25s cubic-bezier(.34,1.56,.64,1); display: flex; flex-direction: column; align-items: center; gap: 2px; border: none; background: transparent; cursor: pointer; padding: 0; }
+.qz-hole.up .qz-mole { transform: translate(-50%, 0); }
+.qz-mole-face { font-size: 2rem; line-height: 1; }
+.qz-mole-sign { background: #fff; border: 2px solid #ffd27a; border-radius: 8px; padding: 1px 8px; font-weight: 900; font-size: 0.95rem; color: #5a3d00; }
+.qz-mole.correct .qz-mole-sign { background: #c8f0cf; border-color: #46c246; }
+.qz-mole.wrong .qz-mole-sign { background: #fdd; border-color: #ff7a7a; }
+
+/* ── scratch (🪙 reveal-then-pick cards) ── */
+.qz-scratch-field { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.qz-scratch { position: relative; overflow: hidden; animation: qzChipIn .3s ease both; animation-delay: var(--d,0s); }
+.qz-scratch-cover { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; background: repeating-linear-gradient(45deg, #c0c8d4, #c0c8d4 8px, #aab4c2 8px, #aab4c2 16px); transition: opacity .3s, transform .3s; }
+.qz-scratch.revealed .qz-scratch-cover { opacity: 0; transform: scale(1.2); pointer-events: none; }

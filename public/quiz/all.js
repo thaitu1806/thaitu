@@ -22,6 +22,9 @@
     'slider',
     'eliminate',
     'catch',
+    'balloon',
+    'whack',
+    'scratch',
   ];
 
   // Resolve this script's folder so mode files load from the same place
