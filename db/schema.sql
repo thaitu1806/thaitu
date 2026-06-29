@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS game_sessions (
 
 CREATE TABLE IF NOT EXISTS answer_logs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  session_id INTEGER NOT NULL,
+  session_id INTEGER,
   player_id INTEGER NOT NULL,
   question_id INTEGER NOT NULL,
   selected_answer TEXT NOT NULL,

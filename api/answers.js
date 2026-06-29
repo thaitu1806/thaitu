@@ -13,10 +13,13 @@ export default async function handler(req, res) {
       return res.json({ ok: true, skipped: true });
     }
     try {
-      // Log the answer (existing behavior)
+      // Log the answer. session_id may be absent during play (the session row is
+      // only created when the game finishes) — store NULL rather than 0 to avoid
+      // a foreign-key violation.
+      const sid = (session_id && Number(session_id) > 0) ? session_id : null;
       await db.execute({
         sql: `INSERT INTO answer_logs (session_id, player_id, question_id, selected_answer, correct_answer, is_correct, time_spent_ms) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        args: [session_id || 0, player_id, question_id, selected_answer || '', correct_answer || '', is_correct ? 1 : 0, time_spent_ms || 0],
+        args: [sid, player_id, question_id, selected_answer || '', correct_answer || '', is_correct ? 1 : 0, time_spent_ms || 0],
       });
 
       // Diamond reward logic for correct answers
