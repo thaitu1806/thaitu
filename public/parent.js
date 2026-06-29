@@ -343,7 +343,7 @@
           <div class="child-avatar">${(child.name || '?')[0].toUpperCase()}</div>
           <div class="child-info">
             <div class="child-name">${child.name || 'Chưa đặt tên'}</div>
-            <div class="child-meta">⭐ ${child.total_stars || 0} · 🎮 ${child.total_games || 0} lượt · Lớp ${child.grade || '?'}</div>
+            <div class="child-meta">⭐ ${child.total_stars || 0} · 🎮 ${child.total_games || 0} lượt · ${child.grade === 0 ? '5 tuổi' : 'Lớp ' + (child.grade ?? '?')}</div>
           </div>
         </div>
       `).join('');

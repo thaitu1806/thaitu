@@ -609,7 +609,7 @@
             return;
           }
           document.querySelector('.home-sub').textContent = `Xin chào ${data.name}! 🎉`;
-          localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade || 2 }));
+          localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade ?? 2 }));
           loadRewardBar(data.id);
         } catch {
           document.querySelector('.home-sub').textContent = `Xin chào ${p.name}! 🎉`;
