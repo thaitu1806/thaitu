@@ -14,7 +14,12 @@
 
   reg('slider', {
     weight: 1,
-    canUse(q) { const n = numAnswer(q); return n != null && n <= 100; },
+    canUse(q) {
+      const n = numAnswer(q); if (n == null || n > 100) return false;
+      // Slider is confusing for youngest kids
+      try { const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}'); if ((p.grade ?? 2) < 2) return false; } catch {}
+      return true;
+    },
     render(ctx) {
       const { question: q, questionEl, optionsEl, helpers, finish } = ctx;
       if (questionEl) questionEl.textContent = q.question_text;

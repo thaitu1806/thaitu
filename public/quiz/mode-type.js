@@ -9,7 +9,15 @@
 
   reg('type', {
     weight: 2,
-    canUse(q) { return window.HocVuiQuiz.helpers.isShortAnswer(q); },
+    canUse(q) {
+      if (!window.HocVuiQuiz.helpers.isShortAnswer(q)) return false;
+      // Too hard for youngest kids — only enable for grade 2+
+      try {
+        const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
+        if ((p.grade ?? 2) < 2) return false;
+      } catch {}
+      return true;
+    },
     render(ctx) {
       const { question: q, questionEl, optionsEl, helpers, finish } = ctx;
       if (questionEl) questionEl.textContent = q.question_text;
