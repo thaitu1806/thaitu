@@ -9,8 +9,15 @@
   }
 
   reg('eliminate', {
-    weight: 1,
-    canUse(q) { return window.HocVuiQuiz.helpers.wrongList(q).length >= 2; },
+    weight: 0.5,
+    canUse(q) {
+      const wrongs = window.HocVuiQuiz.helpers.wrongList(q);
+      if (wrongs.length < 2) return false;
+      // Skip when options are very short (emoji-only) — too confusing for young kids
+      const opts = window.HocVuiQuiz.helpers.optionList(q);
+      if (opts.some(o => o.text.length <= 2)) return false;
+      return true;
+    },
     render(ctx) {
       const { question: q, questionEl, optionsEl, helpers, finish } = ctx;
       const base = (q.question_text || '').trim();
