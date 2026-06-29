@@ -27,7 +27,7 @@ const S = {
 function getCollection() { try { return JSON.parse(localStorage.getItem('v13_collection') || '[]'); } catch { return []; } }
 function saveCollection(arr) { localStorage.setItem('v13_collection', JSON.stringify(arr)); }
 function getPlayerId() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.id; } catch { return null; } }
-function getPlayerGrade() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.grade || 2; } catch { return 2; } }
+function getPlayerGrade() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.grade ?? 2; } catch { return 2; } }
 
 // ===== SCREENS =====
 function showScreen(id) {

@@ -112,7 +112,7 @@
   // FETCH QUESTIONS
   async function fetchQuestions() {
     const profile = getProfile();
-    const grade = profile?.grade || 2;
+    const grade = profile?.grade ?? 2;
     const url = `/api/questions?subject=${state.subject}&difficulty=${state.difficulty}&limit=20&grade=${grade}`;
     try {
       const res = await fetch(url);

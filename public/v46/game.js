@@ -47,7 +47,7 @@
 
   async function fetchQuestions() {
     const profile = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
-    const grade = profile.grade || 2;
+    const grade = profile.grade ?? 2;
     try {
       if (subject === 'mix') {
         const subs = ['math', 'vietnamese', 'english'];

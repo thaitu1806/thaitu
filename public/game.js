@@ -81,7 +81,7 @@ function showScreen(name) {
       return;
     }
     document.getElementById('player-welcome').textContent = `Chào ${data.name}! 🎉`;
-    localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade || 2 }));
+    localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade ?? 2 }));
   } catch {
     // Network error - trust local
     document.getElementById('player-welcome').textContent = `Chào ${p.name}! 🎉`;
@@ -905,7 +905,7 @@ document.getElementById('btn-hint')?.addEventListener('click', async () => {
           player_id: state.player.id,
           question_text: q.question_text,
           options: { a: q.option_a, b: q.option_b, c: q.option_c, d: q.option_d },
-          grade: state.player.grade || 2,
+          grade: state.player.grade ?? 2,
           hint_level: hintLevel,
         }),
       });
@@ -994,7 +994,7 @@ document.getElementById('btn-explain')?.addEventListener('click', async () => {
           question_text: question.question_text,
           selected_answer: selectedAnswer,
           correct_answer: question.correct_answer,
-          grade: state.player.grade || 2,
+          grade: state.player.grade ?? 2,
         }),
       });
       const data = await res.json();

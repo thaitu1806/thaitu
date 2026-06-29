@@ -87,7 +87,7 @@ function updateStartScreen() {
 async function startQuiz() {
   try {
     const profile = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
-    const grade = profile.grade || 2;
+    const grade = profile.grade ?? 2;
     const subjects = ['math', 'vietnamese', 'english'];
     const subject = subjects[Math.floor(Math.random() * subjects.length)];
     const res = await fetch(`/api/questions?subject=${subject}&difficulty=easy&limit=${TOTAL_QUESTIONS}&grade=${grade}`);

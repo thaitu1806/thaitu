@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     const { name, grade } = req.body;
     if (!name || !name.trim()) return res.status(400).json({ error: 'Nhập tên đi con!' });
 
-    const playerGrade = grade ? parseInt(grade) : 2;
+    const playerGrade = (grade != null && grade !== '') ? parseInt(grade) : 2;
 
     try {
       const existing = await db.execute({ sql: `SELECT * FROM players WHERE name = ?`, args: [name.trim()] });
@@ -47,11 +47,11 @@ export default async function handler(req, res) {
     const { id: bodyId, grade } = req.body;
     const id = req.query.id || bodyId;
     if (!id) return res.status(400).json({ error: 'Missing id' });
-    if (!grade) return res.status(400).json({ error: 'Missing grade' });
+    if (grade == null || grade === '') return res.status(400).json({ error: 'Missing grade' });
 
     const gradeValue = parseInt(grade);
-    if (gradeValue < 2 || gradeValue > 5) {
-      return res.status(400).json({ error: 'Grade must be between 2 and 5' });
+    if (gradeValue < 0 || gradeValue > 5) {
+      return res.status(400).json({ error: 'Grade must be between 0 and 5' });
     }
 
     try {

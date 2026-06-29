@@ -37,7 +37,7 @@
 
   async function fetchQ() {
     const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
-    const g = p.grade || 2;
+    const g = p.grade ?? 2;
     const need = size * size + 10;
     try {
       if (subject === 'mix') {

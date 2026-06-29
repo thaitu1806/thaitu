@@ -19,7 +19,7 @@
 │   ├── seed.js          # Local seeder
 │   ├── seed-turso.js    # Production seeder
 │   ├── local.db         # Local SQLite database file
-│   └── questions/       # Seed data files organized by subject-difficulty (incl. picture-math.js: emoji-based visual questions for grade 2)
+│   └── questions/       # Seed data files organized by subject-difficulty. Picture (emoji) sets by grade: picture-preschool.js (grade 0, "5 tuổi"), picture-grade1.js (grade 1), picture-math.js (grade 2)
 ├── public/              # Static frontend files
 │   ├── index.html       # Capacitor entry — redirects to home.html
 │   ├── api-config.js    # Runtime API base URL patch for native shell
@@ -45,6 +45,7 @@
 - Production (Vercel): API routes are serverless functions in `api/`, static files served from `public/`
 - Each game version (v1+) is a self-contained HTML/JS/CSS bundle with no build step
 - The `api/` handlers mirror the routes defined inline in `server.js` for Vercel compatibility
+- Multi-grade questions: `questions.grade` ranges **0–5** (0 = "5 tuổi" mầm non, 1 = Lớp 1, … 5 = Lớp 5). `api/questions.js` filters strictly by grade. Picture/emoji question sets exist for the youngest grades (see `db/questions/picture-*.js`). The child's grade is set in `public/profile.html` (buttons include 5 tuổi + Lớp 1–5) and stored on the player + in localStorage `hocvui_profile`. **Always read grade with `?? 2` not `|| 2`** (grade 0 is falsy) — both in game `fetchQ`/`fetchQuestions` and in `api/players.js`/`server.js` POST+PUT (PUT range allows 0–5).
 - V4 online duel uses Firebase Realtime Database directly from the client (the legacy `ws-server.js` is only used locally and is being phased out)
 - Parent system: `public/parent.html` (register/login/dashboard for parents) backed by `api/parent.js` (`/api/parent?action=...`). On Vercel `/api/parent` routes to `api/features.js?feature=parent`; locally `server.js` mounts `api/parent.js` directly at `/api/parent`. Admins manage parents via the "Phụ huynh" tab in `admin.html` → `api/admin/index.js` `resource=parents` (list / children / unlink / delete).
 - Parent-created rewards ("Quà từ bố mẹ"): parents define real-life gifts per child (icon+title+diamond price) in the parent dashboard "🎁 Quà của con" tab. Tables `parent_rewards` + `parent_reward_claims` (auto-created via `api/db.js` migration on Turso). Actions on `/api/parent`: `create-reward`, `rewards` (parent view with parent_id, child view without), `delete-reward`, `redeem-reward` (child spends diamonds → claim), `claims`, `fulfill-claim`. The child sees these in `shop.html` (top "Quà từ bố mẹ" section); parents get a pending-claims banner to mark fulfilled.

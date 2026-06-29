@@ -16,6 +16,8 @@ import { englishQuestionsEasy } from './questions/english-easy.js';
 import { englishQuestionsMedium } from './questions/english-medium.js';
 import { englishQuestionsHard } from './questions/english-hard.js';
 import { pictureMathEasy } from './questions/picture-math.js';
+import { preschoolPicture } from './questions/picture-preschool.js';
+import { grade1Picture } from './questions/picture-grade1.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -35,6 +37,9 @@ async function seed() {
 
   console.log('Seeding questions...');
   const allQuestions = [
+    // Mầm non 5 tuổi (grade 0) + Lớp 1 (grade 1) — câu hỏi hình ảnh
+    ...preschoolPicture.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 0 })),
+    ...grade1Picture.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 1 })),
     ...mathQuestionsEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
     ...extraMathEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
     ...pictureMathEasy.map(q => ({ ...q, subject: 'math', difficulty: 'easy', grade: 2 })),
@@ -59,7 +64,7 @@ async function seed() {
     const batch = allQuestions.slice(i, i + batchSize);
     const statements = batch.map(q => ({
       sql: `INSERT INTO questions (subject, difficulty, question_text, option_a, option_b, option_c, option_d, correct_answer, explanation, grade) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      args: [q.subject, q.difficulty, q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_answer, q.explanation || null, q.grade || 2],
+      args: [q.subject, q.difficulty, q.question_text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_answer, q.explanation || null, q.grade ?? 2],
     }));
     await db.batch(statements);
   }

@@ -103,7 +103,7 @@
   // ===== FETCH QUESTIONS =====
   async function fetchQuestions() {
     const profile = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
-    const grade = profile.grade || 2;
+    const grade = profile.grade ?? 2;
     try {
       const res = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=${MAX_QUESTIONS}&grade=${grade}`);
       const data = await res.json();

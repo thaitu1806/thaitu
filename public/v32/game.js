@@ -72,7 +72,7 @@ async function startGame() {
   const totalNeeded = MAX_EXPERIMENTS * INGREDIENTS_PER_EXPERIMENT;
   try {
     const profile = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
-    const grade = profile.grade || 2;
+    const grade = profile.grade ?? 2;
     const res = await fetch(`/api/questions?subject=${selectedSubject}&difficulty=easy&limit=${totalNeeded}&grade=${grade}`);
     questions = await res.json();
     if (!questions || questions.length === 0) {

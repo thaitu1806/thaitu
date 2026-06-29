@@ -38,7 +38,7 @@ const S = {
 };
 
 function getPlayerId() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.id; } catch { return null; } }
-function getPlayerGrade() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.grade || 2; } catch { return 2; } }
+function getPlayerGrade() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.grade ?? 2; } catch { return 2; } }
 
 function getTotalWaves() { return parseInt(localStorage.getItem('v18_total_waves') || '0'); }
 function saveTotalWaves(w) { localStorage.setItem('v18_total_waves', String(w)); }

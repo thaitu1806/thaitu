@@ -24,7 +24,7 @@
     }));
   }
   async function fetchQ() {
-    const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}'); const g = p.grade || 2;
+    const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}'); const g = p.grade ?? 2;
     try {
       if (subject === 'mix') { const subs = ['math', 'vietnamese', 'english']; const per = Math.ceil(QL / 3);
         const r = await Promise.all(subs.map(s => fetch(`/api/questions?subject=${s}&difficulty=${difficulty}&limit=${per}&grade=${g}`).then(x => x.ok ? x.json() : []).catch(() => [])));

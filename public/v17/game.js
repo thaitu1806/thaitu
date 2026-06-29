@@ -31,7 +31,7 @@ const S = {
 function getProgress() { try { return JSON.parse(localStorage.getItem('v17_progress') || '{}'); } catch { return {}; } }
 function saveProgressData(data) { localStorage.setItem('v17_progress', JSON.stringify(data)); }
 function getPlayerId() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.id; } catch { return null; } }
-function getPlayerGrade() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.grade || 2; } catch { return 2; } }
+function getPlayerGrade() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.grade ?? 2; } catch { return 2; } }
 
 // ===== SCREENS =====
 function showScreen(id) {

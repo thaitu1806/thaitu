@@ -45,7 +45,7 @@ const S = {
 function loadProgress() { try { return JSON.parse(localStorage.getItem('v16_progress')) || { shifts: 0, served: 0 }; } catch { return { shifts: 0, served: 0 }; } }
 function saveProgress(p) { localStorage.setItem('v16_progress', JSON.stringify(p)); }
 function getPlayerId() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.id; } catch { return null; } }
-function getPlayerGrade() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.grade || 2; } catch { return 2; } }
+function getPlayerGrade() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.grade ?? 2; } catch { return 2; } }
 
 let progress = loadProgress();
 

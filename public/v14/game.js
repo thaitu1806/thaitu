@@ -34,7 +34,7 @@ const S = {
 };
 
 function getPlayerId() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.id; } catch { return null; } }
-function getPlayerGrade() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.grade || 2; } catch { return 2; } }
+function getPlayerGrade() { try { return JSON.parse(localStorage.getItem('hocvui_profile'))?.grade ?? 2; } catch { return 2; } }
 function getTotalRescued() { try { return JSON.parse(localStorage.getItem('v14_rescued') || '[]').length; } catch { return 0; } }
 function saveRescued(arr) { localStorage.setItem('v14_rescued', JSON.stringify(arr)); }
 function getAllRescued() { try { return JSON.parse(localStorage.getItem('v14_rescued') || '[]'); } catch { return []; } }

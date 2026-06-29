@@ -183,7 +183,7 @@ async function startShift() {
   // Try to load some API questions too (mix)
   try {
     const profile = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
-    const grade = profile.grade || 2;
+    const grade = profile.grade ?? 2;
     const res = await fetch(`/api/questions?subject=math&difficulty=easy&limit=4&grade=${grade}`);
     questions = await res.json();
     if (!questions || questions.length === 0) questions = [];

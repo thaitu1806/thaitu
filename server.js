@@ -214,7 +214,7 @@ app.post('/api/sessions', async (req, res) => {
 app.post('/api/players', async (req, res) => {
   const { name, grade } = req.body;
   const db = getDb();
-  const playerGrade = grade ? parseInt(grade) : 2;
+  const playerGrade = (grade != null && grade !== '') ? parseInt(grade) : 2;
   try {
     const existing = await db.execute({ sql: `SELECT * FROM players WHERE name = ?`, args: [name] });
     if (existing.rows.length > 0) {
@@ -249,8 +249,8 @@ app.put('/api/players/:id', async (req, res) => {
   try {
     if (grade !== undefined) {
       const gradeValue = parseInt(grade);
-      if (gradeValue < 2 || gradeValue > 5) {
-        return res.status(400).json({ error: 'Grade must be between 2 and 5' });
+      if (gradeValue < 0 || gradeValue > 5) {
+        return res.status(400).json({ error: 'Grade must be between 0 and 5' });
       }
       await db.execute({ sql: `UPDATE players SET grade = ? WHERE id = ?`, args: [gradeValue, parseInt(req.params.id)] });
     }

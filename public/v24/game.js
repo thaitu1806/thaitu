@@ -190,7 +190,7 @@
 
   async function fetchQuestions() {
     const profile = getProfile();
-    const grade = profile ? profile.grade || 2 : 2;
+    const grade = profile ? profile.grade ?? 2 : 2;
     const playerId = profile ? profile.id : '';
     try {
       const url = `/api/questions?subject=${selectedSubject}&difficulty=${selectedDifficulty}&limit=${QUIZ_TOTAL}&grade=${grade}&player_id=${playerId}`;

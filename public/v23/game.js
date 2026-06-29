@@ -101,7 +101,7 @@
   // ===== FETCH QUESTIONS =====
   async function fetchQuestions() {
     const profile = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
-    const grade = profile.grade || 2;
+    const grade = profile.grade ?? 2;
     const needed = TOTAL_PATIENTS * STEPS_PER_PATIENT + 10; // extra buffer
     try {
       const res = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=${needed}&grade=${grade}`);

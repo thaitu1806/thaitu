@@ -28,7 +28,7 @@
 
   async function fetchQ() {
     const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
-    const g = p.grade || 2;
+    const g = p.grade ?? 2;
     try {
       const r = await fetch(`/api/questions?subject=${subject}&difficulty=${difficulty}&limit=${ROUNDS * PAIRS + 20}&grade=${g}`);
       pool = r.ok ? await r.json() : [];

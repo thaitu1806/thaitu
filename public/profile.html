@@ -301,6 +301,8 @@
         <label>Lớp của con:</label>
         <div class="grade-selector">
           <div class="grade-options" id="pf-grade-options">
+            <button type="button" data-grade="0" class="grade-btn">🧸 5 tuổi</button>
+            <button type="button" data-grade="1" class="grade-btn">🎒 Lớp 1</button>
             <button type="button" data-grade="2" class="grade-btn active">📚 Lớp 2</button>
             <button type="button" data-grade="3" class="grade-btn">📖 Lớp 3</button>
             <button type="button" data-grade="4" class="grade-btn">📘 Lớp 4</button>
@@ -395,7 +397,7 @@
     // --- State ---
     const saved = localStorage.getItem('hocvui_profile');
     let profile = saved ? JSON.parse(saved) : null;
-    let selectedGrade = (profile && profile.grade) ? profile.grade : 2;
+    let selectedGrade = (profile && profile.grade != null) ? profile.grade : 2;
 
     // --- Grade selector logic ---
     function initGradeSelector() {

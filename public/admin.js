@@ -686,7 +686,7 @@ async function loadQuestionsList() {
           <div class="q-meta">
             <span class="badge badge-${q.subject}">${q.subject === 'math' ? '🔢' : '📖'}</span>
             <span class="badge badge-${q.difficulty}">${q.difficulty}</span>
-            <span class="badge badge-grade">Lớp ${q.grade || 2}</span>
+            <span class="badge badge-grade">${q.grade === 0 ? '5 tuổi' : 'Lớp ' + (q.grade ?? 2)}</span>
             ${q.source === 'ai' ? '<span class="badge badge-ai">🤖 AI</span>' : ''}
           </div>
           <div class="q-text">${q.question_text}</div>
@@ -993,7 +993,7 @@ async function toggleParentChildren(parentId) {
     if (list.length === 0) { box.innerHTML = '<p style="padding:8px;color:#888;">Chưa liên kết con nào.</p>'; return; }
     box.innerHTML = list.map(c => `
       <div class="child-link-row">
-        <span>🧒 <strong>${escapeHtml(c.name)}</strong> • Lớp ${c.grade || 2} • ⭐ ${c.total_stars || 0} • 💎 ${c.total_diamonds || 0}</span>
+        <span>🧒 <strong>${escapeHtml(c.name)}</strong> • ${c.grade === 0 ? '5 tuổi' : 'Lớp ' + (c.grade ?? 2)} • ⭐ ${c.total_stars || 0} • 💎 ${c.total_diamonds || 0}</span>
         <button class="btn-sm btn-sm-danger" onclick="unlinkParentChild(${parentId}, ${c.id})">Gỡ liên kết</button>
       </div>
     `).join('');

@@ -32,7 +32,7 @@
     try { return JSON.parse(localStorage.getItem('hocvui_profile')); } catch { return null; }
   }
   function getPlayerId() { return getProfile()?.id || null; }
-  function getPlayerGrade() { return getProfile()?.grade || 2; }
+  function getPlayerGrade() { return getProfile()?.grade ?? 2; }
 
   // ===== SCREENS =====
   function showScreen(id) {

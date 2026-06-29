@@ -112,7 +112,7 @@ function getPlayerId() {
 function getGrade() {
   try {
     const p = JSON.parse(localStorage.getItem('hocvui_profile') || '{}');
-    return p.grade || 2;
+    return p.grade ?? 2;
   } catch { return 2; }
 }
 
