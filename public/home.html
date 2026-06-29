@@ -338,6 +338,8 @@
       <div class="grade-selector" style="margin-bottom:14px;">
         <label style="display:block; font-weight:700; font-size:0.9rem; color:#555; margin-bottom:8px;">Lớp của con:</label>
         <div class="grade-options" id="gate-grade-options" style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+          <button type="button" data-grade="0" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">🧸 5 tuổi</button>
+          <button type="button" data-grade="1" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">🎒 Lớp 1</button>
           <button type="button" data-grade="2" class="grade-btn active" style="padding:10px 14px; border:2px solid #4facfe; border-radius:12px; background:#e3f2fd; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">📚 Lớp 2</button>
           <button type="button" data-grade="3" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">📖 Lớp 3</button>
           <button type="button" data-grade="4" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">📘 Lớp 4</button>
@@ -671,7 +673,7 @@
             document.getElementById('gate-msg').textContent = data.error;
             return;
           }
-          localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade || selectedGrade }));
+          localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade ?? selectedGrade }));
           gate.style.display = 'none';
           document.querySelector('.home-sub').textContent = `Xin chào ${data.name}! 🎉`;
           loadRewardBar(data.id);

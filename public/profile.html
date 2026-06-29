@@ -446,7 +446,7 @@
             document.getElementById('pf-msg').className = 'profile-msg err';
             return;
           }
-          profile = { id: data.id, name: data.name, grade: data.grade || selectedGrade };
+          profile = { id: data.id, name: data.name, grade: data.grade ?? selectedGrade };
           localStorage.setItem('hocvui_profile', JSON.stringify(profile));
           document.getElementById('pf-msg').textContent = '✅ Đã cập nhật!';
           document.getElementById('pf-msg').className = 'profile-msg ok';
@@ -459,7 +459,7 @@
             body: JSON.stringify({ name, grade: selectedGrade })
           });
           const data = await res.json();
-          profile = { id: data.id, name: data.name, grade: data.grade || selectedGrade };
+          profile = { id: data.id, name: data.name, grade: data.grade ?? selectedGrade };
           localStorage.setItem('hocvui_profile', JSON.stringify(profile));
           document.getElementById('pf-msg').textContent = '✅ Đã lưu!';
           document.getElementById('pf-msg').className = 'profile-msg ok';
