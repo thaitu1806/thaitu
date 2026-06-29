@@ -92,6 +92,9 @@
     btn.style.cssText = 'position:fixed;top:12px;right:12px;z-index:9000;width:38px;height:38px;border-radius:50%;border:none;background:rgba(0,0,0,0.2);color:#fff;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:transform 0.2s;';
     btn.addEventListener('click', () => showRulesPopup(rules));
     document.body.appendChild(btn);
+
+    // Hide inline guide buttons since the floating ❓ already covers this
+    document.querySelectorAll('.btn-guide, #btn-guide').forEach(el => { el.style.display = 'none'; });
   }
 
   function injectHomeButton() {
