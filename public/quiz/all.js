@@ -21,7 +21,6 @@
     'mystery',
     'slider',
     'eliminate',
-    'catch',
     'balloon',
     'whack',
     'scratch',
