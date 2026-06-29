@@ -90,17 +90,23 @@
   width: 100% !important;
 }
 
+/* Enlarge option buttons for young kids (font/size only — NOT width, so
+   absolutely-positioned chips in catch/balloon/tap aren't forced to 100%). */
 .qz-young .option-btn {
   font-size: 1.4rem !important;
   min-height: 60px !important;
   padding: 14px 12px !important;
   border-radius: 16px !important;
+}
+/* Full width only inside the choice grid */
+.qz-young .qz-mode-choice .option-btn {
   width: 100% !important;
   text-align: center !important;
 }
 
 /* tap chips */
 .qz-young .qz-tap-chip {
+  width: auto !important;
   font-size: 1.6rem !important;
   min-width: 64px !important;
   min-height: 56px !important;
@@ -109,6 +115,7 @@
 
 /* catch chips */
 .qz-young .qz-catch-chip {
+  width: auto !important;
   font-size: 1.4rem !important;
   min-width: 72px !important;
   min-height: 52px !important;
