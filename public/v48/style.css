@@ -269,3 +269,10 @@ body { font-family: 'Nunito', sans-serif; min-height: 100vh; background: linear-
 .qz-go:active { transform: translateY(2px); box-shadow: 0 2px 0 #1f7a31; }
 .qz-type.correct .qz-type-display, .qz-type.correct .qz-input { border-color: #34c77b; background: #e8f7ee; color: #1f7a44; }
 .qz-type.wrong .qz-type-display, .qz-type.wrong .qz-input { border-color: #ff5a5a; background: #fdecec; color: #c2261b; }
+
+
+/* ── quiz mode: tap-the-correct chips ── */
+.q-options.qz-tap-field { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; }
+.qz-tap-chip { flex: 0 0 auto; transform: rotate(var(--tilt, 0deg)); animation: chipIn .3s ease both; animation-delay: var(--d, 0s); }
+@keyframes chipIn { from { opacity: 0; transform: rotate(var(--tilt,0deg)) scale(0.6); } to { opacity: 1; transform: rotate(var(--tilt,0deg)) scale(1); } }
+.qz-tap-chip:active { transform: rotate(0) scale(0.96); }
