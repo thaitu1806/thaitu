@@ -81,11 +81,22 @@
  * YOUNG LEARNERS (grade 0 + 1): bigger buttons, larger fonts, more spacing.
  * Triggered by body.qz-young class set by all.js.
  * ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Choice mode: full-width 2-column grid so buttons fill the space */
+.qz-young .qz-mode-choice {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+
 .qz-young .option-btn {
-  font-size: 1.5rem !important;
-  min-height: 56px !important;
-  padding: 14px 16px !important;
+  font-size: 1.4rem !important;
+  min-height: 60px !important;
+  padding: 14px 12px !important;
   border-radius: 16px !important;
+  width: 100% !important;
+  text-align: center !important;
 }
 
 /* tap chips */
