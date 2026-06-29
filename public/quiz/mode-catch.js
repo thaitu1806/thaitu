@@ -19,13 +19,16 @@
       optionsEl.appendChild(field);
       const colors = ['#ff7a59', '#4a90e2', '#34c77b', '#f4b73e'];
       const chips = [];
-      helpers.shuffle(helpers.optionList(q)).forEach((o, i) => {
+      const list = helpers.shuffle(helpers.optionList(q));
+      const n = list.length;
+      list.forEach((o, i) => {
         const chip = helpers.el('button', 'option-btn qz-catch-chip', o.text);
         chip.dataset.key = o.key;
         chip.style.background = colors[i % colors.length];
-        chip.style.top = (12 + i * 22) + '%';
-        // each chip drifts at its own speed/phase
-        chips.push({ el: chip, key: o.key, x: -20 - Math.random() * 40, speed: 0.18 + Math.random() * 0.18, dir: 1 });
+        // evenly spaced lanes, each chip centred on its lane
+        chip.style.top = (((i + 0.5) / n) * 100) + '%';
+        // gentle drift; start staggered across the track so they don't overlap
+        chips.push({ el: chip, key: o.key, x: 15 + (i / Math.max(1, n - 1)) * 70, speed: 0.018 + Math.random() * 0.012, dir: i % 2 ? 1 : -1 });
         chip.addEventListener('click', () => {
           const ok = o.key === ck;
           stop();
@@ -43,9 +46,9 @@
         const dt = Math.min(50, t - last); last = t;
         chips.forEach(c => {
           c.x += c.dir * c.speed * dt;
-          if (c.x > 100) { c.x = 100; c.dir = -1; }
-          else if (c.x < 0) { c.x = 0; c.dir = 1; }
-          c.el.style.left = `calc(${c.x}% - 30px)`;
+          if (c.x > 88) { c.x = 88; c.dir = -1; }
+          else if (c.x < 12) { c.x = 12; c.dir = 1; }
+          c.el.style.left = c.x + '%';
         });
         raf = requestAnimationFrame(frame);
       }

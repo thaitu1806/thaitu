@@ -50,8 +50,8 @@
 .qz-mode-eliminate .elim-btn.correct { background: #c8f0cf; border-color: #46c246; }
 
 /* ── catch (drifting chips) ── */
-.qz-catch-field { grid-column: 1 / -1; position: relative; width: 100%; height: 150px; overflow: hidden; }
-.qz-catch-chip { position: absolute; width: 60px; height: 60px; border-radius: 50%; color: #fff; font-weight: 900; border: none; padding: 4px; box-shadow: inset -4px -4px 8px rgba(0,0,0,0.18); }
+.qz-catch-field { grid-column: 1 / -1; position: relative; width: 100%; height: 220px; overflow: hidden; }
+.qz-catch-chip { position: absolute; transform: translate(-50%, -50%); min-width: 56px; height: auto; min-height: 44px; padding: 8px 14px; border-radius: 22px; color: #fff; font-weight: 900; font-size: 1.05rem; white-space: nowrap; border: none; box-shadow: inset -4px -4px 8px rgba(0,0,0,0.18); cursor: pointer; }
 
 /* ── balloon (🎈 tap drifting balloons) ── */
 .qz-balloon-field { grid-column: 1 / -1; position: relative; width: 100%; height: 200px; overflow: hidden; }
