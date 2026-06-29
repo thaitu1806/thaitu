@@ -99,6 +99,17 @@
     const onResultCb = opts.onResult || function () {};
     const mode = pickMode(q, opts.mode);
 
+    // Debug log: which answer mode is shown for this question.
+    try {
+      const applicable = applicableModes(q).map(m => m.id);
+      console.log(
+        '%c[Quiz] mode → ' + (mode ? mode.id : 'none'),
+        'color:#fff;background:#7a3bd6;padding:2px 8px;border-radius:6px;font-weight:700',
+        '| áp dụng được:', applicable.join(', '),
+        '| câu:', (q && q.question_text) ? q.question_text.slice(0, 40) : ''
+      );
+    } catch (e) {}
+
     if (box) {
       box.innerHTML = '';
       box.className = (box.className || '').replace(/\bqz-mode-\w+\b/g, '').trim() + (mode ? ' qz-mode-' + mode.id : '');
