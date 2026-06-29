@@ -16,8 +16,10 @@
   const WIDGET_CSS = `
     .quest-widget {
       position: fixed;
-      bottom: 16px;
-      right: 16px;
+      bottom: auto;
+      top: 50%;
+      right: 12px;
+      transform: translateY(20px);
       z-index: 9990;
       font-family: 'Nunito', sans-serif;
       font-size: 14px;

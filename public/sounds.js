@@ -173,12 +173,12 @@
     btn.type = 'button';
     btn.setAttribute('aria-label', 'Bật/tắt âm thanh');
     btn.style.cssText = [
-      'position:fixed', 'left:10px', 'bottom:10px', 'z-index:2147483000',
-      'width:40px', 'height:40px', 'border-radius:50%', 'border:none',
-      'background:rgba(0,0,0,0.42)', 'color:#fff', 'font-size:1.15rem',
+      'position:fixed', 'left:8px', 'top:50%', 'transform:translateY(8px)', 'z-index:2147483000',
+      'width:36px', 'height:36px', 'border-radius:50%', 'border:none',
+      'background:rgba(0,0,0,0.35)', 'color:#fff', 'font-size:1rem',
       'cursor:pointer', 'display:flex', 'align-items:center', 'justify-content:center',
-      'box-shadow:0 3px 10px rgba(0,0,0,0.25)', 'backdrop-filter:blur(4px)',
-      'padding:0', 'line-height:1', 'transition:transform .12s,opacity .2s', 'opacity:0.85',
+      'box-shadow:0 2px 8px rgba(0,0,0,0.2)', 'backdrop-filter:blur(4px)',
+      'padding:0', 'line-height:1', 'transition:transform .12s,opacity .2s', 'opacity:0.7',
     ].join(';');
     btn.addEventListener('click', () => { btn.style.transform = 'scale(0.88)'; setTimeout(() => btn.style.transform = '', 120); window.HocVuiSound.toggle(); });
     btn.addEventListener('mouseenter', () => { btn.style.opacity = '1'; });

@@ -68,8 +68,8 @@
     const s = document.createElement('style');
     s.id = 'hv-mascot-style';
     s.textContent = `
-    #hv-mascot { position: fixed; right: 8px; bottom: 80px; z-index: 2147482000; width: 88px; height: 104px; pointer-events: none; user-select: none; -webkit-user-select: none; }
-    #hv-mascot .m-stage { position: absolute; bottom: 0; right: 0; width: 80px; height: 80px; pointer-events: auto; cursor: pointer; transition: transform .15s; }
+    #hv-mascot { position: fixed; right: 6px; bottom: 50%; z-index: 2147482000; width: 72px; height: 88px; pointer-events: none; user-select: none; -webkit-user-select: none; }
+    #hv-mascot .m-stage { position: absolute; bottom: 0; right: 0; width: 66px; height: 66px; pointer-events: auto; cursor: pointer; transition: transform .15s; }
     #hv-mascot .m-stage:active { transform: scale(0.92); }
     #hv-mascot .m-svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 4px 5px rgba(0,0,0,0.2)); animation: mIdle 2.8s ease-in-out infinite; transform-origin: 50% 90%; }
     @keyframes mIdle { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-5px) rotate(-1.5deg); } }
@@ -86,7 +86,7 @@
     #hv-mascot.is-sad .m-eye { r: 5px; }
     /* speech bubble */
     #hv-mascot .m-bubble {
-      position: absolute; right: 4px; bottom: 84px; max-width: 160px; min-width: 64px;
+      position: absolute; right: 4px; bottom: 72px; max-width: 150px; min-width: 56px;
       background: #fff; color: #333; font-family: 'Nunito', system-ui, sans-serif; font-weight: 800;
       font-size: 0.82rem; line-height: 1.25; padding: 8px 11px; border-radius: 14px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.22); text-align: center;
@@ -101,11 +101,11 @@
     #hv-mascot .m-bubble.bad::after { border-top-color: #fff3e0; }
     /* mascot mute/show toggle sits just above the sound toggle */
     #hv-mascot-toggle {
-      position: fixed; left: 10px; bottom: 56px; z-index: 2147483000;
-      width: 40px; height: 40px; border-radius: 50%; border: none;
-      background: rgba(0,0,0,0.42); color: #fff; font-size: 1.1rem; cursor: pointer;
+      position: fixed; left: 8px; top: 50%; transform: translateY(-32px); z-index: 2147483000;
+      width: 36px; height: 36px; border-radius: 50%; border: none;
+      background: rgba(0,0,0,0.35); color: #fff; font-size: 1rem; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.25); padding: 0; line-height: 1; opacity: 0.85;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2); padding: 0; line-height: 1; opacity: 0.7;
       transition: transform .12s;
     }
     #hv-mascot-toggle:active { transform: scale(0.88); }
