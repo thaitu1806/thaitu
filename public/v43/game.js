@@ -230,16 +230,15 @@
 
     const optionsEl = $('q-options');
     optionsEl.innerHTML = '';
-    ['a', 'b', 'c', 'd'].forEach((key) => {
-      const text = currentQuestion[`option_${key}`];
-      if (text == null) return;
-      const btn = document.createElement('button');
-      btn.className = 'option-btn';
-      btn.dataset.key = key;
-      btn.textContent = text;
-      btn.addEventListener('click', () => handleAnswer(key));
-      optionsEl.appendChild(btn);
-    });
+    if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+      window.HocVuiQuiz.render({ questionEl: $('q-text'), optionsEl: optionsEl, question: currentQuestion, onResult: (ok) => {
+        const ck = String((currentQuestion.correct_answer || 'a')).toLowerCase();
+        const wrong = ['a','b','c','d'].find(k => k !== ck) || 'b';
+        handleAnswer(ok ? ck : wrong);
+      } });
+    } else {
+      ['a','b','c','d'].forEach((key) => { const text = currentQuestion['option_' + key]; if (text == null) return; const btn = document.createElement('button'); btn.className = 'option-btn'; btn.dataset.key = key; btn.textContent = text; btn.addEventListener('click', () => handleAnswer(key)); optionsEl.appendChild(btn); });
+    }
 
     startTimer();
   }

@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 
-const TARGETS = [6, 7, 8, 9, 10, 47, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60];
+const TARGETS = [2, 6, 7, 8, 9, 10, 47, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60];
 
 // Match the option-render forEach block:  ['a','b','c','d'].forEach(k => { ... handleAns(k) ... });
 // Non-greedy up to the closing "});" that follows opts.appendChild(btn).
