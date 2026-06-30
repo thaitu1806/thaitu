@@ -647,11 +647,13 @@
             showGate();
             return;
           }
-          document.querySelector('.home-sub').textContent = `Xin chào ${data.name}! 🎉`;
+          const sub = document.querySelector('.home-sub');
+          if (sub) sub.textContent = `Xin chào ${data.name}! 🎉`;
           localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade ?? 2 }));
           loadRewardBar(data.id);
         } catch {
-          document.querySelector('.home-sub').textContent = `Xin chào ${p.name}! 🎉`;
+          const sub = document.querySelector('.home-sub');
+          if (sub) sub.textContent = `Xin chào ${p.name}! 🎉`;
           loadRewardBar(p.id);
         }
       }
@@ -714,7 +716,8 @@
           }
           localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade ?? selectedGrade }));
           gate.style.display = 'none';
-          document.querySelector('.home-sub').textContent = `Xin chào ${data.name}! 🎉`;
+          const sub = document.querySelector('.home-sub');
+          if (sub) sub.textContent = `Xin chào ${data.name}! 🎉`;
           loadRewardBar(data.id);
         } catch {
           document.getElementById('gate-msg').textContent = 'Lỗi kết nối!';
