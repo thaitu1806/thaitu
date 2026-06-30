@@ -4,6 +4,7 @@ import { getDb } from './db.js';
 import { getPlayerLevel, checkStreakMilestone, STREAK_MILESTONES, PLAYER_LEVELS } from '../lib/diamond-calc.js';
 import { generateDailyQuests, getVietnamDateStr } from '../lib/quest-generator.js';
 import { validateLinkCodeFormat } from '../lib/link-code.js';
+import friendsHandler from './friends.js';
 
 const LEVEL_ORDER = ['bronze', 'silver', 'gold', 'diamond', 'master'];
 
@@ -54,6 +55,7 @@ export default async function handler(req, res) {
       case 'link': return await handleLink(req, res);
       case 'parent': return await handleParent(req, res);
       case 'progress': return await handleProgress(req, res);
+      case 'friends': return await handleFriends(req, res);
       default: return res.status(404).json({ error: 'Unknown feature' });
     }
   } catch (err) {
@@ -511,4 +513,9 @@ async function handleProgress(req, res) {
   }
 
   res.status(405).json({ error: 'Method not allowed' });
+}
+
+// === FRIENDS ===
+async function handleFriends(req, res) {
+  return friendsHandler(req, res);
 }

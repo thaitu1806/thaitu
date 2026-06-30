@@ -263,3 +263,20 @@ CREATE TABLE IF NOT EXISTS parent_reward_claims (
 
 CREATE INDEX IF NOT EXISTS idx_parent_reward_claims_parent ON parent_reward_claims(parent_id, status);
 CREATE INDEX IF NOT EXISTS idx_parent_reward_claims_player ON parent_reward_claims(player_id);
+
+-- Friends System (two-way: request → accept → mutual friends)
+
+CREATE TABLE IF NOT EXISTS friendships (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  requester_id INTEGER NOT NULL,
+  receiver_id INTEGER NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'accepted')),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  accepted_at DATETIME DEFAULT NULL,
+  FOREIGN KEY (requester_id) REFERENCES players(id),
+  FOREIGN KEY (receiver_id) REFERENCES players(id),
+  UNIQUE(requester_id, receiver_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_friendships_requester ON friendships(requester_id, status);
+CREATE INDEX IF NOT EXISTS idx_friendships_receiver ON friendships(receiver_id, status);

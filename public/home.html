@@ -623,8 +623,7 @@
       }
       card.style.display = 'flex';
     }
-    // HocVuiProgress is defined by engagement.js (injected before   <script src="/draggable-widget.js"></script>
-</body>); retry until ready.
+    // HocVuiProgress is defined by engagement.js; retry until ready.
     let tries = 0;
     (function wait() { if (window.HocVuiProgress) update(); else if (tries++ < 40) setTimeout(wait, 100); })();
   })();

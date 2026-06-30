@@ -36,6 +36,7 @@
     { "src": "/api/players/(?<id>\\d+)", "dest": "/api/players.js?id=$id" },
     { "src": "/api/players", "dest": "/api/players.js" },
     { "src": "/api/parent", "dest": "/api/features.js?feature=parent" },
+    { "src": "/api/friends", "dest": "/api/features.js?feature=friends" },
     { "src": "/api/shop/items", "dest": "/api/features.js?feature=shop" },
     { "src": "/api/shop/buy", "dest": "/api/features.js?feature=buy" },
     { "src": "/api/sessions", "dest": "/api/sessions.js" },

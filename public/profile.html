@@ -199,6 +199,19 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.1); margin-bottom: 14px;
       text-align: center;
     }
+    /* Friends section */
+    .friend-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: #f8fafc; margin-bottom: 6px; }
+    .friend-card .fc-avatar { width: 38px; height: 38px; border-radius: 50%; background: #e8f4fd; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+    .friend-card .fc-info { flex: 1; min-width: 0; }
+    .friend-card .fc-name { font-weight: 800; font-size: 0.9rem; color: #333; }
+    .friend-card .fc-stats { font-size: 0.75rem; color: #888; font-weight: 700; }
+    .friend-card .fc-btn { padding: 6px 12px; border: none; border-radius: 10px; font-size: 0.78rem; font-weight: 800; cursor: pointer; flex-shrink: 0; }
+    .fc-btn-accept { background: #4caf50; color: #fff; }
+    .fc-btn-reject { background: #eee; color: #666; }
+    .fc-btn-add { background: linear-gradient(135deg,#4facfe,#00f2fe); color: #fff; }
+    .fc-btn-pending { background: #fff3e0; color: #e65100; cursor: default; }
+    .fc-btn-friends { background: #e8f5e9; color: #2e7d32; cursor: default; }
+    .fc-btn-unfriend { background: #ffebee; color: #c62828; }
     .link-status-card h3 {
       font-size: 1rem; font-weight: 800; color: #333; margin-bottom: 12px;
     }
@@ -279,6 +292,29 @@
 
     <!-- Link status section -->
     <div class="link-status-card" id="link-status-section" style="display:none">
+
+    <!-- 👫 Friends section -->
+    <div class="profile-box" id="friends-section">
+      <h3 style="margin-bottom:12px;font-size:1.1rem;">👫 Bạn bè</h3>
+      <!-- Pending requests -->
+      <div id="friends-pending" style="display:none;">
+        <p style="font-size:0.85rem;font-weight:800;color:#e65100;margin-bottom:6px;">📩 Lời mời kết bạn</p>
+        <div id="friends-pending-list"></div>
+      </div>
+      <!-- My friends list -->
+      <div id="friends-list-wrap">
+        <div id="friends-list"></div>
+        <p id="friends-empty" style="display:none;text-align:center;color:#999;font-size:0.85rem;padding:10px;">Chưa có bạn bè. Tìm bạn bên dưới!</p>
+      </div>
+      <!-- Search / discover -->
+      <div style="margin-top:12px;">
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="friend-search" placeholder="🔍 Tìm bạn theo tên..." style="flex:1;padding:10px 14px;border:2px solid #e0e0e0;border-radius:12px;font-size:0.9rem;font-family:inherit;font-weight:700;">
+          <button id="friend-search-btn" type="button" style="padding:10px 16px;border:none;border-radius:12px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:#fff;font-weight:900;cursor:pointer;">Tìm</button>
+        </div>
+        <div id="friend-search-results" style="margin-top:8px;"></div>
+      </div>
+    </div>
       <!-- Unlinked / prompted state -->
       <div id="link-unlinked">
         <h3>🔗 Mã liên kết phụ huynh</h3>
@@ -709,6 +745,127 @@
         });
       }
     });
+
+    // ─── FRIENDS SECTION ─────────────────────────────────────────────────────
+    (function initFriends() {
+      if (!profile || !profile.id) return;
+      const pid = profile.id;
+
+      loadFriendsList();
+      loadPendingRequests();
+
+      // Search
+      document.getElementById('friend-search-btn').addEventListener('click', searchFriends);
+      document.getElementById('friend-search').addEventListener('keypress', e => { if (e.key === 'Enter') searchFriends(); });
+
+      async function loadFriendsList() {
+        try {
+          const res = await fetch(`/api/friends?action=list&player_id=${pid}`);
+          const friends = await res.json();
+          const wrap = document.getElementById('friends-list');
+          const empty = document.getElementById('friends-empty');
+          if (!friends.length) { empty.style.display = 'block'; wrap.innerHTML = ''; return; }
+          empty.style.display = 'none';
+          wrap.innerHTML = friends.map(f => friendCard(f, 'friend')).join('');
+          wrap.querySelectorAll('.fc-btn-unfriend').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const fid = btn.dataset.friendId;
+              await fetch('/api/friends', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'unfriend', friend_id: parseInt(fid), player_id: pid }) });
+              loadFriendsList();
+            });
+          });
+        } catch (e) {}
+      }
+
+      async function loadPendingRequests() {
+        try {
+          const res = await fetch(`/api/friends?action=pending&player_id=${pid}`);
+          const pending = await res.json();
+          const section = document.getElementById('friends-pending');
+          const list = document.getElementById('friends-pending-list');
+          if (!pending.length) { section.style.display = 'none'; return; }
+          section.style.display = 'block';
+          list.innerHTML = pending.map(p => pendingCard(p)).join('');
+          list.querySelectorAll('.fc-btn-accept').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              await fetch('/api/friends', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'accept', friendship_id: parseInt(btn.dataset.fid), player_id: pid }) });
+              loadPendingRequests(); loadFriendsList();
+            });
+          });
+          list.querySelectorAll('.fc-btn-reject').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              await fetch('/api/friends', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'reject', friendship_id: parseInt(btn.dataset.fid), player_id: pid }) });
+              loadPendingRequests();
+            });
+          });
+        } catch (e) {}
+      }
+
+      async function searchFriends() {
+        const q = document.getElementById('friend-search').value.trim();
+        const wrap = document.getElementById('friend-search-results');
+        if (!q) { wrap.innerHTML = ''; return; }
+        try {
+          const res = await fetch(`/api/friends?action=search&q=${encodeURIComponent(q)}&player_id=${pid}`);
+          const results = await res.json();
+          if (!results.length) { wrap.innerHTML = '<p style="color:#999;font-size:0.85rem;text-align:center;">Không tìm thấy 🔍</p>'; return; }
+          wrap.innerHTML = results.map(r => searchCard(r)).join('');
+          wrap.querySelectorAll('.fc-btn-add').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const rid = parseInt(btn.dataset.receiverId);
+              await fetch('/api/friends', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'request', requester_id: pid, receiver_id: rid }) });
+              btn.textContent = '⏳ Đã gửi';
+              btn.className = 'fc-btn fc-btn-pending';
+              btn.disabled = true;
+            });
+          });
+        } catch (e) { wrap.innerHTML = ''; }
+      }
+
+      function friendCard(f, type) {
+        const avatar = f.equipped_avatar || '🧒';
+        const active = f.last_active_date || '';
+        return `<div class="friend-card">
+          <div class="fc-avatar">${avatar}</div>
+          <div class="fc-info">
+            <div class="fc-name">${esc(f.name)}</div>
+            <div class="fc-stats">⭐ ${f.total_stars || 0} · 💎 ${f.lifetime_diamonds || 0}${active ? ' · ' + active : ''}</div>
+          </div>
+          <button class="fc-btn fc-btn-unfriend" data-friend-id="${f.friend_id}">Hủy</button>
+        </div>`;
+      }
+
+      function pendingCard(p) {
+        const avatar = p.equipped_avatar || '🧒';
+        return `<div class="friend-card">
+          <div class="fc-avatar">${avatar}</div>
+          <div class="fc-info">
+            <div class="fc-name">${esc(p.name)}</div>
+            <div class="fc-stats">⭐ ${p.total_stars || 0} · 💎 ${p.lifetime_diamonds || 0}</div>
+          </div>
+          <button class="fc-btn fc-btn-accept" data-fid="${p.friendship_id}">✓</button>
+          <button class="fc-btn fc-btn-reject" data-fid="${p.friendship_id}">✗</button>
+        </div>`;
+      }
+
+      function searchCard(r) {
+        const avatar = r.equipped_avatar || '🧒';
+        let btnHtml = '';
+        if (r.friendship_status === 'accepted') btnHtml = '<span class="fc-btn fc-btn-friends">✓ Bạn bè</span>';
+        else if (r.friendship_status === 'pending') btnHtml = '<span class="fc-btn fc-btn-pending">⏳ Chờ</span>';
+        else btnHtml = `<button class="fc-btn fc-btn-add" data-receiver-id="${r.id}">+ Kết bạn</button>`;
+        return `<div class="friend-card">
+          <div class="fc-avatar">${avatar}</div>
+          <div class="fc-info">
+            <div class="fc-name">${esc(r.name)}</div>
+            <div class="fc-stats">Lớp ${r.grade || 2} · ⭐ ${r.total_stars || 0} · 💎 ${r.lifetime_diamonds || 0}</div>
+          </div>
+          ${btnHtml}
+        </div>`;
+      }
+
+      function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    })();
   </script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
