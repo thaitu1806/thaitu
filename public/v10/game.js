@@ -158,7 +158,7 @@
     $('q-popup').style.display = 'flex';
     startTimer();
   }
-  function closeQuestion() { $('q-popup').style.display = 'none'; clearInterval(tH); }
+  function closeQuestion() { $('q-popup').style.display = 'none'; clearInterval(tH); locked = false; }
 
   function startTimer() {
     clearInterval(tH);
@@ -317,11 +317,17 @@
     $('btn-guide').addEventListener('click', () => { guideModal.style.display = 'flex'; });
     $('btn-guide-close').addEventListener('click', () => { guideModal.style.display = 'none'; });
     guideModal.addEventListener('click', e => { if (e.target === guideModal) guideModal.style.display = 'none'; });
-    $('btn-exit').addEventListener('click', () => { $('exit-modal').style.display = 'flex'; });
-    const exitModal = $('exit-modal');
-    $('btn-exit-cancel').addEventListener('click', () => { exitModal.style.display = 'none'; });
-    $('btn-exit-confirm').addEventListener('click', () => { exitModal.style.display = 'none'; clearInterval(tH); window.location.reload(); });
-    exitModal.addEventListener('click', e => { if (e.target === exitModal) exitModal.style.display = 'none'; });
+    // Exit is handled by the shared floating 🚪 (help-rules.js) which returns to the
+    // home page. The in-HUD exit button was removed; guard its wiring in case the
+    // game-specific exit modal is absent.
+    const btnExit = $('btn-exit');
+    if (btnExit) {
+      btnExit.addEventListener('click', () => { $('exit-modal').style.display = 'flex'; });
+      const exitModal = $('exit-modal');
+      $('btn-exit-cancel').addEventListener('click', () => { exitModal.style.display = 'none'; });
+      $('btn-exit-confirm').addEventListener('click', () => { exitModal.style.display = 'none'; clearInterval(tH); window.location.reload(); });
+      exitModal.addEventListener('click', e => { if (e.target === exitModal) exitModal.style.display = 'none'; });
+    }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();

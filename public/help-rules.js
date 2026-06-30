@@ -102,6 +102,15 @@
     const path = window.location.pathname;
     if (!/^\/v\d+\/?/.test(path)) return;
 
+    // Mark the page so the shared header CSS (HUD spacing + redundant home-link
+    // hiding) applies. Only game versions get this treatment.
+    document.body.classList.add('hv-game');
+
+    // This shared floating 🚪 is the canonical "go home" button, present on every
+    // screen (start + in-game). Hide any game-specific HUD exit button so we don't
+    // get two stacked 🚪 in the top-left corner (e.g. v6–v10, v49–v57 have their own).
+    document.querySelectorAll('#btn-exit, .btn-exit').forEach(el => { el.style.display = 'none'; });
+
     const btn = document.createElement('button');
     btn.className = 'help-home-btn';
     btn.textContent = '🚪';
@@ -111,10 +120,20 @@
     document.body.appendChild(btn);
   }
 
+  // Decide where the shared 🚪 should go: while a game round is in progress
+  // ("game-screen"/"play-screen" is the active screen) → reload to restart;
+  // at the menu/start/result screen → go back to the home page.
+  function isInGameplay() {
+    const active = document.querySelector('.screen.active, .screen.show');
+    if (!active) return false;
+    return /game|play/i.test(active.id || '');
+  }
+
   function confirmExitToHome() {
     const existing = document.getElementById('help-exit-popup');
     if (existing) { existing.remove(); return; }
 
+    const inGame = isInGameplay();
     const overlay = document.createElement('div');
     overlay.id = 'help-exit-popup';
     overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);animation:fadeIn 0.2s;';
@@ -127,11 +146,11 @@
     icon.style.cssText = 'font-size:2.5rem;margin-bottom:8px;';
 
     const text = document.createElement('p');
-    text.textContent = 'Thoát game?';
+    text.textContent = inGame ? 'Chơi lại từ đầu?' : 'Về trang chủ?';
     text.style.cssText = 'font-size:1.05rem;font-weight:800;color:#333;margin-bottom:6px;';
 
     const sub = document.createElement('p');
-    sub.textContent = 'Quay lại màn hình bắt đầu của trò chơi.';
+    sub.textContent = inGame ? 'Chơi lại ván này từ đầu.' : 'Quay về trang chủ Học Vui.';
     sub.style.cssText = 'font-size:0.85rem;color:#777;margin-bottom:18px;';
 
     const btnRow = document.createElement('div');
@@ -143,9 +162,9 @@
     cancel.addEventListener('click', () => overlay.remove());
 
     const confirm = document.createElement('button');
-    confirm.textContent = '🚪 Thoát';
+    confirm.textContent = inGame ? '🔄 Chơi lại' : '🚪 Thoát';
     confirm.style.cssText = 'padding:10px 18px;background:#f44336;color:#fff;border:none;border-radius:12px;font-weight:700;font-size:0.95rem;cursor:pointer;font-family:inherit;';
-    confirm.addEventListener('click', () => { window.location.reload(); });
+    confirm.addEventListener('click', () => { if (inGame) window.location.reload(); else window.location.href = '/'; });
 
     btnRow.appendChild(cancel);
     btnRow.appendChild(confirm);
@@ -197,6 +216,14 @@
     @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     @keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
     .help-rules-btn:active, .help-home-btn:active { transform: scale(0.9); }
+    /* Shared header fix for every game: the in-play HUD sits below the row of
+       floating controls (🚪 exit top-left, ❓ help top-right, 🎯 daily-goal pill
+       top-center) so the pill no longer overlaps the stats. margin-top (not
+       padding) pushes the whole HUD down without distorting card-style HUDs. */
+    body.hv-game #game-screen .game-hud { margin-top: 44px; }
+    /* The floating 🚪 already returns to the home page, so the inline
+       "🏠 Về trang chủ" link on a game's start menu is redundant. */
+    body.hv-game #start-screen .home-link { display: none !important; }
   `;
   document.head.appendChild(style);
 
