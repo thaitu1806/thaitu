@@ -108,8 +108,20 @@
 
     // This shared floating 🚪 is the canonical "go home" button, present on every
     // screen (start + in-game). Hide any game-specific HUD exit button so we don't
-    // get two stacked 🚪 in the top-left corner (e.g. v6–v10, v49–v57 have their own).
-    document.querySelectorAll('#btn-exit, .btn-exit').forEach(el => { el.style.display = 'none'; });
+    // get two stacked exit buttons (e.g. v6–v10/v49–v57 use #btn-exit; v5 uses a
+    // ✕ .btn-exit-game inside its turn indicator). Some games build their board
+    // (and exit button) dynamically after load, so keep hiding via an observer.
+    hideGameExitButtons();
+    try {
+      const exitObs = new MutationObserver(hideGameExitButtons);
+      exitObs.observe(document.body, { childList: true, subtree: true });
+    } catch (e) {}
+
+    // The floating 🚪 already goes home, so hide the redundant inline
+    // "🏠 Về trang chủ" link / hub home button on the landing (initially-active)
+    // screen. Screen ids vary per game, so detect the active screen instead of
+    // hardcoding ids. The result screen keeps its home link (primary post-game nav).
+    hideRedundantHomeLink();
 
     const btn = document.createElement('button');
     btn.className = 'help-home-btn';
@@ -118,15 +130,80 @@
     btn.style.cssText = 'position:fixed;top:12px;left:12px;z-index:9000;width:38px;height:38px;border-radius:50%;border:none;background:rgba(0,0,0,0.2);color:#fff;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:transform 0.2s;';
     btn.addEventListener('click', confirmExitToHome);
     document.body.appendChild(btn);
+
+    // Push the active screen's header clear of the floating controls now, and
+    // again whenever screens swap (class .active/.show toggles).
+    requestAnimationFrame(nudgeActiveHeader);
+    try {
+      const obs = new MutationObserver(() => requestAnimationFrame(nudgeActiveHeader));
+      document.querySelectorAll('.screen').forEach(s => obs.observe(s, { attributes: true, attributeFilter: ['class'] }));
+    } catch (e) {}
+  }
+
+  // Hide the redundant inline "🏠 Về trang chủ" link / hub home button on the
+  // landing screen (the one that is `.active` on load). The floating 🚪 covers
+  // this. Result/finish screens are left untouched so their home link remains.
+  function hideRedundantHomeLink() {
+    const landing = document.querySelector('.screen.active, .screen.show') || document.querySelector('.screen');
+    if (!landing) return;
+    landing.querySelectorAll('.home-link, .zoo-home').forEach(el => { el.style.display = 'none'; });
+  }
+
+  // Hide every game-specific exit/close button so only the shared floating 🚪
+  // remains. Selector covers the common ids/classes; safe to run repeatedly.
+  var EXIT_SEL = '#btn-exit, .btn-exit, #btn-exit-game, .btn-exit-game';
+  function hideGameExitButtons() {
+    document.querySelectorAll(EXIT_SEL).forEach(el => {
+      if (el.style.display !== 'none') el.style.display = 'none';
+    });
+  }
+
+  // Keep the in-game header/HUD clear of the floating controls row (🚪 top-left,
+  // ❓ top-right, 🎯 daily-goal pill top-center). Find the header element of the
+  // active screen (a known header/HUD class, else the first real child) and, if it
+  // starts within the reserved top strip, push it down. Layout-driven so it works
+  // across versions without a per-version class list. Re-runs on screen changes.
+  var RESERVED_TOP = 46; // px strip reserved for the floating controls
+  var HEADER_SEL = '.game-hud,.battle-hud,.quiz-hud,.planet-hud,.quiz-header,.game-header,' +
+    '.turn-indicator,[class*="-hud"],[class$="-header"]';
+  function nudgeActiveHeader() {
+    const screen = document.querySelector('.screen.active, .screen.show');
+    if (!screen) return;
+    // Prefer an explicit header/HUD element; fall back to the first real child.
+    let target = screen.querySelector(HEADER_SEL);
+    if (!target) {
+      for (const el of Array.from(screen.children)) {
+        const cs0 = getComputedStyle(el);
+        if (cs0.display === 'none' || cs0.position === 'absolute' || cs0.position === 'fixed') continue;
+        if (el.getBoundingClientRect().height === 0) continue;
+        target = el; break;
+      }
+    }
+    if (!target || (target.dataset && target.dataset.hvNudged === '1')) return;
+    const cs = getComputedStyle(target);
+    const r = target.getBoundingClientRect();
+    if (r.height === 0) return;
+    // Only push it if it actually starts within the reserved strip.
+    if (r.top < RESERVED_TOP + 6) {
+      const cur = parseFloat(cs.marginTop) || 0;
+      target.style.marginTop = (cur + RESERVED_TOP) + 'px';
+      target.dataset.hvNudged = '1';
+    }
   }
 
   // Decide where the shared 🚪 should go: while a game round is in progress
-  // ("game-screen"/"play-screen" is the active screen) → reload to restart;
-  // at the menu/start/result screen → go back to the home page.
+  // (the active .screen is a known play/battle/quiz screen) → reload to restart;
+  // at the menu/start/hub/result screen → go back to the home page.
   function isInGameplay() {
     const active = document.querySelector('.screen.active, .screen.show');
     if (!active) return false;
-    return /game|play/i.test(active.id || '');
+    const id = active.id || '';
+    // Inverted classification: treat the active screen as "in gameplay" (→ reload)
+    // unless it's a known non-play screen (→ go home). Using a denylist means
+    // bespoke play-screen names (board/quiz/battle/planet/story/mission/…) default
+    // to reload, matching "I'm mid-game". Landing menus and end screens go home.
+    var GO_HOME = /(^|[-_])(start|setup|menu|mode|home|hub|select|subject|shop|store|rewards?|upgrade|wardrobe|map|fly|wait|waiting|online|join|create|result|victory|defeat|gameover|complete|finish|tryagain|end|lobby|zoo|city|farm|island)([-_]|$)/i;
+    return !GO_HOME.test(id);
   }
 
   function confirmExitToHome() {
@@ -219,11 +296,13 @@
     /* Shared header fix for every game: the in-play HUD sits below the row of
        floating controls (🚪 exit top-left, ❓ help top-right, 🎯 daily-goal pill
        top-center) so the pill no longer overlaps the stats. margin-top (not
-       padding) pushes the whole HUD down without distorting card-style HUDs. */
-    body.hv-game #game-screen .game-hud { margin-top: 44px; }
-    /* The floating 🚪 already returns to the home page, so the inline
-       "🏠 Về trang chủ" link on a game's start menu is redundant. */
-    body.hv-game #start-screen .home-link { display: none !important; }
+       padding) pushes the whole HUD down without distorting card-style HUDs.
+       Covers the common HUD class names used across game versions. */
+    /* In-game header/HUD spacing is handled by JS (nudgeActiveHeader) which
+       measures the active screen's header and pushes it clear of the floating
+       controls only when it actually sits in the reserved top strip. This avoids
+       enumerating the many per-version HUD class names. The redundant landing
+       "🏠 Về trang chủ" link is likewise hidden by JS (hideRedundantHomeLink). */
   `;
   document.head.appendChild(style);
 
