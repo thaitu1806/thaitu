@@ -201,3 +201,75 @@
   font-size: 1.4rem !important;
   line-height: 1.4 !important;
 }
+
+/* ── archer (🎯 drag arrow to target) ── */
+.qz-archer-field { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.qz-archer-targets { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.qz-archer-target {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 12px;
+  border-radius: 14px; background: #f8fafc; border: 2px solid #e0e6f0; min-width: 64px; transition: .2s;
+}
+.qz-archer-target.correct { background: #c8f0cf; border-color: #46c246; }
+.qz-archer-target.wrong { background: #ffd4d4; border-color: #ff5a5a; }
+.qz-archer-target.disabled { pointer-events: none; opacity: .85; }
+.qz-target-ring { font-size: 1.6rem; }
+.qz-target-label { font-size: 0.85rem; font-weight: 800; color: #333; text-align: center; }
+.qz-archer-bow { display: flex; align-items: center; gap: 10px; padding: 10px; }
+.qz-arrow { font-size: 2.2rem; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; transition: transform .1s; }
+.qz-arrow.dragging { cursor: grabbing; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+.qz-arrow.qz-arrow-hit { animation: arrowHit .4s ease forwards; }
+@keyframes arrowHit { to { transform: scale(0.6); opacity: 0.3; } }
+.qz-bow-hint { font-size: 0.78rem; color: #888; font-weight: 700; }
+
+/* ── jigsaw (🧩 assemble pieces) ── */
+.qz-jigsaw-field { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.qz-jigsaw-assembly {
+  min-height: 44px; padding: 10px 16px; border-radius: 14px; background: #f0f4ff;
+  border: 2px dashed #aac4f0; font-size: 1.1rem; font-weight: 800; color: #4a6fa5; text-align: center;
+}
+.qz-jigsaw-done { font-size: 1.1rem; }
+.qz-jigsaw-done.complete { color: #2e7d32; }
+.qz-jigsaw-done.correct { color: #2e7d32; }
+.qz-jigsaw-done.wrong { color: #c62828; }
+.qz-jigsaw-pieces { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.qz-jigsaw-chip {
+  padding: 10px 14px; border-radius: 12px; font-size: 0.95rem; font-weight: 800;
+  background: linear-gradient(135deg, #fff, #e8f0fe); border: 2px solid #c8d8f0;
+  cursor: pointer; transition: .15s;
+}
+.qz-jigsaw-chip:active { transform: scale(0.94); }
+.qz-jigsaw-chip.correct.placed { background: #c8f0cf; border-color: #46c246; pointer-events: none; }
+.qz-jigsaw-chip.wrong { background: #ffd4d4; border-color: #ff5a5a; pointer-events: none; }
+.qz-jigsaw-chip.disabled { pointer-events: none; opacity: .7; }
+.qz-jigsaw-chip.shake { animation: jigShake .4s ease; }
+@keyframes jigShake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+
+/* ── slot (🎰 stop the reels) ── */
+.qz-slot-field { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.qz-slot-machine {
+  display: flex; gap: 6px; background: linear-gradient(180deg, #2a2040, #1a1030);
+  padding: 14px 12px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  border: 3px solid #ffd700;
+}
+.qz-slot-machine.correct { border-color: #46c246; box-shadow: 0 0 20px rgba(70,194,70,.5); }
+.qz-slot-machine.wrong { border-color: #ff5a5a; box-shadow: 0 0 20px rgba(255,90,90,.4); }
+.qz-slot-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.qz-slot-reel {
+  width: 80px; height: 40px; overflow: hidden; border-radius: 8px; background: #fff;
+  position: relative;
+}
+.qz-slot-reel > .qz-slot-item {
+  display: block; height: 40px; line-height: 40px; text-align: center;
+  font-size: 0.85rem; font-weight: 900; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding: 0 4px;
+}
+.qz-slot-stop {
+  padding: 6px 14px; border: none; border-radius: 8px;
+  background: linear-gradient(135deg, #ff5a5a, #ff3030); color: #fff;
+  font-weight: 900; font-size: 0.75rem; cursor: pointer; text-transform: uppercase;
+}
+.qz-slot-stop:active { transform: scale(0.92); }
+.qz-slot-stop.disabled { background: #666; cursor: default; pointer-events: none; }
+.qz-slot-hint { font-size: 0.85rem; font-weight: 800; color: #888; text-align: center; }
+.qz-slot-hint.good { color: #2e7d32; }
+.qz-slot-hint.bad { color: #c62828; }

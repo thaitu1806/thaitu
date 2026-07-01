@@ -25,6 +25,9 @@
     'balloon',
     'whack',
     'scratch',
+    'archer',
+    'jigsaw',
+    'slot',
   ];
 
   // Resolve this script's folder so mode files load from the same place

@@ -26,6 +26,9 @@ function bootstrap() {
   load(read('mode-balloon.js'));
   load(read('mode-whack.js'));
   load(read('mode-scratch.js'));
+  load(read('mode-archer.js'));
+  load(read('mode-jigsaw.js'));
+  load(read('mode-slot.js'));
   return win.HocVuiQuiz;
 }
 
@@ -49,9 +52,9 @@ describe('engine helpers', () => {
 });
 
 describe('mode registration', () => {
-  test('all eleven modes register', () => {
+  test('all fourteen modes register', () => {
     const ids = Q.listModes();
-    ['choice', 'truefalse', 'type', 'tap', 'mystery', 'slider', 'eliminate', 'catch', 'balloon', 'whack', 'scratch'].forEach(id => {
+    ['choice', 'truefalse', 'type', 'tap', 'mystery', 'slider', 'eliminate', 'catch', 'balloon', 'whack', 'scratch', 'archer', 'jigsaw', 'slot'].forEach(id => {
       expect(ids).toContain(id);
     });
   });
