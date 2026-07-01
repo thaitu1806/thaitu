@@ -49,6 +49,21 @@ export function getDb() {
       fulfilled_at DATETIME DEFAULT NULL
     )`, args: [] }).catch(() => {});
 
+    // Friends system — ensure table exists on Turso/local.
+    db.execute({ sql: `CREATE TABLE IF NOT EXISTS friendships (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      requester_id INTEGER NOT NULL,
+      receiver_id INTEGER NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'accepted')),
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      accepted_at DATETIME DEFAULT NULL,
+      FOREIGN KEY (requester_id) REFERENCES players(id),
+      FOREIGN KEY (receiver_id) REFERENCES players(id),
+      UNIQUE(requester_id, receiver_id)
+    )`, args: [] }).catch(() => {});
+    db.execute({ sql: `CREATE INDEX IF NOT EXISTS idx_friendships_requester ON friendships(requester_id, status)`, args: [] }).catch(() => {});
+    db.execute({ sql: `CREATE INDEX IF NOT EXISTS idx_friendships_receiver ON friendships(receiver_id, status)`, args: [] }).catch(() => {});
+
     // Self-heal: older DBs created answer_logs with `session_id INTEGER NOT NULL`.
     // Answers are logged *during* play (before the game-session row exists), so
     // session_id must be nullable or every answer 500s. SQLite can't drop a column

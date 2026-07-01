@@ -47,6 +47,26 @@ export default async function handler(req, res) {
         return res.json(results.rows || []);
       }
 
+      // ── Suggest players not yet friends (for "Gợi ý kết bạn") ──
+      case 'suggest': {
+        const { player_id, limit = 5 } = req.query;
+        if (!player_id) return res.status(400).json({ error: 'player_id required' });
+        const pid = parseInt(player_id);
+        const results = await db.execute({
+          sql: `SELECT id, name, grade, equipped_avatar, lifetime_diamonds, total_stars
+                FROM players
+                WHERE id != ?
+                  AND id NOT IN (
+                    SELECT CASE WHEN requester_id = ? THEN receiver_id ELSE requester_id END
+                    FROM friendships WHERE requester_id = ? OR receiver_id = ?
+                  )
+                ORDER BY last_active_date DESC
+                LIMIT ?`,
+          args: [pid, pid, pid, pid, parseInt(limit)],
+        });
+        return res.json(results.rows || []);
+      }
+
       // ── Send friend request ──
       case 'request': {
         const { requester_id, receiver_id } = req.body;

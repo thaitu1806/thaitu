@@ -308,7 +308,9 @@
       </div>
       <!-- Search / discover -->
       <div style="margin-top:12px;">
-        <div style="display:flex;gap:8px;">
+        <p style="font-size:0.85rem;font-weight:800;color:#1976d2;margin-bottom:8px;">💡 Gợi ý kết bạn</p>
+        <div id="friends-suggest"></div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
           <input type="text" id="friend-search" placeholder="🔍 Tìm bạn theo tên..." style="flex:1;padding:10px 14px;border:2px solid #e0e0e0;border-radius:12px;font-size:0.9rem;font-family:inherit;font-weight:700;">
           <button id="friend-search-btn" type="button" style="padding:10px 16px;border:none;border-radius:12px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:#fff;font-weight:900;cursor:pointer;">Tìm</button>
         </div>
@@ -753,6 +755,7 @@
 
       loadFriendsList();
       loadPendingRequests();
+      loadSuggestions();
 
       // Search
       document.getElementById('friend-search-btn').addEventListener('click', searchFriends);
@@ -820,6 +823,25 @@
             });
           });
         } catch (e) { wrap.innerHTML = ''; }
+      }
+
+      async function loadSuggestions() {
+        try {
+          const res = await fetch(`/api/friends?action=suggest&player_id=${pid}&limit=5`);
+          const suggestions = await res.json();
+          const wrap = document.getElementById('friends-suggest');
+          if (!suggestions.length) { wrap.innerHTML = '<p style="color:#999;font-size:0.8rem;">Không có gợi ý</p>'; return; }
+          wrap.innerHTML = suggestions.map(r => searchCard(r)).join('');
+          wrap.querySelectorAll('.fc-btn-add').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const rid = parseInt(btn.dataset.receiverId);
+              await fetch('/api/friends', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ action: 'request', requester_id: pid, receiver_id: rid }) });
+              btn.textContent = '⏳ Đã gửi';
+              btn.className = 'fc-btn fc-btn-pending';
+              btn.disabled = true;
+            });
+          });
+        } catch (e) {}
       }
 
       function friendCard(f, type) {
