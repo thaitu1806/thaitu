@@ -202,7 +202,7 @@
     // unless it's a known non-play screen (→ go home). Using a denylist means
     // bespoke play-screen names (board/quiz/battle/planet/story/mission/…) default
     // to reload, matching "I'm mid-game". Landing menus and end screens go home.
-    var GO_HOME = /(^|[-_])(start|setup|menu|mode|home|hub|select|subject|shop|store|rewards?|upgrade|wardrobe|map|fly|wait|waiting|online|join|create|result|victory|defeat|gameover|complete|finish|tryagain|end|lobby|zoo|city|farm|island)([-_]|$)/i;
+    var GO_HOME = /(^|[-_])(start|setup|menu|mode|home|hub|select|subject|shop|store|rewards?|upgrade|wardrobe|map|fly|wait|waiting|online|join|create|result|victory|defeat|gameover|complete|finish|tryagain|end|lobby|zoo|city|island)([-_]|$)/i;
     return !GO_HOME.test(id);
   }
 
