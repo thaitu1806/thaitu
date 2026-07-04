@@ -357,13 +357,24 @@
     $('quiz-area').style.display = 'block';
     $('quiz-question').textContent = q.question_text;
 
-    const btns = document.querySelectorAll('#quiz-answers .ans-btn');
-    btns.forEach(btn => {
-      const opt = btn.dataset.opt;
-      btn.textContent = q[`option_${opt}`];
-      btn.className = 'ans-btn';
-      btn.disabled = false;
-    });
+    const quizAnswersEl = $('quiz-answers');
+    if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+      quizAnswersEl.innerHTML = '';
+      window.HocVuiQuiz.render({ questionEl: $('quiz-question'), optionsEl: quizAnswersEl, question: q, onResult: (ok) => {
+        const ck = (q.correct_answer || 'a').toLowerCase();
+        const wrong = ['a','b','c','d'].find(k => k !== ck) || 'b';
+        handleAnswer(ok ? ck : wrong);
+      }});
+    } else {
+      // Original fallback: update static buttons
+      const btns = quizAnswersEl.querySelectorAll('.ans-btn');
+      btns.forEach(btn => {
+        const opt = btn.dataset.opt;
+        btn.textContent = q[`option_${opt}`];
+        btn.className = 'ans-btn';
+        btn.disabled = false;
+      });
+    }
 
     // Start timer
     state.timeLeft = 12;

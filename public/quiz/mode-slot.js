@@ -58,7 +58,7 @@
         displayText.classList.remove('qz-slot-pulse');
         void displayText.offsetWidth; // force reflow
         displayText.classList.add('qz-slot-pulse');
-      }, 600); // 600ms per item — slow enough to read!
+      }, 750); // 750ms per item — slow enough to read!
 
       stopBtn.addEventListener('click', function () {
         if (done) return;

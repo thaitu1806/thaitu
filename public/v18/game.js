@@ -169,16 +169,31 @@ function showQuestion() {
   void scrollContainer.offsetHeight;
   scrollContainer.classList.add('entering');
 
-  // Set answer buttons
-  const btns = document.querySelectorAll('.ans-btn');
-  ['a', 'b', 'c', 'd'].forEach((o, i) => {
-    btns[i].textContent = q[`option_${o}`];
-    btns[i].className = 'ans-btn';
-    btns[i].disabled = false;
-    btns[i].dataset.opt = o;
-  });
+  const answerArea = document.getElementById('answer-area');
+  if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+    answerArea.innerHTML = '';
+    window.HocVuiQuiz.render({ questionEl: scrollText, optionsEl: answerArea, question: q, onResult: (ok) => {
+      const ck = (q.correct_answer || 'a').toLowerCase();
+      const selected = ok ? ck : (['a','b','c','d'].find(k => k !== ck) || 'b');
+      if (ok) {
+        handleCorrectAnswer(q, selected, ck);
+      } else {
+        handleWrongAnswer(q, selected, ck);
+      }
+      logAnswer(q, selected, ck, ok);
+    }});
+  } else {
+    // Set answer buttons
+    const btns = document.querySelectorAll('.ans-btn');
+    ['a', 'b', 'c', 'd'].forEach((o, i) => {
+      btns[i].textContent = q[`option_${o}`];
+      btns[i].className = 'ans-btn';
+      btns[i].disabled = false;
+      btns[i].dataset.opt = o;
+    });
 
-  startTimer();
+    startTimer();
+  }
 }
 
 // ===== TIMER =====

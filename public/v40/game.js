@@ -244,13 +244,30 @@ function showMathQuestion() {
   const optionsDiv = document.getElementById('q-options');
   optionsDiv.innerHTML = '';
 
-  currentQuestion.options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.textContent = opt;
-    btn.onclick = () => handleMathAnswer(opt);
-    optionsDiv.appendChild(btn);
-  });
+  if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+    // Build a standard question object for the engine
+    const engineQ = {
+      question_text: currentQuestion.question_text,
+      option_a: currentQuestion.options[0] || '',
+      option_b: currentQuestion.options[1] || '',
+      option_c: currentQuestion.options[2] || '',
+      option_d: currentQuestion.options[3] || '',
+      correct_answer: ['a','b','c','d'][currentQuestion.options.indexOf(currentQuestion.correct)] || 'a'
+    };
+    window.HocVuiQuiz.render({ questionEl: document.getElementById('q-text'), optionsEl: optionsDiv, question: engineQ, onResult: (ok) => {
+      clearInterval(timer);
+      const selected = ok ? currentQuestion.correct : (currentQuestion.options.find(o => o !== currentQuestion.correct) || currentQuestion.options[0]);
+      handleMathAnswer(ok ? currentQuestion.correct : selected);
+    }});
+  } else {
+    currentQuestion.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
+      btn.onclick = () => handleMathAnswer(opt);
+      optionsDiv.appendChild(btn);
+    });
+  }
 
   document.getElementById('feedback').style.display = 'none';
   startTimer();
@@ -280,20 +297,29 @@ function showApiQuestion() {
   const optionsDiv = document.getElementById('q-options');
   optionsDiv.innerHTML = '';
 
-  const options = [
-    { key: 'a', text: q.option_a },
-    { key: 'b', text: q.option_b },
-    { key: 'c', text: q.option_c },
-    { key: 'd', text: q.option_d }
-  ];
+  if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+    window.HocVuiQuiz.render({ questionEl: document.getElementById('q-text'), optionsEl: optionsDiv, question: q, onResult: (ok) => {
+      clearInterval(timer);
+      const ck = (q.correct_answer || 'a').toLowerCase();
+      const selected = ok ? ck : (['a','b','c','d'].find(k => k !== ck) || 'b');
+      handleApiAnswer(selected, q.correct_answer);
+    }});
+  } else {
+    const options = [
+      { key: 'a', text: q.option_a },
+      { key: 'b', text: q.option_b },
+      { key: 'c', text: q.option_c },
+      { key: 'd', text: q.option_d }
+    ];
 
-  options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.textContent = opt.text;
-    btn.onclick = () => handleApiAnswer(opt.key, q.correct_answer);
-    optionsDiv.appendChild(btn);
-  });
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt.text;
+      btn.onclick = () => handleApiAnswer(opt.key, q.correct_answer);
+      optionsDiv.appendChild(btn);
+    });
+  }
 
   document.getElementById('feedback').style.display = 'none';
   startTimer();

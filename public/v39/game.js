@@ -131,13 +131,22 @@ function showQuestion() {
     { key: 'd', text: q.option_d }
   ];
 
-  options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.textContent = opt.text;
-    btn.onclick = () => handleAnswer(opt.key, q.correct_answer);
-    optionsDiv.appendChild(btn);
-  });
+  if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+    const qEl = document.getElementById('q-text');
+    window.HocVuiQuiz.render({ questionEl: qEl, optionsEl: optionsDiv, question: q, onResult: (ok) => {
+      const ck = (q.correct_answer || 'a').toLowerCase();
+      const wrong = ['a','b','c','d'].find(k => k !== ck) || 'b';
+      handleAnswer(ok ? ck : wrong, q.correct_answer);
+    }});
+  } else {
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt.text;
+      btn.onclick = () => handleAnswer(opt.key, q.correct_answer);
+      optionsDiv.appendChild(btn);
+    });
+  }
 
   startTimer();
 }

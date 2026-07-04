@@ -113,21 +113,31 @@ function showQuestion() {
   document.getElementById('feedback').className = 'feedback';
 
   const grid = document.getElementById('options-grid');
-  grid.innerHTML = '';
-  const options = [
-    { key: 'A', text: q.option_a },
-    { key: 'B', text: q.option_b },
-    { key: 'C', text: q.option_c },
-    { key: 'D', text: q.option_d }
-  ];
+  if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+    grid.innerHTML = '';
+    window.HocVuiQuiz.render({ questionEl: document.getElementById('question-box'), optionsEl: grid, question: q, onResult: (ok) => {
+      const ck = (q.correct_answer || 'a').toLowerCase();
+      const wrong = ['a','b','c','d'].find(k => k !== ck) || 'b';
+      selectAnswer(ok ? ck : wrong, q.correct_answer);
+    }});
+  } else {
+    // Original fallback: dynamically create buttons
+    grid.innerHTML = '';
+    const options = [
+      { key: 'A', text: q.option_a },
+      { key: 'B', text: q.option_b },
+      { key: 'C', text: q.option_c },
+      { key: 'D', text: q.option_d }
+    ];
 
-  options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.textContent = `${opt.key}. ${opt.text}`;
-    btn.onclick = () => selectAnswer(opt.key, q.correct_answer);
-    grid.appendChild(btn);
-  });
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = `${opt.key}. ${opt.text}`;
+      btn.onclick = () => selectAnswer(opt.key, q.correct_answer);
+      grid.appendChild(btn);
+    });
+  }
 
   startTimer();
 }

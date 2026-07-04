@@ -136,20 +136,29 @@ function renderOptions(q) {
   const optionsGrid = document.getElementById('q-options');
   optionsGrid.innerHTML = '';
 
-  const options = [
-    { key: 'A', text: q.option_a },
-    { key: 'B', text: q.option_b },
-    { key: 'C', text: q.option_c },
-    { key: 'D', text: q.option_d }
-  ];
+  if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+    const qEl = document.getElementById('q-text');
+    window.HocVuiQuiz.render({ questionEl: qEl, optionsEl: optionsGrid, question: q, onResult: (ok) => {
+      const ck = (q.correct_answer || 'a').toLowerCase();
+      const wrong = ['a','b','c','d'].find(k => k !== ck) || 'b';
+      handleAnswer(ok ? ck.toUpperCase() : wrong.toUpperCase(), q);
+    }});
+  } else {
+    const options = [
+      { key: 'A', text: q.option_a },
+      { key: 'B', text: q.option_b },
+      { key: 'C', text: q.option_c },
+      { key: 'D', text: q.option_d }
+    ];
 
-  options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.textContent = `${opt.key}. ${opt.text}`;
-    btn.onclick = () => handleAnswer(opt.key, q);
-    optionsGrid.appendChild(btn);
-  });
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = `${opt.key}. ${opt.text}`;
+      btn.onclick = () => handleAnswer(opt.key, q);
+      optionsGrid.appendChild(btn);
+    });
+  }
 }
 
 function startQuestionTimer() {

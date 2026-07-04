@@ -283,18 +283,28 @@
     btnNext.style.display = 'none';
 
     const optionsEl = document.getElementById('quiz-options');
-    optionsEl.innerHTML = '';
-    const labels = ['A', 'B', 'C', 'D'];
-    const optionValues = [q.option_a, q.option_b, q.option_c, q.option_d];
+    if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+      optionsEl.innerHTML = '';
+      window.HocVuiQuiz.render({ questionEl: document.getElementById('quiz-question'), optionsEl: optionsEl, question: q, onResult: (ok) => {
+        const ck = (q.correct_answer || 'a').toLowerCase();
+        const wrong = ['a','b','c','d'].find(k => k !== ck) || 'b';
+        selectAnswer(ok ? ck : wrong, q.correct_answer);
+      }});
+    } else {
+      // Original fallback: dynamically create buttons
+      optionsEl.innerHTML = '';
+      const labels = ['A', 'B', 'C', 'D'];
+      const optionValues = [q.option_a, q.option_b, q.option_c, q.option_d];
 
-    labels.forEach((label, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'quiz-opt';
-      btn.textContent = `${label}. ${optionValues[i]}`;
-      btn.dataset.answer = label;
-      btn.addEventListener('click', () => selectAnswer(label, q.correct_answer));
-      optionsEl.appendChild(btn);
-    });
+      labels.forEach((label, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-opt';
+        btn.textContent = `${label}. ${optionValues[i]}`;
+        btn.dataset.answer = label;
+        btn.addEventListener('click', () => selectAnswer(label, q.correct_answer));
+        optionsEl.appendChild(btn);
+      });
+    }
   }
 
   function selectAnswer(selected, correct) {

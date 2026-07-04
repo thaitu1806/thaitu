@@ -237,17 +237,35 @@
     questionLabel.textContent = STEP_LABELS[currentStep];
     questionText.textContent = q.question_text;
 
-    const btns = answerGrid.querySelectorAll('.ans-btn');
-    const opts = [q.option_a, q.option_b, q.option_c, q.option_d];
-    const labels = ['A', 'B', 'C', 'D'];
-    btns.forEach((btn, i) => {
-      btn.textContent = `${labels[i]}. ${opts[i]}`;
-      btn.className = 'ans-btn';
-      btn.disabled = false;
-    });
+    if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+      answerGrid.innerHTML = '';
+      window.HocVuiQuiz.render({ questionEl: questionText, optionsEl: answerGrid, question: q, onResult: (ok) => {
+        const ck = (q.correct_answer || 'a').toLowerCase();
+        const selected = ok ? ck : (['a','b','c','d'].find(k => k !== ck) || 'b');
+        totalAnswered++;
+        saveAnswerLog(q, selected, ok);
+        questionIndex++;
+        if (ok) {
+          totalCorrect++;
+          handleCorrectAnswer();
+        } else {
+          handleWrongAnswer();
+        }
+      }});
+      answering = true;
+    } else {
+      const btns = answerGrid.querySelectorAll('.ans-btn');
+      const opts = [q.option_a, q.option_b, q.option_c, q.option_d];
+      const labels = ['A', 'B', 'C', 'D'];
+      btns.forEach((btn, i) => {
+        btn.textContent = `${labels[i]}. ${opts[i]}`;
+        btn.className = 'ans-btn';
+        btn.disabled = false;
+      });
 
-    answering = true;
-    startTimer();
+      answering = true;
+      startTimer();
+    }
   }
 
   // ===== TIMER =====

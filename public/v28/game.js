@@ -351,20 +351,29 @@ function renderQuiz(q) {
   optionsEl.innerHTML = '';
   document.getElementById('quiz-feedback').textContent = '';
 
-  const options = [
-    { label: 'A', text: q.option_a },
-    { label: 'B', text: q.option_b },
-    { label: 'C', text: q.option_c },
-    { label: 'D', text: q.option_d }
-  ];
+  if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+    window.HocVuiQuiz.render({ questionEl: document.getElementById('quiz-question'), optionsEl: optionsEl, question: q, onResult: (ok) => {
+      clearInterval(state.quizTimer);
+      const ck = (q.correct_answer || 'a').toLowerCase();
+      const selected = ok ? ck : (['a','b','c','d'].find(k => k !== ck) || 'b');
+      handleAnswer(selected, q.correct_answer);
+    }});
+  } else {
+    const options = [
+      { label: 'A', text: q.option_a },
+      { label: 'B', text: q.option_b },
+      { label: 'C', text: q.option_c },
+      { label: 'D', text: q.option_d }
+    ];
 
-  options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'quiz-option';
-    btn.textContent = `${opt.label}. ${opt.text}`;
-    btn.addEventListener('click', () => handleAnswer(opt.label, q.correct_answer));
-    optionsEl.appendChild(btn);
-  });
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-option';
+      btn.textContent = `${opt.label}. ${opt.text}`;
+      btn.addEventListener('click', () => handleAnswer(opt.label, q.correct_answer));
+      optionsEl.appendChild(btn);
+    });
+  }
 }
 
 function startTimer() {

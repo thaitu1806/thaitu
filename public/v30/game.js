@@ -221,22 +221,33 @@ function handleTrueFalse(isCorrect, roundType) {
 
 function renderFourChoice(q, roundType) {
   const optionsGrid = document.getElementById('q-options');
-  const options = [
-    { key: 'A', text: q.option_a },
-    { key: 'B', text: q.option_b },
-    { key: 'C', text: q.option_c },
-    { key: 'D', text: q.option_d }
-  ];
 
-  options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    if (roundType.id === 'golden') btn.className += ' golden-glow';
-    if (roundType.id === 'reverse') btn.className += ' reverse-mode';
-    btn.textContent = `${opt.key}. ${opt.text}`;
-    btn.onclick = () => handleFourChoice(opt.key, q.correct_answer, roundType);
-    optionsGrid.appendChild(btn);
-  });
+  if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+    optionsGrid.innerHTML = '';
+    window.HocVuiQuiz.render({ questionEl: document.getElementById('q-text'), optionsEl: optionsGrid, question: q, onResult: (ok) => {
+      const ck = (q.correct_answer || 'a').toLowerCase();
+      const wrong = ['a','b','c','d'].find(k => k !== ck) || 'b';
+      handleFourChoice(ok ? ck : wrong, q.correct_answer, roundType);
+    }});
+  } else {
+    // Original fallback: dynamically create buttons
+    const options = [
+      { key: 'A', text: q.option_a },
+      { key: 'B', text: q.option_b },
+      { key: 'C', text: q.option_c },
+      { key: 'D', text: q.option_d }
+    ];
+
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      if (roundType.id === 'golden') btn.className += ' golden-glow';
+      if (roundType.id === 'reverse') btn.className += ' reverse-mode';
+      btn.textContent = `${opt.key}. ${opt.text}`;
+      btn.onclick = () => handleFourChoice(opt.key, q.correct_answer, roundType);
+      optionsGrid.appendChild(btn);
+    });
+  }
 }
 
 function handleFourChoice(selected, correct, roundType) {

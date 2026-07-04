@@ -259,10 +259,35 @@ function showQuizQuestion() {
   document.getElementById('quiz-progress').textContent = `${Q.current + 1}/${QUIZ_TOTAL}`;
   document.getElementById('quiz-earned').textContent = Q.earned;
   document.getElementById('quiz-combo').textContent = Q.combo >= 2 ? `🔥x${Q.combo}` : '';
-  const btns = document.querySelectorAll('.qa-btn');
-  ['a','b','c','d'].forEach((o,i) => { btns[i].textContent = q[`option_${o}`]; btns[i].className = 'qa-btn'; btns[i].disabled = false; });
   document.getElementById('quiz-status').textContent = '';
-  startTimer();
+
+  const answersEl = document.getElementById('quiz-answers');
+  if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+    answersEl.innerHTML = '';
+    window.HocVuiQuiz.render({ questionEl: document.getElementById('quiz-question'), optionsEl: answersEl, question: q, onResult: (ok) => {
+      const ck = (q.correct_answer || 'a').toLowerCase();
+      const selected = ok ? ck : (['a','b','c','d'].find(k => k !== ck) || 'b');
+      if (ok) {
+        Q.correct++; Q.combo++;
+        if (Q.combo > Q.maxCombo) Q.maxCombo = Q.combo;
+        const bonus = Q.combo >= 5 ? 3 : Q.combo >= 3 ? 2 : 1;
+        const coins = COINS_PER_CORRECT * bonus;
+        Q.earned += coins;
+        document.getElementById('quiz-status').textContent = `✅ +${coins} xu!` + (Q.combo >= 3 ? ` 🔥x${Q.combo}` : '');
+      } else {
+        Q.incorrect++; Q.combo = 0;
+        document.getElementById('quiz-status').textContent = '❌ Sai rồi!';
+      }
+      document.getElementById('quiz-earned').textContent = Q.earned;
+      document.getElementById('quiz-combo').textContent = Q.combo >= 2 ? `🔥x${Q.combo}` : '';
+      logAnswer(q, selected, ck, ok);
+      setTimeout(() => { Q.current++; showQuizQuestion(); }, 1000);
+    }});
+  } else {
+    const btns = document.querySelectorAll('.qa-btn');
+    ['a','b','c','d'].forEach((o,i) => { btns[i].textContent = q[`option_${o}`]; btns[i].className = 'qa-btn'; btns[i].disabled = false; });
+    startTimer();
+  }
 }
 
 function startTimer() {

@@ -170,20 +170,33 @@ function showQuestion() {
   document.getElementById('q-feedback').textContent = '';
 
   const optionsEl = document.getElementById('q-options');
-  const options = [
-    { label: 'A', text: q.option_a },
-    { label: 'B', text: q.option_b },
-    { label: 'C', text: q.option_c },
-    { label: 'D', text: q.option_d }
-  ];
 
-  optionsEl.innerHTML = options.map(opt => `
-    <div class="q-option" data-answer="${opt.label}">${opt.text}</div>
-  `).join('');
+  if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+    const qEl = document.getElementById('q-text');
+    optionsEl.innerHTML = '';
+    window.HocVuiQuiz.render({ questionEl: qEl, optionsEl: optionsEl, question: q, onResult: (ok) => {
+      const ck = (q.correct_answer || 'a').toLowerCase();
+      const wrong = ['a','b','c','d'].find(k => k !== ck) || 'b';
+      const fakeBtn = document.createElement('div');
+      fakeBtn.dataset.answer = ok ? ck : wrong;
+      handleAnswer(fakeBtn, q);
+    }});
+  } else {
+    const options = [
+      { label: 'A', text: q.option_a },
+      { label: 'B', text: q.option_b },
+      { label: 'C', text: q.option_c },
+      { label: 'D', text: q.option_d }
+    ];
 
-  optionsEl.querySelectorAll('.q-option').forEach(btn => {
-    btn.addEventListener('click', () => handleAnswer(btn, q));
-  });
+    optionsEl.innerHTML = options.map(opt => `
+      <div class="q-option" data-answer="${opt.label}">${opt.text}</div>
+    `).join('');
+
+    optionsEl.querySelectorAll('.q-option').forEach(btn => {
+      btn.addEventListener('click', () => handleAnswer(btn, q));
+    });
+  }
 
   startTimer();
 }

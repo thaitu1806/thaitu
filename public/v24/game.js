@@ -250,13 +250,24 @@
     document.getElementById('quiz-question').textContent = q.question_text;
     document.getElementById('quiz-feedback').textContent = '';
 
-    const btns = document.querySelectorAll('#quiz-answers .quiz-ans');
-    const opts = ['a','b','c','d'];
-    btns.forEach((btn, i) => {
-      btn.textContent = q['option_' + opts[i]];
-      btn.className = 'quiz-ans';
-      btn.onclick = () => handleAnswer(opts[i]);
-    });
+    const quizAnswersEl = document.getElementById('quiz-answers');
+    if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+      quizAnswersEl.innerHTML = '';
+      window.HocVuiQuiz.render({ questionEl: document.getElementById('quiz-question'), optionsEl: quizAnswersEl, question: q, onResult: (ok) => {
+        const ck = (q.correct_answer || 'a').toLowerCase();
+        const wrong = ['a','b','c','d'].find(k => k !== ck) || 'b';
+        handleAnswer(ok ? ck : wrong);
+      }});
+    } else {
+      // Original fallback: update static buttons
+      const btns = quizAnswersEl.querySelectorAll('.quiz-ans');
+      const opts = ['a','b','c','d'];
+      btns.forEach((btn, i) => {
+        btn.textContent = q['option_' + opts[i]];
+        btn.className = 'quiz-ans';
+        btn.onclick = () => handleAnswer(opts[i]);
+      });
+    }
   }
 
   function handleAnswer(selected) {

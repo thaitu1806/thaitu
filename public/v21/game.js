@@ -213,14 +213,32 @@
 
     const q = S.questions[S.qIndex];
     document.getElementById('question-text').textContent = q.question_text;
-    const btns = document.querySelectorAll('#answer-grid .ans-btn');
-    ['a', 'b', 'c', 'd'].forEach((opt, i) => {
-      btns[i].textContent = q[`option_${opt}`];
-      btns[i].className = 'ans-btn';
-      btns[i].disabled = false;
-    });
 
-    startTimer();
+    const answerGridEl = document.getElementById('answer-grid');
+    if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+      answerGridEl.innerHTML = '';
+      window.HocVuiQuiz.render({ questionEl: document.getElementById('question-text'), optionsEl: answerGridEl, question: q, onResult: (ok) => {
+        const ck = (q.correct_answer || 'a').toLowerCase();
+        const selected = ok ? ck : (['a','b','c','d'].find(k => k !== ck) || 'b');
+        if (ok) handleCorrect(); else handleWrong();
+        logAnswer(q, selected, ck, ok);
+        setTimeout(() => {
+          if (!S.gameOver) {
+            S.qIndex++;
+            showQuestion();
+          }
+        }, 1200);
+      }});
+    } else {
+      const btns = document.querySelectorAll('#answer-grid .ans-btn');
+      ['a', 'b', 'c', 'd'].forEach((opt, i) => {
+        btns[i].textContent = q[`option_${opt}`];
+        btns[i].className = 'ans-btn';
+        btns[i].disabled = false;
+      });
+
+      startTimer();
+    }
   }
 
   // ===== ANSWER HANDLING =====

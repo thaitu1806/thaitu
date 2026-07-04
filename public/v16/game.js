@@ -176,11 +176,22 @@ function showNextQuestion() {
   if (S.qIndex >= S.questions.length) { S.qIndex = 0; S.questions.sort(() => Math.random() - 0.5); }
   const q = S.questions[S.qIndex];
   document.getElementById('qp-text').textContent = q.question_text;
-  const btns = document.querySelectorAll('.qp-btn');
-  ['a','b','c','d'].forEach((o,i) => { btns[i].textContent = q[`option_${o}`]; btns[i].className = 'qp-btn'; btns[i].disabled = false; });
   document.getElementById('qp-status').textContent = '';
   document.getElementById('qp-status').className = 'qp-status';
-  startQuestionTimer();
+
+  const answersEl = document.getElementById('qp-answers');
+  if (window.HocVuiQuiz && window.HocVuiQuiz.render) {
+    answersEl.innerHTML = '';
+    window.HocVuiQuiz.render({ questionEl: document.getElementById('qp-text'), optionsEl: answersEl, question: q, onResult: (ok) => {
+      const ck = (q.correct_answer || 'a').toLowerCase();
+      if (ok) handleCorrect(); else handleWrong();
+      logAnswer(q, ok ? ck : (['a','b','c','d'].find(k => k !== ck) || 'b'), ck, ok);
+    }});
+  } else {
+    const btns = document.querySelectorAll('.qp-btn');
+    ['a','b','c','d'].forEach((o,i) => { btns[i].textContent = q[`option_${o}`]; btns[i].className = 'qp-btn'; btns[i].disabled = false; });
+    startQuestionTimer();
+  }
 }
 
 function startQuestionTimer() {
