@@ -46,11 +46,11 @@
         col.appendChild(stopBtn);
         machine.appendChild(col);
         // Animate: cycle through items
-        const speed = 80 + c * 30; // slightly different speeds
+        const speed = 350 + c * 80; // slow enough to read (350ms, 430ms, 510ms per column)
         let pos = Math.floor(Math.random() * items.length);
         const interval = setInterval(() => {
           pos = (pos + 1) % items.length;
-          reel.style.transform = 'translateY(-' + (pos * 40) + 'px)';
+          reel.style.transform = 'translateY(-' + (pos * 44) + 'px)';
         }, speed);
         columns.push({ col, reel, stopBtn, interval, items, pos, stopped: false });
       }
