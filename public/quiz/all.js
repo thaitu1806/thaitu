@@ -28,6 +28,11 @@
     'archer',
     'jigsaw',
     'slot',
+    'ladder',
+    'paint',
+    'magnet',
+    'stack',
+    'crystal',
   ];
 
   // Resolve this script's folder so mode files load from the same place

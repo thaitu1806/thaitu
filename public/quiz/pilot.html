@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧪 Quiz Mode Pilot — Test 5 New Modes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="quiz-modes.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Nunito', sans-serif; min-height: 100vh; background: linear-gradient(160deg, #667eea, #764ba2); padding: 16px; padding-bottom: 100px; }
+    .pilot-container { max-width: 420px; margin: 0 auto; }
+    h1 { color: #fff; text-align: center; margin-bottom: 8px; font-size: 1.4rem; }
+    .pilot-info { text-align: center; color: rgba(255,255,255,0.8); font-size: 0.85rem; margin-bottom: 16px; }
+    .card { background: #fff; border-radius: 22px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 80px; overflow: visible; }
+    #q-text { font-size: 1.1rem; font-weight: 800; text-align: center; min-height: 2em; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+    #q-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; overflow: visible; }
+    .option-btn { padding: 12px 10px; border: 2px solid #e0e6f0; border-radius: 14px; background: #f7faff; font-size: 0.95rem; font-weight: 800; cursor: pointer; }
+    .option-btn.correct { background: #c8f0cf; border-color: #46c246; }
+    .option-btn.wrong { background: #ffd4d4; border-color: #ff5a5a; }
+    .option-btn.disabled { pointer-events: none; opacity: .85; }
+    .controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
+    .ctrl-btn { padding: 10px 18px; border: none; border-radius: 12px; background: linear-gradient(135deg, #fff, #f0e6ff); font-weight: 800; cursor: pointer; font-size: 0.85rem; }
+    .ctrl-btn.active { background: linear-gradient(135deg, #a855f7, #7c3aed); color: #fff; }
+    #result { text-align: center; font-weight: 800; font-size: 0.95rem; min-height: 1.5em; margin-top: 10px; }
+    #result.good { color: #2e7d32; }
+    #result.bad { color: #c62828; }
+    #mode-name { text-align: center; font-weight: 900; color: #7c3aed; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="pilot-container">
+    <h1>🧪 Pilot — 5 New Quiz Modes</h1>
+    <p class="pilot-info">Test các mode mới trước khi add vào engine chính.</p>
+
+    <div class="controls">
+      <button class="ctrl-btn" data-mode="ladder">🪜 Thang</button>
+      <button class="ctrl-btn" data-mode="paint">🎨 Tô Màu</button>
+      <button class="ctrl-btn" data-mode="magnet">🧲 Nam Châm</button>
+      <button class="ctrl-btn" data-mode="stack">🏗️ Xếp Gạch</button>
+      <button class="ctrl-btn" data-mode="crystal">🔮 Pha Lê</button>
+      <button class="ctrl-btn" data-mode="random">🎲 Random</button>
+    </div>
+
+    <div class="card">
+      <p id="mode-name"></p>
+      <p id="q-text">Bấm mode ở trên để bắt đầu!</p>
+      <div id="q-options"></div>
+      <div id="result"></div>
+    </div>
+
+    <div class="controls">
+      <button class="ctrl-btn" id="btn-next" style="background:linear-gradient(135deg,#4caf50,#2e7d32);color:#fff;">▶ Câu tiếp</button>
+    </div>
+  </div>
+
+  <!-- Load engine + only the 5 new modes (NOT all.js, to isolate testing) -->
+  <script src="engine.js"></script>
+  <script src="mode-ladder.js"></script>
+  <script src="mode-paint.js"></script>
+  <script src="mode-magnet.js"></script>
+  <script src="mode-stack.js"></script>
+  <script src="mode-crystal.js"></script>
+  <script>
+    const MODES = ['ladder', 'paint', 'magnet', 'stack', 'crystal'];
+    let currentMode = null;
+
+    // Sample questions for testing
+    const QUESTIONS = [
+      { question_text: '5 + 3 = ?', option_a: '8', option_b: '7', option_c: '9', option_d: '6', correct_answer: 'a' },
+      { question_text: '"Cat" nghĩa là gì?', option_a: 'Con mèo', option_b: 'Con chó', option_c: 'Con gà', option_d: 'Con vịt', correct_answer: 'a' },
+      { question_text: '12 - 4 = ?', option_a: '7', option_b: '8', option_c: '9', option_d: '6', correct_answer: 'b' },
+      { question_text: 'Thủ đô Việt Nam?', option_a: 'Huế', option_b: 'Đà Nẵng', option_c: 'Hà Nội', option_d: 'Hồ Chí Minh', correct_answer: 'c' },
+      { question_text: '7 × 3 = ?', option_a: '24', option_b: '18', option_c: '20', option_d: '21', correct_answer: 'd' },
+      { question_text: '"Red" là màu gì?', option_a: 'Xanh', option_b: 'Vàng', option_c: 'Đỏ', option_d: 'Trắng', correct_answer: 'c' },
+      { question_text: '15 + 6 = ?', option_a: '20', option_b: '21', option_c: '22', option_d: '19', correct_answer: 'b' },
+      { question_text: 'Con gì kêu "meo"?', option_a: 'Chó', option_b: 'Gà', option_c: 'Mèo', option_d: 'Vịt', correct_answer: 'c' },
+    ];
+
+    function randomQ() { return QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)]; }
+
+    function renderQuestion(forceMode) {
+      const q = randomQ();
+      const mode = forceMode || MODES[Math.floor(Math.random() * MODES.length)];
+      currentMode = mode;
+      document.getElementById('mode-name').textContent = '🎮 Mode: ' + mode;
+      document.getElementById('result').textContent = '';
+      document.getElementById('result').className = '';
+      const opts = document.getElementById('q-options');
+      opts.innerHTML = '';
+      window.HocVuiQuiz.render({
+        questionEl: document.getElementById('q-text'),
+        optionsEl: opts,
+        question: q,
+        mode: mode,
+        onResult: (ok, text) => {
+          const res = document.getElementById('result');
+          res.textContent = ok ? '✅ Đúng! ' + text : '❌ Sai! Đáp án: ' + q['option_' + q.correct_answer];
+          res.className = ok ? 'good' : 'bad';
+        }
+      });
+    }
+
+    // Mode buttons
+    document.querySelectorAll('.ctrl-btn[data-mode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.ctrl-btn[data-mode]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const mode = btn.dataset.mode === 'random' ? null : btn.dataset.mode;
+        renderQuestion(mode);
+      });
+    });
+
+    // Next question
+    document.getElementById('btn-next').addEventListener('click', () => {
+      renderQuestion(currentMode === 'random' ? null : currentMode);
+    });
+  </script>
+</body>
+</html>
