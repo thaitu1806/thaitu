@@ -476,7 +476,8 @@
   function startAutoRefresh() {
     if (refreshInterval) clearInterval(refreshInterval);
     refreshInterval = setInterval(() => {
-      if (document.getElementById('farm-screen').classList.contains('active')) {
+      const farmEl = document.getElementById('farm-screen');
+      if (farmEl && farmEl.classList.contains('active')) {
         advanceGrowth();
         saveFarm();
         renderFarm();
