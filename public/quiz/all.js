@@ -38,6 +38,11 @@
     'spell',
     'launch',
     'music',
+    'match',
+    'sort',
+    'draw',
+    'bubble',
+    'pong',
   ];
 
   // Resolve this script's folder so mode files load from the same place

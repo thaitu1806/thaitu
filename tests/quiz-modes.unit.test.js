@@ -39,6 +39,11 @@ function bootstrap() {
   load(read('mode-spell.js'));
   load(read('mode-launch.js'));
   load(read('mode-music.js'));
+  load(read('mode-match.js'));
+  load(read('mode-sort.js'));
+  load(read('mode-draw.js'));
+  load(read('mode-bubble.js'));
+  load(read('mode-pong.js'));
   return win.HocVuiQuiz;
 }
 
@@ -62,9 +67,9 @@ describe('engine helpers', () => {
 });
 
 describe('mode registration', () => {
-  test('all twenty-four modes register', () => {
+  test('all twenty-nine modes register', () => {
     const ids = Q.listModes();
-    ['choice', 'truefalse', 'type', 'tap', 'mystery', 'slider', 'eliminate', 'catch', 'balloon', 'whack', 'scratch', 'archer', 'jigsaw', 'slot', 'ladder', 'paint', 'magnet', 'stack', 'crystal', 'wave', 'spin', 'spell', 'launch', 'music'].forEach(id => {
+    ['choice', 'truefalse', 'type', 'tap', 'mystery', 'slider', 'eliminate', 'catch', 'balloon', 'whack', 'scratch', 'archer', 'jigsaw', 'slot', 'ladder', 'paint', 'magnet', 'stack', 'crystal', 'wave', 'spin', 'spell', 'launch', 'music', 'match', 'sort', 'draw', 'bubble', 'pong'].forEach(id => {
       expect(ids).toContain(id);
     });
   });
