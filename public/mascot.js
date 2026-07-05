@@ -29,6 +29,7 @@
   let root = null, face = null, bubble = null, toggleBtn = null;
   let bubbleTimer = null, stateTimer = null;
   let streak = 0;
+  let lockUntil = 0; // after encourage(), block cheer() for 2s so reveal doesn't override sad state
 
   // Mascot SVG — a round chibi sprout creature with big eyes. CSS targets the
   // named groups (.m-eye, .m-mouth, .m-cheek) to change expression per state.
@@ -199,8 +200,8 @@
   }
 
   window.HocVuiMascot = {
-    cheer() { streak++; setState('happy'); say(streak >= 3 ? pick(COMBO) : pick(CHEER), 'good'); },
-    encourage() { streak = 0; setState('sad'); say(pick(ENCOURAGE), 'bad'); },
+    cheer() { if (lockUntil > Date.now()) return; streak++; setState('happy'); say(streak >= 3 ? pick(COMBO) : pick(CHEER), 'good'); },
+    encourage() { streak = 0; setState('sad'); say(pick(ENCOURAGE), 'bad'); lockUntil = Date.now() + 2000; },
     say(text, kind) { say(text, kind || ''); },
     setState,
     refreshStage,
