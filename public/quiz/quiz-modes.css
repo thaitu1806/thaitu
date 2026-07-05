@@ -545,3 +545,120 @@
   100% { transform: scale(0) rotate(45deg); opacity: 0; }
 }
 .qz-crystal-gem.disabled { pointer-events: none; }
+
+/* ── wave (🌊 bobbing chips on water) ── */
+.qz-wave-field {
+  grid-column: 1 / -1; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  padding: 20px 10px; border-radius: 18px; position: relative; overflow: hidden;
+  background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 40%, #64b5f6 80%, #1e88e5 100%);
+}
+.qz-wave-field::before {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 30%;
+  background: repeating-linear-gradient(90deg, transparent 0 20px, rgba(255,255,255,0.15) 20px 22px);
+  animation: waveScroll 3s linear infinite;
+}
+@keyframes waveScroll { to { background-position-x: 42px; } }
+.qz-wave-chip {
+  padding: 14px 18px; border-radius: 24px; font-weight: 900; font-size: 1rem;
+  background: linear-gradient(135deg, #ffffff, #e3f2fd); border: 2.5px solid #42a5f5;
+  cursor: pointer; animation: waveBob 2s ease-in-out infinite; animation-delay: var(--phase, 0s);
+  box-shadow: 0 6px 16px rgba(33,150,243,0.3); position: relative; z-index: 1;
+  transition: box-shadow .2s;
+}
+.qz-wave-chip:active { box-shadow: 0 2px 6px rgba(33,150,243,0.2); transform: translateY(-8px) scale(0.95); }
+@keyframes waveBob { 0%,100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-14px) rotate(-2deg); } 75% { transform: translateY(-6px) rotate(1deg); } }
+.qz-wave-chip.correct { background: linear-gradient(135deg, #a5d6a7, #4caf50); border-color: #2e7d32; color: #fff; box-shadow: 0 0 20px rgba(76,175,80,0.6); animation: waveWin .5s ease; }
+@keyframes waveWin { 0% { transform: scale(1); } 50% { transform: scale(1.15) translateY(-8px); } 100% { transform: scale(1); } }
+.qz-wave-chip.wrong { background: linear-gradient(135deg, #ef9a9a, #e53935); border-color: #b71c1c; color: #fff; animation: waveSink .5s ease forwards; }
+@keyframes waveSink { to { transform: translateY(16px) rotate(5deg); opacity: .5; } }
+.qz-wave-chip.disabled { pointer-events: none; }
+
+/* ── spin (🎪 spinning wheel) ── */
+.qz-spin-field { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; min-height: 250px; }
+.qz-spin-wheel {
+  position: relative; width: 230px; height: 230px; border-radius: 50%;
+  border: 5px solid #ff9800; background: radial-gradient(circle, #fff8e1 0%, #ffe0b2 60%, #ffb74d 100%);
+  box-shadow: 0 8px 30px rgba(255,152,0,0.3), inset 0 0 20px rgba(255,152,0,0.1);
+}
+.qz-spin-wheel::before { content: '🎪'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 2rem; opacity: .15; }
+.qz-spin-wheel.spinning { animation: spinWheel 5s linear infinite; }
+@keyframes spinWheel { to { transform: rotate(360deg); } }
+.qz-spin-item {
+  position: absolute; top: 50%; left: 50%; margin: -22px 0 0 -44px; width: 88px;
+  padding: 10px 6px; border-radius: 14px; font-weight: 800; font-size: 0.82rem; text-align: center;
+  background: #fff; border: 2.5px solid #ff9800; cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15); transition: .3s;
+}
+.qz-spin-item.correct { background: #c8f0cf; border-color: #2e7d32; box-shadow: 0 0 16px rgba(76,175,80,0.6); transform-origin: center; }
+.qz-spin-item.wrong { background: #ffcdd2; border-color: #c62828; }
+.qz-spin-item.disabled { pointer-events: none; opacity: .8; }
+
+/* ── spell (🪄 potion bottles) ── */
+.qz-spell-field { grid-column: 1 / -1; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding: 10px 0; }
+.qz-spell-bottle {
+  position: relative; padding: 18px 14px 14px; border-radius: 18px; font-weight: 800; font-size: 0.9rem;
+  background: linear-gradient(180deg, #ede7f6, #d1c4e9); border: 2.5px solid #7e57c2;
+  cursor: pointer; min-width: 74px; text-align: center;
+  animation: spellFloat 2.5s ease-in-out infinite; animation-delay: var(--delay, 0s);
+  box-shadow: 0 4px 12px rgba(126,87,194,0.25);
+  transition: box-shadow .3s, transform .3s;
+}
+.qz-spell-bottle::before { content: '🧪'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 1.4rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+.qz-spell-bottle::after { content: '✨'; position: absolute; top: 2px; right: 4px; font-size: 0.6rem; opacity: .5; animation: spellTwinkle 1.5s ease-in-out infinite; }
+@keyframes spellTwinkle { 0%,100% { opacity: .3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+@keyframes spellFloat { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(1deg); } }
+.qz-spell-bottle.glow {
+  background: linear-gradient(180deg, #fff9c4, #ffd54f); border-color: #f9a825;
+  box-shadow: 0 0 24px rgba(255,215,0,0.7), 0 0 48px rgba(255,215,0,0.3); animation: spellGlow .6s ease;
+}
+@keyframes spellGlow { 0% { transform: scale(1); } 50% { transform: scale(1.12) rotate(-3deg); } 100% { transform: scale(1); } }
+.qz-spell-bottle.smoke {
+  background: linear-gradient(180deg, #90a4ae, #607d8b); border-color: #37474f; opacity: .6;
+  animation: spellSmoke .5s ease; filter: grayscale(0.5);
+}
+@keyframes spellSmoke { 0% { transform: scale(1); } 30% { transform: scale(1.05) rotate(3deg); } 100% { transform: scale(0.95); } }
+.qz-spell-bottle.correct { border-color: #2e7d32; }
+.qz-spell-bottle.disabled { pointer-events: none; animation: none; }
+
+/* ── launch (🚀 rockets) ── */
+.qz-launch-field { grid-column: 1 / -1; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; align-items: flex-end; padding: 16px 0; position: relative; }
+.qz-launch-field::after { content: ''; position: absolute; bottom: 0; left: 10%; right: 10%; height: 8px; background: linear-gradient(90deg, #795548, #4e342e); border-radius: 4px; }
+.qz-launch-rocket {
+  position: relative; padding: 16px 14px 24px; border-radius: 16px 16px 10px 10px; font-weight: 900; font-size: 0.9rem;
+  background: linear-gradient(180deg, #e3f2fd, #90caf9); border: 2.5px solid #1565c0;
+  cursor: pointer; min-width: 72px; text-align: center;
+  animation: rocketVib .12s ease-in-out infinite alternate; animation-delay: var(--vib-delay, 0s);
+  box-shadow: 0 4px 12px rgba(21,101,192,0.3);
+}
+.qz-launch-rocket::before { content: '🚀'; position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 1.5rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+.qz-launch-rocket::after { content: '🔥'; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; opacity: .6; }
+@keyframes rocketVib { from { transform: translateY(0) rotate(-0.5deg); } to { transform: translateY(-2px) rotate(0.5deg); } }
+.qz-launch-rocket.liftoff { animation: rocketLiftoff .8s cubic-bezier(.34,1.56,.64,1) forwards; }
+@keyframes rocketLiftoff { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-20px) scale(1.05); } 100% { transform: translateY(-100px) scale(0.8); opacity: .2; } }
+.qz-launch-rocket.broken { animation: rocketBroken .6s ease; background: linear-gradient(180deg, #cfd8dc, #78909c); border-color: #37474f; }
+@keyframes rocketBroken { 0% { transform: scale(1); } 20% { transform: translateX(-5px) rotate(-5deg); } 40% { transform: translateX(5px) rotate(5deg); } 60% { transform: translateX(-3px) rotate(-3deg); } 100% { transform: scale(0.95); } }
+.qz-launch-rocket.correct { border-color: #2e7d32; }
+.qz-launch-rocket.disabled { pointer-events: none; animation: none; }
+
+/* ── music (🎵 notes on staff) ── */
+.qz-music-field { grid-column: 1 / -1; position: relative; padding: 24px 12px; border-radius: 16px; background: linear-gradient(180deg, #fce4ec, #f8bbd0); }
+.qz-music-staff { position: absolute; inset: 12px; display: flex; flex-direction: column; justify-content: space-evenly; pointer-events: none; }
+.qz-music-line { height: 2px; background: rgba(136,14,79,0.15); border-radius: 1px; }
+.qz-music-note {
+  position: relative; z-index: 1; padding: 14px 16px; border-radius: 50%; font-weight: 900; font-size: 0.9rem;
+  background: linear-gradient(135deg, #fff, #fce4ec); border: 3px solid #e91e63;
+  cursor: pointer; margin: 6px 8px; display: inline-block;
+  animation: noteBounce 1.8s ease-in-out infinite; animation-delay: var(--bounce-delay, 0s);
+  box-shadow: 0 4px 12px rgba(233,30,99,0.25); transition: .3s;
+}
+.qz-music-note::before { content: '♪'; position: absolute; top: -8px; right: -6px; font-size: 0.8rem; color: #e91e63; animation: noteFloat 2s ease-in-out infinite; }
+@keyframes noteFloat { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-4px) rotate(10deg); } }
+@keyframes noteBounce { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.05); } }
+.qz-music-note.correct {
+  background: linear-gradient(135deg, #c8f0cf, #69f0ae); border-color: #2e7d32; color: #1b5e20;
+  box-shadow: 0 0 18px rgba(76,175,80,0.5); animation: noteWin .5s ease;
+}
+@keyframes noteWin { 0% { transform: scale(1); } 50% { transform: scale(1.2) rotate(5deg); } 100% { transform: scale(1); } }
+.qz-music-note.wrong { background: #cfd8dc; border-color: #78909c; color: #455a64; opacity: .6; animation: noteFlat .4s ease; }
+@keyframes noteFlat { 0% { transform: rotate(0); } 30% { transform: rotate(-10deg); } 60% { transform: rotate(8deg); } 100% { transform: rotate(0) scale(0.95); } }
+.qz-music-note.disabled { pointer-events: none; animation: none; }

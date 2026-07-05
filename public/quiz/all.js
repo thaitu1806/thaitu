@@ -33,6 +33,11 @@
     'magnet',
     'stack',
     'crystal',
+    'wave',
+    'spin',
+    'spell',
+    'launch',
+    'music',
   ];
 
   // Resolve this script's folder so mode files load from the same place

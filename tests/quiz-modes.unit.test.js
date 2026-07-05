@@ -34,6 +34,11 @@ function bootstrap() {
   load(read('mode-magnet.js'));
   load(read('mode-stack.js'));
   load(read('mode-crystal.js'));
+  load(read('mode-wave.js'));
+  load(read('mode-spin.js'));
+  load(read('mode-spell.js'));
+  load(read('mode-launch.js'));
+  load(read('mode-music.js'));
   return win.HocVuiQuiz;
 }
 
@@ -57,9 +62,9 @@ describe('engine helpers', () => {
 });
 
 describe('mode registration', () => {
-  test('all nineteen modes register', () => {
+  test('all twenty-four modes register', () => {
     const ids = Q.listModes();
-    ['choice', 'truefalse', 'type', 'tap', 'mystery', 'slider', 'eliminate', 'catch', 'balloon', 'whack', 'scratch', 'archer', 'jigsaw', 'slot', 'ladder', 'paint', 'magnet', 'stack', 'crystal'].forEach(id => {
+    ['choice', 'truefalse', 'type', 'tap', 'mystery', 'slider', 'eliminate', 'catch', 'balloon', 'whack', 'scratch', 'archer', 'jigsaw', 'slot', 'ladder', 'paint', 'magnet', 'stack', 'crystal', 'wave', 'spin', 'spell', 'launch', 'music'].forEach(id => {
       expect(ids).toContain(id);
     });
   });

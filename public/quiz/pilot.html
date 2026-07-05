@@ -39,6 +39,11 @@
       <button class="ctrl-btn" data-mode="magnet">🧲 Nam Châm</button>
       <button class="ctrl-btn" data-mode="stack">🏗️ Xếp Gạch</button>
       <button class="ctrl-btn" data-mode="crystal">🔮 Pha Lê</button>
+      <button class="ctrl-btn" data-mode="wave">🌊 Sóng</button>
+      <button class="ctrl-btn" data-mode="spin">🎪 Xoay</button>
+      <button class="ctrl-btn" data-mode="spell">🪄 Phép</button>
+      <button class="ctrl-btn" data-mode="launch">🚀 Tên Lửa</button>
+      <button class="ctrl-btn" data-mode="music">🎵 Nhạc</button>
       <button class="ctrl-btn" data-mode="random">🎲 Random</button>
     </div>
 
@@ -54,15 +59,20 @@
     </div>
   </div>
 
-  <!-- Load engine + only the 5 new modes (NOT all.js, to isolate testing) -->
+  <!-- Load engine + pilot modes (NOT all.js, to isolate testing) -->
   <script src="engine.js"></script>
   <script src="mode-ladder.js"></script>
   <script src="mode-paint.js"></script>
   <script src="mode-magnet.js"></script>
   <script src="mode-stack.js"></script>
   <script src="mode-crystal.js"></script>
+  <script src="mode-wave.js"></script>
+  <script src="mode-spin.js"></script>
+  <script src="mode-spell.js"></script>
+  <script src="mode-launch.js"></script>
+  <script src="mode-music.js"></script>
   <script>
-    const MODES = ['ladder', 'paint', 'magnet', 'stack', 'crystal'];
+    const MODES = ['ladder', 'paint', 'magnet', 'stack', 'crystal', 'wave', 'spin', 'spell', 'launch', 'music'];
     let currentMode = null;
 
     // Sample questions for testing
