@@ -359,17 +359,17 @@
 .qz-slot-hint.bad { color: #ff5252; }
 
 /* ── ladder (🪜 climb the rungs) ── */
-.qz-ladder-field { grid-column: 1 / -1; position: relative; min-height: 220px; display: flex; flex-direction: column; align-items: center; }
+.qz-ladder-field { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .qz-ladder-climber {
-  font-size: 2.2rem; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-  transition: bottom .6s cubic-bezier(.34,1.56,.64,1); z-index: 2;
+  font-size: 2.2rem; text-align: center; margin-top: 4px;
+  transition: transform .6s cubic-bezier(.34,1.56,.64,1);
   filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
 }
-.qz-ladder-climber.climb { bottom: calc(20px + var(--target, 0) * 54px); }
+.qz-ladder-climber.climb { transform: translateY(calc(-1 * (var(--target, 0) + 1) * 52px)); }
 .qz-ladder-climber.climb::after { content: '✨'; position: absolute; top: -10px; right: -10px; font-size: 1rem; animation: ladderSparkle .6s ease forwards; }
 @keyframes ladderSparkle { to { transform: translateY(-12px) scale(0); opacity: 0; } }
 .qz-ladder-climber.fall { animation: ladderFall .6s ease forwards; }
-@keyframes ladderFall { 50% { transform: translateX(-50%) translateY(10px) rotate(15deg); } 100% { transform: translateX(-50%) translateY(30px) rotate(25deg); opacity: 0.3; } }
+@keyframes ladderFall { 50% { transform: translateY(10px) rotate(15deg); } 100% { transform: translateY(20px) rotate(25deg); opacity: 0.3; } }
 .qz-ladder-rungs { display: flex; flex-direction: column-reverse; gap: 6px; width: 100%; max-width: 280px; }
 .qz-ladder-rung {
   padding: 12px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; text-align: center; cursor: pointer;

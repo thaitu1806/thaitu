@@ -19,10 +19,6 @@
       const field = helpers.el('div', 'qz-ladder-field');
       optionsEl.appendChild(field);
 
-      // Character at bottom
-      const climber = helpers.el('div', 'qz-ladder-climber', '🧗');
-      field.appendChild(climber);
-
       // Ladder rungs (bottom to top)
       const ladder = helpers.el('div', 'qz-ladder-rungs');
       let done = false;
@@ -51,6 +47,10 @@
         ladder.appendChild(rung);
       });
       field.appendChild(ladder);
+
+      // Character below the ladder (not overlapping answers)
+      const climber = helpers.el('div', 'qz-ladder-climber', '🧗');
+      field.appendChild(climber);
 
       ctx.onReveal(() => {
         done = true;
