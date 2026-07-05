@@ -5,7 +5,23 @@
  * modes apply, so they work regardless of a game's own options container class.
  */
 
-/* ── choice (enhanced feedback only — respects each game's own .option-btn style) ── */
+/* ── choice mode fallback styling ──
+   Uses :where() for zero specificity — any game's own .option-btn rule wins.
+   Only provides defaults for games whose buttons use a different class (bq-btn, etc.)
+   and don't style .option-btn at all. */
+:where(.qz-mode-choice) .option-btn,
+:where(.qz-mode-tap) .option-btn,
+:where(.qz-mode-eliminate) .option-btn {
+  padding: 12px 10px; border: 2px solid #dde6f0; border-radius: 14px;
+  background: #f7faff; font-size: 0.95rem; font-weight: 800; cursor: pointer;
+  min-height: 46px; word-break: break-word; text-align: center;
+  transition: transform .12s;
+}
+:where(.qz-mode-choice) .option-btn:active { transform: scale(0.96); }
+:where(.qz-mode-choice) .option-btn.correct { background: #c8f0cf; border-color: #46c246; }
+:where(.qz-mode-choice) .option-btn.wrong { background: #ffd4d4; border-color: #ff5a5a; }
+:where(.qz-mode-choice) .option-btn.disabled { pointer-events: none; opacity: .85; }
+/* Fade-in animation (additive, doesn't conflict) */
 .qz-mode-choice .option-btn { animation: choiceFadeIn .25s ease both; }
 .qz-mode-choice .option-btn:nth-child(1) { animation-delay: 0s; }
 .qz-mode-choice .option-btn:nth-child(2) { animation-delay: 0.05s; }
