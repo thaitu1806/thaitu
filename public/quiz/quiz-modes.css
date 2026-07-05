@@ -5,45 +5,13 @@
  * modes apply, so they work regardless of a game's own options container class.
  */
 
-/* ── choice (enhanced A/B/C/D buttons) ── */
-.qz-mode-choice { grid-column: 1 / -1; display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px; }
-.qz-mode-choice .option-btn {
-  position: relative; padding: 14px 12px 14px 38px; border-radius: 16px;
-  background: linear-gradient(135deg, #ffffff, #f0f4ff); border: 2.5px solid #d0daf0;
-  font-size: 1rem; font-weight: 800; color: #333; cursor: pointer;
-  box-shadow: 0 3px 0 #c0cce0, 0 4px 10px rgba(0,0,0,0.08);
-  transition: transform .12s, box-shadow .12s, border-color .2s;
-  animation: choiceFadeIn .3s ease both;
-  overflow: hidden;
-}
+/* ── choice (enhanced feedback only — respects each game's own .option-btn style) ── */
+.qz-mode-choice .option-btn { animation: choiceFadeIn .25s ease both; }
 .qz-mode-choice .option-btn:nth-child(1) { animation-delay: 0s; }
-.qz-mode-choice .option-btn:nth-child(2) { animation-delay: 0.06s; }
-.qz-mode-choice .option-btn:nth-child(3) { animation-delay: 0.12s; }
-.qz-mode-choice .option-btn:nth-child(4) { animation-delay: 0.18s; }
-@keyframes choiceFadeIn { from { opacity: 0; transform: translateY(8px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-.qz-mode-choice .option-btn::before {
-  content: attr(data-key); text-transform: uppercase;
-  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
-  width: 24px; height: 24px; border-radius: 8px;
-  background: linear-gradient(135deg, #667eea, #764ba2); color: #fff;
-  font-size: 0.7rem; font-weight: 900; display: flex; align-items: center; justify-content: center;
-}
-.qz-mode-choice .option-btn:active { transform: translateY(2px) scale(0.97); box-shadow: 0 1px 0 #c0cce0; }
-.qz-mode-choice .option-btn.correct {
-  background: linear-gradient(135deg, #c8f0cf, #69f0ae); border-color: #2e7d32; color: #1b5e20;
-  box-shadow: 0 0 14px rgba(76,175,80,0.4), 0 3px 0 #1b5e20;
-  animation: choiceCorrect .4s ease;
-}
-.qz-mode-choice .option-btn.correct::before { background: linear-gradient(135deg, #4caf50, #2e7d32); }
-@keyframes choiceCorrect { 0% { transform: scale(1); } 40% { transform: scale(1.05); } 100% { transform: scale(1); } }
-.qz-mode-choice .option-btn.wrong {
-  background: linear-gradient(135deg, #ffcdd2, #ef9a9a); border-color: #c62828; color: #b71c1c;
-  box-shadow: 0 0 10px rgba(244,67,54,0.3);
-  animation: choiceShake .4s ease;
-}
-.qz-mode-choice .option-btn.wrong::before { background: linear-gradient(135deg, #f44336, #c62828); }
-@keyframes choiceShake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
-.qz-mode-choice .option-btn.disabled { pointer-events: none; opacity: .82; }
+.qz-mode-choice .option-btn:nth-child(2) { animation-delay: 0.05s; }
+.qz-mode-choice .option-btn:nth-child(3) { animation-delay: 0.1s; }
+.qz-mode-choice .option-btn:nth-child(4) { animation-delay: 0.15s; }
+@keyframes choiceFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ── true/false ── */
 .qz-mode-truefalse { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
