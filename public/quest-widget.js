@@ -79,17 +79,19 @@
     }
 
     .quest-panel {
-      position: absolute;
-      bottom: 60px;
-      right: 0;
-      width: 280px;
-      max-height: 400px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(92%, 320px);
+      max-height: 70vh;
       background: white;
       border-radius: 18px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
       overflow: hidden;
       display: none;
       animation: quest-panel-in 0.25s ease-out;
+      z-index: 10000;
     }
 
     .quest-panel.open {
