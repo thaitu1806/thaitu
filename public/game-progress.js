@@ -9,11 +9,12 @@
   // Inject styles
   var style = document.createElement('style');
   style.textContent = [
-    '.gp-badge{display:flex;align-items:center;gap:6px;padding:4px 8px;margin-top:4px;border-radius:8px;background:linear-gradient(135deg,#f0f4ff,#fff8e1);font-size:0.7rem;line-height:1.2;flex-wrap:wrap;animation:gpFade .4s ease}',
+    '.gp-badge{display:flex;align-items:center;gap:5px;padding:4px 8px;margin-top:6px;border-radius:8px;background:linear-gradient(135deg,#f0f4ff,#fff8e1);font-size:0.65rem;line-height:1.2;flex-wrap:wrap;animation:gpFade .4s ease;width:100%;order:99}',
+    '.game-card{flex-wrap:wrap !important}',
     '.gp-stars{letter-spacing:1px}',
-    '.gp-dots{display:flex;gap:2px;font-size:0.65rem}',
+    '.gp-dots{display:flex;gap:2px;font-size:0.6rem}',
     '.gp-diamonds{color:#7c4dff;font-weight:700}',
-    '.gp-hint{color:#ff6d00;font-weight:600;font-size:0.65rem;width:100%}',
+    '.gp-hint{color:#ff6d00;font-weight:700;font-size:0.6rem;width:100%}',
     '@keyframes gpFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}'
   ].join('\n');
   document.head.appendChild(style);
