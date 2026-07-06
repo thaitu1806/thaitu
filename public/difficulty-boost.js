@@ -9,9 +9,11 @@
   if (typeof window === 'undefined' || window.__hvDiffBoost) return;
   window.__hvDiffBoost = true;
 
-  // Only run on game pages
+  // Only run on game pages (exclude multiplayer games that don't have standard difficulty)
   var path = window.location.pathname;
   if (!/^\/v\d+\/?/.test(path) && !/\/(game|learn)\.html/.test(path)) return;
+  // V3 (local duel), V4 (online duel), V5 (board game) don't use standard difficulty selectors
+  if (/^\/(v3|v4|v5)\//.test(path)) return;
 
   var MULTIPLIERS = { easy: 1, medium: 2, hard: 3 };
   var LABELS = { easy: '💎×1', medium: '💎×2', hard: '💎×3 🔥' };
