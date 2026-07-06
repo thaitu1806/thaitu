@@ -9,7 +9,7 @@
   // Inject styles
   var style = document.createElement('style');
   style.textContent = [
-    '.gp-badge{display:flex;align-items:center;gap:6px;padding:8px 10px;margin-top:10px;border-radius:12px;background:linear-gradient(135deg,#ede7f6,#e8f5e9,#fff8e1);font-size:0.72rem;line-height:1.2;flex-wrap:wrap;animation:gpFade .5s ease;width:100%;order:99;border:1.5px solid rgba(149,117,205,0.25);box-shadow:0 2px 8px rgba(149,117,205,0.12);clear:both}',
+    '.gp-badge{display:flex;align-items:center;gap:6px;padding:8px 10px;margin-top:8px;border-radius:0 0 18px 18px;background:linear-gradient(180deg,#f8f9fa,#e8eaf6);font-size:0.72rem;line-height:1.2;flex-wrap:wrap;justify-content:center;animation:gpFade .5s ease;width:calc(100% + 20px);margin-left:-10px;margin-bottom:-14px;order:99;border-top:1px solid rgba(0,0,0,0.06);clear:both}',
     '.game-card{flex-wrap:wrap !important}',
     '.gp-stars{letter-spacing:2px;font-size:0.85rem;filter:drop-shadow(0 1px 3px rgba(255,193,7,0.5));animation:gpStarPulse 2s ease-in-out infinite}',
     '@keyframes gpStarPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}',
