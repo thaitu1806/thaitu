@@ -31,6 +31,7 @@
     { "src": "/api/players/(?<id>[^/]+)/inventory", "dest": "/api/features.js?feature=inventory&player_id=$id" },
     { "src": "/api/players/(?<id>[^/]+)/equip", "dest": "/api/features.js?feature=equip&player_id=$id" },
     { "src": "/api/players/(?<id>[^/]+)/link-status", "dest": "/api/features.js?feature=link&id=$id" },
+    { "src": "/api/players/(?<id>[^/]+)/game-stats", "dest": "/api/features.js?feature=game-stats&id=$id" },
     { "src": "/api/players/(?<id>[^/]+)/progress/(?<mode>[^/]*)", "dest": "/api/features.js?feature=progress&id=$id&mode=$mode" },
     { "src": "/api/players/(?<id>[^/]+)/stats", "dest": "/api/players.js?action=stats&id=$id" },
     { "src": "/api/players/(?<id>\\d+)", "dest": "/api/players.js?id=$id" },

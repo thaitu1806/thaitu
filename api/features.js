@@ -56,6 +56,7 @@ export default async function handler(req, res) {
       case 'parent': return await handleParent(req, res);
       case 'progress': return await handleProgress(req, res);
       case 'friends': return await handleFriends(req, res);
+      case 'game-stats': return await handleGameStats(req, res);
       default: return res.status(404).json({ error: 'Unknown feature' });
     }
   } catch (err) {
@@ -518,4 +519,35 @@ async function handleProgress(req, res) {
 // === FRIENDS ===
 async function handleFriends(req, res) {
   return friendsHandler(req, res);
+}
+
+// === GAME STATS ===
+async function handleGameStats(req, res) {
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+  const id = req.query?.id;
+  if (!id) return res.status(400).json({ error: 'Thiếu thông tin bắt buộc' });
+  const db = getDb();
+  const result = await db.execute({
+    sql: `SELECT mode,
+      COUNT(*) as plays,
+      MAX(stars_earned) as best_stars,
+      MAX(CASE WHEN total_questions > 0 THEN ROUND(correct_answers * 100.0 / total_questions) ELSE 0 END) as best_accuracy,
+      SUM(stars_earned) as total_diamonds,
+      GROUP_CONCAT(DISTINCT difficulty) as difficulties_played
+    FROM game_sessions
+    WHERE player_id = ? AND mode IS NOT NULL AND mode != ''
+    GROUP BY mode`,
+    args: [parseInt(id)],
+  });
+  const stats = {};
+  for (const row of (result.rows || [])) {
+    stats[row.mode] = {
+      plays: row.plays,
+      best_stars: row.best_stars,
+      best_accuracy: row.best_accuracy,
+      total_diamonds: row.total_diamonds,
+      difficulties_played: row.difficulties_played ? row.difficulties_played.split(',') : [],
+    };
+  }
+  return res.json(stats);
 }

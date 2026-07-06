@@ -334,6 +334,38 @@ app.put('/api/players/:id/progress/:mode', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// Game stats (per-game aggregated progress)
+app.get('/api/players/:id/game-stats', async (req, res) => {
+  const db = getDb();
+  try {
+    const result = await db.execute({
+      sql: `SELECT mode,
+        COUNT(*) as plays,
+        MAX(stars_earned) as best_stars,
+        MAX(CASE WHEN total_questions > 0 THEN ROUND(correct_answers * 100.0 / total_questions) ELSE 0 END) as best_accuracy,
+        SUM(stars_earned) as total_diamonds,
+        GROUP_CONCAT(DISTINCT difficulty) as difficulties_played
+      FROM game_sessions
+      WHERE player_id = ? AND mode IS NOT NULL AND mode != ''
+      GROUP BY mode`,
+      args: [parseInt(req.params.id)],
+    });
+    const stats = {};
+    for (const row of (result.rows || [])) {
+      stats[row.mode] = {
+        plays: row.plays,
+        best_stars: row.best_stars,
+        best_accuracy: row.best_accuracy,
+        total_diamonds: row.total_diamonds,
+        difficulties_played: row.difficulties_played ? row.difficulties_played.split(',') : [],
+      };
+    }
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Diamond info endpoint
 app.get('/api/players/:id/diamonds', async (req, res) => {
   req.query.id = req.params.id;
