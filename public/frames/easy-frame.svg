@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" fill="none">
+  <!-- Green leaf border -->
+  <rect x="5" y="5" width="190" height="230" rx="16" stroke="#66bb6a" stroke-width="4" fill="none"/>
+  <!-- Corner leaves -->
+  <g fill="#66bb6a" opacity="0.8">
+    <path d="M16 12 C12 6, 20 4, 22 10 C24 14, 20 16, 16 12Z"/>
+    <path d="M184 12 C188 6, 180 4, 178 10 C176 14, 180 16, 184 12Z"/>
+    <path d="M16 228 C12 234, 20 236, 22 230 C24 226, 20 224, 16 228Z"/>
+    <path d="M184 228 C188 234, 180 236, 178 230 C176 226, 180 224, 184 228Z"/>
+  </g>
+  <!-- Top vine -->
+  <path d="M40 5 C50 2, 60 8, 70 5 C80 2, 90 8, 100 5 C110 2, 120 8, 130 5 C140 2, 150 8, 160 5" stroke="#81c784" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Bottom vine -->
+  <path d="M40 235 C50 238, 60 232, 70 235 C80 238, 90 232, 100 235 C110 238, 120 232, 130 235 C140 238, 150 232, 160 235" stroke="#81c784" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Small leaves on sides -->
+  <g fill="#a5d6a7" opacity="0.6">
+    <path d="M5 60 C2 55, 2 65, 5 60Z M5 100 C2 95, 2 105, 5 100Z M5 140 C2 135, 2 145, 5 140Z M5 180 C2 175, 2 185, 5 180Z"/>
+    <path d="M195 60 C198 55, 198 65, 195 60Z M195 100 C198 95, 198 105, 195 100Z M195 140 C198 135, 198 145, 195 140Z M195 180 C198 175, 198 185, 195 180Z"/>
+  </g>
+</svg>

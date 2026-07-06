@@ -18,7 +18,13 @@
     '.gp-hint{color:#fff;font-weight:800;font-size:0.68rem;width:100%;margin-top:4px;padding:5px 10px;border-radius:8px;background:linear-gradient(135deg,#ff6d00,#ff9100);display:inline-block;text-shadow:0 1px 1px rgba(0,0,0,0.2);box-shadow:0 2px 6px rgba(255,109,0,0.35);letter-spacing:0.3px;animation:gpHintBounce 2.5s ease-in-out infinite}',
     '@keyframes gpHintBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}',
     '.gp-badge .gp-hint.gp-master{background:linear-gradient(135deg,#7c4dff,#aa00ff);box-shadow:0 2px 6px rgba(124,77,255,0.35)}',
-    '@keyframes gpFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}'
+    '@keyframes gpFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}',
+    '.game-card.gp-tier-easy{background-image:url(/frames/easy-frame.svg);background-size:100% 100%;background-repeat:no-repeat;padding:18px 18px;border:none;box-shadow:0 4px 14px rgba(102,187,106,0.2)}',
+    '.game-card.gp-tier-medium{background-image:url(/frames/medium-frame.svg);background-size:100% 100%;background-repeat:no-repeat;padding:18px 18px;border:none;box-shadow:0 4px 14px rgba(66,165,245,0.2)}',
+    '.game-card.gp-tier-hard{background-image:url(/frames/hard-frame.svg);background-size:100% 100%;background-repeat:no-repeat;padding:18px 18px;border:none;box-shadow:0 4px 16px rgba(171,71,188,0.25),0 0 8px rgba(123,31,162,0.12);animation:cardUp .4s ease both,gpHardGlow 2.5s ease-in-out infinite alternate}',
+    '@keyframes gpHardGlow{0%{box-shadow:0 4px 16px rgba(171,71,188,0.2)}100%{box-shadow:0 4px 20px rgba(171,71,188,0.35),0 0 10px rgba(123,31,162,0.15)}}',
+    '.game-card.gp-mastered{background-image:url(/frames/dragon-frame.svg);background-size:100% 100%;background-repeat:no-repeat;background-color:#f3e5f5;padding:18px 18px;border:none;box-shadow:0 4px 18px rgba(156,39,176,0.25),0 0 0 2px rgba(255,215,0,0.25);animation:cardUp .4s ease both,gpMasterGlow 3s ease-in-out infinite}',
+    '@keyframes gpMasterGlow{0%,100%{box-shadow:0 4px 18px rgba(156,39,176,0.25),0 0 0 2px rgba(255,215,0,0.25)}50%{box-shadow:0 6px 24px rgba(156,39,176,0.4),0 0 0 3px rgba(255,215,0,0.4)}}'
   ].join('\n');
   document.head.appendChild(style);
 
@@ -75,13 +81,29 @@
   function renderBadge(stats) {
     var el = document.createElement('div');
     el.className = 'gp-badge';
+    var hint = getHint(stats);
+    var hintClass = hint.indexOf('Bậc Thầy') >= 0 ? 'gp-hint gp-master' : 'gp-hint';
     el.innerHTML =
       '<span class="gp-stars">' + renderStars(stats.best_stars) + '</span>' +
       '<span class="gp-dots">' + renderDots(stats) + '</span>' +
       '<span class="gp-diamonds">💎 ' + (stats.total_diamonds || 0) + '</span>' +
-      '<span class="gp-hint">' + getHint(stats) + '</span>';
+      '<span class="' + hintClass + '">' + hint + '</span>';
     return el;
   }
+
+  function getTier(stats) {
+    var diffs = stats.difficulties_played || [];
+    var acc = stats.best_accuracy || 0;
+    var plays = stats.plays || 0;
+    if (plays === 0) return '';
+    if (diffs.indexOf('hard') >= 0 && acc >= 80) return 'gp-mastered';
+    if (diffs.indexOf('hard') >= 0) return 'gp-tier-hard';
+    if (diffs.indexOf('medium') >= 0 && acc >= 80) return 'gp-tier-medium';
+    if (diffs.indexOf('medium') >= 0) return 'gp-tier-easy';
+    return 'gp-tier-easy';
+  }
+
+  var TIER_CLASSES = ['gp-mastered', 'gp-tier-hard', 'gp-tier-medium', 'gp-tier-easy'];
 
   function applyBadges(statsMap) {
     var cards = document.querySelectorAll('.game-card[data-path]');
@@ -93,6 +115,11 @@
       var mode = modeFromPath(card.getAttribute('data-path'));
       if (!mode) return;
       var stats = statsMap[mode] || { plays: 0, best_stars: 0, best_accuracy: 0, total_diamonds: 0, difficulties_played: [] };
+
+      // Tier-based border
+      TIER_CLASSES.forEach(function (c) { card.classList.remove(c); });
+      var tier = getTier(stats);
+      if (tier) card.classList.add(tier);
 
       card.appendChild(renderBadge(stats));
     });

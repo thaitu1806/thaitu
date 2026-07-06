@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" fill="none">
+  <!-- Purple crystal border -->
+  <rect x="4" y="4" width="192" height="232" rx="16" stroke="url(#purple)" stroke-width="5" fill="none"/>
+  <!-- Corner crystals -->
+  <g fill="url(#purple)" opacity="0.85">
+    <polygon points="16,8 20,2 24,8 20,14"/>
+    <polygon points="176,8 180,2 184,8 180,14"/>
+    <polygon points="16,228 20,222 24,228 20,234"/>
+    <polygon points="176,228 180,222 184,228 180,234"/>
+  </g>
+  <!-- Top crystal chain -->
+  <g stroke="url(#purple)" stroke-width="1.5" fill="none">
+    <path d="M40 4 L45 0 L50 4 M60 4 L65 0 L70 4 M80 4 L85 0 L90 4 M110 4 L115 0 L120 4 M130 4 L135 0 L140 4 M150 4 L155 0 L160 4"/>
+  </g>
+  <!-- Bottom crystal chain -->
+  <g stroke="url(#purple)" stroke-width="1.5" fill="none">
+    <path d="M40 236 L45 240 L50 236 M60 236 L65 240 L70 236 M80 236 L85 240 L90 236 M110 236 L115 240 L120 236 M130 236 L135 240 L140 236 M150 236 L155 240 L160 236"/>
+  </g>
+  <!-- Side crystals -->
+  <g fill="url(#purple)" opacity="0.5">
+    <polygon points="2,50 6,46 10,50 6,54"/>
+    <polygon points="2,90 6,86 10,90 6,94"/>
+    <polygon points="2,130 6,126 10,130 6,134"/>
+    <polygon points="2,170 6,166 10,170 6,174"/>
+    <polygon points="190,50 194,46 198,50 194,54"/>
+    <polygon points="190,90 194,86 198,90 194,94"/>
+    <polygon points="190,130 194,126 198,130 194,134"/>
+    <polygon points="190,170 194,166 198,170 194,174"/>
+  </g>
+  <!-- Center top gem -->
+  <polygon points="100,2 104,6 100,10 96,6" fill="#ce93d8" stroke="#7b1fa2" stroke-width="0.5"/>
+  <defs>
+    <linearGradient id="purple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ce93d8"/>
+      <stop offset="30%" stop-color="#ab47bc"/>
+      <stop offset="50%" stop-color="#9c27b0"/>
+      <stop offset="70%" stop-color="#7b1fa2"/>
+      <stop offset="100%" stop-color="#ce93d8"/>
+    </linearGradient>
+  </defs>
+</svg>

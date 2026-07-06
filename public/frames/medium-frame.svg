@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" fill="none">
+  <!-- Blue wave border -->
+  <rect x="5" y="5" width="190" height="230" rx="16" stroke="url(#blue)" stroke-width="4" fill="none"/>
+  <!-- Corner stars -->
+  <g fill="#42a5f5">
+    <path d="M16 16 L18 12 L20 16 L24 16 L21 19 L22 23 L18 20 L14 23 L15 19 L12 16Z" transform="scale(0.7) translate(6,6)"/>
+    <path d="M16 16 L18 12 L20 16 L24 16 L21 19 L22 23 L18 20 L14 23 L15 19 L12 16Z" transform="scale(0.7) translate(248,6)"/>
+    <path d="M16 16 L18 12 L20 16 L24 16 L21 19 L22 23 L18 20 L14 23 L15 19 L12 16Z" transform="scale(0.7) translate(6,320)"/>
+    <path d="M16 16 L18 12 L20 16 L24 16 L21 19 L22 23 L18 20 L14 23 L15 19 L12 16Z" transform="scale(0.7) translate(248,320)"/>
+  </g>
+  <!-- Top wave -->
+  <path d="M30 8 C45 3, 55 12, 70 8 C85 4, 95 12, 110 8 C125 4, 135 12, 150 8 C165 4, 175 10, 170 8" stroke="#64b5f6" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Bottom wave -->
+  <path d="M30 232 C45 237, 55 228, 70 232 C85 236, 95 228, 110 232 C125 236, 135 228, 150 232 C165 236, 175 230, 170 232" stroke="#64b5f6" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Side bubbles -->
+  <g fill="none" stroke="#90caf9" stroke-width="1.5" opacity="0.6">
+    <circle cx="6" cy="60" r="4"/><circle cx="8" cy="100" r="3"/><circle cx="6" cy="140" r="4"/><circle cx="8" cy="180" r="3"/>
+    <circle cx="194" cy="60" r="4"/><circle cx="192" cy="100" r="3"/><circle cx="194" cy="140" r="4"/><circle cx="192" cy="180" r="3"/>
+  </g>
+  <defs>
+    <linearGradient id="blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#42a5f5"/>
+      <stop offset="50%" stop-color="#1e88e5"/>
+      <stop offset="100%" stop-color="#42a5f5"/>
+    </linearGradient>
+  </defs>
+</svg>
