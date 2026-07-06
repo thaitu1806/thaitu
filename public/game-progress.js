@@ -88,8 +88,7 @@
 
       var mode = modeFromPath(card.getAttribute('data-path'));
       if (!mode) return;
-      var stats = statsMap[mode];
-      if (!stats) return;
+      var stats = statsMap[mode] || { plays: 0, best_stars: 0, best_accuracy: 0, total_diamonds: 0, difficulties_played: [] };
 
       card.appendChild(renderBadge(stats));
     });
@@ -100,9 +99,9 @@
     if (!profile || !profile.id) return;
 
     fetch('/api/players/' + profile.id + '/game-stats')
-      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (res) { return res.ok ? res.json() : {}; })
       .then(function (data) {
-        if (!data || typeof data !== 'object') return;
+        if (!data || typeof data !== 'object') data = {};
         applyBadges(data);
 
         // Re-apply when cards re-render (search/filter changes the grid)
@@ -117,13 +116,13 @@
           observer2.observe(recentGrid, { childList: true });
         }
       })
-      .catch(function () { /* silent */ });
+      .catch(function () { applyBadges({}); });
   }
 
   // Wait for DOM + profile (profile gate may be active)
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { setTimeout(init, 300); });
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(init, 800); });
   } else {
-    setTimeout(init, 300);
+    setTimeout(init, 800);
   }
 })();
