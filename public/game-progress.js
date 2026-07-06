@@ -9,15 +9,19 @@
   // Inject styles
   var style = document.createElement('style');
   style.textContent = [
-    '.gp-badge{display:flex;align-items:center;gap:6px;padding:8px 10px;margin-top:8px;border-radius:0 0 18px 18px;background:linear-gradient(180deg,#f8f9fa,#e8eaf6);font-size:0.72rem;line-height:1.2;flex-wrap:wrap;justify-content:center;animation:gpFade .5s ease;width:calc(100% + 20px);margin-left:-10px;margin-bottom:-14px;order:99;border-top:1px solid rgba(0,0,0,0.06);clear:both}',
+    '.gp-badge{display:flex;align-items:center;gap:6px;padding:10px 10px 12px;margin-top:8px;border-radius:0 0 18px 18px;background:linear-gradient(180deg,#f8f9fa,#e8eaf6);font-size:0.72rem;line-height:1.2;flex-wrap:wrap;justify-content:center;animation:gpFade .5s ease;width:calc(100% + 20px);margin-left:-10px;margin-bottom:-14px;order:99;border-top:1px solid rgba(0,0,0,0.06);clear:both}',
     '.game-card{flex-wrap:wrap !important}',
-    '.gp-stars{letter-spacing:2px;font-size:0.85rem;filter:drop-shadow(0 1px 3px rgba(255,193,7,0.5));animation:gpStarPulse 2s ease-in-out infinite}',
-    '@keyframes gpStarPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}',
-    '.gp-dots{display:flex;gap:4px;font-size:0.8rem;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.15))}',
-    '.gp-diamonds{color:#7c4dff;font-weight:900;font-size:0.75rem;background:linear-gradient(135deg,rgba(124,77,255,0.12),rgba(124,77,255,0.05));padding:2px 8px;border-radius:8px;border:1px solid rgba(124,77,255,0.2)}',
-    '.gp-hint{color:#fff;font-weight:800;font-size:0.68rem;width:100%;margin-top:4px;padding:5px 10px;border-radius:8px;background:linear-gradient(135deg,#ff6d00,#ff9100);display:inline-block;text-shadow:0 1px 1px rgba(0,0,0,0.2);box-shadow:0 2px 6px rgba(255,109,0,0.35);letter-spacing:0.3px;animation:gpHintBounce 2.5s ease-in-out infinite}',
-    '@keyframes gpHintBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}',
-    '.gp-badge .gp-hint.gp-master{background:linear-gradient(135deg,#7c4dff,#aa00ff);box-shadow:0 2px 6px rgba(124,77,255,0.35)}',
+    '.gp-stars{display:flex;gap:2px}',
+    '.gp-star{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;background:linear-gradient(180deg,#fff,#f5f5f5);border:1.5px solid #e0e0e0;box-shadow:0 2px 0 #d0d0d0}',
+    '.gp-star.on{background:linear-gradient(180deg,#fff8e1,#ffecb3);border-color:#ffc107;box-shadow:0 2px 0 #f9a825,0 0 6px rgba(255,193,7,0.3)}',
+    '.gp-dots{display:flex;gap:4px}',
+    '.gp-dot{width:20px;height:20px;border-radius:50%;background:linear-gradient(180deg,#e0e0e0,#bdbdbd);border:1.5px solid #9e9e9e;box-shadow:inset 0 2px 3px rgba(255,255,255,0.4),0 2px 4px rgba(0,0,0,0.15)}',
+    '.gp-dot.on-green{background:linear-gradient(180deg,#a5d6a7,#4caf50);border-color:#2e7d32;box-shadow:inset 0 2px 3px rgba(255,255,255,0.3),0 0 8px rgba(76,175,80,0.4)}',
+    '.gp-dot.on-blue{background:linear-gradient(180deg,#90caf9,#1e88e5);border-color:#1565c0;box-shadow:inset 0 2px 3px rgba(255,255,255,0.3),0 0 8px rgba(30,136,229,0.4)}',
+    '.gp-dot.on-purple{background:linear-gradient(180deg,#ce93d8,#8e24aa);border-color:#6a1b9a;box-shadow:inset 0 2px 3px rgba(255,255,255,0.3),0 0 8px rgba(142,36,170,0.4)}',
+    '.gp-diamonds{display:flex;align-items:center;gap:3px;padding:3px 10px;border-radius:8px;background:linear-gradient(180deg,#e3f2fd,#bbdefb);border:1.5px solid #64b5f6;box-shadow:0 2px 0 #42a5f5;color:#1565c0;font-weight:900;font-size:0.72rem}',
+    '.gp-hint{width:100%;margin-top:6px;padding:8px 12px;border-radius:10px;text-align:center;background:linear-gradient(180deg,#ff9800,#f57c00);border:none;border-bottom:3px solid #e65100;color:#fff;font-weight:900;font-size:0.73rem;box-shadow:0 3px 8px rgba(255,152,0,0.3);text-shadow:0 1px 1px rgba(0,0,0,0.2);letter-spacing:0.3px}',
+    '.gp-badge .gp-hint.gp-master{background:linear-gradient(180deg,#7c4dff,#651fff);border-bottom-color:#4a148c;box-shadow:0 3px 8px rgba(124,77,255,0.3)}',
     '@keyframes gpFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}',
     '.game-card.gp-tier-easy{background-image:url(/frames/easy-frame.svg);background-size:100% 100%;background-repeat:no-repeat;padding:18px 18px;border:none;box-shadow:0 4px 14px rgba(102,187,106,0.2)}',
     '.game-card.gp-tier-medium{background-image:url(/frames/medium-frame.svg);background-size:100% 100%;background-repeat:no-repeat;padding:18px 18px;border:none;box-shadow:0 4px 14px rgba(66,165,245,0.2)}',
@@ -40,26 +44,26 @@
 
   function renderStars(best) {
     var s = Math.min(Math.max(best || 0, 0), 3);
-    return '⭐'.repeat(s) + '☆'.repeat(3 - s);
+    var html = '';
+    for (var i = 0; i < 3; i++) {
+      html += '<span class="gp-star' + (i < s ? ' on' : '') + '">' + (i < s ? '⭐' : '☆') + '</span>';
+    }
+    return html;
   }
 
   function renderDots(stats) {
-    // 🟢 = played, 🔵 = medium ≥80%, 🟣 = hard ≥80%
     var played = (stats.plays || 0) > 0;
     var diffs = stats.difficulties_played || [];
     var hasMedium = diffs.indexOf('medium') >= 0;
     var hasHard = diffs.indexOf('hard') >= 0;
-    // We need per-difficulty accuracy for mastery. We only have overall best_accuracy.
-    // Approximate: if they played medium/hard AND best_accuracy >= 80, count it.
     var acc = stats.best_accuracy || 0;
     var mediumMastery = hasMedium && acc >= 80;
     var hardMastery = hasHard && acc >= 80;
 
-    var dots = '';
-    dots += played ? '🟢' : '⚫';
-    dots += mediumMastery ? '🔵' : '⚫';
-    dots += hardMastery ? '🟣' : '⚫';
-    return dots;
+    var d1 = played ? 'gp-dot on-green' : 'gp-dot';
+    var d2 = mediumMastery ? 'gp-dot on-blue' : 'gp-dot';
+    var d3 = hardMastery ? 'gp-dot on-purple' : 'gp-dot';
+    return '<span class="' + d1 + '"></span><span class="' + d2 + '"></span><span class="' + d3 + '"></span>';
   }
 
   function getHint(stats) {
