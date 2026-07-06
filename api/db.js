@@ -24,6 +24,9 @@ export function getDb() {
   if (!migrated) {
     migrated = true;
     db.execute({ sql: `ALTER TABLE players ADD COLUMN adventure_level INTEGER DEFAULT 1`, args: [] }).catch(() => {});
+    // game_sessions: add mode column if missing (stores "v2", "v6", etc.)
+    db.execute({ sql: `ALTER TABLE game_sessions ADD COLUMN mode TEXT DEFAULT NULL`, args: [] }).catch(() => {});
+    db.execute({ sql: `ALTER TABLE game_sessions ADD COLUMN accuracy INTEGER DEFAULT NULL`, args: [] }).catch(() => {});
     // Parent-created rewards ("Quà từ bố mẹ") — ensure tables exist on Turso/local.
     db.execute({ sql: `CREATE TABLE IF NOT EXISTS parent_rewards (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

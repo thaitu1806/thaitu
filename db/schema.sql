@@ -45,6 +45,8 @@ CREATE TABLE IF NOT EXISTS game_sessions (
   correct_answers INTEGER DEFAULT 0,
   stars_earned INTEGER DEFAULT 0,
   combo_max INTEGER DEFAULT 0,
+  mode TEXT DEFAULT NULL,
+  accuracy INTEGER DEFAULT NULL,
   played_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (player_id) REFERENCES players(id)
 );
