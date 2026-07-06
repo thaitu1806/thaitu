@@ -15,21 +15,65 @@
 
   // need = lifetime correct answers required to unlock.
   const AVATARS = [
+    // ── Free (mở khóa ngay) ──
     { e: '🧒', n: 'Bé Trai', need: 0 },
     { e: '👧', n: 'Bé Gái', need: 0 },
-    { e: '🧑', n: 'Bạn Nhỏ', need: 0 },
+    { e: '🧒🏻', n: 'Bạn Nhỏ', need: 0 },
+    // ── Beginner (10–30 câu) ──
     { e: '🐱', n: 'Mèo Con', need: 10 },
     { e: '🐶', n: 'Cún Yêu', need: 10 },
-    { e: '🐰', n: 'Thỏ Ngọc', need: 25 },
-    { e: '🦊', n: 'Cáo Nhanh', need: 25 },
-    { e: '🐼', n: 'Gấu Trúc', need: 50 },
-    { e: '🦁', n: 'Sư Tử', need: 50 },
-    { e: '🐯', n: 'Hổ Dũng', need: 80 },
-    { e: '🦉', n: 'Cú Thông Thái', need: 120 },
-    { e: '🦄', n: 'Kỳ Lân', need: 180 },
-    { e: '🐲', n: 'Rồng Nhí', need: 260 },
-    { e: '🤖', n: 'Robot', need: 350 },
-    { e: '👑', n: 'Hoàng Tử/Công Chúa', need: 500 },
+    { e: '🐹', n: 'Chuột Hamster', need: 15 },
+    { e: '🐰', n: 'Thỏ Ngọc', need: 20 },
+    { e: '🐸', n: 'Ếch Xanh', need: 25 },
+    { e: '🦊', n: 'Cáo Nhanh', need: 30 },
+    // ── Explorer (40–80 câu) ──
+    { e: '🐼', n: 'Gấu Trúc', need: 40 },
+    { e: '🐨', n: 'Gấu Koala', need: 50 },
+    { e: '🦁', n: 'Sư Tử', need: 60 },
+    { e: '🐯', n: 'Hổ Dũng', need: 70 },
+    { e: '🐧', n: 'Chim Cánh Cụt', need: 80 },
+    // ── Adventurer (100–180 câu) ──
+    { e: '🦉', n: 'Cú Thông Thái', need: 100 },
+    { e: '🦋', n: 'Bướm Xinh', need: 120 },
+    { e: '🐬', n: 'Cá Heo', need: 140 },
+    { e: '🦄', n: 'Kỳ Lân', need: 160 },
+    { e: '🐲', n: 'Rồng Nhí', need: 180 },
+    // ── Champion (200–350 câu) ──
+    { e: '🦅', n: 'Đại Bàng', need: 200 },
+    { e: '🐙', n: 'Bạch Tuộc', need: 220 },
+    { e: '🦩', n: 'Hồng Hạc', need: 240 },
+    { e: '🦈', n: 'Cá Mập', need: 260 },
+    { e: '🐺', n: 'Sói Xám', need: 280 },
+    { e: '🦇', n: 'Dơi Đêm', need: 300 },
+    { e: '🤖', n: 'Robot', need: 320 },
+    { e: '🎃', n: 'Bí Ngô', need: 340 },
+    // ── Master (360–600 câu) ──
+    { e: '👑', n: 'Hoàng Tử', need: 360 },
+    { e: '👸', n: 'Công Chúa', need: 380 },
+    { e: '🧙', n: 'Phù Thủy', need: 400 },
+    { e: '🧛', n: 'Ma Cà Rồng', need: 430 },
+    { e: '🧜‍♀️', n: 'Nàng Tiên Cá', need: 460 },
+    { e: '🦸', n: 'Siêu Anh Hùng', need: 500 },
+    { e: '🧚', n: 'Tiên Nữ', need: 540 },
+    { e: '🥷', n: 'Ninja', need: 580 },
+    // ── Legend (620–1000 câu) ──
+    { e: '🐉', n: 'Rồng Vàng', need: 620 },
+    { e: '🦖', n: 'Khủng Long', need: 670 },
+    { e: '🦕', n: 'Brachiosaurus', need: 720 },
+    { e: '🐋', n: 'Cá Voi Xanh', need: 780 },
+    { e: '🌈', n: 'Cầu Vồng', need: 840 },
+    { e: '☄️', n: 'Sao Băng', need: 900 },
+    { e: '🛸', n: 'UFO', need: 960 },
+    // ── Mythic (1050–1500 câu) ──
+    { e: '🔱', n: 'Thần Biển', need: 1050 },
+    { e: '⚡', n: 'Thần Sấm', need: 1150 },
+    { e: '🌋', n: 'Núi Lửa', need: 1250 },
+    { e: '🏔️', n: 'Đỉnh Everest', need: 1350 },
+    { e: '🌌', n: 'Thiên Hà', need: 1500 },
+    // ── Godlike (1700–2000 câu) ──
+    { e: '💎', n: 'Kim Cương', need: 1700 },
+    { e: '🪐', n: 'Hành Tinh', need: 1850 },
+    { e: '👾', n: 'Bá Chủ Vũ Trụ', need: 2000 },
   ];
 
   function lifetime() { try { return (window.HocVuiProgress && window.HocVuiProgress.lifetimeCorrect) || 0; } catch (e) { return 0; } }
