@@ -248,6 +248,13 @@
     { id: 'b9', e: '🗻', n: 'Núi Phú Sĩ', r: 'epic' },
     { id: 'b10', e: '🏝️', n: 'Đảo Nhiệt Đới', r: 'epic' },
   ];
+  // Pad STICKERS to 550 for sprite sheet coverage (5 sheets × 110)
+  // Extra slots beyond 220 are generated with sequential IDs
+  const _EXTRA_NAMES = 'Nai Nhỏ,Chuột Hamster,Nhím,Vẹt,Hồng Hạc,Gấu Mèo,Ngựa Vằn,Hà Mã,Tắc Kè Hoa,Sứa,Cá Ngựa,Sao Biển,Cá Hề,Cá Đuối,Kỳ Lân Biển,Cá Voi Sát Thủ,Cá Lồng Đèn,San Hô,Ốc Mượn Hồn,Cầu Gai,Ốc Anh Vũ,Lợn Biển,Hải Mã,Hải Cẩu,Bồ Nông,Hải Âu,Tàu Cướp Biển,Mỏ Neo,Rương Kho Báu,Cuộn Bản Đồ,Mũ Lặn,Tàu Ngầm,Đinh Ba,Đuôi Tiên Cá,Ngọc Trai,Brachiosaurus,Triceratops,Stegosaurus,Thằn Lằn Bay,Raptor,Ankylosaurus,Spinosaurus,Dấu Chân KL,Hổ Phách,Thiên Thạch,Gậy Người Hang,Hổ Răng Kiếm,Voi Ma Mút,Ốc Hóa Thạch,Cuốc KH,Phượng Hoàng,Gryphon,Cerberus,Ngựa Có Cánh,Kraken,Người Tuyết Lớn,Chim Sấm,Thằn Lằn Chúa,Chimera,Hydra,Rồng Tiên,Rồng Băng,Rồng Bóng Tối,Rồng Pha Lê,Rồng Thiên Nhiên,Rồng Bão,Rồng Trăng,Rồng Mặt Trời,Trạm Vũ Trụ,Xe Mặt Trăng,Hố Đen,Tinh Vân,Chòm Sao,Sao Hỏa,Sao Mộc,Mưa Sao Băng,Nhật Thực,Nguyệt Thực,Thiên Hà,Tàu Con Thoi,Tiểu Hành Tinh,Module Mặt Trăng,Kính Hubble,Pin MT,Robot Thám Hiểm,Cực Quang,Mưa Đá,Sương Mù,Bão Cát,Sóng Thần,Tinh Thể Băng,Gió Xoáy,Sương Mai,Hoa Hồng,Hoa Oải Hương,Hoa Cúc,Hoa Lan,Hoa Loa Kèn,Hoa Vạn Thọ,Tre,Bonsai,Cọ,Sồi,Liễu,Bao Báp,Bẫy Ruồi,Dương Xỉ,Quả Sồi,Quả Thông,Mầm Non,Bồ Công Anh,Dây Thường Xuân,Bướm Xanh,Chuồn Chuồn,Đom Đóm,Sâu Bướm,Châu Chấu,Kiến,Nhện,Bọ Cánh Cứng Vàng,Ốc Sên,Giun Đất,Bọ Ngựa,Bướm Đêm,Ve Sầu,Rết,Bọ Que,Bọ Cạp,Cuốn Chiếu,Bọ Hung,Chim Ruồi,Công,Toucan,Bói Cá,Chim Cổ Đỏ,Hồng Y,Chim Ác Là,Giẻ Xanh,Vẹt Mào,Chim Kiwi,Bánh Donut Tráng,Kem 3 Viên,Pretzel,Waffle,Pancake Xếp,Cuộn Quế,Macaron Pastel,Kẹo Gậy,Gấu Kẹo Dẻo,Kẹo Bông,Cake Pop,Churro,Mì Ramen,Sủi Cảo,Onigiri,Chả Giò,Dim Sum,Cơm Cà Ri,Pad Thái,Phở,Bibimbap,Sashimi,Bơ,Lựu,Thanh Long,Chanh Dây,Vải,Sung,Cà Rốt,Bông Cải,Ngô,Ớt Chuông,Cà Tím,Bí Ngô,Cà Chua,Hành Tây,Tỏi,Ớt,Lọ Mứt,Bình Mật Ong,Siro Phong,Hộp Sữa,Hộp Nước Ép,Sinh Tố,Cacao Nóng,Cà Phê,Trà Matcha,Mũ Đầu Bếp,Chảo,Phới,Cán Bột,Găng Tay Lò,Bát Trộn,Cốc Đo,Xẻng Nấu,Tạp Dề,Sách Nấu Ăn,Giỏ Picnic,Kẹo Nướng,Lò BBQ,Đũa,Khăn Ăn,Bảng Menu,Người Gừng,Pudding Noel,Trứng Phục Sinh,Bánh Trung Thu,Mochi,Baklava,Tiramisu,Croffle,Taiyaki,Bingsu,Mô Tô,Xe Tải Quái Vật,Xe Cấp Cứu,Xe Cảnh Sát,Taxi,Xe Kem,Tàu Du Lịch,Mô Tô Nước,Tàu Đệm Khí,Cáp Treo,Tàu Cao Tốc,Máy Bay Đôi,Zeppelin,Xe Scooter,Kính Bơi,Cung Tên,Kiếm Đấu,Đai Karate,Tạ,Xe BMX,Bạt Nhún,Nhảy Dây,Lắc Vòng,Guitar Điện,Bộ Trống,Saxophone,Đàn Harp,Accordion,Tai Nghe,Đĩa Than,Boombox,Bàn DJ,Maracas,Trống Lắc,Sáo,Ukulele,Banjo,Xylophone,Xúc Xắc Đôi,Lều Xiếc,Đu Quay,Tàu Lượn,Robot Đồ Chơi,Búp Bê Nga,Quả Cầu 8,Rubik,Lính Chì,Hộp Bật,Con Quay,Bi Ve,Kính Vạn Hoa,Quả Cầu Tuyết,Hộp Nhạc,Gạch LEGO,Xe Lửa Đồ Chơi,Ngựa Bập Bênh,Máy Bay Giấy,Hạc Giấy,Khối ABC,Rối Ngón Tay,Rối Vớ,Chong Chóng,Trống Đồ Chơi,Nhẫn Ruby,Mặt Dây Ngọc,Quả Cầu Sapphire,Gương Phép,Đèn Thần,Quả Cầu Pha Lê,Đá Triết Gia,Chén Thánh,Sách Phép,Cuộn Bùa Chú,Bình Thuốc Tím,Bình Thuốc Xanh,Bình Thuốc Đỏ,Mũ Phù Thủy,Gậy Pháp Sư,Kiếm Phép,Khiên Phép,Trứng Rồng,Cướp Biển,Hiệp Sĩ,Công Chúa,Thám Tử,Robot Thân Thiện,Sóng Wifi,Đồng Hồ Cát,Đồng Hồ Bấm,Hoa Gió,Ghim Bản Đồ,Ống Nhòm,Lều Cắm Trại,Nhà Gỗ,Nhà Trên Cây,Cối Xay Gió,Cầu,Suối Nước Nóng,Thác Nước,Cửa Hang,Cổng Cầu Vồng,Phong Bì,Bưu Thiếp,Con Tem,Nhật Ký,Bút Lông,Máy Đánh Chữ,Báo,Loa Phóng Thanh,Thích,Hòa Bình,Vỗ Tay,Nắm Đấm,OK,Vẫy Tay,Chỉ Lên,Bắt Chéo Ngón,Rock,Bắt Tay'.split(',');
+  const _EXTRA_RARITY = ['common','common','common','rare','rare','common','common','common','common','rare','rare','common','common','rare','epic','epic','epic','common','common','rare','rare','common','rare','common','common','common','rare','common','epic','common','rare','rare','rare','epic','epic','common','rare','rare','rare','rare','rare','rare','rare','rare','epic','rare','epic','epic','rare','rare','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','common','common','rare','rare','common','common','common','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','epic','epic','rare','rare','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','rare','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','rare','rare','rare','common','common','rare','rare','rare','rare','rare','common','rare','rare','rare','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','rare','rare','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','common','rare','rare','rare','rare','common','common','rare','rare','rare','common','common','rare','rare','rare','rare','rare','common','common','common','common','common','common','rare','rare','rare','rare','rare','rare','common','common','common','common','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','rare','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','epic','rare','rare','rare','rare','rare','rare','common','common','common','common','common','common','rare','rare','rare','rare','common','common','rare','rare','common','common','common','common','common','common','rare','rare','epic','epic','rare','rare','rare','rare','rare','common','common','common','common','common','common','common','common','common','rare','rare'];
+  for (let i = 0; i < _EXTRA_NAMES.length && STICKERS.length < 550; i++) {
+    STICKERS.push({ id: 'ex' + (i + 1), e: '', n: _EXTRA_NAMES[i], r: _EXTRA_RARITY[i] || 'common' });
+  }
 
   const RARITY = {
     common: { label: 'Thường', color: '#7bb86f', glow: 'rgba(123,184,111,0.5)' },
@@ -285,6 +292,31 @@
     return pickItem;
   }
 
+  // ── Sprite sheet helper ──
+  // Each sheet: 10 cols × 11 rows = 110 icons, each 128×128px
+  // Total sheet: 1280×1408px, displayed at 64×64 per cell
+  const SHEET_COLS = 10, SHEET_ROWS = 11, ICONS_PER_SHEET = 110;
+  const CELL_SIZE = 128; // px in sprite
+  const DISPLAY_SIZE = 64; // px rendered
+
+  function spriteStyle(index, size) {
+    size = size || DISPLAY_SIZE;
+    const sheet = Math.floor(index / ICONS_PER_SHEET) + 1;
+    const local = index % ICONS_PER_SHEET;
+    const col = local % SHEET_COLS;
+    const row = Math.floor(local / SHEET_COLS);
+    const scale = size / CELL_SIZE;
+    const bgW = SHEET_COLS * CELL_SIZE * scale;
+    const bgH = SHEET_ROWS * CELL_SIZE * scale;
+    const x = -(col * CELL_SIZE * scale);
+    const y = -(row * CELL_SIZE * scale);
+    return `width:${size}px;height:${size}px;background:url(/img/stickers-${sheet}.png) ${x}px ${y}px/${bgW}px ${bgH}px no-repeat;`;
+  }
+
+  function stickerIndex(sticker) {
+    return STICKERS.indexOf(sticker);
+  }
+
   // ── Styles ──
   function injectStyles() {
     if (document.getElementById('hv-collection-style')) return;
@@ -304,7 +336,7 @@
     @keyframes hvcPop { 0% { opacity: 0; transform: scale(0.5) rotate(-8deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
     .hvc-reveal > * { position: relative; z-index: 1; }
     .hvc-banner { font-size: 0.95rem; font-weight: 900; color: #8a5cf6; letter-spacing: 1px; }
-    .hvc-sticker { font-size: 5.5rem; margin: 10px 0 6px; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.2)); animation: hvcBounce 1.4s ease-in-out infinite; }
+    .hvc-sticker { width: 120px; height: 120px; margin: 10px auto 6px; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.2)); animation: hvcBounce 1.4s ease-in-out infinite; border-radius: 16px; }
     @keyframes hvcBounce { 50% { transform: translateY(-10px) scale(1.05); } }
     .hvc-name { font-size: 1.4rem; font-weight: 900; color: #2a2150; }
     .hvc-rarity { display: inline-block; margin-top: 6px; padding: 3px 14px; border-radius: 999px; color: #fff; font-weight: 800; font-size: 0.8rem; }
@@ -323,10 +355,11 @@
     .hvc-album-sub { color: #8a87a0; font-weight: 800; font-size: 0.95rem; margin-bottom: 14px; }
     .hvc-bar { height: 10px; background: #ede9f7; border-radius: 999px; overflow: hidden; margin-bottom: 16px; }
     .hvc-bar-fill { height: 100%; background: linear-gradient(90deg,#a06bff,#ff7a59); border-radius: 999px; transition: width .4s; }
-    .hvc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px,1fr)); gap: 10px; }
-    .hvc-cell { aspect-ratio: 1; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.9rem;
-      background: #f4f1fb; border: 2px solid #eae6f7; position: relative; }
+    .hvc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px,1fr)); gap: 8px; }
+    .hvc-cell { aspect-ratio: 1; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+      background: #f4f1fb; border: 2px solid #eae6f7; position: relative; overflow: hidden; }
     .hvc-cell.owned { background: #fff; border-color: var(--c,#a06bff); box-shadow: 0 4px 10px var(--g,rgba(160,107,255,0.25)); }
+    .hvc-cell .hvc-sprite { width: 100%; height: 100%; border-radius: 12px; }
     .hvc-cell.locked { color: transparent; }
     .hvc-cell.locked::after { content: '❓'; position: absolute; font-size: 1.4rem; color: #c9c3e0; }
     `;
@@ -347,10 +380,15 @@
     ensureOverlay();
     const owned = getOwned().length, total = STICKERS.length;
     const rar = RARITY[sticker.r];
+    const idx = stickerIndex(sticker);
+    const sprStyle = idx >= 0 ? spriteStyle(idx, 120) : '';
+    const stickerHtml = sprStyle
+      ? `<div class="hvc-sticker" style="${sprStyle}"></div>`
+      : `<div class="hvc-sticker" style="font-size:5.5rem;width:auto;height:auto;">${sticker.e}</div>`;
     overlay.innerHTML = `
       <div class="hvc-reveal" style="--rg:${rar.glow}">
         <div class="hvc-banner">✨ NHÃN DÁN MỚI ✨</div>
-        <div class="hvc-sticker">${sticker.e}</div>
+        ${stickerHtml}
         <div class="hvc-name">${sticker.n}</div>
         <div class="hvc-rarity" style="background:${rar.color}">${rar.label}</div>
         <div class="hvc-progress">Bộ sưu tập: ${owned}/${total}</div>
@@ -382,12 +420,14 @@
     const owned = getOwned();
     const total = STICKERS.length;
     const pct = Math.round(owned.length / total * 100);
-    const cells = STICKERS.map(s => {
+    const cells = STICKERS.map((s, i) => {
       const has = owned.includes(s.id);
       const rar = RARITY[s.r];
-      return has
-        ? `<div class="hvc-cell owned" style="--c:${rar.color};--g:${rar.glow}" title="${s.n} (${rar.label})">${s.e}</div>`
-        : `<div class="hvc-cell locked" title="Chưa mở khoá"></div>`;
+      if (has) {
+        const spr = spriteStyle(i, 64);
+        return `<div class="hvc-cell owned" style="--c:${rar.color};--g:${rar.glow}" title="${s.n} (${rar.label})"><div class="hvc-sprite" style="${spr}"></div></div>`;
+      }
+      return `<div class="hvc-cell locked" title="Chưa mở khoá"></div>`;
     }).join('');
     overlay.innerHTML = `
       <div class="hvc-album">
