@@ -9,7 +9,7 @@
   // Inject styles
   var style = document.createElement('style');
   style.textContent = [
-    '.gp-badge{display:flex;align-items:center;gap:6px;padding:10px 10px 12px;margin-top:8px;border-radius:0 0 18px 18px;background:linear-gradient(180deg,#f8f9fa,#e8eaf6);font-size:0.72rem;line-height:1.2;flex-wrap:wrap;justify-content:center;animation:gpFade .5s ease;width:calc(100% + 20px);margin-left:-10px;margin-bottom:-14px;order:99;border-top:1px solid rgba(0,0,0,0.06);clear:both}',
+    '.gp-badge{display:none;align-items:center;gap:6px;padding:10px 10px 12px;margin-top:8px;border-radius:0 0 18px 18px;background:linear-gradient(180deg,#f8f9fa,#e8eaf6);font-size:0.72rem;line-height:1.2;flex-wrap:wrap;justify-content:center;animation:gpFade .5s ease;width:calc(100% + 20px);margin-left:-10px;margin-bottom:-14px;order:99;border-top:1px solid rgba(0,0,0,0.06);clear:both}',
     '.game-card{flex-wrap:wrap !important}',
     '.gp-stars{display:flex;gap:2px}',
     '.gp-star{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;background:linear-gradient(180deg,#fff,#f5f5f5);border:1.5px solid #e0e0e0;box-shadow:0 2px 0 #d0d0d0}',

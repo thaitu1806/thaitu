@@ -256,7 +256,10 @@
 
   function apply() {
     const el = document.getElementById('hero-avatar');
-    if (el) el.textContent = getAvatar();
+    if (!el) return;
+    // If the hero-avatar contains an <img> (logo), don't overwrite it
+    if (el.querySelector('img')) return;
+    el.textContent = getAvatar();
   }
 
   window.HocVuiAvatar = { open, get: getAvatar, set(a) { setAvatar(a); apply(); }, apply };
