@@ -290,6 +290,25 @@
       </div>
     </div>
 
+    <!-- Quick actions + stats (from home) -->
+    <div class="avatar-card" style="padding:14px 16px;">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px;">
+        <span class="chip-stat" id="pf-streak" style="background:#fff;border-radius:20px;padding:8px 14px;font-weight:800;font-size:0.85rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);">🔥 0 ngày</span>
+        <span class="chip-stat" id="pf-diamonds" style="background:#fff;border-radius:20px;padding:8px 14px;font-weight:800;font-size:0.85rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);">💎 0</span>
+        <span class="chip-stat" id="pf-quests" style="background:#fff;border-radius:20px;padding:8px 14px;font-weight:800;font-size:0.85rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);">📋 0/5 NV</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px;">
+        <a href="/shop.html" style="background:linear-gradient(135deg,#ffb300,#ff8f00);color:#fff;border-radius:20px;padding:8px 16px;font-weight:900;font-size:0.85rem;text-decoration:none;box-shadow:0 3px 8px rgba(255,152,0,0.3);">🛒 Shop</a>
+        <button type="button" id="pf-album" style="background:linear-gradient(135deg,#a06bff,#7a3bd6);color:#fff;border-radius:20px;padding:8px 16px;font-weight:900;font-size:0.85rem;border:none;cursor:pointer;box-shadow:0 3px 8px rgba(124,77,255,0.3);">📔 Sưu tập</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <a href="/guide.html" style="background:#f5f3ff;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:800;font-size:0.8rem;color:#555;">📖 Hướng dẫn</a>
+        <a href="#" id="pf-report" style="background:#f5f3ff;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:800;font-size:0.8rem;color:#555;">🏅 Phiếu bé ngoan</a>
+        <a href="/lab/" style="background:#f5f3ff;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:800;font-size:0.8rem;color:#555;">🧪 Trò chơi mới</a>
+        <a href="/parent.html" style="background:#f5f3ff;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:800;font-size:0.8rem;color:#555;">👨‍👩‍👧 Phụ huynh</a>
+      </div>
+    </div>
+
     <!-- Link status section -->
     <div class="link-status-card" id="link-status-section" style="display:none">
 
@@ -559,6 +578,9 @@
 
         document.getElementById('diamond-balance').textContent = totalDiamonds;
         document.getElementById('pi-lifetime').textContent = lifetime;
+        // Sync to quick-action bar
+        var pfDia = document.getElementById('pf-diamonds');
+        if (pfDia) pfDia.textContent = '💎 ' + totalDiamonds;
 
         // Level badge
         const level = getPlayerLevel(lifetime);
@@ -590,6 +612,9 @@
         const streak = data.current_streak || 0;
         document.getElementById('streak-display').textContent = streak + ' ngày';
         document.getElementById('pi-longest-streak').textContent = (data.longest_streak || 0) + ' ngày';
+        // Sync to quick-action bar
+        var pfStreak = document.getElementById('pf-streak');
+        if (pfStreak) pfStreak.textContent = '🔥 ' + streak + ' ngày';
       } catch {}
     }
 
@@ -896,5 +921,12 @@
   <script src="/collection.js"></script>
   <script src="/draggable-widget.js"></script>
   <script src="/difficulty-boost.js"></script>
+  <script>
+    // Wire profile quick-action buttons
+    var pfAlbum = document.getElementById('pf-album');
+    if (pfAlbum) pfAlbum.addEventListener('click', function() { if (window.HocVuiCollection) window.HocVuiCollection.showAlbum(); });
+    var pfReport = document.getElementById('pf-report');
+    if (pfReport) pfReport.addEventListener('click', function(e) { e.preventDefault(); if (window.HocVuiProgress) window.HocVuiProgress.showReportCard(); });
+  </script>
 </body>
 </html>
