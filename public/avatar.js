@@ -174,8 +174,9 @@
   function apply() {
     var el = document.getElementById('hero-avatar');
     if (!el) return;
-    // If the hero-avatar contains an <img> (logo), don't overwrite it
-    if (el.querySelector('img')) return;
+    // Only replace the default logo if user has explicitly chosen an avatar
+    var raw = getAvatar();
+    if (raw === '0' && !localStorage.getItem(key())) return; // never chosen — keep logo
     var idx = resolveAvatarIndex();
     el.innerHTML = '<span style="' + avatarSpriteStyle(idx, 48) + '"></span>';
   }
