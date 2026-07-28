@@ -484,6 +484,20 @@
   const $ = id => document.getElementById(id);
   const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
+  // Game icon sprite sheet: 10 cols × 6 rows = 60 icons, 128×128 each, 1280×768
+  const GI_URL = '/img/game-icons.png', GI_COLS = 10, GI_CELL = 128;
+  function gameIconStyle(index, size) {
+    size = size || 46;
+    const scale = size / GI_CELL;
+    const col = index % GI_COLS;
+    const row = Math.floor(index / GI_COLS);
+    const bgW = GI_COLS * GI_CELL * scale;
+    const bgH = 6 * GI_CELL * scale;
+    const x = -(col * GI_CELL * scale);
+    const y = -(row * GI_CELL * scale);
+    return 'display:inline-block;width:' + size + 'px;height:' + size + 'px;background:url(' + GI_URL + ') ' + x + 'px ' + y + 'px/' + bgW + 'px ' + bgH + 'px no-repeat;border-radius:12px;';
+  }
+
   function coverSrc(g) {
     return '/covers/' + g.p.replace(/\//g, '') + '.jpg';
   }
@@ -491,10 +505,12 @@
   function cardHtml(g) {
     const fav = getFavs().includes(g.p);
     const base = '/covers/' + g.p.replace(/\//g, '');
+    const gIdx = GAMES.indexOf(g);
+    const iconHtml = gIdx >= 0 ? '<span class="gc-emoji" style="' + gameIconStyle(gIdx, 56) + '"></span>' : '<span class="gc-emoji">' + g.i + '</span>';
     return '<a href="' + g.p + '" class="game-card" data-path="' + g.p + '" style="--gc-bg:' + g.bg + '">' +
       '<button class="gc-fav' + (fav ? ' on' : '') + '" data-fav="' + g.p + '" title="Yêu thích" aria-label="Yêu thích">' + (fav ? '⭐' : '☆') + '</button>' +
       '<span class="gc-cover">' +
-        '<span class="gc-emoji">' + g.i + '</span>' +
+        iconHtml +
         '<img class="gc-img" src="' + base + '.jpg" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
       '</span>' +
       '<span class="gc-info"><span class="gc-name">' + g.n + '</span><span class="gc-desc">' + g.d + '</span></span>' +
@@ -518,7 +534,10 @@
     if (!game) { banner.style.display = 'none'; return; }
     banner.href = game.p;
     banner.dataset.path = game.p;
-    $('cb-icon').textContent = game.i;
+    const gIdx = GAMES.indexOf(game);
+    const cbEl = $('cb-icon');
+    if (gIdx >= 0) { cbEl.textContent = ''; cbEl.style.cssText = gameIconStyle(gIdx, 46); }
+    else { cbEl.textContent = game.i; cbEl.style.cssText = ''; }
     $('cb-name').textContent = game.n;
     banner.style.display = 'flex';
   }
