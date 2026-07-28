@@ -172,19 +172,32 @@
   }
 
   function apply() {
-    var el = document.getElementById('hero-avatar');
-    if (!el) return;
-    // Only replace the default logo if user has explicitly chosen an avatar
     var raw = getAvatar();
-    if (raw === '0' && !localStorage.getItem(key())) return; // never chosen — keep logo
+    var hasChoice = localStorage.getItem(key()) !== null;
     var idx = resolveAvatarIndex();
-    el.innerHTML = '<span style="' + avatarSpriteStyle(idx, 48) + '"></span>';
+
+    // Home page: #hero-avatar
+    var el = document.getElementById('hero-avatar');
+    if (el && hasChoice) {
+      el.innerHTML = '<span style="' + avatarSpriteStyle(idx, 48) + '"></span>';
+    }
+
+    // Profile page: #avatar-emoji inside #avatar-display
+    var emojiEl = document.getElementById('avatar-emoji');
+    if (emojiEl && hasChoice) {
+      emojiEl.textContent = '';
+      emojiEl.style.cssText = avatarSpriteStyle(idx, 72);
+    }
   }
 
   window.HocVuiAvatar = { open, get: getAvatar, getIndex: resolveAvatarIndex, set: function (a) { setAvatar(a); apply(); }, apply, spriteStyle: avatarSpriteStyle };
 
   function init() {
     apply();
+    // Re-apply after a delay (in case profile page async fetch overrides)
+    if (location.pathname.indexOf('profile') >= 0) {
+      setTimeout(apply, 1500);
+    }
     // Make the home hero avatar tappable to open the picker.
     const el = document.getElementById('hero-avatar');
     if (el) {
@@ -204,6 +217,13 @@
           el.appendChild(hint);
         }
       }
+    }
+    // Profile page: make avatar-display tappable
+    var avDisp = document.getElementById('avatar-display');
+    if (avDisp && !el) {
+      avDisp.style.cursor = 'pointer';
+      avDisp.title = 'Đổi nhân vật';
+      avDisp.addEventListener('click', open);
     }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
