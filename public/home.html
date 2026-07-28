@@ -485,8 +485,7 @@
   const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
   function coverSrc(g) {
-    // /v11/ -> /covers/v11  — try webp first, fallback to jpg/png via onerror chain
-    return '/covers/' + g.p.replace(/\//g, '') + '.webp';
+    return '/covers/' + g.p.replace(/\//g, '') + '.jpg';
   }
 
   function cardHtml(g) {
@@ -496,7 +495,7 @@
       '<button class="gc-fav' + (fav ? ' on' : '') + '" data-fav="' + g.p + '" title="Yêu thích" aria-label="Yêu thích">' + (fav ? '⭐' : '☆') + '</button>' +
       '<span class="gc-cover">' +
         '<span class="gc-emoji">' + g.i + '</span>' +
-        '<img class="gc-img" src="' + base + '.webp" alt="" loading="lazy" onerror="this.onerror=null;this.src=\'' + base + '.jpg\'">' +
+        '<img class="gc-img" src="' + base + '.jpg" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
       '</span>' +
       '<span class="gc-info"><span class="gc-name">' + g.n + '</span><span class="gc-desc">' + g.d + '</span></span>' +
     '</a>';
