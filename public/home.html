@@ -486,31 +486,35 @@
   const $ = id => document.getElementById(id);
   const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-  // Game icon sprite sheet: 10 cols × 6 rows = 60 icons, 128×128 each, 1280×768
-  const GI_URL = '/img/game-icons.png', GI_COLS = 10, GI_CELL = 128;
+  // Game icon sprite sheet: 10 cols × 6 rows, actual size 1024×617
+  const GI_URL = '/img/game-icons.png', GI_COLS = 10, GI_ROWS = 6;
+  const GI_W = 1024, GI_H = 617;
+  const GI_CW = GI_W / GI_COLS, GI_CH = GI_H / GI_ROWS;
   function gameIconStyle(index, size) {
     size = size || 46;
-    const scale = size / GI_CELL;
     const col = index % GI_COLS;
     const row = Math.floor(index / GI_COLS);
-    const bgW = GI_COLS * GI_CELL * scale;
-    const bgH = 6 * GI_CELL * scale;
-    const x = -(col * GI_CELL * scale);
-    const y = -(row * GI_CELL * scale);
+    const scaleX = size / GI_CW, scaleY = size / GI_CH;
+    const bgW = GI_W * scaleX;
+    const bgH = GI_H * scaleY;
+    const x = -(col * GI_CW * scaleX);
+    const y = -(row * GI_CH * scaleY);
     return 'display:inline-block;width:' + size + 'px;height:' + size + 'px;background:url(' + GI_URL + ') ' + x + 'px ' + y + 'px/' + bgW + 'px ' + bgH + 'px no-repeat;border-radius:12px;overflow:hidden;';
   }
 
-  // UI icons sprite: 8 cols × 3 rows = 24 icons, 128×128 each, 1024×384
-  const UI_URL = '/img/ui-icons.png', UI_COLS = 8, UI_CELL = 128;
+  // UI icons sprite: 8 cols × 3 rows, actual size 1024×377
+  const UI_URL = '/img/ui-icons.png', UI_COLS = 8, UI_ROWS = 3;
+  const UI_W = 1024, UI_H = 377;
+  const UI_CW = UI_W / UI_COLS, UI_CH = UI_H / UI_ROWS;
   function uiIconStyle(index, size) {
     size = size || 24;
-    const scale = size / UI_CELL;
     const col = index % UI_COLS;
     const row = Math.floor(index / UI_COLS);
-    const bgW = UI_COLS * UI_CELL * scale;
-    const bgH = 3 * UI_CELL * scale;
-    const x = -(col * UI_CELL * scale);
-    const y = -(row * UI_CELL * scale);
+    const scaleX = size / UI_CW, scaleY = size / UI_CH;
+    const bgW = UI_W * scaleX;
+    const bgH = UI_H * scaleY;
+    const x = -(col * UI_CW * scaleX);
+    const y = -(row * UI_CH * scaleY);
     return 'display:inline-block;width:' + size + 'px;height:' + size + 'px;background:url(' + UI_URL + ') ' + x + 'px ' + y + 'px/' + bgW + 'px ' + bgH + 'px no-repeat;vertical-align:middle;';
   }
   function uiIconHtml(index, size) { return '<span style="' + uiIconStyle(index, size || 22) + '"></span>'; }
