@@ -486,9 +486,9 @@
   const $ = id => document.getElementById(id);
   const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-  // Game icon sprite sheet: 10 cols × 6 rows, actual size 1024×617
+  // Game icon sprite sheet: 10 cols × 6 rows, actual size 644×388
   const GI_URL = '/img/game-icons.png', GI_COLS = 10, GI_ROWS = 6;
-  const GI_W = 1024, GI_H = 617;
+  const GI_W = 644, GI_H = 388;
   const GI_CW = GI_W / GI_COLS, GI_CH = GI_H / GI_ROWS;
   function gameIconStyle(index, size) {
     size = size || 46;
