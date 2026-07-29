@@ -331,20 +331,20 @@
     </a>
 
     <!-- HỌC TẬP -->
-    <div class="section-head"><h2>📘 Học tập</h2></div>
+    <div class="section-head"><h2><span id="ui-ic-learn"></span> Học tập</h2></div>
     <div class="learn-grid">
       <a href="/learn.html" class="mode-card learn-card c1">
-        <span class="lc-icon">📚</span>
+        <span class="lc-icon" id="ui-ic-knowledge"></span>
         <span class="lc-name">Kiến Thức</span>
         <span class="lc-desc">Học qua hình ảnh, dễ hiểu!</span>
       </a>
       <a href="/game.html" class="mode-card learn-card c2">
-        <span class="lc-icon">🌻</span>
+        <span class="lc-icon" id="ui-ic-practice"></span>
         <span class="lc-name">Luyện Tập</span>
         <span class="lc-desc">Bắn zombie bằng trí tuệ!</span>
       </a>
       <a href="/exam.html" class="mode-card learn-card c3">
-        <span class="lc-icon">📝</span>
+        <span class="lc-icon" id="ui-ic-exam"></span>
         <span class="lc-name">Phòng Thi</span>
         <span class="lc-desc">Làm bài, xem điểm!</span>
       </a>
@@ -352,14 +352,14 @@
 
     <!-- CHƠI GẦN ĐÂY (tách biệt khỏi menu) -->
     <section id="recent-section" style="display:none;">
-      <div class="section-head"><h2>🕘 Chơi gần đây</h2></div>
+      <div class="section-head"><h2><span id="ui-ic-recent"></span> Chơi gần đây</h2></div>
       <div class="recent-panel">
         <div class="game-grid recent-grid" id="recent-grid"></div>
       </div>
     </section>
 
     <!-- TRÒ CHƠI -->
-    <div class="section-head"><h2>🎮 Trò chơi</h2><span class="count" id="game-count"></span></div>
+    <div class="section-head"><h2><span id="ui-ic-games"></span> Trò chơi</h2><span class="count" id="game-count"></span></div>
 
     <div class="toolbar">
       <div class="search-box">
@@ -465,13 +465,13 @@
   ];
 
   const CATS = [
-    { id:'all', label:'✨ Tất cả' },
-    { id:'fav', label:'⭐ Yêu thích' },
-    { id:'phieu', label:'🗺️ Phiêu lưu' },
-    { id:'dau', label:'⚔️ Thi đấu' },
-    { id:'kinhdoanh', label:'🏪 Kinh doanh' },
-    { id:'sangtao', label:'🎨 Sáng tạo' },
-    { id:'giaitri', label:'🎯 Giải trí' }
+    { id:'all', label:'Tất cả', ui: 8 },
+    { id:'fav', label:'Yêu thích', ui: 9 },
+    { id:'phieu', label:'Phiêu lưu', ui: 10 },
+    { id:'dau', label:'Thi đấu', ui: 11 },
+    { id:'kinhdoanh', label:'Kinh doanh', ui: 12 },
+    { id:'sangtao', label:'Sáng tạo', ui: 13 },
+    { id:'giaitri', label:'Giải trí', ui: 14 }
   ];
 
   const FAV_KEY = 'hocvui_favs';
@@ -540,7 +540,7 @@
 
   function renderChips() {
     $('chips').innerHTML = CATS.map(c =>
-      '<button class="chip' + (c.id === activeCat ? ' active' : '') + '" data-cat="' + c.id + '">' + c.label + '</button>'
+      '<button class="chip' + (c.id === activeCat ? ' active' : '') + '" data-cat="' + c.id + '">' + uiIconHtml(c.ui, 18) + ' ' + c.label + '</button>'
     ).join('');
   }
 
@@ -623,6 +623,18 @@
 
   renderChips();
   renderGames();
+
+  // Inject UI sprite icons into section headers + learning cards
+  (function(){
+    var map = {'ui-ic-learn':0,'ui-ic-knowledge':1,'ui-ic-practice':2,'ui-ic-exam':3,'ui-ic-games':4,'ui-ic-recent':5};
+    for(var id in map){
+      var el=document.getElementById(id);
+      if(el){
+        var s = (id.indexOf('knowledge')>=0||id.indexOf('practice')>=0||id.indexOf('exam')>=0) ? 36 : 22;
+        el.style.cssText = uiIconStyle(map[id], s);
+      }
+    }
+  })();
 
   // Sticker album entry point (collection.js is injected on every page).
   document.getElementById('rb-album')?.addEventListener('click', function () {
