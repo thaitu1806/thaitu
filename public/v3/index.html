@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>💪 Kéo Co Trí Tuệ - Học Vui</title>
+  <title> Kéo Co Trí Tuệ - Học Vui</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="/tts.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -16,31 +16,31 @@
     <section id="start-screen" class="screen active">
       <div class="container">
         <div class="logo-scene" aria-hidden="true">
-          <span class="tug-left">🧒</span>
+          <span class="tug-left"></span>
           <span class="tug-rope"></span>
-          <span class="tug-right">👧</span>
+          <span class="tug-right"></span>
         </div>
-        <h1 class="main-title">💪 Kéo Co Trí Tuệ</h1>
+        <h1 class="main-title"> Kéo Co Trí Tuệ</h1>
         <p class="subtitle">Trả lời đúng nhanh hơn để kéo dây về phía mình!</p>
 
-        <div class="selector-group"><label class="selector-label">👥 Đối thủ:</label><div class="selector-options" data-group="mode">
-          <button type="button" class="sel-btn active" data-value="duo">👫 2 Người</button>
-          <button type="button" class="sel-btn" data-value="bot">🤖 Đấu Máy</button>
+        <div class="selector-group"><label class="selector-label"> Đối thủ:</label><div class="selector-options" data-group="mode">
+          <button type="button" class="sel-btn active" data-value="duo"> 2 Người</button>
+          <button type="button" class="sel-btn" data-value="bot"> Đấu Máy</button>
         </div></div>
-        <div class="selector-group"><label class="selector-label">📚 Môn học:</label><div class="selector-options" data-group="subject">
-          <button type="button" class="sel-btn active" data-value="mix">🎲 Trộn</button>
-          <button type="button" class="sel-btn" data-value="math">🔢 Toán</button>
-          <button type="button" class="sel-btn" data-value="vietnamese">📖 T.Việt</button>
-          <button type="button" class="sel-btn" data-value="english">🔤 Anh</button>
+        <div class="selector-group"><label class="selector-label"> Môn học:</label><div class="selector-options" data-group="subject">
+          <button type="button" class="sel-btn active" data-value="mix"> Trộn</button>
+          <button type="button" class="sel-btn" data-value="math"> Toán</button>
+          <button type="button" class="sel-btn" data-value="vietnamese"> T.Việt</button>
+          <button type="button" class="sel-btn" data-value="english"> Anh</button>
         </div></div>
-        <div class="selector-group"><label class="selector-label">⚡ Độ khó:</label><div class="selector-options" data-group="difficulty">
-          <button type="button" class="sel-btn active" data-value="easy">🌱 Dễ</button>
-          <button type="button" class="sel-btn" data-value="medium">🌿 Vừa</button>
-          <button type="button" class="sel-btn" data-value="hard">🌳 Khó</button>
+        <div class="selector-group"><label class="selector-label"> Độ khó:</label><div class="selector-options" data-group="difficulty">
+          <button type="button" class="sel-btn active" data-value="easy"> Dễ</button>
+          <button type="button" class="sel-btn" data-value="medium"> Vừa</button>
+          <button type="button" class="sel-btn" data-value="hard"> Khó</button>
         </div></div>
-        <button class="btn-primary" id="btn-start">💪 Bắt Đầu!</button>
-        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn</button>
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <button class="btn-primary" id="btn-start"> Bắt Đầu!</button>
+        <button class="btn-guide" id="btn-guide"> Hướng Dẫn</button>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </section>
 
@@ -48,7 +48,7 @@
     <section id="game-screen" class="screen">
       <!-- Player 2 panel (top, flipped) -->
       <div class="player-panel panel-top" id="panel-2">
-        <div class="panel-tag">👧 Bạn 2</div>
+        <div class="panel-tag"> Bạn 2</div>
         <p class="q-text" id="q-text-2"></p>
         <div class="q-options" id="q-options-2"></div>
       </div>
@@ -57,11 +57,11 @@
       <div class="arena" id="arena">
         <div class="ground"></div>
         <div class="rope" id="rope">
-          <span class="puller puller-l">🧒</span>
+          <span class="puller puller-l"></span>
           <span class="rope-line"></span>
-          <span class="flag" id="flag">🚩</span>
+          <span class="flag" id="flag"></span>
           <span class="rope-line"></span>
-          <span class="puller puller-r">👧</span>
+          <span class="puller puller-r"></span>
         </div>
         <div class="mud-pit"></div>
         <div class="score-line">
@@ -73,35 +73,35 @@
 
       <!-- Player 1 panel (bottom) -->
       <div class="player-panel panel-bottom" id="panel-1">
-        <div class="panel-tag">🧒 Bạn 1</div>
+        <div class="panel-tag"> Bạn 1</div>
         <p class="q-text" id="q-text-1"></p>
         <div class="q-options" id="q-options-1"></div>
       </div>
 
-      <button class="btn-exit" id="btn-exit" title="Thoát">🚪</button>
+      <button class="btn-exit" id="btn-exit" title="Thoát"></button>
     </section>
 
     <!-- RESULT -->
     <section id="result-screen" class="screen">
       <div class="container">
-        <div class="result-emoji" id="result-emoji">🏆</div>
+        <div class="result-emoji" id="result-emoji"></div>
         <h2 class="result-title" id="result-title">Kết Thúc</h2>
         <div class="result-detail" id="result-detail"></div>
-        <button class="btn-primary" id="btn-replay">🔄 Chơi Lại</button>
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <button class="btn-primary" id="btn-replay"> Chơi Lại</button>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </section>
   </div>
 
   <div id="guide-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card">
-      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <h3 class="modal-title"> Cách Chơi</h3>
       <ul class="modal-rules">
-        <li>💪 Hai bạn ngồi đối diện, mỗi bạn 1 đầu màn hình.</li>
-        <li>❓ Cùng một câu hỏi hiện cho cả hai.</li>
-        <li>⚡ Ai bấm <b>đúng trước</b> = kéo dây 🚩 về phía mình.</li>
-        <li>❌ Bấm sai = bị khoá tới câu sau.</li>
-        <li>🏆 Kéo cờ qua vạch của đối thủ = thắng!</li>
+        <li> Hai bạn ngồi đối diện, mỗi bạn 1 đầu màn hình.</li>
+        <li> Cùng một câu hỏi hiện cho cả hai.</li>
+        <li> Ai bấm <b>đúng trước</b> = kéo dây  về phía mình.</li>
+        <li> Bấm sai = bị khoá tới câu sau.</li>
+        <li> Kéo cờ qua vạch của đối thủ = thắng!</li>
       </ul>
       <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
     </div>
@@ -109,11 +109,11 @@
 
   <div id="exit-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card exit-card">
-      <div class="exit-icon">🚪</div>
+      <div class="exit-icon"></div>
       <p class="exit-text">Thoát game?</p>
       <div class="exit-actions">
         <button class="exit-cancel" id="btn-exit-cancel">Tiếp tục</button>
-        <button class="exit-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+        <button class="exit-confirm" id="btn-exit-confirm"> Thoát</button>
       </div>
     </div>
   </div>
@@ -124,6 +124,7 @@
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
   <script src="/help-rules.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

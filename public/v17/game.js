@@ -2,14 +2,14 @@
 // Explore the solar system, collect planet samples!
 
 const PLANETS = [
-  { id: 'mercury', name: 'Sao Thủy', emoji: '⚫', bg: 'linear-gradient(180deg,#2a2a2a,#1a1a1a)', sample: 'ite', fact: 'Sao Thủy gần Mặt Trời nhất, nóng 430°C ban ngày!' },
-  { id: 'venus', name: 'Sao Kim', emoji: '🟡', bg: 'linear-gradient(180deg,#8b6914,#4a3608)', sample: '💨', fact: 'Sao Kim quay ngược! Mặt Trời mọc ở phía Tây.' },
-  { id: 'mars', name: 'Sao Hỏa', emoji: '🔴', bg: 'linear-gradient(180deg,#8b2500,#4a1400)', sample: 'ite', fact: 'Sao Hỏa có núi lửa cao nhất hệ Mặt Trời: 21km!' },
-  { id: 'jupiter', name: 'Sao Mộc', emoji: '🟠', bg: 'linear-gradient(180deg,#8b5e00,#4a3200)', sample: '🌀', fact: 'Sao Mộc to gấp 1300 lần Trái Đất!' },
-  { id: 'saturn', name: 'Sao Thổ', emoji: '🪐', bg: 'linear-gradient(180deg,#6b5b00,#3a3000)', sample: '💍', fact: 'Vành đai Sao Thổ rộng 280.000km nhưng mỏng chỉ 10m!' },
-  { id: 'uranus', name: 'Sao Thiên Vương', emoji: '🔵', bg: 'linear-gradient(180deg,#1a5f7a,#0a2f3d)', sample: '❄️', fact: 'Sao Thiên Vương nằm nghiêng 98°, quay như con lăn!' },
-  { id: 'neptune', name: 'Sao Hải Vương', emoji: '🔷', bg: 'linear-gradient(180deg,#0a2f6b,#051535)', sample: '🌊', fact: 'Gió trên Sao Hải Vương nhanh nhất: 2100 km/h!' },
-  { id: 'pluto', name: 'Sao Diêm Vương', emoji: '⚪', bg: 'linear-gradient(180deg,#3a3a4a,#1a1a2a)', sample: '💎', fact: 'Sao Diêm Vương nhỏ hơn cả Mặt Trăng của Trái Đất!' },
+  { id: 'mercury', name: 'Sao Thủy', emoji: '', bg: 'linear-gradient(180deg,#2a2a2a,#1a1a1a)', sample: 'ite', fact: 'Sao Thủy gần Mặt Trời nhất, nóng 430°C ban ngày!' },
+  { id: 'venus', name: 'Sao Kim', emoji: '', bg: 'linear-gradient(180deg,#8b6914,#4a3608)', sample: '', fact: 'Sao Kim quay ngược! Mặt Trời mọc ở phía Tây.' },
+  { id: 'mars', name: 'Sao Hỏa', emoji: '', bg: 'linear-gradient(180deg,#8b2500,#4a1400)', sample: 'ite', fact: 'Sao Hỏa có núi lửa cao nhất hệ Mặt Trời: 21km!' },
+  { id: 'jupiter', name: 'Sao Mộc', emoji: '', bg: 'linear-gradient(180deg,#8b5e00,#4a3200)', sample: '', fact: 'Sao Mộc to gấp 1300 lần Trái Đất!' },
+  { id: 'saturn', name: 'Sao Thổ', emoji: '', bg: 'linear-gradient(180deg,#6b5b00,#3a3000)', sample: '', fact: 'Vành đai Sao Thổ rộng 280.000km nhưng mỏng chỉ 10m!' },
+  { id: 'uranus', name: 'Sao Thiên Vương', emoji: '', bg: 'linear-gradient(180deg,#1a5f7a,#0a2f3d)', sample: '', fact: 'Sao Thiên Vương nằm nghiêng 98°, quay như con lăn!' },
+  { id: 'neptune', name: 'Sao Hải Vương', emoji: '', bg: 'linear-gradient(180deg,#0a2f6b,#051535)', sample: '', fact: 'Gió trên Sao Hải Vương nhanh nhất: 2100 km/h!' },
+  { id: 'pluto', name: 'Sao Diêm Vương', emoji: '', bg: 'linear-gradient(180deg,#3a3a4a,#1a1a2a)', sample: '<img src="/img/diamond.png" class="em-icon">', fact: 'Sao Diêm Vương nhỏ hơn cả Mặt Trăng của Trái Đất!' },
 ];
 
 const QUESTIONS_PER_PLANET = 5;
@@ -84,17 +84,17 @@ function showMap() {
     const current = i === S.currentPlanet && !cleared;
     const unlocked = i === 0 || S.planetsCleared.includes(i - 1);
     const cls = cleared ? 'cleared' : current ? 'current' : unlocked ? 'unlocked' : 'locked';
-    const status = cleared ? '✅ Đã khám phá' : current ? '▶️ Tiếp theo' : unlocked ? '🔓 Sẵn sàng' : '🔒';
+    const status = cleared ? ' Đã khám phá' : current ? '▶ Tiếp theo' : unlocked ? ' Sẵn sàng' : '';
     return `<div class="planet-row ${cls}" data-idx="${i}">
       <div class="pr-emoji">${p.emoji}</div>
       <div class="pr-info"><div class="pr-name">${p.name}</div><div class="pr-status">${status}</div></div>
-      <div class="pr-badge">${cleared ? '⭐' : current ? '🚀' : ''}</div>
+      <div class="pr-badge">${cleared ? '<img src="/img/star.png" class="em-icon">' : current ? '' : ''}</div>
     </div>`;
   }).join('');
 
   // Show fact
   const fact = PLANETS[S.currentPlanet]?.fact || '';
-  document.getElementById('map-fact').textContent = `💡 ${fact}`;
+  document.getElementById('map-fact').textContent = ` ${fact}`;
 }
 
 document.getElementById('planet-path').addEventListener('click', e => {
@@ -202,7 +202,7 @@ document.getElementById('pq-answers').addEventListener('click', e => {
 function handleCorrect(q) {
   S.correct++;
   S.questionInPlanet++;
-  document.getElementById('pq-status').textContent = '✅ Tuyệt vời!';
+  document.getElementById('pq-status').textContent = ' Tuyệt vời!';
   document.getElementById('pq-status').className = 'pq-status good';
   updatePlanetHUD();
 
@@ -217,7 +217,7 @@ function handleWrong(q) {
   S.incorrect++;
   S.wrongsThisPlanet++;
   S.fuel = Math.max(0, S.fuel - FUEL_PER_WRONG);
-  document.getElementById('pq-status').textContent = `❌ Sai! -${FUEL_PER_WRONG}% nhiên liệu`;
+  document.getElementById('pq-status').textContent = ` Sai! -${FUEL_PER_WRONG}% nhiên liệu`;
   document.getElementById('pq-status').className = 'pq-status bad';
   updatePlanetHUD();
 
@@ -264,23 +264,23 @@ function endGame(reason) {
   saveProgressData(p);
   saveSession();
 
-  const title = reason === 'win' ? '🎉 Khám phá toàn bộ Hệ Mặt Trời!' : reason === 'fuel' ? '⛽ Hết nhiên liệu!' : '💥 Va chạm! (3 sai trên 1 hành tinh)';
+  const title = reason === 'win' ? '<img src="/img/party.png" class="em-icon"> Khám phá toàn bộ Hệ Mặt Trời!' : reason === 'fuel' ? ' Hết nhiên liệu!' : ' Va chạm! (3 sai trên 1 hành tinh)';
   const stars = S.planetsCleared.length >= 8 ? 3 : S.planetsCleared.length >= 5 ? 2 : S.planetsCleared.length >= 2 ? 1 : 0;
 
   document.getElementById('result-container').innerHTML = `
     <div class="result-title">${title}</div>
     <div class="result-planets">${S.planetsCleared.map(i => PLANETS[i].emoji).join(' ') || '—'}</div>
     <div class="result-stats">
-      <div class="result-stat"><span>🪐 Hành tinh</span><strong>${S.planetsCleared.length}/8</strong></div>
-      <div class="result-stat"><span>✅ Câu đúng</span><strong>${S.correct}</strong></div>
-      <div class="result-stat"><span>❌ Câu sai</span><strong>${S.incorrect}</strong></div>
-      <div class="result-stat"><span>⛽ Nhiên liệu còn</span><strong>${S.fuel}%</strong></div>
-      <div class="result-stat"><span>⭐ Sao</span><strong>${'⭐'.repeat(stars) || '—'}</strong></div>
+      <div class="result-stat"><span> Hành tinh</span><strong>${S.planetsCleared.length}/8</strong></div>
+      <div class="result-stat"><span> Câu đúng</span><strong>${S.correct}</strong></div>
+      <div class="result-stat"><span> Câu sai</span><strong>${S.incorrect}</strong></div>
+      <div class="result-stat"><span> Nhiên liệu còn</span><strong>${S.fuel}%</strong></div>
+      <div class="result-stat"><span><img src="/img/star.png" class="em-icon"> Sao</span><strong>${'<img src="/img/star.png" class="em-icon">'.repeat(stars) || '—'}</strong></div>
     </div>
     ${S.samples.length ? `<div class="result-samples"><div class="result-samples-title">Mẫu vật thu thập (perfect landing):</div><div class="result-samples-list">${S.samples.join(' ')}</div></div>` : ''}
     <div class="result-btns">
-      <button class="result-btn primary" onclick="location.reload()">🔄 Bay lại</button>
-      <button class="result-btn secondary" onclick="location.href='/'">🏠 Trang chủ</button>
+      <button class="result-btn primary" onclick="location.reload()"> Bay lại</button>
+      <button class="result-btn secondary" onclick="location.href='/'"> Trang chủ</button>
     </div>`;
   showScreen('result-screen');
   if (window.checkAndShowPrompt && getPlayerId()) window.checkAndShowPrompt(getPlayerId());
@@ -313,7 +313,7 @@ async function logAnswer(q, selected, correct, isCorrect) {
     if (C && C.hasSpecies('astronaut')) {
       astroChar = C.createCharacter('astronaut', host, { state: 'idle' });
     } else {
-      host.textContent = '🧑‍🚀';
+      host.textContent = '';
     }
   }
 
@@ -327,7 +327,7 @@ async function logAnswer(q, selected, correct, isCorrect) {
     if (C && C.hasSpecies('rocket')) {
       shipChar = C.createCharacter('rocket', host, { state: 'happy' });
     } else {
-      host.textContent = '🚀';
+      host.textContent = '';
     }
   }
 

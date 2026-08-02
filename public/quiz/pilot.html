@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🧪 Quiz Mode Pilot — Test 5 New Modes</title>
+  <title>🧪 Quiz Mode Pilot — All Modes</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="quiz-modes.css">
   <style>
@@ -30,10 +30,24 @@
 </head>
 <body>
   <div class="pilot-container">
-    <h1>🧪 Pilot — 5 New Quiz Modes</h1>
-    <p class="pilot-info">Test các mode mới trước khi add vào engine chính.</p>
+    <h1>🧪 Pilot — All Quiz Modes</h1>
+    <p class="pilot-info">Test tất cả mode. Bấm nút để chọn mode cụ thể.</p>
 
     <div class="controls">
+      <button class="ctrl-btn" data-mode="choice">📋 Trắc nghiệm</button>
+      <button class="ctrl-btn" data-mode="truefalse">✅ Đúng/Sai</button>
+      <button class="ctrl-btn" data-mode="type">⌨️ Gõ đáp án</button>
+      <button class="ctrl-btn" data-mode="tap">👆 Chạm</button>
+      <button class="ctrl-btn" data-mode="mystery">🎁 Hộp bí ẩn</button>
+      <button class="ctrl-btn" data-mode="slider">📏 Thanh trượt</button>
+      <button class="ctrl-btn" data-mode="eliminate">🚫 Loại trừ</button>
+      <button class="ctrl-btn" data-mode="catch">🎣 Bắt</button>
+      <button class="ctrl-btn" data-mode="balloon">🎈 Bóng bay</button>
+      <button class="ctrl-btn" data-mode="whack">🔨 Đập chuột</button>
+      <button class="ctrl-btn" data-mode="scratch">🪙 Thẻ cào</button>
+      <button class="ctrl-btn" data-mode="archer">🎯 Bắn cung</button>
+      <button class="ctrl-btn" data-mode="jigsaw">🧩 Ghép mảnh</button>
+      <button class="ctrl-btn" data-mode="slot">🎰 Slot</button>
       <button class="ctrl-btn" data-mode="ladder">🪜 Thang</button>
       <button class="ctrl-btn" data-mode="paint">🎨 Tô Màu</button>
       <button class="ctrl-btn" data-mode="magnet">🧲 Nam Châm</button>
@@ -64,25 +78,11 @@
     </div>
   </div>
 
-  <!-- Load engine + pilot modes (NOT all.js, to isolate testing) -->
+  <!-- Load engine + ALL modes -->
   <script src="engine.js"></script>
-  <script src="mode-ladder.js"></script>
-  <script src="mode-paint.js"></script>
-  <script src="mode-magnet.js"></script>
-  <script src="mode-stack.js"></script>
-  <script src="mode-crystal.js"></script>
-  <script src="mode-wave.js"></script>
-  <script src="mode-spin.js"></script>
-  <script src="mode-spell.js"></script>
-  <script src="mode-launch.js"></script>
-  <script src="mode-music.js"></script>
-  <script src="mode-match.js"></script>
-  <script src="mode-sort.js"></script>
-  <script src="mode-draw.js"></script>
-  <script src="mode-bubble.js"></script>
-  <script src="mode-pong.js"></script>
+  <script src="all.js"></script>
   <script>
-    const MODES = ['ladder', 'paint', 'magnet', 'stack', 'crystal', 'wave', 'spin', 'spell', 'launch', 'music', 'match', 'sort', 'draw', 'bubble', 'pong'];
+    const MODES = ['choice', 'truefalse', 'type', 'tap', 'mystery', 'slider', 'eliminate', 'catch', 'balloon', 'whack', 'scratch', 'archer', 'jigsaw', 'slot', 'ladder', 'paint', 'magnet', 'stack', 'crystal', 'wave', 'spin', 'spell', 'launch', 'music', 'match', 'sort', 'draw', 'bubble', 'pong'];
     let currentMode = null;
 
     // Sample questions for testing
@@ -137,5 +137,6 @@
     });
   </script>
   <script src="/difficulty-boost.js"></script>
+  <script src="/sprite-icons.js"></script>
 </body>
 </html>

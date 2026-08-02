@@ -14,10 +14,8 @@
   // Register the available modes here. Order doesn't matter (engine queues
   // registrations that arrive before it loads).
   const MODES = [
-    'choice',
     'truefalse',
     'type',
-    'tap',
     'mystery',
     'slider',
     'eliminate',
@@ -29,7 +27,6 @@
     'jigsaw',
     'slot',
     'ladder',
-    'paint',
     'magnet',
     'stack',
     'crystal',

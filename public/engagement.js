@@ -108,25 +108,28 @@
       background: rgba(20,10,40,0.6); backdrop-filter: blur(4px); font-family: 'Nunito', system-ui, sans-serif; }
     .hv-eng-overlay.show { display: flex; animation: hvEngFade .25s ease; }
     @keyframes hvEngFade { from { opacity: 0; } to { opacity: 1; } }
-    .hv-eng-card { background: linear-gradient(180deg,#fff,#fff4e6); border-radius: 26px; padding: 26px 24px; width: min(92%,340px);
+    .hv-eng-card { background: linear-gradient(180deg,#fff,#fff4e6); border-radius: 28px; padding: 32px 28px; width: min(94%,380px);
       text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.4); animation: hvEngPop .4s cubic-bezier(.34,1.56,.64,1) both; }
     @keyframes hvEngPop { 0% { opacity:0; transform: scale(0.6) translateY(20px);} 100% { opacity:1; transform: scale(1) translateY(0);} }
-    .hv-eng-title { font-size: 1.3rem; font-weight: 900; color: #d2691e; }
-    .hv-eng-sub { font-size: 0.9rem; color: #8a7a5a; font-weight: 700; margin-top: 2px; }
-    .hv-chests { display: flex; justify-content: center; gap: 14px; margin: 18px 0 8px; }
-    .hv-chest { font-size: 3.2rem; cursor: pointer; transition: transform .15s; filter: drop-shadow(0 5px 6px rgba(0,0,0,0.2)); }
+    .hv-eng-title { font-size: 1.5rem; font-weight: 900; color: #d2691e; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .hv-eng-sub { font-size: 1rem; color: #8a7a5a; font-weight: 700; margin-top: 6px; }
+    .hv-chests { display: flex; justify-content: center; gap: 14px; margin: 22px 0 12px; }
+    .hv-chest { cursor: pointer; transition: transform .15s; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.25)); }
+    .hv-chest img { width: 100px; height: 100px; }
     .hv-chest:active { transform: scale(0.9); }
     .hv-chest.shake { animation: hvChestShake 0.7s ease-in-out infinite; }
-    @keyframes hvChestShake { 0%,100% { transform: rotate(-4deg);} 50% { transform: rotate(4deg) translateY(-4px);} }
-    .hv-eng-days { display: flex; justify-content: center; gap: 5px; margin: 12px 0; flex-wrap: wrap; }
-    .hv-day { width: 30px; height: 38px; border-radius: 9px; background: #f0e6d2; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      font-size: 0.62rem; font-weight: 800; color: #a89060; }
-    .hv-day .d-ic { font-size: 0.9rem; }
-    .hv-day.claimed { background: #ffe0a3; color: #b5651d; }
-    .hv-day.today { outline: 3px solid #ff8f3c; }
-    .hv-eng-reward { font-size: 2.6rem; margin: 6px 0; }
-    .hv-eng-btn { margin-top: 12px; width: 100%; padding: 13px; border: none; border-radius: 14px;
-      background: linear-gradient(135deg,#ffb347,#ff8f1f); color: #fff; font-size: 1.05rem; font-weight: 900; cursor: pointer; box-shadow: 0 5px 0 #c46a10; }
+    @keyframes hvChestShake { 0%,100% { transform: rotate(-4deg);} 50% { transform: rotate(4deg) translateY(-6px);} }
+    .hv-eng-days { display: flex; justify-content: center; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+    .hv-day { width: 42px; height: 54px; border-radius: 12px; background: linear-gradient(180deg,#f8f0e0,#efe4d0); display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 800; color: #a89060; gap: 2px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+    .hv-day .d-ic { font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+    .hv-day .d-ic img { width: 28px; height: 28px; }
+    .hv-day.claimed { background: linear-gradient(180deg,#ffe9a3,#ffd54f); color: #b5651d; box-shadow: 0 2px 8px rgba(255,193,7,0.3); }
+    .hv-day.today { outline: 3px solid #ff8f3c; box-shadow: 0 0 12px rgba(255,143,60,0.4); }
+    .hv-eng-reward { font-size: 3rem; margin: 10px 0; }
+    .hv-eng-reward img { width: 64px; height: 64px; }
+    .hv-eng-btn { margin-top: 16px; width: 100%; padding: 15px; border: none; border-radius: 16px;
+      background: linear-gradient(135deg,#ffb347,#ff8f1f); color: #fff; font-size: 1.1rem; font-weight: 900; cursor: pointer; box-shadow: 0 5px 0 #c46a10; }
     .hv-eng-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #c46a10; }
     /* today's goal widget */
     #hv-goal { position: fixed; left: 50%; transform: translateX(-50%); top: 4px; z-index: 2147482500;
@@ -157,13 +160,13 @@
   // ─────────────────────────────────────────────────────────────────────────
   // Daily login reward (home page)
   const DAY_REWARDS = [
-    { ic: '💎', n: '+5 Kim cương', d: '+5💎' },
-    { ic: '⭐', n: 'Nhãn dán', d: 'sticker' },
-    { ic: '💎', n: '+8 Kim cương', d: '+8💎' },
-    { ic: '🎁', n: 'Nhãn dán hiếm', d: 'sticker2' },
-    { ic: '💎', n: '+10 Kim cương', d: '+10💎' },
-    { ic: '⭐', n: 'Nhãn dán', d: 'sticker' },
-    { ic: '🏆', n: 'Thưởng lớn!', d: 'big' },
+    { ic: '<img src="/img/diamond.png" style="width:28px;height:28px;">', n: '+5 Kim cương', d: '+5' },
+    { ic: '<img src="/img/star.png" style="width:28px;height:28px;">', n: 'Nhãn dán', d: 'sticker' },
+    { ic: '<img src="/img/diamond.png" style="width:28px;height:28px;">', n: '+8 Kim cương', d: '+8' },
+    { ic: '<img src="/img/gift.png" style="width:28px;height:28px;">', n: 'Nhãn dán hiếm', d: 'sticker2' },
+    { ic: '<img src="/img/diamond.png" style="width:28px;height:28px;">', n: '+10 Kim cương', d: '+10' },
+    { ic: '<img src="/img/star.png" style="width:28px;height:28px;">', n: 'Nhãn dán', d: 'sticker' },
+    { ic: '<img src="/img/trophy.png" style="width:28px;height:28px;">', n: 'Thưởng lớn!', d: 'big' },
   ];
 
   function getDaily() { return load('daily', { last: '', streak: 0 }); }
@@ -189,16 +192,16 @@
     const dayIdx = ((streak - 1) % 7);
     const days = DAY_REWARDS.map((r, i) => {
       const cls = i < dayIdx ? 'claimed' : (i === dayIdx ? 'today' : '');
-      return `<div class="hv-day ${cls}"><span class="d-ic">${i < dayIdx ? '✅' : r.ic}</span>N${i + 1}</div>`;
+      return `<div class="hv-day ${cls}"><span class="d-ic">${i < dayIdx ? '<img src="/img/star.png" style="width:20px;height:20px;">' : r.ic}</span>N${i + 1}</div>`;
     }).join('');
     overlay.innerHTML = `
       <div class="hv-eng-card">
-        <div class="hv-eng-title">🎁 Quà Mỗi Ngày</div>
+        <div class="hv-eng-title"><img src="/img/daily-gift.png" style="width:32px;height:32px;"> Quà Mỗi Ngày</div>
         <div class="hv-eng-sub">Chuỗi ${streak} ngày — mở quà nào!</div>
-        <div class="hv-chests"><span class="hv-chest shake" id="hv-chest">🎁</span></div>
+        <div class="hv-chests"><span class="hv-chest shake" id="hv-chest"><img src="/img/daily-gift.png"></span></div>
         <div class="hv-eng-days">${days}</div>
         <div id="hv-reward-reveal"></div>
-        <button class="hv-eng-btn" id="hv-eng-claim" style="display:none;">Tuyệt vời! 🎉</button>
+        <button class="hv-eng-btn" id="hv-eng-claim" style="display:none;">Tuyệt vời! <img src="/img/party.png" style="width:20px;height:20px;vertical-align:middle;"></button>
       </div>`;
     overlay.classList.add('show');
     const chest = document.getElementById('hv-chest');
@@ -206,11 +209,11 @@
     chest.addEventListener('click', () => {
       if (opened) return; opened = true;
       chest.classList.remove('shake');
-      chest.textContent = '📭';
+      chest.innerHTML = '<img src="/img/daily-gift.png" style="opacity:0.4;">';
       const reward = DAY_REWARDS[dayIdx];
       claimReward(reward, streak);
       const rev = document.getElementById('hv-reward-reveal');
-      rev.innerHTML = `<div class="hv-eng-reward">${reward.ic}</div><div style="font-weight:900;color:#d2691e;">${reward.n}</div>`;
+      rev.innerHTML = `<div class="hv-eng-reward">${reward.ic}</div><div style="font-weight:900;color:#d2691e;font-size:1.1rem;">${reward.n}</div>`;
       document.getElementById('hv-eng-claim').style.display = 'block';
       if (window.HocVuiSound) window.HocVuiSound.play('win');
       burstConfetti();
@@ -237,7 +240,7 @@
       const cur = load('bonusDiamonds', 0) + amount;
       save('bonusDiamonds', cur);
       const el = document.getElementById('rb-diamonds');
-      if (el) { const m = (el.textContent.match(/\d+/) || [0])[0]; el.textContent = '💎 ' + (parseInt(m) + amount); }
+      if (el) { const m = (el.textContent.match(/\d+/) || [0])[0]; el.innerHTML = '<img src="/img/diamond.png" style="width:16px;height:16px;vertical-align:middle;"> ' + (parseInt(m) + amount); }
     } catch (e) {}
   }
 
@@ -258,7 +261,7 @@
 
   function onGoalDone() {
     if (window.HocVuiSound) window.HocVuiSound.play('win');
-    if (window.HocVuiMascot) window.HocVuiMascot.say('Đạt mục tiêu hôm nay! 🎯🎉', 'good');
+    if (window.HocVuiMascot) window.HocVuiMascot.say('Đạt mục tiêu hôm nay!', 'good');
     burstConfetti();
     // bonus sticker for completing the daily goal
     grantSticker(3);
@@ -272,7 +275,7 @@
     if (goalEl) return;
     goalEl = document.createElement('div');
     goalEl.id = 'hv-goal';
-    goalEl.innerHTML = `<span class="g-ic">🎯</span><div class="g-bar"><div class="g-fill" id="hv-goal-fill"></div></div><span class="g-txt" id="hv-goal-txt"></span>`;
+    goalEl.innerHTML = `<span class="g-ic"><img src="/img/target.png" style="width:20px;height:20px;"></span><div class="g-bar"><div class="g-fill" id="hv-goal-fill"></div></div><span class="g-txt" id="hv-goal-txt"></span>`;
     document.body.appendChild(goalEl);
   }
   function updateGoalWidget() {
@@ -280,7 +283,7 @@
     const g = Progress.goalToday();
     const pct = Math.min(100, Math.round(g.n / g.target * 100));
     document.getElementById('hv-goal-fill').style.width = pct + '%';
-    document.getElementById('hv-goal-txt').textContent = g.done ? 'Đạt rồi! 🌟' : `${g.n}/${g.target}`;
+    document.getElementById('hv-goal-txt').textContent = g.done ? 'Đạt rồi!' : `${g.n}/${g.target}`;
     goalEl.classList.toggle('done', g.done);
     goalEl.classList.add('show');
   }
@@ -297,12 +300,13 @@
     const name = profile.name || 'Bé';
     const stickers = (window.HocVuiCollection && window.HocVuiCollection.count) ? window.HocVuiCollection.count() : 0;
     // rating by weekly correct count
-    let rank = '🌱 Chăm Học', stars = 1;
-    if (total >= 120) { rank = '🏆 Siêu Sao Học Tập'; stars = 5; }
-    else if (total >= 70) { rank = '🌟 Học Trò Giỏi'; stars = 4; }
-    else if (total >= 35) { rank = '⭐ Tiến Bộ Tốt'; stars = 3; }
-    else if (total >= 12) { rank = '😊 Cố Gắng'; stars = 2; }
-    const starRow = '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
+    let rank = 'Chăm Học', stars = 1;
+    if (total >= 120) { rank = 'Siêu Sao Học Tập'; stars = 5; }
+    else if (total >= 70) { rank = 'Học Trò Giỏi'; stars = 4; }
+    else if (total >= 35) { rank = 'Tiến Bộ Tốt'; stars = 3; }
+    else if (total >= 12) { rank = 'Cố Gắng'; stars = 2; }
+    const SP = window.HocVuiSprite;
+    const starRow = SP ? Array.from({length:5}, (_, i) => SP.html(2, 0, 0, i < stars ? 24 : 18)).join('') : '';
     overlay.innerHTML = `
       <div class="hv-eng-card hv-report">
         <div class="hv-rep-ribbon">PHIẾU BÉ NGOAN</div>
@@ -315,7 +319,7 @@
           <div><b>${days}</b><span>ngày học</span></div>
           <div><b>${stickers}</b><span>nhãn dán</span></div>
         </div>
-        <div class="hv-rep-note">Bố mẹ ơi, khen con một câu nhé! 💛</div>
+        <div class="hv-rep-note">Bố mẹ ơi, khen con một câu nhé!</div>
         <button class="hv-eng-btn" id="hv-rep-close">Đóng</button>
       </div>`;
     overlay.classList.add('show');

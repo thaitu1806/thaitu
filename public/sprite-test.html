@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprite Sheet Test</title>
+  <style>
+    body { background: #0f4c75; margin: 40px; font-family: sans-serif; color: #fff; }
+    h2 { margin-top: 30px; }
+    .sprite-box { 
+      display: inline-block; 
+      border: 2px solid rgba(255,255,255,0.3); 
+      margin: 10px;
+      position: relative;
+    }
+    .sprite-box::after {
+      content: attr(data-label);
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    /* === OCTOPUS: 1236x202, 6 frames === */
+    .octopus-sprite {
+      width: 206px;   /* 1236 / 6 = 206 */
+      height: 202px;
+      background: url('/img/octopus-swim.png') 0 0 no-repeat;
+      /* total width = 1236px, element width = 206px, so background-size = auto (natural) */
+      background-size: 1236px 202px;
+      animation: octo-anim 0.8s steps(6) infinite;
+    }
+    @keyframes octo-anim {
+      from { background-position: 0 0; }
+      to   { background-position: -1236px 0; }
+    }
+
+    /* === FISH CLOWN: 1157x216, 5 frames === */
+    .fish-clown-sprite {
+      width: 231px;   /* floor(1157 / 5) = 231 */
+      height: 216px;
+      background: url('/img/fish-clown.png') 0 0 no-repeat;
+      background-size: 1157px 216px;
+      animation: fish-clown-anim 0.6s steps(5) infinite;
+    }
+    @keyframes fish-clown-anim {
+      from { background-position: 0 0; }
+      to   { background-position: -1157px 0; }
+    }
+
+    /* === FISH BLUE: 1157x216, 5 frames === */
+    .fish-blue-sprite {
+      width: 231px;
+      height: 216px;
+      background: url('/img/fish-blue.png') 0 0 no-repeat;
+      background-size: 1157px 216px;
+      animation: fish-blue-anim 0.6s steps(5) infinite;
+    }
+    @keyframes fish-blue-anim {
+      from { background-position: 0 0; }
+      to   { background-position: -1157px 0; }
+    }
+
+    /* === FISH GOLD: 1157x216, 5 frames === */
+    .fish-gold-sprite {
+      width: 231px;
+      height: 216px;
+      background: url('/img/fish-gold.png') 0 0 no-repeat;
+      background-size: 1157px 216px;
+      animation: fish-gold-anim 0.6s steps(5) infinite;
+    }
+    @keyframes fish-gold-anim {
+      from { background-position: 0 0; }
+      to   { background-position: -1157px 0; }
+    }
+
+    /* Scaled-down versions (what we'll use in ocean-bg) */
+    .scaled {
+      transform: scale(0.4);
+      transform-origin: top left;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sprite Sheet Animation Test</h1>
+  <p>Kiểm tra xem từng con có chạy mượt không, có bị lặp/biến mất frame không.</p>
+
+  <h2>Bạch tuộc (6 frames, 1236×202px, mỗi frame 206×202)</h2>
+  <div class="sprite-box" data-label="Full size">
+    <div class="octopus-sprite"></div>
+  </div>
+
+  <h2>Cá hề (5 frames, 1157×216px, mỗi frame ~231×216)</h2>
+  <div class="sprite-box" data-label="Full size">
+    <div class="fish-clown-sprite"></div>
+  </div>
+
+  <h2>Cá xanh (5 frames, 1157×216px)</h2>
+  <div class="sprite-box" data-label="Full size">
+    <div class="fish-blue-sprite"></div>
+  </div>
+
+  <h2>Cá vàng (5 frames, 1157×216px)</h2>
+  <div class="sprite-box" data-label="Full size">
+    <div class="fish-gold-sprite"></div>
+  </div>
+
+  <hr>
+  <h2>Scaled down (kích thước thực dùng trong ocean-bg)</h2>
+  <div style="display:flex; gap:40px; align-items:start;">
+    <div class="sprite-box"><div class="octopus-sprite scaled"></div></div>
+    <div class="sprite-box"><div class="fish-clown-sprite scaled"></div></div>
+    <div class="sprite-box"><div class="fish-blue-sprite scaled"></div></div>
+    <div class="sprite-box"><div class="fish-gold-sprite scaled"></div></div>
+  </div>
+  <script src="/sprite-icons.js"></script>
+</body>
+</html>

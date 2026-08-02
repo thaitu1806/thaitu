@@ -16,36 +16,36 @@ const state = {
   sessionId: null,
   questionStartTime: 0,
   timerSpeedSetting: 'normal', // slow, normal, fast
-  zombieEmoji: '💀',
-  bulletEmoji: '☄️',
-  explosionEmoji: '💥',
-  plantEmoji: '🌻',
+  zombieEmoji: '',
+  bulletEmoji: '',
+  explosionEmoji: '',
+  plantEmoji: '',
 };
 
 // Random sets for each game
 const ZOMBIE_SET = [
-  '💀', '🧟', '👻', '👹', '👺', '🤖', '👾', '🦇', '🐛', '🦠',
-  '🎃', '☠️', '🕷️', '🦂', '🐍', '🦎', '🐲', '🐉', '🦖', '🦕',
-  '🐊', '🦈', '🐙', '🦑', '🪳', '🪲', '🐜', '🦗', '🕸️', '🦟',
-  '🐺', '🦁', '🐗', '🦍', '🦬', '🐏', '🦏', '🐻', '🧛', '🧙',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
 ];
 const BULLET_SET = [
-  '☄️', '🔥', '⚡', '💫', '🌟', '🚀', '🎯', '💣', '🪨', '🌊',
-  '🏹', '🗡️', '🪃', '🛡️', '⚔️', '🔱', '💎', '🧨', '🎱', '🪓',
-  '🌩️', '❄️', '🌪️', '☀️', '🌶️', '🍉', '🥊', '🎾', '⚾', '🏈',
-  '🪁', '🎳', '🧊', '💧', '🫧', '🌀', '⭐', '🔔', '🎵', '🍳',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '⭐', '', '', '',
 ];
 const EXPLOSION_SET = [
-  '💥', '🔥', '✨', '⭐', '🌟', '💫', '🎆', '🎇', '☀️', '🌈',
-  '🎊', '🎉', '🪅', '🎀', '🌸', '🌺', '🏵️', '🌼', '💐', '🌻',
-  '⚡', '💢', '❗', '🔆', '🔅', '✳️', '❇️', '🌠', '☄️', '🫨',
-  '💨', '💦', '🫧', '🌀', '🎭', '🧧', '🪩', '🎪', '🎠', '🩵',
+  '', '', '', '⭐', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
 ];
 const PLANT_SET = [
-  '🌻', '🌹', '🌵', '🍄', '🌲', '🎋', '🌸', '🪴', '🌿', '🏵️',
-  '🌷', '🌺', '🌼', '💐', '🍀', '☘️', '🌱', '🎍', '🪻', '🫘',
-  '🌾', '🎄', '🌳', '🍁', '🍂', '🍃', '🪷', '🪹', '🐚', '🥀',
-  '🍇', '🍊', '🍋', '🍓', '🫐', '🥝', '🥥', '🌽', '🥕', '🥦',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
 ];
 
 // DOM Elements
@@ -80,11 +80,11 @@ function showScreen(name) {
       window.location.href = '/';
       return;
     }
-    document.getElementById('player-welcome').textContent = `Chào ${data.name}! 🎉`;
+    document.getElementById('player-welcome').textContent = `Chào ${data.name}! `;
     localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade ?? 2 }));
   } catch {
     // Network error - trust local
-    document.getElementById('player-welcome').textContent = `Chào ${p.name}! 🎉`;
+    document.getElementById('player-welcome').textContent = `Chào ${p.name}! `;
   }
 })();
 
@@ -98,7 +98,7 @@ document.getElementById('btn-start').addEventListener('click', async () => {
   const name = p.name;
   state.timerSpeedSetting = document.getElementById('timer-speed').value;
   state.player = p;
-  document.getElementById('welcome-text').textContent = `Xin chào ${name}! 🎉`;
+  document.getElementById('welcome-text').textContent = `Xin chào ${name}! `;
   showScreen('subject');
 });
 
@@ -160,7 +160,7 @@ async function startGame() {
   }
 
   // Update UI
-  const subjectLabel = state.subject === 'math' ? '🔢 Toán' : '📖 Tiếng Việt';
+  const subjectLabel = state.subject === 'math' ? ' Toán' : ' Tiếng Việt';
   const diffLabels = { easy: '⭐ Dễ', medium: '⭐⭐ TB', hard: '⭐⭐⭐ Khó' };
   document.getElementById('game-subject-label').textContent = subjectLabel;
   document.getElementById('game-difficulty-label').textContent = diffLabels[state.difficulty];
@@ -422,9 +422,9 @@ function shootZombie() {
 
 // UPDATE STATS
 function updateStats() {
-  document.getElementById('score-display').textContent = `💰 ${state.score}`;
-  document.getElementById('combo-display').textContent = `🔥 x${state.combo}`;
-  document.getElementById('progress-display').textContent = `📋 ${state.currentIndex}/${state.questions.length}`;
+  document.getElementById('score-display').textContent = ` ${state.score}`;
+  document.getElementById('combo-display').textContent = ` x${state.combo}`;
+  document.getElementById('progress-display').textContent = ` ${state.currentIndex}/${state.questions.length}`;
 }
 
 // END GAME
@@ -438,24 +438,24 @@ function endGame() {
 
   if (percentage >= 0.9) {
     stars = 3;
-    title = '🏆 Xuất sắc!';
-    showCelebration('🏆 Xuất sắc! Giỏi quá!');
+    title = ' Xuất sắc!';
+    showCelebration(' Xuất sắc! Giỏi quá!');
   } else if (percentage >= 0.7) {
     stars = 2;
-    title = '👏 Giỏi lắm!';
-    showCelebration('👏 Giỏi lắm!');
+    title = ' Giỏi lắm!';
+    showCelebration(' Giỏi lắm!');
   } else if (percentage >= 0.5) {
     stars = 1;
-    title = '👍 Cố gắng thêm!';
+    title = ' Cố gắng thêm!';
     playSound('clap');
   } else {
     stars = 0;
-    title = '💪 Lần sau sẽ tốt hơn!';
+    title = ' Lần sau sẽ tốt hơn!';
     playSound('gameover');
   }
 
   document.getElementById('result-title').textContent = title;
-  document.getElementById('result-stars').textContent = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+  document.getElementById('result-stars').textContent = '⭐'.repeat(stars) + ''.repeat(3 - stars);
   document.getElementById('result-correct').textContent = state.correctCount;
   document.getElementById('result-total').textContent = total;
   document.getElementById('result-score').textContent = state.score;
@@ -525,7 +525,7 @@ document.getElementById('btn-back-menu').addEventListener('click', () => showScr
 
 // EXIT GAME with custom popup
 document.getElementById('btn-exit-game').addEventListener('click', () => {
-  showConfirmPopup('😢', 'Bạn có muốn thoát\ntrò chơi không?', () => {
+  showConfirmPopup('', 'Bạn có muốn thoát\ntrò chơi không?', () => {
     clearInterval(state.timerInterval);
     window.location.href = '/';
   });
@@ -703,7 +703,7 @@ function playSound(type) {
 function showCelebration(text) {
   const el = document.createElement('div');
   el.className = 'celebration-overlay';
-  el.innerHTML = `<div class="celebration-content"><div class="celebration-emojis">🎉🎊👏✨🌟</div><div class="celebration-text">${text}</div></div>`;
+  el.innerHTML = `<div class="celebration-content"><div class="celebration-emojis"></div><div class="celebration-text">${text}</div></div>`;
   document.body.appendChild(el);
   playSound('celebrate');
   setTimeout(() => el.remove(), 2500);
@@ -713,7 +713,7 @@ function showCelebration(text) {
 function createParticles(x, y, type) {
   const container = document.querySelector('.game-arena');
   const colors = type === 'correct' ? ['#4CAF50', '#8BC34A', '#CDDC39'] : ['#f44336', '#FF5722', '#FF9800'];
-  const emojis = type === 'correct' ? ['⭐', '✨', '💫'] : ['💥', '😵', '❌'];
+  const emojis = type === 'correct' ? ['⭐', '', ''] : ['', '', ''];
 
   for (let i = 0; i < 8; i++) {
     const particle = document.createElement('div');
@@ -791,7 +791,7 @@ async function checkAIStatus() {
 checkAIStatus();
 
 /**
- * Show the "💡 Tại sao?" button after a wrong answer.
+ * Show the " Tại sao?" button after a wrong answer.
  * @param {object} question - The current question object
  * @param {string} selectedAnswer - The player's selected answer (a/b/c/d)
  */
@@ -807,7 +807,7 @@ function showExplainButton(question, selectedAnswer) {
 
   btn.style.display = 'block';
   btn.disabled = false;
-  btn.textContent = '💡 Tại sao?';
+  btn.textContent = ' Tại sao?';
 
   // Store context for the click handler
   btn._question = question;
@@ -847,12 +847,12 @@ function showHintButton() {
     btn.style.display = 'block';
     btn.disabled = true;
     btn.classList.add('hint-maxed');
-    btn.textContent = '💡 Hết gợi ý';
+    btn.textContent = ' Hết gợi ý';
   } else {
     btn.style.display = 'block';
     btn.disabled = false;
     btn.classList.remove('hint-maxed');
-    btn.textContent = hs.hintsUsed === 0 ? '💡 Gợi ý' : '💡 Gợi ý thêm';
+    btn.textContent = hs.hintsUsed === 0 ? ' Gợi ý' : ' Gợi ý thêm';
   }
 
   // Hide tooltip from previous question
@@ -877,7 +877,7 @@ function hideHintButton() {
   }
 }
 
-// "💡 Gợi ý" button click handler
+// " Gợi ý" button click handler
 document.getElementById('btn-hint')?.addEventListener('click', async () => {
   const btn = document.getElementById('btn-hint');
   const tooltip = document.getElementById('hint-tooltip');
@@ -921,8 +921,8 @@ document.getElementById('btn-hint')?.addEventListener('click', async () => {
   // Fallback if no hint received
   if (!hintText) {
     hintText = hintLevel === 1
-      ? 'Hãy đọc kỹ câu hỏi và suy nghĩ thêm nhé! 🤔'
-      : 'Thử loại trừ các đáp án chắc chắn sai trước nhé! ✨';
+      ? 'Hãy đọc kỹ câu hỏi và suy nghĩ thêm nhé! '
+      : 'Thử loại trừ các đáp án chắc chắn sai trước nhé! ';
   }
 
   // Update hint state
@@ -939,10 +939,10 @@ document.getElementById('btn-hint')?.addEventListener('click', async () => {
   if (hs.hintsUsed >= 2) {
     btn.disabled = true;
     btn.classList.add('hint-maxed');
-    btn.textContent = '💡 Hết gợi ý';
+    btn.textContent = ' Hết gợi ý';
   } else {
     btn.disabled = false;
-    btn.textContent = '💡 Gợi ý thêm';
+    btn.textContent = ' Gợi ý thêm';
   }
 });
 
@@ -969,7 +969,7 @@ function hideExplainPopup() {
   }
 }
 
-// "💡 Tại sao?" button click handler
+// " Tại sao?" button click handler
 document.getElementById('btn-explain')?.addEventListener('click', async () => {
   const btn = document.getElementById('btn-explain');
   if (!btn || btn.disabled) return;
@@ -1020,7 +1020,7 @@ document.getElementById('btn-explain')?.addEventListener('click', async () => {
     explanation = `Đáp án đúng là ${correctLabel}: ${correctText}`;
   }
 
-  btn.textContent = '💡 Tại sao?';
+  btn.textContent = ' Tại sao?';
   btn.disabled = false;
 
   showExplainPopup(explanation);

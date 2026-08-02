@@ -5,26 +5,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>📚 Góc Học Tập - Toán Lớp 2</title>
+  <title> Góc Học Tập - Toán Lớp 2</title>
   <link rel="stylesheet" href="learn.css">
+  <link rel="stylesheet" href="/learn/lesson-count.css">
+  <link rel="stylesheet" href="/learn/lesson-compare.css">
+  <link rel="stylesheet" href="/learn/lesson-size.css">
+  <link rel="stylesheet" href="/learn/lesson-colors.css">
+  <link rel="stylesheet" href="/learn/lesson-shapes.css">
+  <link rel="stylesheet" href="/learn/lesson-animals.css">
+  <link rel="stylesheet" href="/learn/lesson-count1.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .grade-icon { display:inline-block; width:20px; height:20px; background-image:url('/img/stickers-2-clean.png'); background-size:200px 223px; background-repeat:no-repeat; vertical-align:middle; }
+    .grade-icon-0 { background-position:-140px -122px; }
+    .grade-icon-1 { background-position:0px -122px; }
+    .grade-icon-2 { background-position:-20px -122px; }
+    .grade-icon-3 { background-position:-40px -122px; }
+    .grade-icon-4 { background-position:-60px -122px; }
+    .grade-icon-5 { background-position:-100px -122px; }
+  </style>
 </head>
 <body>
+  <button class="learn-exit-btn" onclick="window.location.href='/'" title="Thoát">
+    <img src="/img/exit.png" style="width:36px;height:36px;">
+  </button>
   <div id="app">
     <!-- MENU -->
     <div id="menu-screen" class="screen active">
       <div class="learn-header">
-        <a href="/" class="back-link">← Về trang chủ</a>
-        <h1>📚 Góc Học Tập</h1>
+        <div class="mascot-row">
+          <span class="mascot-icon"></span>
+          <span class="mascot-icon"></span>
+        </div>
+        <h1>Góc Học Tập</h1>
         <p id="learn-subtitle">Toán lớp 2 - Học qua hình ảnh!</p>
       </div>
       <div class="grade-tabs" id="grade-tabs">
-        <button class="grade-tab" data-grade="0" onclick="switchGrade(0)">5 tuổi</button>
-        <button class="grade-tab" data-grade="1" onclick="switchGrade(1)">Lớp 1</button>
-        <button class="grade-tab active" data-grade="2" onclick="switchGrade(2)">Lớp 2</button>
-        <button class="grade-tab" data-grade="3" onclick="switchGrade(3)">Lớp 3</button>
-        <button class="grade-tab" data-grade="4" onclick="switchGrade(4)">Lớp 4</button>
-        <button class="grade-tab" data-grade="5" onclick="switchGrade(5)">Lớp 5</button>
+        <button class="grade-tab" data-grade="0" onclick="switchGrade(0)"><span class="grade-icon grade-icon-0"></span> 5 tuổi</button>
+        <button class="grade-tab" data-grade="1" onclick="switchGrade(1)"><span class="grade-icon grade-icon-1"></span> Lớp 1</button>
+        <button class="grade-tab active" data-grade="2" onclick="switchGrade(2)"><span class="grade-icon grade-icon-2"></span> Lớp 2</button>
+        <button class="grade-tab" data-grade="3" onclick="switchGrade(3)"><span class="grade-icon grade-icon-3"></span> Lớp 3</button>
+        <button class="grade-tab" data-grade="4" onclick="switchGrade(4)"><span class="grade-icon grade-icon-4"></span> Lớp 4</button>
+        <button class="grade-tab" data-grade="5" onclick="switchGrade(5)"><span class="grade-icon grade-icon-5"></span> Lớp 5</button>
       </div>
       <div class="topics-grid" id="topics-grid">
         <!-- Filled by JS based on grade -->
@@ -52,7 +74,7 @@
     <div id="clock-play-screen" class="screen">
       <div class="lesson-header">
         <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
-        <span class="lesson-title">👆 Kéo Kim Đồng Hồ</span>
+        <span class="lesson-title"> Kéo Kim Đồng Hồ</span>
         <span></span>
       </div>
       <div class="clock-play-body">
@@ -65,37 +87,131 @@
           <div class="clock-display" id="clock-time-display">12:00</div>
         </div>
         <div class="clock-play-controls">
-          <button class="cp-btn" id="btn-check-time">✅ Kiểm tra</button>
-          <button class="cp-btn cp-btn-next" id="btn-new-challenge">🎲 Câu mới</button>
+          <button class="cp-btn" id="btn-check-time"> Kiểm tra</button>
+          <button class="cp-btn cp-btn-next" id="btn-new-challenge"> Câu mới</button>
         </div>
         <div class="clock-play-score">
-          <span>✅ Đúng: <strong id="cp-correct">0</strong></span>
-          <span>❌ Sai: <strong id="cp-wrong">0</strong></span>
+          <span> Đúng: <strong id="cp-correct">0</strong></span>
+          <span> Sai: <strong id="cp-wrong">0</strong></span>
         </div>
       </div>
     </div>
+
+    <!-- INTERACTIVE COUNTING LESSON (Grade 0) -->
+    <div id="count0-interactive-screen" class="screen">
+      <div class="lc-header">
+        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <div class="lc-progress-wrap"><div class="lc-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#6b4fa0;"> Đếm 1-5</span>
+      </div>
+      <div class="lc-body">
+        <!-- Filled dynamically by lesson-count.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE COMPARE LESSON (Grade 0) -->
+    <div id="compare0-interactive-screen" class="screen">
+      <div class="lcp-header">
+        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <div class="lcp-progress-wrap"><div class="lcp-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#2e7d32;">Nhiều - Ít</span>
+      </div>
+      <div class="lcp-body">
+        <!-- Filled dynamically by lesson-compare.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE SIZE LESSON (Grade 0) -->
+    <div id="size0-interactive-screen" class="screen">
+      <div class="lsz-header">
+        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <div class="lsz-progress-wrap"><div class="lsz-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#e65100;">To - Nhỏ</span>
+      </div>
+      <div class="lsz-body">
+        <!-- Filled dynamically by lesson-size.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE COLORS LESSON (Grade 0) -->
+    <div id="colors0-interactive-screen" class="screen">
+      <div class="lcl-header">
+        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <div class="lcl-progress-wrap"><div class="lcl-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#ad1457;">Màu Sắc</span>
+      </div>
+      <div class="lcl-body">
+        <!-- Filled dynamically by lesson-colors.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE SHAPES LESSON (Grade 0) -->
+    <div id="shapes0-interactive-screen" class="screen">
+      <div class="lsh-header">
+        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <div class="lsh-progress-wrap"><div class="lsh-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#1565c0;">Hình Dạng</span>
+      </div>
+      <div class="lsh-body">
+        <!-- Filled dynamically by lesson-shapes.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE ANIMALS LESSON (Grade 0) -->
+    <div id="animals0-interactive-screen" class="screen">
+      <div class="lan-header">
+        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <div class="lan-progress-wrap"><div class="lan-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#2e7d32;">Con Vật</span>
+      </div>
+      <div class="lan-body">
+        <!-- Filled dynamically by lesson-animals.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE COUNT1 LESSON (Grade 1) -->
+    <div id="count1-interactive-screen" class="screen">
+      <div class="lc1-header">
+        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <div class="lc1-progress-wrap"><div class="lc1-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#1565c0;">Đếm Đến 20</span>
+      </div>
+      <div class="lc1-body">
+        <!-- Filled dynamically by lesson-count1.js -->
+      </div>
+    </div>
   </div>
+
   <!-- AI Tutor Chatbot -->
   <button id="ai-tutor-btn" class="ai-feature ai-tutor-fab" onclick="toggleChatPanel()" style="display:none">
-    🤖 Hỏi Thầy AI
+     Hỏi Thầy AI
   </button>
 
   <div id="ai-chat-panel" class="ai-chat-panel hidden">
     <div class="ai-chat-header">
-      <span>🤖 Thầy AI</span>
+      <span> Thầy AI</span>
       <span id="ai-chat-remaining" class="ai-chat-remaining"></span>
-      <button class="ai-chat-close" onclick="toggleChatPanel()">✕</button>
+      <button class="ai-chat-close" onclick="toggleChatPanel()"></button>
     </div>
     <div class="ai-chat-messages" id="ai-chat-messages">
-      <div class="ai-msg bot">Chào con! 👋 Thầy AI đây. Hỏi bài gì thầy giúp nhé! 📚</div>
+      <div class="ai-msg bot">Chào con!  Thầy AI đây. Hỏi bài gì thầy giúp nhé! </div>
     </div>
     <div class="ai-chat-input-wrap" id="ai-chat-input-wrap">
       <input type="text" id="ai-chat-input" placeholder="Hỏi bài tại đây..." maxlength="200" onkeydown="if(event.key==='Enter')sendChatMessage()">
-      <button id="ai-chat-send" onclick="sendChatMessage()">📤</button>
+      <button id="ai-chat-send" onclick="sendChatMessage()"></button>
     </div>
   </div>
 
   <script src="learn.js"></script>
+  <script src="/learn/lesson-count.js"></script>
+  <script src="/learn/lesson-compare.js"></script>
+  <script src="/learn/lesson-size.js"></script>
+  <script src="/learn/lesson-colors.js"></script>
+  <script src="/learn/lesson-shapes.js"></script>
+  <script src="/learn/lesson-animals.js"></script>
+  <script src="/learn/lesson-count1.js"></script>
+  <script src="/number-sprites.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

@@ -13,7 +13,7 @@
       sessionStorage.setItem('adminAuth', btoa('admin:admin'));
       showAdmin();
     } else {
-      document.getElementById('login-error').textContent = '❌ Sai tên đăng nhập hoặc mật khẩu!';
+      document.getElementById('login-error').textContent = ' Sai tên đăng nhập hoặc mật khẩu!';
     }
   }
 
@@ -53,7 +53,7 @@ function showPopup(icon, text) {
 }
 
 // Custom confirm dialog (replaces window.confirm). Returns a Promise<boolean>.
-function showConfirm(text, { icon = '❓', okText = 'Đồng ý', cancelText = 'Hủy', danger = false } = {}) {
+function showConfirm(text, { icon = '', okText = 'Đồng ý', cancelText = 'Hủy', danger = false } = {}) {
   return new Promise((resolve) => {
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);';
@@ -77,7 +77,7 @@ function showConfirm(text, { icon = '❓', okText = 'Đồng ý', cancelText = '
 }
 
 // Custom prompt dialog (replaces window.prompt). Returns a Promise<string|null>.
-function showPrompt(text, { icon = '✏️', placeholder = '', okText = 'OK', cancelText = 'Hủy' } = {}) {
+function showPrompt(text, { icon = '', placeholder = '', okText = 'OK', cancelText = 'Hủy' } = {}) {
   return new Promise((resolve) => {
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);';
@@ -602,9 +602,9 @@ function displayPreview(questions) {
       <span class="preview-q">${q.question_text}</span>
       <span class="preview-ans">
         A:${q.option_a} B:${q.option_b} C:${q.option_c} D:${q.option_d}
-        ✓ ${q.correct_answer.toUpperCase()}
+         ${q.correct_answer.toUpperCase()}
       </span>
-      <button class="btn-remove" onclick="removePreview(${i})">✕</button>
+      <button class="btn-remove" onclick="removePreview(${i})"></button>
     </div>
   `).join('');
 }
@@ -623,11 +623,11 @@ document.getElementById('btn-save-generated').addEventListener('click', async ()
       body: JSON.stringify({ questions: generatedQuestions }),
     });
     const data = await res.json();
-    showPopup('✅', `Đã lưu ${data.inserted} câu hỏi!`);
+    showPopup('', `Đã lưu ${data.inserted} câu hỏi!`);
     generatedQuestions = [];
     document.getElementById('gen-preview').classList.add('hidden');
   } catch (e) {
-    showPopup('❌', 'Lỗi: ' + e.message);
+    showPopup('', 'Lỗi: ' + e.message);
   }
 });
 
@@ -648,11 +648,11 @@ document.getElementById('manual-form').addEventListener('submit', async (e) => {
       body: JSON.stringify(data),
     });
     if (res.ok) {
-      showMessage('manual-message', '✅ Đã lưu câu hỏi!', 'success');
+      showMessage('manual-message', ' Đã lưu câu hỏi!', 'success');
       form.reset();
     }
   } catch (e) {
-    showMessage('manual-message', '❌ Lỗi: ' + e.message, 'error');
+    showMessage('manual-message', ' Lỗi: ' + e.message, 'error');
   }
 });
 
@@ -684,17 +684,17 @@ async function loadQuestionsList() {
       questions.map(q => `
         <div class="q-item">
           <div class="q-meta">
-            <span class="badge badge-${q.subject}">${q.subject === 'math' ? '🔢' : '📖'}</span>
+            <span class="badge badge-${q.subject}">${q.subject === 'math' ? '' : ''}</span>
             <span class="badge badge-${q.difficulty}">${q.difficulty}</span>
             <span class="badge badge-grade">${q.grade === 0 ? '5 tuổi' : 'Lớp ' + (q.grade ?? 2)}</span>
-            ${q.source === 'ai' ? '<span class="badge badge-ai">🤖 AI</span>' : ''}
+            ${q.source === 'ai' ? '<span class="badge badge-ai"> AI</span>' : ''}
           </div>
           <div class="q-text">${q.question_text}</div>
           <div class="q-options">
             A:${q.option_a} | B:${q.option_b} | C:${q.option_c} | D:${q.option_d}
-            <strong>✓${q.correct_answer.toUpperCase()}</strong>
+            <strong>${q.correct_answer.toUpperCase()}</strong>
           </div>
-          <button class="btn-delete" onclick="deleteQuestion(${q.id})">🗑️</button>
+          <button class="btn-delete" onclick="deleteQuestion(${q.id})"></button>
         </div>
       `).join('');
   } catch (e) {
@@ -705,7 +705,7 @@ async function loadQuestionsList() {
 document.getElementById('btn-filter').addEventListener('click', loadQuestionsList);
 
 async function deleteQuestion(id) {
-  if (!await showConfirm('Xóa câu hỏi này?', { icon: '🗑️', okText: 'Xóa', danger: true })) return;
+  if (!await showConfirm('Xóa câu hỏi này?', { icon: '', okText: 'Xóa', danger: true })) return;
   await adminFetch(adminUrl('questions', {id}), { method: 'DELETE' });
   loadQuestionsList();
 }
@@ -745,11 +745,11 @@ async function loadStats() {
       </div>
 
       <div class="stats-section">
-        <h3>📊 Phân bổ câu hỏi</h3>
+        <h3> Phân bổ câu hỏi</h3>
         <div class="category-grid">
           ${bySubject.map(c => `
             <div class="cat-item">
-              <span>${c.subject === 'math' ? '🔢' : '📖'} ${c.difficulty}</span>
+              <span>${c.subject === 'math' ? '' : ''} ${c.difficulty}</span>
               <strong>${c.count}</strong>
             </div>
           `).join('')}
@@ -758,11 +758,11 @@ async function loadStats() {
 
       ${hardestQuestions.length > 0 ? `
       <div class="stats-section">
-        <h3>🔥 Câu hỏi khó nhất (hay sai nhất)</h3>
+        <h3> Câu hỏi khó nhất (hay sai nhất)</h3>
         <div class="hard-questions">
           ${hardestQuestions.map(q => `
             <div class="hard-q-item">
-              <span class="badge badge-${q.subject}">${q.subject === 'math' ? '🔢' : '📖'}</span>
+              <span class="badge badge-${q.subject}">${q.subject === 'math' ? '' : ''}</span>
               <span class="hard-q-text">${q.question_text}</span>
               <span class="error-rate">${q.error_rate}% sai (${q.wrong}/${q.attempts})</span>
             </div>
@@ -771,16 +771,16 @@ async function loadStats() {
       </div>` : ''}
 
       <div class="stats-section">
-        <h3>👤 Người chơi</h3>
+        <h3> Người chơi</h3>
         <div class="players-list">
           ${playerList.length === 0 ? '<p>Chưa có người chơi nào</p>' : playerList.map(p => `
             <div class="player-card" onclick="showPlayerDetail(${p.id})">
               <div class="player-name">${p.name}</div>
               <div class="player-stats-mini">
-                <span>🎮 ${p.total_games || 0} lượt</span>
+                <span> ${p.total_games || 0} lượt</span>
                 <span>⭐ ${p.total_stars_earned || 0}</span>
-                <span>✓ ${p.total_answered ? Math.round(100 * p.total_correct / p.total_answered) : 0}%</span>
-                <span>📅 ${p.last_played ? new Date(p.last_played).toLocaleDateString('vi') : 'Chưa chơi'}</span>
+                <span> ${p.total_answered ? Math.round(100 * p.total_correct / p.total_answered) : 0}%</span>
+                <span> ${p.last_played ? new Date(p.last_played).toLocaleDateString('vi') : 'Chưa chơi'}</span>
               </div>
             </div>
           `).join('')}
@@ -815,16 +815,16 @@ async function showPlayerDetail(playerId) {
 
     modal.innerHTML = `
       <div class="modal-content">
-        <button class="modal-close" onclick="document.getElementById('player-detail-modal').classList.add('hidden')">✕</button>
-        <h2>👤 ${player.name}</h2>
+        <button class="modal-close" onclick="document.getElementById('player-detail-modal').classList.add('hidden')"></button>
+        <h2> ${player.name}</h2>
         <p>Tham gia: ${new Date(player.created_at).toLocaleDateString('vi')}</p>
 
         <div class="detail-section">
-          <h3>📈 Tiến trình theo môn</h3>
+          <h3> Tiến trình theo môn</h3>
           <div class="accuracy-grid">
             ${byCategory.map(c => `
               <div class="accuracy-item ${c.accuracy >= 80 ? 'good' : c.accuracy >= 50 ? 'ok' : 'weak'}">
-                <div>${c.subject === 'math' ? '🔢' : '📖'} ${c.difficulty}</div>
+                <div>${c.subject === 'math' ? '' : ''} ${c.difficulty}</div>
                 <div class="accuracy-bar">
                   <div class="accuracy-fill" style="width:${c.accuracy}%"></div>
                 </div>
@@ -835,12 +835,12 @@ async function showPlayerDetail(playerId) {
         </div>
 
         <div class="detail-section">
-          <h3>⚠️ Dạng hay sai / nhầm lẫn</h3>
+          <h3> Dạng hay sai / nhầm lẫn</h3>
           ${missed.length === 0 ? '<p>Chưa có dữ liệu</p>' : `
           <div class="missed-list">
             ${missed.slice(0, 10).map(q => `
               <div class="missed-item">
-                <span class="badge badge-${q.subject}">${q.subject === 'math' ? '🔢' : '📖'} ${q.difficulty}</span>
+                <span class="badge badge-${q.subject}">${q.subject === 'math' ? '' : ''} ${q.difficulty}</span>
                 <span class="missed-text">${q.question_text}</span>
                 <span class="missed-rate">Sai ${q.times_wrong}/${q.times_attempted} lần (${q.error_rate}%)</span>
               </div>
@@ -849,11 +849,11 @@ async function showPlayerDetail(playerId) {
         </div>
 
         <div class="detail-section">
-          <h3>📉 Xu hướng điểm số</h3>
+          <h3> Xu hướng điểm số</h3>
           <div class="progress-chart">
             ${progress.slice(0, 15).reverse().map(s => `
               <div class="progress-bar-item">
-                <div class="progress-label">${new Date(s.played_at).toLocaleDateString('vi')} ${s.subject === 'math' ? '🔢' : '📖'}</div>
+                <div class="progress-label">${new Date(s.played_at).toLocaleDateString('vi')} ${s.subject === 'math' ? '' : ''}</div>
                 <div class="progress-bar-track">
                   <div class="progress-bar-fill ${s.accuracy >= 80 ? 'good' : s.accuracy >= 50 ? 'ok' : 'weak'}" style="width:${s.accuracy}%"></div>
                 </div>
@@ -864,15 +864,15 @@ async function showPlayerDetail(playerId) {
         </div>
 
         <div class="detail-section">
-          <h3>🕐 Lịch sử chơi gần đây</h3>
+          <h3> Lịch sử chơi gần đây</h3>
           <div class="session-list">
             ${sessions.slice(0, 10).map(s => `
               <div class="session-item">
                 <span>${new Date(s.played_at).toLocaleString('vi')}</span>
-                <span>${s.subject === 'math' ? '🔢 Toán' : '📖 TV'} - ${s.difficulty}</span>
-                <span>✓${s.correct_answers}/${s.total_questions}</span>
-                <span>⭐${s.stars_earned} 🔥${s.combo_max}</span>
-                <span>💰${s.score}</span>
+                <span>${s.subject === 'math' ? ' Toán' : ' TV'} - ${s.difficulty}</span>
+                <span>${s.correct_answers}/${s.total_questions}</span>
+                <span>⭐${s.stars_earned} ${s.combo_max}</span>
+                <span>${s.score}</span>
               </div>
             `).join('') || '<p>Chưa có lịch sử</p>'}
           </div>
@@ -913,14 +913,14 @@ async function loadPlayers() {
           return `
           <div class="table-row">
             <span class="player-name-cell">${p.name}</span>
-            <span>🎮 ${p.total_games || 0}</span>
+            <span> ${p.total_games || 0}</span>
             <span>⭐ ${p.total_stars_earned || 0}</span>
             <span class="acc-${accClass}">${accuracy}%</span>
-            <span>🗺️ ${p.adventure_level || 1}</span>
+            <span> ${p.adventure_level || 1}</span>
             <span>${p.last_played ? new Date(p.last_played).toLocaleDateString('vi') : '-'}</span>
             <span>
-              <button class="btn-detail" onclick="showPlayerDetail(${p.id})">📊 Chi tiết</button>
-              <button class="btn-delete" onclick="deletePlayer(${p.id}, '${p.name.replace(/'/g, "\\'")}')">🗑️</button>
+              <button class="btn-detail" onclick="showPlayerDetail(${p.id})"> Chi tiết</button>
+              <button class="btn-delete" onclick="deletePlayer(${p.id}, '${p.name.replace(/'/g, "\\'")}')"></button>
             </span>
           </div>`;
         }).join('')}
@@ -932,19 +932,19 @@ async function loadPlayers() {
 }
 
 async function deletePlayer(id, name) {
-  if (!await showConfirm(`Xóa người chơi "${name}" và tất cả dữ liệu liên quan?`, { icon: '🗑️', okText: 'Xóa', danger: true })) return;
+  if (!await showConfirm(`Xóa người chơi "${name}" và tất cả dữ liệu liên quan?`, { icon: '', okText: 'Xóa', danger: true })) return;
   try {
     const res = await adminFetch(adminUrl('players', { id, action: 'delete' }), { method: 'DELETE' });
     if (res.ok) {
-      showPopup('✅', 'Đã xóa người chơi!');
+      showPopup('', 'Đã xóa người chơi!');
       loadPlayers();
     } else {
       let msg = 'Lỗi xóa người chơi!';
       try { const d = await res.json(); if (d.error) msg = d.error; } catch {}
-      showPopup('❌', msg);
+      showPopup('', msg);
     }
   } catch (e) {
-    showPopup('❌', 'Lỗi: ' + e.message);
+    showPopup('', 'Lỗi: ' + e.message);
   }
 }
 
@@ -964,12 +964,12 @@ async function loadParents() {
       <div class="parent-item" id="parent-row-${p.id}">
         <div class="parent-main">
           <div class="parent-info">
-            <strong>👨‍👩‍👧 ${escapeHtml(p.display_name || p.username)}</strong>
-            <span class="parent-meta">@${escapeHtml(p.username)} • 🧒 ${p.children_count} con • ${p.created_at ? new Date(p.created_at).toLocaleDateString('vi') : ''}</span>
+            <strong> ${escapeHtml(p.display_name || p.username)}</strong>
+            <span class="parent-meta">@${escapeHtml(p.username)} •  ${p.children_count} con • ${p.created_at ? new Date(p.created_at).toLocaleDateString('vi') : ''}</span>
           </div>
           <div class="parent-actions">
-            <button class="btn-sm" onclick="toggleParentChildren(${p.id})">👁️ Xem con</button>
-            <button class="btn-sm btn-sm-danger" onclick="deleteParent(${p.id}, '${escapeAttr(p.display_name || p.username)}')">🗑️</button>
+            <button class="btn-sm" onclick="toggleParentChildren(${p.id})"> Xem con</button>
+            <button class="btn-sm btn-sm-danger" onclick="deleteParent(${p.id}, '${escapeAttr(p.display_name || p.username)}')"></button>
           </div>
         </div>
         <div class="parent-children hidden" id="parent-children-${p.id}"></div>
@@ -993,7 +993,7 @@ async function toggleParentChildren(parentId) {
     if (list.length === 0) { box.innerHTML = '<p style="padding:8px;color:#888;">Chưa liên kết con nào.</p>'; return; }
     box.innerHTML = list.map(c => `
       <div class="child-link-row">
-        <span>🧒 <strong>${escapeHtml(c.name)}</strong> • ${c.grade === 0 ? '5 tuổi' : 'Lớp ' + (c.grade ?? 2)} • ⭐ ${c.total_stars || 0} • 💎 ${c.total_diamonds || 0}</span>
+        <span> <strong>${escapeHtml(c.name)}</strong> • ${c.grade === 0 ? '5 tuổi' : 'Lớp ' + (c.grade ?? 2)} • ⭐ ${c.total_stars || 0} •  ${c.total_diamonds || 0}</span>
         <button class="btn-sm btn-sm-danger" onclick="unlinkParentChild(${parentId}, ${c.id})">Gỡ liên kết</button>
       </div>
     `).join('');
@@ -1003,27 +1003,27 @@ async function toggleParentChildren(parentId) {
 }
 
 async function unlinkParentChild(parentId, playerId) {
-  if (!await showConfirm('Gỡ liên kết con này khỏi phụ huynh?', { icon: '🔗', okText: 'Gỡ', danger: true })) return;
+  if (!await showConfirm('Gỡ liên kết con này khỏi phụ huynh?', { icon: '', okText: 'Gỡ', danger: true })) return;
   try {
     const res = await adminFetch(adminUrl('parents', { id: parentId, action: 'unlink', player_id: playerId }), { method: 'DELETE' });
     if (res.ok) {
-      showPopup('✅', 'Đã gỡ liên kết!');
+      showPopup('', 'Đã gỡ liên kết!');
       // Refresh the open children list and the parent row counts.
       const box = document.getElementById(`parent-children-${parentId}`);
       if (box) box.classList.add('hidden');
       toggleParentChildren(parentId);
       loadParents();
-    } else showPopup('❌', 'Lỗi gỡ liên kết');
-  } catch (e) { showPopup('❌', 'Lỗi: ' + e.message); }
+    } else showPopup('', 'Lỗi gỡ liên kết');
+  } catch (e) { showPopup('', 'Lỗi: ' + e.message); }
 }
 
 async function deleteParent(id, name) {
-  if (!await showConfirm(`Xóa tài khoản phụ huynh "${name}"? Các liên kết với con cũng bị gỡ.`, { icon: '🗑️', okText: 'Xóa', danger: true })) return;
+  if (!await showConfirm(`Xóa tài khoản phụ huynh "${name}"? Các liên kết với con cũng bị gỡ.`, { icon: '', okText: 'Xóa', danger: true })) return;
   try {
     const res = await adminFetch(adminUrl('parents', { id }), { method: 'DELETE' });
-    if (res.ok) { showPopup('✅', 'Đã xóa phụ huynh!'); loadParents(); }
-    else showPopup('❌', 'Lỗi xóa phụ huynh');
-  } catch (e) { showPopup('❌', 'Lỗi: ' + e.message); }
+    if (res.ok) { showPopup('', 'Đã xóa phụ huynh!'); loadParents(); }
+    else showPopup('', 'Lỗi xóa phụ huynh');
+  } catch (e) { showPopup('', 'Lỗi: ' + e.message); }
 }
 
 function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -1033,7 +1033,7 @@ function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
 // === EXAM ADMIN ===
 document.getElementById('btn-create-exam').addEventListener('click', async () => {
   const title = document.getElementById('ea-title').value.trim();
-  if (!title) { showPopup('⚠️', 'Nhập tên bài thi!'); return; }
+  if (!title) { showPopup('', 'Nhập tên bài thi!'); return; }
 
   const data = {
     title,
@@ -1050,10 +1050,10 @@ document.getElementById('btn-create-exam').addEventListener('click', async () =>
       body: JSON.stringify(data),
     });
     const result = await res.json();
-    showPopup('✅', `Đã tạo bài thi "${title}" với ${result.question_ids.length} câu hỏi!`);
+    showPopup('', `Đã tạo bài thi "${title}" với ${result.question_ids.length} câu hỏi!`);
     document.getElementById('ea-title').value = '';
     loadExamsList();
-  } catch (e) { showPopup('❌', 'Lỗi: ' + e.message); }
+  } catch (e) { showPopup('', 'Lỗi: ' + e.message); }
 });
 
 async function loadExamsList() {
@@ -1068,15 +1068,15 @@ async function loadExamsList() {
         <div class="ea-item-info">
           <strong>${e.title}</strong>
           <span class="ea-meta">
-            ${e.subject === 'math' ? '🔢' : e.subject === 'vietnamese' ? '📖' : '📚'} ${e.difficulty} • ${e.total_questions} câu • ${e.time_limit_minutes} phút
-            • ${e.is_active ? '🟢 Đang mở' : '🔴 Đã đóng'}
+            ${e.subject === 'math' ? '' : e.subject === 'vietnamese' ? '' : ''} ${e.difficulty} • ${e.total_questions} câu • ${e.time_limit_minutes} phút
+            • ${e.is_active ? ' Đang mở' : ' Đã đóng'}
             • ${e.times_taken || 0} lượt thi
           </span>
         </div>
         <div class="ea-item-actions">
-          <button onclick="viewExamResults(${e.id})" class="btn-sm">📊 Kết quả</button>
-          <button onclick="toggleExam(${e.id}, ${e.is_active ? 0 : 1})" class="btn-sm">${e.is_active ? '🔒 Đóng' : '🔓 Mở'}</button>
-          <button onclick="deleteExam(${e.id})" class="btn-sm btn-sm-danger">🗑️</button>
+          <button onclick="viewExamResults(${e.id})" class="btn-sm"> Kết quả</button>
+          <button onclick="toggleExam(${e.id}, ${e.is_active ? 0 : 1})" class="btn-sm">${e.is_active ? ' Đóng' : ' Mở'}</button>
+          <button onclick="deleteExam(${e.id})" class="btn-sm btn-sm-danger"></button>
         </div>
       </div>
     `).join('');
@@ -1094,8 +1094,8 @@ async function viewExamResults(examId) {
 
     modal.innerHTML = `
       <div class="modal-content">
-        <button class="modal-close" onclick="document.getElementById('exam-results-modal').classList.add('hidden')">✕</button>
-        <h3>📊 Kết quả bài thi</h3>
+        <button class="modal-close" onclick="document.getElementById('exam-results-modal').classList.add('hidden')"></button>
+        <h3> Kết quả bài thi</h3>
         ${results.length === 0 ? '<p>Chưa có ai thi</p>' : `
         <div class="exam-results-list">
           ${results.map(r => `
@@ -1133,7 +1133,7 @@ async function toggleExam(id, active) {
 }
 
 async function deleteExam(id) {
-  if (!await showConfirm('Xóa bài thi này?', { icon: '🗑️', okText: 'Xóa', danger: true })) return;
+  if (!await showConfirm('Xóa bài thi này?', { icon: '', okText: 'Xóa', danger: true })) return;
   await adminFetch(adminUrl('exams', {id}), { method: 'DELETE' });
   loadExamsList();
 }
@@ -1169,23 +1169,23 @@ async function loadShopItems() {
       return;
     }
 
-    const catLabels = { avatar: '🧑 Avatar', frame: '🖼️ Khung', sticker: '✨ Sticker', powerup: '⚡ Power-up', voucher: '🎁 Voucher' };
-    const levelLabels = { bronze: '🥉', silver: '🥈', gold: '🥇', diamond: '💎', master: '👑' };
+    const catLabels = { avatar: ' Avatar', frame: ' Khung', sticker: ' Sticker', powerup: ' Power-up', voucher: ' Voucher' };
+    const levelLabels = { bronze: '', silver: '', gold: '', diamond: '', master: '' };
 
     list.innerHTML = items.map(item => `
       <div class="ea-item">
         <div class="ea-item-info">
-          <strong>${item.image_url || '📦'} ${item.name}</strong>
+          <strong>${item.image_url || ''} ${item.name}</strong>
           <span class="ea-meta">
-            ${catLabels[item.category] || item.category} • ${item.price_diamonds}💎 • ${levelLabels[item.min_level] || ''} ${item.min_level}
+            ${catLabels[item.category] || item.category} • ${item.price_diamonds} • ${levelLabels[item.min_level] || ''} ${item.min_level}
             ${item.max_per_week ? '• Max ' + item.max_per_week + '/tuần' : ''}
-            • ${item.is_active ? '🟢 Active' : '🔴 Ẩn'}
+            • ${item.is_active ? ' Active' : ' Ẩn'}
           </span>
         </div>
         <div class="ea-item-actions">
-          <button onclick="editShopItem(${item.id})" class="btn-sm">✏️ Sửa</button>
-          <button onclick="toggleShopItem(${item.id}, ${item.is_active ? 0 : 1})" class="btn-sm">${item.is_active ? '🙈 Ẩn' : '👁️ Hiện'}</button>
-          <button onclick="deleteShopItem(${item.id})" class="btn-sm btn-sm-danger">🗑️</button>
+          <button onclick="editShopItem(${item.id})" class="btn-sm"> Sửa</button>
+          <button onclick="toggleShopItem(${item.id}, ${item.is_active ? 0 : 1})" class="btn-sm">${item.is_active ? ' Ẩn' : ' Hiện'}</button>
+          <button onclick="deleteShopItem(${item.id})" class="btn-sm btn-sm-danger"></button>
         </div>
       </div>
     `).join('');
@@ -1226,8 +1226,8 @@ async function saveShopItem() {
   const maxWeekVal = document.getElementById('shop-max-week').value;
   const max_per_week = maxWeekVal ? parseInt(maxWeekVal) : null;
 
-  if (!name) { showPopup('⚠️', 'Nhập tên vật phẩm!'); return; }
-  if (!price_diamonds || price_diamonds < 1) { showPopup('⚠️', 'Giá phải >= 1!'); return; }
+  if (!name) { showPopup('', 'Nhập tên vật phẩm!'); return; }
+  if (!price_diamonds || price_diamonds < 1) { showPopup('', 'Giá phải >= 1!'); return; }
 
   const body = { name, description, category, price_diamonds, min_level, image_url, max_per_week };
 
@@ -1249,14 +1249,14 @@ async function saveShopItem() {
     }
     const result = await res.json();
     if (result.ok || result.id) {
-      showPopup('✅', editId ? 'Đã cập nhật vật phẩm!' : 'Đã tạo vật phẩm mới!');
+      showPopup('', editId ? 'Đã cập nhật vật phẩm!' : 'Đã tạo vật phẩm mới!');
       cancelShopForm();
       loadShopItems();
     } else {
-      showPopup('❌', result.error || 'Lỗi lưu vật phẩm');
+      showPopup('', result.error || 'Lỗi lưu vật phẩm');
     }
   } catch (e) {
-    showPopup('❌', 'Lỗi: ' + e.message);
+    showPopup('', 'Lỗi: ' + e.message);
   }
 }
 
@@ -1277,7 +1277,7 @@ async function editShopItem(id) {
     document.getElementById('shop-image').value = item.image_url || '';
     document.getElementById('shop-max-week').value = item.max_per_week || '';
   } catch (e) {
-    showPopup('❌', 'Lỗi: ' + e.message);
+    showPopup('', 'Lỗi: ' + e.message);
   }
 }
 
@@ -1292,26 +1292,26 @@ async function toggleShopItem(id, newActive) {
     if (result.ok) {
       loadShopItems();
     } else {
-      showPopup('❌', result.error || 'Lỗi');
+      showPopup('', result.error || 'Lỗi');
     }
   } catch (e) {
-    showPopup('❌', 'Lỗi: ' + e.message);
+    showPopup('', 'Lỗi: ' + e.message);
   }
 }
 
 async function deleteShopItem(id) {
-  if (!await showConfirm('Xóa vật phẩm này?', { icon: '🗑️', okText: 'Xóa', danger: true })) return;
+  if (!await showConfirm('Xóa vật phẩm này?', { icon: '', okText: 'Xóa', danger: true })) return;
   try {
     const res = await adminFetch(`/api/admin/shop/items/${id}`, { method: 'DELETE' });
     const result = await res.json();
     if (result.ok) {
-      showPopup('✅', 'Đã xóa!');
+      showPopup('', 'Đã xóa!');
       loadShopItems();
     } else {
-      showPopup('❌', result.error || 'Lỗi xóa');
+      showPopup('', result.error || 'Lỗi xóa');
     }
   } catch (e) {
-    showPopup('❌', 'Lỗi: ' + e.message);
+    showPopup('', 'Lỗi: ' + e.message);
   }
 }
 
@@ -1324,21 +1324,21 @@ async function loadVouchers() {
     const vouchers = data.vouchers || [];
 
     if (vouchers.length === 0) {
-      list.innerHTML = '<p>✅ Không có phiếu thưởng nào đang chờ duyệt.</p>';
+      list.innerHTML = '<p> Không có phiếu thưởng nào đang chờ duyệt.</p>';
       return;
     }
 
     list.innerHTML = vouchers.map(v => `
       <div class="ea-item">
         <div class="ea-item-info">
-          <strong>🎫 ${v.item_name}</strong> — ${v.player_name}
+          <strong> ${v.item_name}</strong> — ${v.player_name}
           <span class="ea-meta">
-            ${v.category} • ${v.price_diamonds}💎 • Yêu cầu lúc: ${new Date(v.requested_at).toLocaleString('vi')}
+            ${v.category} • ${v.price_diamonds} • Yêu cầu lúc: ${new Date(v.requested_at).toLocaleString('vi')}
           </span>
         </div>
         <div class="ea-item-actions">
-          <button onclick="resolveVoucher(${v.id}, 'approved')" class="btn-sm" style="background:#c8e6c9;">✅ Duyệt</button>
-          <button onclick="resolveVoucher(${v.id}, 'rejected')" class="btn-sm btn-sm-danger">❌ Từ chối</button>
+          <button onclick="resolveVoucher(${v.id}, 'approved')" class="btn-sm" style="background:#c8e6c9;"> Duyệt</button>
+          <button onclick="resolveVoucher(${v.id}, 'rejected')" class="btn-sm btn-sm-danger"> Từ chối</button>
         </div>
       </div>
     `).join('');
@@ -1349,10 +1349,10 @@ async function loadVouchers() {
 
 async function resolveVoucher(id, status) {
   if (status === 'rejected') {
-    const confirmed = await showConfirm('Từ chối phiếu thưởng này?', { icon: '❌', okText: 'Từ chối', danger: true });
+    const confirmed = await showConfirm('Từ chối phiếu thưởng này?', { icon: '', okText: 'Từ chối', danger: true });
     if (!confirmed) return;
   }
-  const admin_note = status === 'rejected' ? (await showPrompt('Lý do từ chối (tùy chọn):', { icon: '📝', placeholder: 'Nhập lý do...' })) : '';
+  const admin_note = status === 'rejected' ? (await showPrompt('Lý do từ chối (tùy chọn):', { icon: '', placeholder: 'Nhập lý do...' })) : '';
   // Cancelling the reason prompt aborts the rejection.
   if (status === 'rejected' && admin_note === null) return;
   try {
@@ -1363,13 +1363,13 @@ async function resolveVoucher(id, status) {
     });
     const result = await res.json();
     if (result.ok) {
-      showPopup('✅', status === 'approved' ? 'Đã duyệt phiếu thưởng!' : 'Đã từ chối phiếu thưởng.');
+      showPopup('', status === 'approved' ? 'Đã duyệt phiếu thưởng!' : 'Đã từ chối phiếu thưởng.');
       loadVouchers();
     } else {
-      showPopup('❌', result.error || 'Lỗi');
+      showPopup('', result.error || 'Lỗi');
     }
   } catch (e) {
-    showPopup('❌', 'Lỗi: ' + e.message);
+    showPopup('', 'Lỗi: ' + e.message);
   }
 }
 
@@ -1382,14 +1382,14 @@ async function loadAIGeneratorStatus() {
     const res = await adminFetch('/api/ai/status');
     const data = await res.json();
     if (data.enabled) {
-      statusEl.innerHTML = `<span class="ai-status-on">🟢 AI đang hoạt động — ${data.provider} (${data.model})</span>`;
+      statusEl.innerHTML = `<span class="ai-status-on"> AI đang hoạt động — ${data.provider} (${data.model})</span>`;
       document.getElementById('btn-ai-generate').disabled = false;
     } else {
-      statusEl.innerHTML = `<span class="ai-status-off">🔴 AI chưa được kích hoạt (thiếu API key)</span>` + aiSetupHelpHtml();
+      statusEl.innerHTML = `<span class="ai-status-off"> AI chưa được kích hoạt (thiếu API key)</span>` + aiSetupHelpHtml();
       document.getElementById('btn-ai-generate').disabled = true;
     }
   } catch (e) {
-    statusEl.innerHTML = `<span class="ai-status-off">🔴 Không thể kết nối AI service</span>` + aiSetupHelpHtml();
+    statusEl.innerHTML = `<span class="ai-status-off"> Không thể kết nối AI service</span>` + aiSetupHelpHtml();
     document.getElementById('btn-ai-generate').disabled = true;
   }
 }
@@ -1400,28 +1400,28 @@ async function loadAIGeneratorStatus() {
 function aiSetupHelpHtml() {
   return `
     <div class="ai-setup-help">
-      <h4>🔑 Cách thêm token AI</h4>
+      <h4> Cách thêm token AI</h4>
       <p>API key được đọc từ <b>biến môi trường</b>. Vì lý do bảo mật, key không nhập trực tiếp trên web mà phải đặt ở server.</p>
       <p><b>Trên Vercel:</b> Project → <b>Settings</b> → <b>Environment Variables</b> → thêm các biến dưới đây → <b>Redeploy</b>.</p>
       <p><b>Chạy máy (local):</b> thêm vào file <code>.env</code> rồi khởi động lại server.</p>
 
       <div class="ai-setup-cols">
         <div class="ai-setup-col">
-          <div class="ai-setup-title">🤖 ChatGPT (OpenAI)</div>
+          <div class="ai-setup-title"> ChatGPT (OpenAI)</div>
           <pre>AI_PROVIDER=openai
 OPENAI_API_KEY=sk-...
 AI_MODEL=gpt-4o-mini   (tùy chọn)</pre>
           <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">Lấy key OpenAI →</a>
         </div>
         <div class="ai-setup-col">
-          <div class="ai-setup-title">🐳 Deepseek</div>
+          <div class="ai-setup-title"> Deepseek</div>
           <pre>AI_PROVIDER=deepseek
 DEEPSEEK_API_KEY=sk-...
 AI_MODEL=deepseek-chat   (tùy chọn)</pre>
           <a href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener">Lấy key Deepseek →</a>
         </div>
       </div>
-      <p class="ai-setup-note">Sau khi đặt biến và <b>redeploy</b>, quay lại tab này — trạng thái sẽ chuyển 🟢.</p>
+      <p class="ai-setup-note">Sau khi đặt biến và <b>redeploy</b>, quay lại tab này — trạng thái sẽ chuyển .</p>
     </div>`;
 }
 
@@ -1432,7 +1432,7 @@ document.getElementById('btn-ai-generate').addEventListener('click', async () =>
   const quantity = parseInt(document.getElementById('ai-gen-count').value);
 
   if (quantity < 1 || quantity > 20) {
-    showPopup('⚠️', 'Số lượng phải từ 1 đến 20!');
+    showPopup('', 'Số lượng phải từ 1 đến 20!');
     return;
   }
 
@@ -1448,7 +1448,7 @@ document.getElementById('btn-ai-generate').addEventListener('click', async () =>
     const data = await res.json();
 
     if (data.error) {
-      showPopup('❌', data.error);
+      showPopup('', data.error);
       return;
     }
 
@@ -1462,7 +1462,7 @@ document.getElementById('btn-ai-generate').addEventListener('click', async () =>
 
     displayAIPreview(questions);
   } catch (e) {
-    showPopup('❌', 'Lỗi kết nối: ' + e.message);
+    showPopup('', 'Lỗi kết nối: ' + e.message);
   } finally {
     document.getElementById('ai-gen-loading').classList.add('hidden');
   }
@@ -1481,10 +1481,10 @@ function displayAIPreview(questions) {
       <span class="preview-q">${q.question_text}</span>
       <span class="preview-ans">
         A:${q.option_a} B:${q.option_b} C:${q.option_c} D:${q.option_d}
-        ✓ ${q.correct_answer.toUpperCase()}
-        ${q.explanation ? '💡 ' + q.explanation : ''}
+         ${q.correct_answer.toUpperCase()}
+        ${q.explanation ? ' ' + q.explanation : ''}
       </span>
-      <button class="btn-remove" onclick="removeAIPreview(${i})">✕</button>
+      <button class="btn-remove" onclick="removeAIPreview(${i})"></button>
     </div>
   `).join('');
 }
@@ -1503,11 +1503,11 @@ document.getElementById('btn-save-ai-generated').addEventListener('click', async
       body: JSON.stringify({ questions: aiGeneratedQuestions }),
     });
     const data = await res.json();
-    showPopup('✅', `Đã lưu ${data.inserted} câu hỏi AI!`);
+    showPopup('', `Đã lưu ${data.inserted} câu hỏi AI!`);
     aiGeneratedQuestions = [];
     document.getElementById('ai-gen-preview').classList.add('hidden');
   } catch (e) {
-    showPopup('❌', 'Lỗi: ' + e.message);
+    showPopup('', 'Lỗi: ' + e.message);
   }
 });
 
@@ -1529,11 +1529,11 @@ async function loadAIStats() {
 
     section.innerHTML = `
       <div class="ai-stats-panel">
-        <h3>🤖 AI Usage</h3>
+        <h3> AI Usage</h3>
         <div class="ai-status-info">
           ${status.enabled
-            ? `<span class="ai-status-on">🟢 Đang hoạt động — ${status.provider} (${status.model})</span>`
-            : '<span class="ai-status-off">🔴 AI chưa kích hoạt</span>'}
+            ? `<span class="ai-status-on"> Đang hoạt động — ${status.provider} (${status.model})</span>`
+            : '<span class="ai-status-off"> AI chưa kích hoạt</span>'}
         </div>
         <div class="stats-overview" style="margin-top:12px;">
           <div class="stat-card" style="background:linear-gradient(135deg,#43a047,#66bb6a);">

@@ -57,6 +57,11 @@
         var note = helpers.el('button', 'option-btn qz-music-note', o.text);
         note.dataset.key = o.key;
         note.style.setProperty('--bounce-delay', (idx * 0.15) + 's');
+        var col = Math.floor(Math.random() * 4);
+        var sprn = document.createElement('span');
+        sprn.className = 'qz-music-sprite';
+        sprn.style.cssText = 'display:inline-block;width:60px;height:60px;background-position:' + (-col * 60) + 'px 0px';
+        note.insertBefore(sprn, note.firstChild);
         note.addEventListener('click', function () {
           if (done) return;
           done = true;

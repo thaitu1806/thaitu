@@ -1,0 +1,273 @@
+/* ===== Ocean Animated Background ===== */
+/* Sprite-sheet animated deep-sea background with 3D fish & octopus */
+
+.ocean-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    #1a6fb5 0%,
+    #2196c8 15%,
+    #36b8d6 35%,
+    #4dd9c0 55%,
+    #5eeadc 75%,
+    #7df3e8 100%
+  );
+}
+
+/* --- Sunbeams (caustics light rays) --- */
+.ocean-bg-beams {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ocean-bg-beams .sunbeam {
+  position: absolute;
+  top: -10%;
+  width: 4px;
+  height: 120%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 200, 0.25) 0%,
+    rgba(255, 255, 200, 0.08) 40%,
+    transparent 80%
+  );
+  transform-origin: top center;
+  animation: sunbeamSway 8s ease-in-out infinite;
+  opacity: 0.5;
+  border-radius: 2px;
+}
+.ocean-bg-beams .sunbeam:nth-child(1) { left: 15%; transform: rotate(-12deg); animation-delay: 0s; width: 5px; }
+.ocean-bg-beams .sunbeam:nth-child(2) { left: 35%; transform: rotate(-5deg); animation-delay: -2s; width: 3px; opacity: 0.35; }
+.ocean-bg-beams .sunbeam:nth-child(3) { left: 55%; transform: rotate(4deg); animation-delay: -4s; width: 4px; }
+.ocean-bg-beams .sunbeam:nth-child(4) { left: 75%; transform: rotate(10deg); animation-delay: -6s; width: 3px; opacity: 0.4; }
+.ocean-bg-beams .sunbeam:nth-child(5) { left: 90%; transform: rotate(15deg); animation-delay: -1s; width: 2px; opacity: 0.3; }
+
+@keyframes sunbeamSway {
+  0%, 100% { transform: rotate(var(--beam-rot, -5deg)) scaleX(1); opacity: 0.5; }
+  50% { transform: rotate(var(--beam-rot, -5deg)) scaleX(1.3); opacity: 0.3; }
+}
+
+/* --- Bubbles --- */
+.ocean-bg-bubbles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ocean-bg-bubbles .bubble {
+  position: absolute;
+  bottom: -20px;
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6), rgba(255,255,255,0.1));
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  animation: bubbleRise linear infinite;
+  opacity: 0.7;
+}
+.ocean-bg-bubbles .bubble:nth-child(1) { left: 10%; width: 8px; height: 8px; animation-duration: 12s; animation-delay: 0s; }
+.ocean-bg-bubbles .bubble:nth-child(2) { left: 25%; width: 6px; height: 6px; animation-duration: 14s; animation-delay: -3s; }
+.ocean-bg-bubbles .bubble:nth-child(3) { left: 45%; width: 10px; height: 10px; animation-duration: 10s; animation-delay: -6s; }
+.ocean-bg-bubbles .bubble:nth-child(4) { left: 65%; width: 5px; height: 5px; animation-duration: 16s; animation-delay: -2s; }
+.ocean-bg-bubbles .bubble:nth-child(5) { left: 80%; width: 7px; height: 7px; animation-duration: 13s; animation-delay: -8s; }
+.ocean-bg-bubbles .bubble:nth-child(6) { left: 55%; width: 4px; height: 4px; animation-duration: 18s; animation-delay: -5s; }
+
+@keyframes bubbleRise {
+  0% { transform: translateY(0) translateX(0); opacity: 0.7; }
+  25% { transform: translateY(-25vh) translateX(8px); }
+  50% { transform: translateY(-50vh) translateX(-5px); opacity: 0.5; }
+  75% { transform: translateY(-75vh) translateX(6px); }
+  100% { transform: translateY(-105vh) translateX(0); opacity: 0; }
+}
+
+/* --- Fish (Sprite Sheet: 800x200, 4 frames, each 200x200) --- */
+.ocean-bg-fish {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ocean-bg-fish .fish {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background-size: 400px 100px;  /* 4 frames × 100px display width */
+  background-repeat: no-repeat;
+  animation:
+    fishSprite 0.6s steps(4) infinite,
+    fishBob 3s ease-in-out infinite;
+  opacity: 0.9;
+}
+
+/* Fish sprites */
+.ocean-bg-fish .fish--clown { background-image: url('/img/fish-clown.png'); }
+.ocean-bg-fish .fish--blue  { background-image: url('/img/fish-blue.png'); }
+.ocean-bg-fish .fish--gold  { background-image: url('/img/fish-gold.png'); }
+
+/* Each fish wanders its own path */
+.ocean-bg-fish .fish:nth-child(1) {
+  width: 110px; height: 110px; background-size: 440px 110px;
+  animation: fishSprite1 0.6s steps(4) infinite, fishWander1 30s ease-in-out infinite, fishBob 3s ease-in-out infinite;
+}
+.ocean-bg-fish .fish:nth-child(2) {
+  animation: fishSprite 0.6s steps(4) infinite, fishWander2 35s ease-in-out infinite, fishBob 2.8s ease-in-out infinite;
+  transform: scaleX(-1);
+}
+.ocean-bg-fish .fish:nth-child(3) {
+  width: 90px; height: 90px; background-size: 360px 90px;
+  animation: fishSprite3 0.6s steps(4) infinite, fishWander3 28s ease-in-out infinite, fishBob 3.2s ease-in-out infinite;
+}
+.ocean-bg-fish .fish:nth-child(4) {
+  width: 80px; height: 80px; background-size: 320px 80px;
+  animation: fishSprite4 0.6s steps(4) infinite, fishWander4 32s ease-in-out infinite, fishBob 2.5s ease-in-out infinite;
+  transform: scaleX(-1);
+}
+
+@keyframes fishSprite {
+  from { background-position: 0 0; }
+  to   { background-position: -400px 0; }
+}
+@keyframes fishSprite1 {
+  from { background-position: 0 0; }
+  to   { background-position: -440px 0; }
+}
+@keyframes fishSprite3 {
+  from { background-position: 0 0; }
+  to   { background-position: -360px 0; }
+}
+@keyframes fishSprite4 {
+  from { background-position: 0 0; }
+  to   { background-position: -320px 0; }
+}
+
+/* Fish 1: top-left area wandering right */
+@keyframes fishWander1 {
+  0%   { top: 15%; left: -10%; }
+  25%  { top: 25%; left: 40%; }
+  50%  { top: 18%; left: 75%; }
+  75%  { top: 30%; left: 50%; }
+  100% { top: 15%; left: -10%; }
+}
+
+/* Fish 2: mid area wandering left */
+@keyframes fishWander2 {
+  0%   { top: 35%; left: 110%; }
+  25%  { top: 45%; left: 60%; }
+  50%  { top: 38%; left: 20%; }
+  75%  { top: 50%; left: 45%; }
+  100% { top: 35%; left: 110%; }
+}
+
+/* Fish 3: lower-mid wandering right */
+@keyframes fishWander3 {
+  0%   { top: 50%; left: -8%; }
+  20%  { top: 55%; left: 30%; }
+  45%  { top: 48%; left: 65%; }
+  70%  { top: 60%; left: 85%; }
+  100% { top: 50%; left: -8%; }
+}
+
+/* Fish 4: bottom area wandering left */
+@keyframes fishWander4 {
+  0%   { top: 65%; left: 105%; }
+  30%  { top: 70%; left: 55%; }
+  60%  { top: 62%; left: 15%; }
+  100% { top: 65%; left: 105%; }
+}
+
+@keyframes fishBob {
+  0%, 100% { margin-top: 0; }
+  50% { margin-top: -10px; }
+}
+
+/* --- Octopus (Sprite Sheet: 1200x200, 6 frames, each 200x200) --- */
+.ocean-bg .octopus {
+  position: absolute;
+  bottom: 10%;
+  width: 120px;
+  height: 120px;
+  background-image: url('/img/octopus-swim.png');
+  background-size: 720px 120px;  /* 1200x200 scaled to 720x120 (6 frames × 120px) */
+  background-repeat: no-repeat;
+  animation:
+    octopusSprite 0.8s steps(6) infinite,
+    octopusWander 25s ease-in-out infinite,
+    octopusBob 4s ease-in-out infinite;
+  opacity: 0.85;
+}
+
+@keyframes octopusSprite {
+  from { background-position: 0 0; }
+  to   { background-position: -720px 0; }
+}
+
+@keyframes octopusWander {
+  0%   { left: 10%; bottom: 10%; }
+  20%  { left: 60%; bottom: 20%; }
+  40%  { left: 80%; bottom: 35%; }
+  60%  { left: 40%; bottom: 25%; }
+  80%  { left: 20%; bottom: 15%; }
+  100% { left: 10%; bottom: 10%; }
+}
+
+@keyframes octopusBob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-12px) rotate(-4deg); }
+  75% { transform: translateY(6px) rotate(4deg); }
+}
+
+/* --- Seaweed (subtle bottom decoration) --- */
+.ocean-bg-seaweed {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ocean-bg-seaweed .seaweed {
+  position: absolute;
+  bottom: 0;
+  width: 8px;
+  height: 60px;
+  background: linear-gradient(to top, #1a5c3a, #27ae60);
+  border-radius: 4px 4px 0 0;
+  transform-origin: bottom center;
+  animation: seaweedSway 4s ease-in-out infinite;
+  opacity: 0.6;
+}
+.ocean-bg-seaweed .seaweed:nth-child(1) { left: 5%; height: 50px; animation-delay: 0s; }
+.ocean-bg-seaweed .seaweed:nth-child(2) { left: 12%; height: 70px; animation-delay: -1s; }
+.ocean-bg-seaweed .seaweed:nth-child(3) { left: 88%; height: 55px; animation-delay: -2s; }
+.ocean-bg-seaweed .seaweed:nth-child(4) { left: 93%; height: 65px; animation-delay: -0.5s; }
+
+@keyframes seaweedSway {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+/* --- Responsive / Mobile tweaks --- */
+@media (max-width: 600px) {
+  .ocean-bg-fish .fish { width: 70px; height: 70px; background-size: 280px 70px; }
+  .ocean-bg .octopus { width: 90px; height: 90px; background-size: 540px 90px; }
+}
+
+/* --- Reduced motion preference --- */
+@media (prefers-reduced-motion: reduce) {
+  .ocean-bg-fish .fish,
+  .ocean-bg-bubbles .bubble,
+  .ocean-bg-beams .sunbeam,
+  .ocean-bg .octopus,
+  .ocean-bg-seaweed .seaweed {
+    animation: none !important;
+  }
+  .ocean-bg-fish .fish,
+  .ocean-bg .octopus {
+    background-position: 0 0 !important;
+  }
+}

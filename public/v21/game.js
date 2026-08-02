@@ -111,7 +111,7 @@
     for (let i = 0; i < floorData.fires; i++) {
       const span = document.createElement('span');
       span.className = 'fire-emoji';
-      span.textContent = '🔥';
+      span.textContent = '<img src="/img/fire.png" class="em-icon">';
       container.appendChild(span);
     }
   }
@@ -122,14 +122,14 @@
     const floorEl = personEl.closest('.floor');
 
     if (floorData.rescued) {
-      personEl.textContent = '✅';
+      personEl.textContent = '';
       floorEl.classList.add('cleared');
     } else if (floorData.fires === 0) {
       // About to be rescued
-      personEl.textContent = '👤';
+      personEl.textContent = '';
       floorEl.classList.remove('cleared');
     } else {
-      personEl.textContent = '👤';
+      personEl.textContent = '';
       floorEl.classList.remove('cleared');
     }
   }
@@ -373,7 +373,7 @@
     const personEl = document.getElementById(`person-${floorNum}`);
     personEl.classList.add('rescued');
     setTimeout(() => {
-      personEl.textContent = '✅';
+      personEl.textContent = '';
       personEl.classList.remove('rescued');
       personEl.closest('.floor').classList.add('cleared');
     }, 600);
@@ -385,7 +385,7 @@
     const building = document.getElementById('building');
     const spray = document.createElement('div');
     spray.className = 'water-spray';
-    spray.textContent = '💦';
+    spray.textContent = '';
     building.appendChild(spray);
     setTimeout(() => spray.remove(), 700);
   }
@@ -394,7 +394,7 @@
     const building = document.getElementById('building');
     const effect = document.createElement('div');
     effect.className = 'fire-spread';
-    effect.textContent = '🔥';
+    effect.textContent = '<img src="/img/fire.png" class="em-icon">';
     building.appendChild(effect);
     setTimeout(() => effect.remove(), 600);
   }
@@ -426,7 +426,7 @@
 
   function showResults(reason) {
     const isWin = reason === 'win';
-    const hero = isWin ? '🦸' : '🏚️';
+    const hero = isWin ? '' : '';
     const title = isWin ? 'Cứu hỏa thành công!' : 'Tòa nhà sụp đổ!';
     const subtitle = isWin
       ? `Bạn đã cứu được tất cả ${FLOORS} người!`
@@ -440,14 +440,14 @@
       <h2 class="result-title">${title}</h2>
       <p class="result-subtitle">${subtitle}</p>
       <div class="result-stats">
-        <div class="result-stat"><span>👨‍👩‍👧‍👦 Cứu được</span><strong>${S.rescued}/${FLOORS}</strong></div>
-        <div class="result-stat"><span>✅ Trả lời đúng</span><strong>${S.correct}/${total}</strong></div>
-        <div class="result-stat"><span>🔥 Combo max</span><strong>${S.comboMax}</strong></div>
-        <div class="result-stat"><span>⭐ Sao</span><strong>${'⭐'.repeat(stars) || '0'}</strong></div>
+        <div class="result-stat"><span> Cứu được</span><strong>${S.rescued}/${FLOORS}</strong></div>
+        <div class="result-stat"><span> Trả lời đúng</span><strong>${S.correct}/${total}</strong></div>
+        <div class="result-stat"><span><img src="/img/fire.png" class="em-icon"> Combo max</span><strong>${S.comboMax}</strong></div>
+        <div class="result-stat"><span><img src="/img/star.png" class="em-icon"> Sao</span><strong>${'<img src="/img/star.png" class="em-icon">'.repeat(stars) || '0'}</strong></div>
       </div>
       <div class="result-btns">
-        <button class="result-btn primary" onclick="window._v21PlayAgain()">🚒 Chơi lại</button>
-        <button class="result-btn secondary" onclick="window.location.href='/'">🏠 Trang chủ</button>
+        <button class="result-btn primary" onclick="window._v21PlayAgain()"> Chơi lại</button>
+        <button class="result-btn secondary" onclick="window.location.href='/'"> Trang chủ</button>
       </div>
     `;
 
@@ -553,7 +553,7 @@
   }
   window.__v21_spawnParticles = spawnParticles;
 
-  // --- Mount the firefighter sprite in place of the 🧑‍🚒 emoji ---
+  // --- Mount the firefighter sprite in place of the  emoji ---
   function mountFirefighter() {
     const host = document.getElementById('firefighter');
     if (!host) return;
@@ -562,11 +562,11 @@
     if (C && C.hasSpecies('firefighter')) {
       ffChar = C.createCharacter('firefighter', host, { state: 'idle', size: 60 });
     } else {
-      host.textContent = '🧑‍🚒';
+      host.textContent = '';
     }
   }
 
-  // --- Upgrade each fire 🔥 emoji to the animated flame sprite ---
+  // --- Upgrade each fire <img src="/img/fire.png" class="em-icon"> emoji to the animated flame sprite ---
   function upgradeFlame(span) {
     if (!span || span.dataset.ffUpgraded) return;
     if (!(C && C.hasSpecies('flame'))) return; // keep emoji fallback
@@ -615,7 +615,7 @@
     const mo = new MutationObserver(() => {
       if (!result.classList.contains('active')) return;
       const container = document.getElementById('result-container');
-      if (container && /🦸/.test(container.textContent || '')) {
+      if (container && //.test(container.textContent || '')) {
         spawnParticles(result, 'confetti', 28);
       }
     });

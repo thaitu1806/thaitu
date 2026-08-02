@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>🎵 Nhạc Sĩ Nhí - Học Vui</title>
+  <title> Nhạc Sĩ Nhí - Học Vui</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="/quiz/quiz-modes.css">
   <link rel="stylesheet" href="/tts.css">
@@ -16,17 +16,17 @@
     <!-- START SCREEN -->
     <section id="start-screen" class="screen active">
       <div class="container">
-        <h1 class="main-title">🎵 Nhạc Sĩ Nhí</h1>
+        <h1 class="main-title"> Nhạc Sĩ Nhí</h1>
         <p class="subtitle">Trả lời đúng để tạo bài hát!</p>
         <div class="songs-info">
-          <span>🎼 Bài hát đã hoàn thành:</span>
+          <span> Bài hát đã hoàn thành:</span>
           <span id="songs-count">0</span>/5
         </div>
         <div class="songs-grid" id="songs-grid"></div>
         <div class="hero-band" id="hero-band"></div>
-        <button class="btn-primary" id="btn-start">🎶 Bắt Đầu Sáng Tác!</button>
-        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <button class="btn-primary" id="btn-start"> Bắt Đầu Sáng Tác!</button>
+        <button class="btn-guide" id="btn-guide"> Hướng Dẫn Cách Chơi</button>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </section>
 
@@ -34,9 +34,9 @@
     <section id="play-screen" class="screen">
       <div class="play-container">
         <div class="play-header">
-          <span class="song-name" id="song-name">🎵 Twinkle Star</span>
-          <span class="combo-display" id="combo-display">🔥 0/8</span>
-          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
+          <span class="song-name" id="song-name"> Twinkle Star</span>
+          <span class="combo-display" id="combo-display"> 0/8</span>
+          <button class="btn-exit" id="btn-exit" title="Thoát game"></button>
         </div>
 
         <!-- Musician stage (animated character) -->
@@ -70,22 +70,22 @@
     <!-- SONG COMPLETE SCREEN -->
     <section id="song-screen" class="screen">
       <div class="song-complete-container">
-        <div class="song-anim" id="song-anim">🎵</div>
-        <h2 class="song-msg" id="song-msg">🎉 Hoàn thành bài hát!</h2>
+        <div class="song-anim" id="song-anim"></div>
+        <h2 class="song-msg" id="song-msg"> Hoàn thành bài hát!</h2>
         <p class="song-detail" id="song-detail"></p>
-        <button class="btn-primary" id="btn-next-song">🎶 Bài tiếp theo</button>
+        <button class="btn-primary" id="btn-next-song"> Bài tiếp theo</button>
       </div>
     </section>
 
     <!-- RESULT SCREEN -->
     <section id="result-screen" class="screen">
       <div class="result-container">
-        <h2 class="result-title" id="result-title">🏆 Nhạc Sĩ Nhí Tài Năng!</h2>
+        <h2 class="result-title" id="result-title"> Nhạc Sĩ Nhí Tài Năng!</h2>
         <div class="result-score" id="result-score">0</div>
         <div class="result-label">bài hát hoàn thành</div>
         <div class="result-songs" id="result-songs"></div>
-        <button class="btn-primary" id="btn-replay">🔄 Chơi lại</button>
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <button class="btn-primary" id="btn-replay"> Chơi lại</button>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </section>
   </div>
@@ -93,12 +93,12 @@
   <!-- GUIDE MODAL -->
   <div id="guide-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card">
-      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <h3 class="modal-title"> Cách Chơi</h3>
       <ul class="modal-rules">
-        <li>🎵 Trả lời <b>đúng</b> = thêm một <b>nốt nhạc</b> vào bài hát.</li>
-        <li>🔥 Gom đủ <b>8 nốt nhạc</b> để <b>hoàn thành</b> một bài hát.</li>
-        <li>🎼 Hoàn thành cả <b>5 bài hát</b> để trở thành Nhạc Sĩ Nhí!</li>
-        <li>❌ Trả lời <b>sai</b> hoặc <b>hết giờ</b> = lệch nhịp, mất một nửa số nốt.</li>
+        <li> Trả lời <b>đúng</b> = thêm một <b>nốt nhạc</b> vào bài hát.</li>
+        <li> Gom đủ <b>8 nốt nhạc</b> để <b>hoàn thành</b> một bài hát.</li>
+        <li> Hoàn thành cả <b>5 bài hát</b> để trở thành Nhạc Sĩ Nhí!</li>
+        <li> Trả lời <b>sai</b> hoặc <b>hết giờ</b> = lệch nhịp, mất một nửa số nốt.</li>
         <li>⏰ Mỗi câu hỏi có <b>10 giây</b> để trả lời.</li>
       </ul>
       <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
@@ -108,12 +108,12 @@
   <!-- EXIT MODAL -->
   <div id="exit-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card exit-modal-card">
-      <div class="exit-modal-icon">🚪</div>
+      <div class="exit-modal-icon"></div>
       <p class="exit-modal-text">Thoát game?</p>
       <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
       <div class="exit-modal-actions">
         <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
-        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm"> Thoát</button>
       </div>
     </div>
   </div>
@@ -128,6 +128,7 @@
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
   <script src="/help-rules.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

@@ -52,11 +52,22 @@
       var autoTimer = null;
 
       list.forEach(function (o, i) {
-        var bubble = helpers.el('button', 'option-btn qz-bubble-item');
+        var bubble = helpers.el('button', 'option-btn qz-bubble-item qz-bubble-sprite');
         bubble.dataset.key = o.key;
-        bubble.textContent = o.text;
+        // Label below the bubble
+        var lbl = document.createElement('span');
+        lbl.className = 'qz-bubble-label';
+        lbl.textContent = o.text;
+        bubble.appendChild(lbl);
         bubble.style.left = ((i + 0.5) * (100 / n)) + '%';
         var yStart = 10 + (i % 3) * 25;
+        // Random sprite variant
+        function randomBubbleSprite(el) {
+          var c = Math.floor(Math.random() * 4);
+          var r = Math.floor(Math.random() * 2);
+          el.style.backgroundPosition = (-c * 74) + 'px ' + (-r * 74) + 'px';
+        }
+        randomBubbleSprite(bubble);
 
         bubble.addEventListener('click', function () {
           if (done) return;
@@ -108,7 +119,13 @@
         bubbleData.forEach(function (b) {
           if (b.el.style.visibility === 'hidden') return;
           b.y += b.speed * dt;
-          if (b.y > 105) b.y = -15;
+          if (b.y > 105) {
+            b.y = -15;
+            // Random new bubble sprite on re-appear
+            var c = Math.floor(Math.random() * 4);
+            var r = Math.floor(Math.random() * 2);
+            b.el.style.backgroundPosition = (-c * 74) + 'px ' + (-r * 74) + 'px';
+          }
           b.sway += dt * 0.002;
           b.el.style.bottom = b.y + '%';
           b.el.style.transform = 'translateX(calc(-50% + ' + (Math.sin(b.sway) * 12) + 'px))';

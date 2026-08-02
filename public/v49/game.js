@@ -85,7 +85,7 @@
     if (C && C.hasSpecies(id)) {
       djChar = C.createCharacter(id, host, { state: 'idle' });
     } else {
-      host.textContent = '🎧';
+      host.textContent = '';
     }
   }
 
@@ -122,7 +122,7 @@
 
   function renderGroove() {
     const row = $('groove-row');
-    row.innerHTML = '<span>🔥 Groove:</span>';
+    row.innerHTML = '<span><img src="/img/fire.png" class="em-icon"> Groove:</span>';
     for (let i = 0; i < window.V49Logic.GROOVE_MAX; i++) {
       const p = document.createElement('span');
       p.className = 'groove-pip' + (i < state.groove ? ' on' : '');
@@ -205,13 +205,13 @@
     if (state.tracks.length > prevTracks) {
       const last = state.tracks[state.tracks.length - 1];
       fb.className = 'feedback bonus';
-      fb.textContent = last.perfect ? `✨ Track ${last.name} hoàn hảo!` : `🎶 Track ${last.name} hoàn thành!`;
+      fb.textContent = last.perfect ? ` Track ${last.name} hoàn hảo!` : ` Track ${last.name} hoàn thành!`;
     } else if (ok) {
       fb.className = 'feedback good';
-      fb.textContent = '✅ Đúng nhịp!';
+      fb.textContent = ' Đúng nhịp!';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = '❌ Lệch nhịp, groove giảm.';
+      fb.textContent = ' Lệch nhịp, groove giảm.';
     }
     renderHud(); renderTracks(); renderBeats(); renderGroove(); syncStage();
     if (ok) pulseBeat();
@@ -264,15 +264,15 @@
     }
 
     setTimeout(() => {
-      const badges = state.tracks.map(t => t.emoji).join(' ') || '🎧';
+      const badges = state.tracks.map(t => t.emoji).join(' ') || '';
       $('result-badges').textContent = badges;
-      $('result-title').textContent = state.outcome === 'won' ? '🏆 DJ Tài Năng!' : '🎧 Kết Set';
-      $('result-emoji').textContent = state.outcome === 'won' ? '🏆' : '🎧';
+      $('result-title').textContent = state.outcome === 'won' ? '<img src="/img/trophy.png" class="em-icon"> DJ Tài Năng!' : ' Kết Set';
+      $('result-emoji').textContent = state.outcome === 'won' ? '<img src="/img/trophy.png" class="em-icon">' : '';
       $('result-detail').innerHTML = `
-        🎶 Track: ${state.tracks.length}/${state.tracksGoal}<br>
-        ✨ Perfect: ${state.tracks.filter(t => t.perfect).length}<br>
-        ✅ Đúng: ${state.correct}/${total} (${acc}%)<br>
-        ⭐ Sao: ${stars}/3
+         Track: ${state.tracks.length}/${state.tracksGoal}<br>
+         Perfect: ${state.tracks.filter(t => t.perfect).length}<br>
+         Đúng: ${state.correct}/${total} (${acc}%)<br>
+        <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3
       `;
       ss('result-screen');
       if (stage) stage.classList.remove('is-drop');
@@ -337,7 +337,7 @@
     for (let i = 0; i < count; i++) {
       const p = document.createElement('span');
       p.className = 'pfx pfx-note';
-      p.textContent = i % 2 ? '♪' : '♫';
+      p.textContent = i % 2 ? '' : '';
       p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
       p.style.setProperty('--ty', -(Math.random() * 36 + 24) + 'px');
       p.style.setProperty('--delay', (Math.random() * 0.15) + 's');

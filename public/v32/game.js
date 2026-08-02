@@ -8,14 +8,14 @@ const QUESTION_TIME = 10;
 const MAX_EXPERIMENTS = 3; // 3 experiments per session (15 questions total)
 
 const RESULTS_POOL = [
-  { emoji: '🧪', name: 'Thuốc Đỏ' },
-  { emoji: '🧫', name: 'Bọt Xanh' },
-  { emoji: '🦠', name: 'Vi Khuẩn Tím' },
-  { emoji: '🌈', name: 'Cầu Vồng Lỏng' },
-  { emoji: '💎', name: 'Tinh Thể' },
-  { emoji: '🌟', name: 'Bụi Sao' },
-  { emoji: '🔮', name: 'Cầu Pha Lê' },
-  { emoji: '💧', name: 'Bong Bóng Ma Thuật' }
+  { emoji: '', name: 'Thuốc Đỏ' },
+  { emoji: '', name: 'Bọt Xanh' },
+  { emoji: '', name: 'Vi Khuẩn Tím' },
+  { emoji: '', name: 'Cầu Vồng Lỏng' },
+  { emoji: '<img src="/img/diamond.png" class="em-icon">', name: 'Tinh Thể' },
+  { emoji: '', name: 'Bụi Sao' },
+  { emoji: '', name: 'Cầu Pha Lê' },
+  { emoji: '', name: 'Bong Bóng Ma Thuật' }
 ];
 
 // State
@@ -110,9 +110,9 @@ function resetLabUI() {
   });
 
   // Update header
-  document.getElementById('ingredient-count').textContent = `🧫 ${ingredientsFilled}/${INGREDIENTS_PER_EXPERIMENT}`;
+  document.getElementById('ingredient-count').textContent = ` ${ingredientsFilled}/${INGREDIENTS_PER_EXPERIMENT}`;
   document.getElementById('experiment-num').textContent = `Thí nghiệm ${currentExperiment + 1}`;
-  document.getElementById('game-score').textContent = `⭐ ${score}`;
+  document.getElementById('game-score').textContent = `<img src="/img/star.png" class="em-icon"> ${score}`;
   document.getElementById('tube-label').textContent = 'Thêm nguyên liệu...';
 }
 
@@ -202,20 +202,20 @@ function handleAnswer(selected, q) {
     totalCorrect++;
     ingredientsFilled++;
     score += 10;
-    fb.textContent = '🧪 Nguyên liệu thêm thành công!';
+    fb.textContent = ' Nguyên liệu thêm thành công!';
     fb.className = 'q-feedback correct';
     fillSlot(ingredientsFilled, true);
     updateTube();
   } else {
-    fb.textContent = '💨 Nguyên liệu bốc hơi!';
+    fb.textContent = ' Nguyên liệu bốc hơi!';
     fb.className = 'q-feedback wrong';
     fizzleSlot();
   }
 
   // Log answer
   logAnswer(q, selected, isCorrect);
-  document.getElementById('game-score').textContent = `⭐ ${score}`;
-  document.getElementById('ingredient-count').textContent = `🧫 ${ingredientsFilled}/${INGREDIENTS_PER_EXPERIMENT}`;
+  document.getElementById('game-score').textContent = `<img src="/img/star.png" class="em-icon"> ${score}`;
+  document.getElementById('ingredient-count').textContent = ` ${ingredientsFilled}/${INGREDIENTS_PER_EXPERIMENT}`;
 
   setTimeout(() => {
     currentQuestion++;
@@ -260,7 +260,7 @@ function fillSlot(level, animate) {
   const slot = document.querySelector(`.slot[data-slot="${level}"]`);
   if (slot) {
     slot.classList.add('filled');
-    slot.textContent = '✅';
+    slot.textContent = '';
   }
 }
 
@@ -270,7 +270,7 @@ function fizzleSlot() {
   if (emptySlots.length > 0) {
     const slot = emptySlots[0];
     slot.classList.add('fizzle');
-    slot.textContent = '💨';
+    slot.textContent = '';
     setTimeout(() => {
       slot.classList.remove('fizzle');
       slot.textContent = '';
@@ -284,7 +284,7 @@ function updateTube() {
 
   if (ingredientsFilled >= INGREDIENTS_PER_EXPERIMENT) {
     liquid.classList.add('full');
-    document.getElementById('tube-label').textContent = '🎉 Đầy rồi!';
+    document.getElementById('tube-label').textContent = '<img src="/img/party.png" class="em-icon"> Đầy rồi!';
   } else {
     document.getElementById('tube-label').textContent = `${ingredientsFilled}/${INGREDIENTS_PER_EXPERIMENT} nguyên liệu`;
   }
@@ -332,9 +332,9 @@ function endGame() {
   document.getElementById('result-score').textContent = score;
 
   const accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
-  let detailHTML = `✅ Đúng: ${totalCorrect}/${totalQuestions} (${accuracy}%)<br>`;
-  detailHTML += `🧪 Thí nghiệm hoàn thành: ${sessionResults.length}/${MAX_EXPERIMENTS}<br>`;
-  detailHTML += `📦 Bộ sưu tập: ${collection.results.length}/${RESULTS_POOL.length} phát minh`;
+  let detailHTML = ` Đúng: ${totalCorrect}/${totalQuestions} (${accuracy}%)<br>`;
+  detailHTML += ` Thí nghiệm hoàn thành: ${sessionResults.length}/${MAX_EXPERIMENTS}<br>`;
+  detailHTML += ` Bộ sưu tập: ${collection.results.length}/${RESULTS_POOL.length} phát minh`;
   document.getElementById('result-detail').innerHTML = detailHTML;
 
   // Show session results
@@ -346,9 +346,9 @@ function endGame() {
   }
 
   if (sessionResults.length === MAX_EXPERIMENTS) {
-    document.getElementById('result-title').textContent = '🏆 Nhà Khoa Học Xuất Sắc!';
+    document.getElementById('result-title').textContent = '<img src="/img/trophy.png" class="em-icon"> Nhà Khoa Học Xuất Sắc!';
   } else {
-    document.getElementById('result-title').textContent = '🔬 Kết Quả Phòng Thí Nghiệm!';
+    document.getElementById('result-title').textContent = ' Kết Quả Phòng Thí Nghiệm!';
   }
 
   spawnConfetti();
@@ -443,14 +443,14 @@ init();
       if (C() && C().hasSpecies('scientist')) {
         sciChar = C().createCharacter('scientist', sciHost, { state: 'idle' });
       } else {
-        sciHost.textContent = '🔬';
+        sciHost.textContent = '';
       }
     }
     if (botHost && !botChar) {
       if (C() && C().hasSpecies('robot')) {
         botChar = C().createCharacter('robot', botHost, { state: 'idle' });
       } else {
-        botHost.textContent = '🤖';
+        botHost.textContent = '';
       }
     }
   }
@@ -463,7 +463,7 @@ init();
       flaskChar = C().createCharacter('beaker', host, { state: 'happy' });
       setTimeout(() => { if (flaskChar) flaskChar.setState('idle'); }, 900);
     } else {
-      host.textContent = '🧪';
+      host.textContent = '';
     }
   }
 

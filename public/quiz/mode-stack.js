@@ -29,10 +29,12 @@
       let done = false;
 
       list.forEach((o, i) => {
-        const brick = helpers.el('button', 'option-btn qz-stack-brick');
+        const brick = helpers.el('button', 'option-btn qz-stack-brick qz-stack-sprite');
         brick.textContent = o.text;
         brick.dataset.key = o.key;
         brick.style.animationDelay = (i * 0.2) + 's';
+        var col = Math.floor(Math.random() * 4);
+        brick.style.backgroundPosition = (-col * 60) + 'px 0px';
         brick.addEventListener('click', () => {
           if (done) return;
           done = true;

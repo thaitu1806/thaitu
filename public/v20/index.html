@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>🌾 Nông Trại Vui Vẻ - Học Vui</title>
+  <title> Nông Trại Vui Vẻ - Học Vui</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 </head>
@@ -15,14 +15,14 @@
     <section id="farm-screen" class="screen active">
       <div class="farm-container">
         <div class="farm-header">
-          <h1 class="farm-title">🌾 Nông Trại Vui Vẻ</h1>
+          <h1 class="farm-title"> Nông Trại Vui Vẻ</h1>
           <div class="coin-display">
-            <span class="coin-icon">💰</span>
+            <span class="coin-icon"></span>
             <span class="coin-amount" id="coin-amount">50</span> xu
           </div>
         </div>
         <div class="farm-stats">
-          <span id="harvest-count">🌿 Thu hoạch: 0</span>
+          <span id="harvest-count"> Thu hoạch: 0</span>
           <span id="daily-bonus-status"></span>
         </div>
 
@@ -36,37 +36,37 @@
 
         <div class="farm-grid" id="farm-grid"></div>
         <div class="farm-actions">
-          <button class="btn-water" id="btn-water">💧 Tưới nước (Quiz)</button>
-          <button class="btn-shop" id="btn-shop">🏪 Cửa hàng</button>
+          <button class="btn-water" id="btn-water"> Tưới nước (Quiz)</button>
+          <button class="btn-shop" id="btn-shop"> Cửa hàng</button>
         </div>
-        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <button class="btn-guide" id="btn-guide"> Hướng Dẫn Cách Chơi</button>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </section>
 
     <!-- PLANT SCREEN (Choose seed) -->
     <section id="plant-screen" class="screen">
       <div class="plant-container">
-        <h2 class="plant-title">🌱 Chọn hạt giống</h2>
+        <h2 class="plant-title"> Chọn hạt giống</h2>
         <p class="plant-subtitle">Trồng vào ô đất đã chọn</p>
         <div class="seed-list" id="seed-list"></div>
-        <button class="btn-back" id="btn-back-farm">🔙 Quay lại</button>
+        <button class="btn-back" id="btn-back-farm"> Quay lại</button>
       </div>
     </section>
 
     <!-- SHOP SCREEN -->
     <section id="shop-screen" class="screen">
       <div class="shop-container">
-        <h2 class="shop-title">🏪 Cửa Hàng</h2>
+        <h2 class="shop-title"> Cửa Hàng</h2>
         <div class="shop-coins">
-          <span class="coin-icon">💰</span>
+          <span class="coin-icon"></span>
           <span id="shop-coin-amount">50</span> xu
         </div>
         <div class="shop-section">
-          <h3>🌱 Mua thêm ô đất</h3>
+          <h3> Mua thêm ô đất</h3>
           <div id="plot-shop"></div>
         </div>
-        <button class="btn-back" id="btn-back-shop">🔙 Quay lại</button>
+        <button class="btn-back" id="btn-back-shop"> Quay lại</button>
       </div>
     </section>
 
@@ -80,8 +80,8 @@
               <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
             </div>
           </div>
-          <div class="quiz-correct-count">💧 <span id="quiz-correct">0</span>/10</div>
-          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
+          <div class="quiz-correct-count"> <span id="quiz-correct">0</span>/10</div>
+          <button class="btn-exit" id="btn-exit" title="Thoát game"></button>
         </div>
         <div class="quiz-mascot" id="quiz-mascot" data-species="farmer"></div>
         <div class="quiz-question-box">
@@ -100,25 +100,25 @@
     <section id="result-screen" class="screen">
       <div class="result-container">
         <div class="result-mascot" id="result-mascot" data-species="cow"></div>
-        <div class="result-icon">💧</div>
+        <div class="result-icon"></div>
         <h2 class="result-title" id="result-title">Kết quả tưới nước!</h2>
         <p class="result-detail" id="result-detail"></p>
         <div class="result-watered" id="result-watered"></div>
-        <button class="btn-start" id="btn-back-result">🌾 Về nông trại</button>
+        <button class="btn-start" id="btn-back-result"> Về nông trại</button>
       </div>
     </section>
   </div>
 
   <div id="guide-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card">
-      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <h3 class="modal-title"> Cách Chơi</h3>
       <ul class="modal-rules">
-        <li>🌱 Chọn ô đất trống rồi <b>mua hạt giống</b> bằng xu để trồng cây.</li>
-        <li>💧 Bấm <b>Tưới nước</b> để trả lời câu hỏi — mỗi câu <b>đúng</b> tưới lớn một cây.</li>
-        <li>🌿 Cây lớn qua <b>3 giai đoạn</b>, theo thời gian thật hoặc khi được tưới.</li>
-        <li>🌾 Cây chín thì bấm để <b>thu hoạch</b> và nhận thêm <b>xu</b>.</li>
-        <li>🏪 Vào <b>Cửa hàng</b> để mua thêm ô đất mở rộng nông trại.</li>
-        <li>🎁 Mỗi ngày đăng nhập nhận <b>thưởng xu</b> miễn phí!</li>
+        <li> Chọn ô đất trống rồi <b>mua hạt giống</b> bằng xu để trồng cây.</li>
+        <li> Bấm <b>Tưới nước</b> để trả lời câu hỏi — mỗi câu <b>đúng</b> tưới lớn một cây.</li>
+        <li> Cây lớn qua <b>3 giai đoạn</b>, theo thời gian thật hoặc khi được tưới.</li>
+        <li> Cây chín thì bấm để <b>thu hoạch</b> và nhận thêm <b>xu</b>.</li>
+        <li> Vào <b>Cửa hàng</b> để mua thêm ô đất mở rộng nông trại.</li>
+        <li> Mỗi ngày đăng nhập nhận <b>thưởng xu</b> miễn phí!</li>
       </ul>
       <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
     </div>
@@ -126,12 +126,12 @@
 
   <div id="exit-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card exit-modal-card">
-      <div class="exit-modal-icon">🚪</div>
+      <div class="exit-modal-icon"></div>
       <p class="exit-modal-text">Thoát game?</p>
       <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
       <div class="exit-modal-actions">
         <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
-        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm"> Thoát</button>
       </div>
     </div>
   </div>
@@ -145,6 +145,7 @@
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
   <script src="/help-rules.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

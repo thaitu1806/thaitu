@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>🌻 Học Vui - Plants vs Zombies</title>
+  <title> Học Vui - Plants vs Zombies</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -132,32 +132,32 @@
       <div class="gb-cloud c1"></div>
       <div class="gb-cloud c2"></div>
       <div class="gb-grass"></div>
-      <span class="gb-flower" style="left:8%;">🌻</span>
-      <span class="gb-flower" style="left:24%;animation-delay:.4s;">🌷</span>
-      <span class="gb-flower" style="left:46%;animation-delay:.8s;">🌼</span>
-      <span class="gb-flower" style="left:68%;animation-delay:.3s;">🌹</span>
-      <span class="gb-flower" style="left:88%;animation-delay:.6s;">🌸</span>
+      <span class="gb-flower" style="left:8%;"></span>
+      <span class="gb-flower" style="left:24%;animation-delay:.4s;"></span>
+      <span class="gb-flower" style="left:46%;animation-delay:.8s;"></span>
+      <span class="gb-flower" style="left:68%;animation-delay:.3s;"></span>
+      <span class="gb-flower" style="left:88%;animation-delay:.6s;"></span>
     </div>
 
     <!-- MENU SCREEN -->
     <div id="menu-screen" class="screen active">
       <div class="menu-container">
         <div class="menu-mascots" aria-hidden="true">
-          <span class="mm mm-plant">🌻</span>
-          <span class="mm mm-vs">⚔️</span>
-          <span class="mm mm-zombie">🧟</span>
+          <span class="mm mm-plant"></span>
+          <span class="mm mm-vs"></span>
+          <span class="mm mm-zombie"></span>
         </div>
         <h1 class="game-title">HỌC VUI</h1>
         <p class="subtitle">Bảo vệ vườn hoa bằng trí tuệ!</p>
-        <button class="help-btn" id="help-btn-open">❓</button>
+        <button class="help-btn" id="help-btn-open"></button>
         <div class="help-popup" id="help-popup">
           <div class="help-content">
-            <h3>🌻 Cách chơi Luyện Tập</h3>
+            <h3> Cách chơi Luyện Tập</h3>
             <p>• Chọn môn học và mức độ<br>
             • Mỗi câu hỏi có 4 đáp án (A/B/C/D)<br>
             • Trả lời đúng → bắn zombie lùi lại<br>
             • Trả lời sai → zombie tiến lại gần<br>
-            • Zombie chạm nhà 🏠 = thua cuộc!<br>
+            • Zombie chạm nhà  = thua cuộc!<br>
             • Timer hết giờ = mất lượt<br>
             • Combo nhiều câu đúng liên tiếp = điểm cao hơn</p>
             <button onclick="document.getElementById('help-popup').classList.remove('active')">Hiểu rồi!</button>
@@ -166,7 +166,7 @@
         <div class="player-input">
           <p id="player-welcome" style="font-size:1.3rem;font-weight:700;color:#2d5a27;margin-bottom:10px;"></p>
           <div class="speed-setting">
-            <label>⏱️ Tốc độ:</label>
+            <label>⏱ Tốc độ:</label>
             <select id="timer-speed">
               <option value="slow">Chậm (30s)</option>
               <option value="normal" selected>Bình thường (20s)</option>
@@ -174,7 +174,7 @@
             </select>
           </div>
           <button id="btn-start" class="btn btn-primary">Bắt đầu chơi!</button>
-          <a href="/" style="display:block;text-align:center;margin-top:12px;color:#888;text-decoration:none;font-size:0.9rem">🏠 Về trang chủ</a>
+          <a href="/" style="display:block;text-align:center;margin-top:12px;color:#888;text-decoration:none;font-size:0.9rem"> Về trang chủ</a>
         </div>
       </div>
     </div>
@@ -186,19 +186,19 @@
         <p id="welcome-text"></p>
         <div class="subject-cards">
           <div class="card" data-subject="math">
-            <span class="card-icon">🔢</span>
+            <span class="card-icon"></span>
             <span class="card-title">Toán</span>
           </div>
           <div class="card" data-subject="vietnamese">
-            <span class="card-icon">📖</span>
+            <span class="card-icon"></span>
             <span class="card-title">Tiếng Việt</span>
           </div>
           <div class="card" data-subject="english">
-            <span class="card-icon">🔤</span>
+            <span class="card-icon"></span>
             <span class="card-title">English</span>
           </div>
         </div>
-        <a href="/" class="btn btn-back" style="margin-top:15px">🏠 Về trang chủ</a>
+        <a href="/" class="btn btn-back" style="margin-top:15px"> Về trang chủ</a>
       </div>
     </div>
 
@@ -225,7 +225,7 @@
         </div>
         <div class="screen-nav-btns">
           <button class="btn btn-back" id="btn-back-subject">← Quay lại</button>
-          <a href="/" class="btn btn-back">🏠 Trang chủ</a>
+          <a href="/" class="btn btn-back"> Trang chủ</a>
         </div>
       </div>
     </div>
@@ -233,28 +233,28 @@
     <!-- GAME SCREEN -->
     <div id="game-screen" class="screen">
       <div class="game-header">
-        <button class="btn-exit" id="btn-exit-game">✕</button>
+        <button class="btn-exit" id="btn-exit-game"></button>
         <div class="game-info">
           <span id="game-subject-label"></span>
           <span id="game-difficulty-label"></span>
         </div>
         <div class="game-stats">
-          <span id="score-display">💰 0</span>
-          <span id="combo-display">🔥 x0</span>
-          <span id="progress-display">📋 0/10</span>
+          <span id="score-display"> 0</span>
+          <span id="combo-display"> x0</span>
+          <span id="progress-display"> 0/10</span>
         </div>
       </div>
 
       <div class="game-arena">
         <!-- Zombie lane -->
         <div class="zombie-lane">
-          <div class="house">🏠</div>
+          <div class="house"></div>
           <div class="lane-track">
-            <div id="zombie" class="zombie">💀</div>
-            <div id="bullet" class="bullet hidden">☄️</div>
+            <div id="zombie" class="zombie"></div>
+            <div id="bullet" class="bullet hidden"></div>
           </div>
           <div class="plant-spot">
-            <div id="plant" class="plant">🌻</div>
+            <div id="plant" class="plant"></div>
           </div>
         </div>
 
@@ -262,7 +262,7 @@
         <div class="question-area">
           <div class="question-text-row">
             <div id="question-text" class="question-text"></div>
-            <button id="btn-speak" class="btn-speak" title="Đọc câu hỏi">🔊</button>
+            <button id="btn-speak" class="btn-speak" title="Đọc câu hỏi"></button>
           </div>
           <div id="options" class="options-grid">
             <button class="option-btn" data-option="a"></button>
@@ -271,10 +271,10 @@
             <button class="option-btn" data-option="d"></button>
           </div>
           <!-- AI Feature: Hint button (shown on each question, hidden if AI disabled) -->
-          <button id="btn-hint" class="btn-hint ai-feature" style="display:none">💡 Gợi ý</button>
+          <button id="btn-hint" class="btn-hint ai-feature" style="display:none"> Gợi ý</button>
           <div id="hint-tooltip" class="hint-tooltip"></div>
           <!-- AI Feature: Explain button (shown after wrong answer) -->
-          <button id="btn-explain" class="btn-explain ai-feature" style="display:none">💡 Tại sao?</button>
+          <button id="btn-explain" class="btn-explain ai-feature" style="display:none"> Tại sao?</button>
         </div>
       </div>
 
@@ -305,9 +305,9 @@
   <!-- AI Explanation Popup -->
   <div id="explain-popup-overlay" class="explain-popup-overlay">
     <div class="explain-popup">
-      <div class="explain-icon">💡</div>
+      <div class="explain-icon"></div>
       <div id="explain-text" class="explain-text"></div>
-      <button class="explain-close-btn" id="explain-close-btn">Hiểu rồi! 👍</button>
+      <button class="explain-close-btn" id="explain-close-btn">Hiểu rồi! </button>
     </div>
   </div>
 
@@ -321,6 +321,7 @@
   </script>
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

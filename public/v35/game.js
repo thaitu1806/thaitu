@@ -8,24 +8,24 @@ const TOTAL_CUSTOMERS = 6;
 const TIMER_SECONDS = 10;
 
 const FLAVORS = [
-  { emoji: '🍫', name: 'Socola' },
-  { emoji: '🍓', name: 'Dâu' },
-  { emoji: '🍵', name: 'Matcha' },
-  { emoji: '🍋', name: 'Chanh' },
-  { emoji: '🍇', name: 'Nho' },
-  { emoji: '🍌', name: 'Chuối' }
+  { emoji: '', name: 'Socola' },
+  { emoji: '', name: 'Dâu' },
+  { emoji: '', name: 'Matcha' },
+  { emoji: '', name: 'Chanh' },
+  { emoji: '', name: 'Nho' },
+  { emoji: '', name: 'Chuối' }
 ];
 
 const TOPPINGS = [
-  { emoji: '🍒', name: 'Cherry' },
-  { emoji: '🌰', name: 'Hạt' },
-  { emoji: '🍯', name: 'Mật ong' },
-  { emoji: '⭐', name: 'Sprinkles' }
+  { emoji: '', name: 'Cherry' },
+  { emoji: '', name: 'Hạt' },
+  { emoji: '', name: 'Mật ong' },
+  { emoji: '<img src="/img/star.png" class="em-icon">', name: 'Sprinkles' }
 ];
 
-const CUSTOMER_EMOJIS = ['🧑', '👧', '👦', '👩', '🧒', '👨'];
-const HAPPY_REACTIONS = ['😍', '🤩', '😋', '🥰', '😊'];
-const SAD_REACTIONS = ['😐', '😕', '😟'];
+const CUSTOMER_EMOJIS = ['', '', '', '', '', ''];
+const HAPPY_REACTIONS = ['', '', '', '', ''];
+const SAD_REACTIONS = ['', '', ''];
 
 let highScore = 0;
 let questions = [];
@@ -287,15 +287,15 @@ function endGame() {
   if (happyCustomers > highScore) {
     highScore = happyCustomers;
     saveData();
-    document.getElementById('result-title').textContent = '🎉 Kỷ Lục Mới!';
+    document.getElementById('result-title').textContent = '<img src="/img/party.png" class="em-icon"> Kỷ Lục Mới!';
   } else {
-    document.getElementById('result-title').textContent = '🍦 Ca Làm Xong!';
+    document.getElementById('result-title').textContent = ' Ca Làm Xong!';
   }
 
   document.getElementById('result-detail').innerHTML = `
-    ✅ Đúng: ${totalCorrect}/${totalQuestions} (${accuracy}%)<br>
-    😊 Khách vui: ${happyCustomers}/${TOTAL_CUSTOMERS}<br>
-    🏆 Kỷ lục: ${highScore}/${TOTAL_CUSTOMERS}
+     Đúng: ${totalCorrect}/${totalQuestions} (${accuracy}%)<br>
+     Khách vui: ${happyCustomers}/${TOTAL_CUSTOMERS}<br>
+    <img src="/img/trophy.png" class="em-icon"> Kỷ lục: ${highScore}/${TOTAL_CUSTOMERS}
   `;
 
   spawnConfetti();
@@ -368,7 +368,7 @@ init();
       if (C && C.hasSpecies('icecream-server')) {
         serverChar = C.createCharacter('icecream-server', serverHost, { state: 'idle' });
       } else {
-        serverHost.textContent = '🧑‍🍳';
+        serverHost.textContent = '';
       }
     }
     if (coneHost && !coneChar) {
@@ -376,7 +376,7 @@ init();
         coneHost.textContent = '';
         coneChar = C.createCharacter('icecream-cone', coneHost, { state: 'idle' });
       }
-      // else: keep the existing 🍦 emoji fallback already in the host
+      // else: keep the existing  emoji fallback already in the host
     }
   }
 

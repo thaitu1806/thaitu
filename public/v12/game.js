@@ -137,7 +137,7 @@ function renderGrid() {
   grid.innerHTML = State.cards.map((card, idx) => `
     <div class="memory-card ${card.matched ? 'matched flipped' : ''}" data-idx="${idx}">
       <div class="card-inner">
-        <div class="card-back">🧩</div>
+        <div class="card-back"></div>
         <div class="card-front type-${card.type}">${card.content}</div>
       </div>
     </div>
@@ -151,7 +151,7 @@ function renderGrid() {
 
 function renderInfo() {
   const info = document.getElementById('game-info');
-  info.innerHTML = `<span>✅ ${State.matchedPairs}/${State.totalPairs}</span><span>🔄 ${State.moves}</span>${State.combo >= 2 ? `<span>🔥x${State.combo}</span>` : ''}`;
+  info.innerHTML = `<span> ${State.matchedPairs}/${State.totalPairs}</span><span> ${State.moves}</span>${State.combo >= 2 ? `<span><img src="/img/fire.png" class="em-icon">x${State.combo}</span>` : ''}`;
 }
 
 function renderTurnBar() {
@@ -174,7 +174,7 @@ function startTimer() {
     const elapsed = Math.floor((Date.now() - State.timerStart) / 1000);
     const m = Math.floor(elapsed / 60);
     const s = elapsed % 60;
-    document.getElementById('timer').textContent = `⏱️ ${m}:${s.toString().padStart(2, '0')}`;
+    document.getElementById('timer').textContent = `⏱ ${m}:${s.toString().padStart(2, '0')}`;
   }, 1000);
 }
 
@@ -267,21 +267,21 @@ function endGame() {
     subtitle = `Thời gian: ${m}:${s.toString().padStart(2, '0')} | ${State.moves} lượt lật`;
   } else {
     const winner = [...State.players].sort((a, b) => b.score - a.score)[0];
-    subtitle = `🏆 ${winner.name} thắng! (${winner.score} cặp)`;
+    subtitle = `<img src="/img/trophy.png" class="em-icon"> ${winner.name} thắng! (${winner.score} cặp)`;
   }
 
   container.innerHTML = `
-    <div class="result-icon">🎉</div>
+    <div class="result-icon"><img src="/img/party.png" class="em-icon"></div>
     <div class="result-title">Hoàn thành!</div>
     <div class="result-subtitle">${subtitle}</div>
     <div class="result-stats">
       ${State.players.map(p => `<div class="result-stat"><span style="color:${p.color}">● ${p.name}</span><span>${p.score} cặp</span></div>`).join('')}
-      <div class="result-stat"><span>🔄 Tổng lượt lật</span><span>${State.moves}</span></div>
-      <div class="result-stat"><span>⏱️ Thời gian</span><span>${m}:${s.toString().padStart(2, '0')}</span></div>
+      <div class="result-stat"><span> Tổng lượt lật</span><span>${State.moves}</span></div>
+      <div class="result-stat"><span>⏱ Thời gian</span><span>${m}:${s.toString().padStart(2, '0')}</span></div>
     </div>
     <div class="result-btns">
-      <button class="result-btn again" onclick="location.reload()">🔄 Chơi lại</button>
-      <button class="result-btn home" onclick="location.href='/'">🏠 Về trang chủ</button>
+      <button class="result-btn again" onclick="location.reload()"> Chơi lại</button>
+      <button class="result-btn home" onclick="location.href='/'"> Về trang chủ</button>
     </div>
   `;
 
@@ -317,7 +317,7 @@ function showScreen(id) {
     if (C && C.hasSpecies('owl')) {
       mascot = C.createCharacter('owl', host, { state: 'idle' });
     } else {
-      host.textContent = '🦉';
+      host.textContent = '';
     }
   }
 

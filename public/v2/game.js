@@ -83,14 +83,14 @@
       tile.className = 'tile';
       tile.dataset.idx = String(i);
       if (i === 0) tile.classList.add('tile-start');
-      if (i === STEPS) { tile.classList.add('tile-goal'); tile.innerHTML = '<span class="goal-chest">🏴‍☠️</span>'; }
+      if (i === STEPS) { tile.classList.add('tile-goal'); tile.innerHTML = '<span class="goal-chest"></span>'; }
       else if (i % 4 === 0 && i !== 0) tile.classList.add('tile-marker');
       trail.appendChild(tile);
     }
     // hero token
     heroEl = document.createElement('div');
     heroEl.className = 'hero-token';
-    heroEl.innerHTML = '<span class="hero-face">🧭</span><span class="hero-shadow"></span>';
+    heroEl.innerHTML = '<span class="hero-face"></span><span class="hero-shadow"></span>';
     trail.appendChild(heroEl);
     positionHero(false);
   }
@@ -152,7 +152,7 @@
     locked = false;
     qStart = Date.now();
     const subj = curQ.subject || subject;
-    $('q-badge').textContent = subj === 'vietnamese' ? '📖' : subj === 'english' ? '🔤' : '🔢';
+    $('q-badge').textContent = subj === 'vietnamese' ? '' : subj === 'english' ? '' : '';
     $('q-text').textContent = curQ.question_text;
     $('feedback').style.display = 'none';
     const opts = $('q-options');
@@ -201,15 +201,15 @@
       hopHero(advance);
       positionHero(true);
       const hopped = pos - before;
-      if (advance >= 2) { fb.className = 'feedback bonus'; fb.textContent = `✨ Combo! Nhảy ${hopped} chặng!`; }
-      else { fb.className = 'feedback good'; fb.textContent = '✅ Đúng! Tiến 1 chặng.'; }
+      if (advance >= 2) { fb.className = 'feedback bonus'; fb.textContent = ` Combo! Nhảy ${hopped} chặng!`; }
+      else { fb.className = 'feedback good'; fb.textContent = ' Đúng! Tiến 1 chặng.'; }
       spawnParticles(heroEl, 'sparkle', 8);
     } else {
       wrong++; combo = 0;
       danger++;
       renderStorm();
       flashStorm();
-      fb.className = 'feedback bad'; fb.textContent = '❌ Sai! Cơn bão tiến gần hơn.';
+      fb.className = 'feedback bad'; fb.textContent = ' Sai! Cơn bão tiến gần hơn.';
     }
     logAns((typeof sel === 'boolean') ? (selText || '') : sel, ck, ok, Date.now() - qStart);
     renderHud();
@@ -252,18 +252,18 @@
     if (window.HocVuiCollection) window.HocVuiCollection.reward(stars);
 
     setTimeout(() => {
-      let title = '🗺️ Kết Thúc', emoji = '🗺️';
-      if (outcome === 'won') { title = '🏴‍☠️ Tìm Thấy Kho Báu!'; emoji = '💎'; }
-      else if (outcome === 'storm') { title = '⛈️ Bão Đã Ập Tới!'; emoji = '⛈️'; }
+      let title = ' Kết Thúc', emoji = '';
+      if (outcome === 'won') { title = ' Tìm Thấy Kho Báu!'; emoji = '<img src="/img/diamond.png" class="em-icon">'; }
+      else if (outcome === 'storm') { title = ' Bão Đã Ập Tới!'; emoji = ''; }
       $('result-title').textContent = title;
       $('result-emoji').textContent = emoji;
       const stars = (outcome === 'won') ? (danger === 0 ? 3 : danger <= 2 ? 2 : 1) : (pos >= STEPS - 3 ? 1 : 0);
-      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}">⭐</span>`).join('');
+      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}"><img src="/img/star.png" class="em-icon"></span>`).join('');
       $('result-detail').innerHTML = `
-        🧭 Chặng đi: ${pos}/${STEPS}<br>
-        ⛈️ Nguy hiểm: ${danger}/${MAX_DANGER}<br>
-        ✅ Đúng: ${correct}/${total} (${acc}%)<br>
-        ✨ Combo cao nhất: ${maxCombo}
+         Chặng đi: ${pos}/${STEPS}<br>
+         Nguy hiểm: ${danger}/${MAX_DANGER}<br>
+         Đúng: ${correct}/${total} (${acc}%)<br>
+         Combo cao nhất: ${maxCombo}
       `;
       ss('result-screen');
       $('storm').classList.remove('is-bursting');

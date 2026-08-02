@@ -97,9 +97,9 @@ function showTruck() {
 }
 
 function updateHeader() {
-  document.getElementById('delivery-count').textContent = `📬 ${deliveredCount}/${TOTAL_HOUSES}`;
-  document.getElementById('round-timer').textContent = `⏱️ ${Math.ceil(roundTimeLeft)}s`;
-  document.getElementById('game-score').textContent = `⭐ ${score}`;
+  document.getElementById('delivery-count').textContent = ` ${deliveredCount}/${TOTAL_HOUSES}`;
+  document.getElementById('round-timer').textContent = `⏱ ${Math.ceil(roundTimeLeft)}s`;
+  document.getElementById('game-score').textContent = `<img src="/img/star.png" class="em-icon"> ${score}`;
 }
 
 // ========== ROUND TIMER ==========
@@ -110,7 +110,7 @@ function startRoundTimer() {
     const reduction = Math.min(combo * 0.02, 0.05); // max slow: 50%
     roundTimeLeft -= (0.1 - reduction);
     
-    document.getElementById('round-timer').textContent = `⏱️ ${Math.ceil(roundTimeLeft)}s`;
+    document.getElementById('round-timer').textContent = `⏱ ${Math.ceil(roundTimeLeft)}s`;
     
     if (roundTimeLeft <= 0) {
       clearInterval(roundTimer);
@@ -247,12 +247,12 @@ function handleAnswer(selected, q) {
     const points = 10 + (combo * 2); // Combo bonus
     score += points;
     if (houseEl) houseEl.classList.add('delivered');
-    fb.textContent = `📬 Giao thành công! +${points} điểm (combo x${combo})`;
+    fb.textContent = ` Giao thành công! +${points} điểm (combo x${combo})`;
     fb.className = 'q-feedback correct';
   } else {
     combo = 0;
     if (houseEl) houseEl.classList.add('skipped');
-    fb.textContent = '📭 Thư bị trả lại!';
+    fb.textContent = ' Thư bị trả lại!';
     fb.className = 'q-feedback wrong';
   }
 
@@ -314,15 +314,15 @@ function endGame() {
 
   document.getElementById('result-score').textContent = score;
 
-  let detailHTML = `📬 Thư đã giao: ${deliveredCount}/${TOTAL_HOUSES}<br>`;
+  let detailHTML = ` Thư đã giao: ${deliveredCount}/${TOTAL_HOUSES}<br>`;
   if (timeBonus > 0) {
-    detailHTML += `⏱️ Thưởng thời gian: +${timeBonus} điểm<br>`;
+    detailHTML += `⏱ Thưởng thời gian: +${timeBonus} điểm<br>`;
   }
   if (deliveredCount === TOTAL_HOUSES) {
-    document.getElementById('result-title').textContent = '🎉 Hoàn Thành Xuất Sắc!';
-    detailHTML += '🏆 Giao hết thư đúng hạn!';
+    document.getElementById('result-title').textContent = '<img src="/img/party.png" class="em-icon"> Hoàn Thành Xuất Sắc!';
+    detailHTML += '<img src="/img/trophy.png" class="em-icon"> Giao hết thư đúng hạn!';
   } else {
-    document.getElementById('result-title').textContent = '📮 Kết Quả Giao Thư!';
+    document.getElementById('result-title').textContent = ' Kết Quả Giao Thư!';
   }
   document.getElementById('result-detail').innerHTML = detailHTML;
 
@@ -415,7 +415,7 @@ init();
     if (C && C.hasSpecies('postman')) {
       postman = C.createCharacter('postman', host, { state: 'idle' });
     } else {
-      host.textContent = '🚗';
+      host.textContent = '';
     }
   }
 

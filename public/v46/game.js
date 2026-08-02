@@ -161,7 +161,7 @@
         const span = el.querySelector('.pot-emoji');
         if (span) {
           if (isFull) span.textContent = pot.species.emoji;
-          else if (pot.stage === 0) span.textContent = '🌱';
+          else if (pot.stage === 0) span.textContent = '';
           else span.textContent = stageEmojis[pot.stage];
         }
       }
@@ -240,7 +240,7 @@
     const fb = $('feedback');
     fb.style.display = 'block';
     fb.className = isCorrect ? 'feedback good' : 'feedback bad';
-    fb.textContent = isCorrect ? '✅ Đúng! Cây lớn lên 🌱→🌿' : '❌ Sai mất! Cây chưa lớn.';
+    fb.textContent = isCorrect ? ' Đúng! Cây lớn lên →' : ' Sai mất! Cây chưa lớn.';
     renderHud(); syncPots(grownIdx);
     // Particles on the pot that grew; bigger burst if it just became bonsai.
     if (grownIdx >= 0 && potRefs[grownIdx]) {
@@ -299,14 +299,14 @@
     saveUserData();
     const stars = state.outcome === 'won' && state.wrong === 0 ? 3 : state.outcome === 'won' ? 2 : state.collectedCount >= 3 ? 1 : 0;
     saveSession({ stars, accuracy, total });
-    const badgeIcons = state.pots.filter(p => p.stage === window.V46Logic.MAX_STAGE).map(p => p.species.emoji).join('  ') || '🌱';
+    const badgeIcons = state.pots.filter(p => p.stage === window.V46Logic.MAX_STAGE).map(p => p.species.emoji).join('  ') || '';
     $('result-badges').textContent = badgeIcons;
-    $('result-title').textContent = state.outcome === 'won' ? '🎉 Mở Hàng Đẹp!' : '🌱 Tạm Đóng Tiệm';
+    $('result-title').textContent = state.outcome === 'won' ? '<img src="/img/party.png" class="em-icon"> Mở Hàng Đẹp!' : ' Tạm Đóng Tiệm';
     $('result-detail').innerHTML = `
-      🌳 Bonsai: ${state.collectedCount}/${state.totalPots}<br>
-      ✅ Đúng: ${state.correct}/${total} (${accuracy}%)<br>
-      ⭐ Sao: ${stars}/3<br>
-      🔥 Combo dài nhất: ${maxCombo}
+       Bonsai: ${state.collectedCount}/${state.totalPots}<br>
+       Đúng: ${state.correct}/${total} (${accuracy}%)<br>
+      <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3<br>
+      <img src="/img/fire.png" class="em-icon"> Combo dài nhất: ${maxCombo}
     `;
     showScreen('result-screen');
     if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch(e){} }

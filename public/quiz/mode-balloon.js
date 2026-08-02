@@ -21,9 +21,17 @@
       const colors = ['#ff6b8b', '#4a90e2', '#34c77b', '#f4b73e', '#9d7bff'];
       const list = helpers.shuffle(helpers.optionList(q));
       const n = list.length;
+      // Shuffle 10 sprite positions (5 cols × 2 rows) so each balloon is unique
+      // Display size 400x160, cell = 80x80px, offset = -col*80 -row*80
+      const spritePositions = helpers.shuffle(
+        Array.from({length: 10}, (_, idx) => ({ col: idx % 5, row: Math.floor(idx / 5) }))
+      );
       const balloons = list.map((o, i) => {
-        const wrap = helpers.el('button', 'option-btn qz-balloon');
+        const wrap = helpers.el('button', 'option-btn qz-balloon qz-balloon-sprite');
         wrap.dataset.key = o.key;
+        // Each balloon gets a different sprite variant
+        const sp = spritePositions[i % spritePositions.length];
+        wrap.style.backgroundPosition = (-sp.col * 80) + 'px ' + (-sp.row * 80) + 'px';
         wrap.style.setProperty('--bln', colors[i % colors.length]);
         wrap.style.left = ((i + 0.5) * (100 / n)) + '%';
         const label = helpers.el('span', 'qz-balloon-label', o.text);
@@ -47,10 +55,14 @@
         const dt = Math.min(50, t - last); last = t;
         balloons.forEach(b => {
           b.y += b.speed * dt;
-          if (b.y > 105) b.y = -12;             // loop back to bottom
+          if (b.y > 105) {
+            b.y = -12;
+            // Random new balloon sprite on loop
+            const sp = spritePositions[Math.floor(Math.random() * spritePositions.length)];
+            b.el.style.backgroundPosition = (-sp.col * 80) + 'px ' + (-sp.row * 80) + 'px';
+          }
           b.sway += dt * 0.003;
           b.el.style.bottom = b.y + '%';
-          // keep horizontal centering (-50%) while adding gentle sway
           b.el.style.transform = 'translateX(calc(-50% + ' + (Math.sin(b.sway) * 8) + 'px))';
         });
         raf = requestAnimationFrame(frame);

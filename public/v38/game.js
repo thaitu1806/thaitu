@@ -9,14 +9,14 @@ const STEPS_PER_PATIENT = 4;
 const MAX_RETRIES = 2;
 
 const STEPS = [
-  { emoji: '🔍', name: 'Khám', desc: 'Kiểm tra răng...' },
-  { emoji: '🧹', name: 'Cạo vôi', desc: 'Cạo sạch vôi răng...' },
-  { emoji: '🔧', name: 'Trám răng', desc: 'Trám chỗ sâu...' },
-  { emoji: '✨', name: 'Đánh bóng', desc: 'Đánh bóng sáng loáng!' }
+  { emoji: '', name: 'Khám', desc: 'Kiểm tra răng...' },
+  { emoji: '', name: 'Cạo vôi', desc: 'Cạo sạch vôi răng...' },
+  { emoji: '', name: 'Trám răng', desc: 'Trám chỗ sâu...' },
+  { emoji: '', name: 'Đánh bóng', desc: 'Đánh bóng sáng loáng!' }
 ];
 
-const MOUTH_STAGES = ['😬', '😐', '🙂', '😊', '😁'];
-const PATIENT_EMOJIS = ['👦', '👧', '👴', '👵', '🧒', '👩'];
+const MOUTH_STAGES = ['', '', '', '', ''];
+const PATIENT_EMOJIS = ['', '', '', '', '', ''];
 
 let highSmiles = 0;
 let questions = [];
@@ -62,7 +62,7 @@ function createFloatingTeeth() {
   for (let i = 0; i < 6; i++) {
     const tooth = document.createElement('div');
     tooth.className = 'float-tooth';
-    tooth.textContent = '🦷';
+    tooth.textContent = '';
     tooth.style.left = Math.random() * 100 + '%';
     tooth.style.animationDuration = (8 + Math.random() * 10) + 's';
     tooth.style.animationDelay = (Math.random() * 6) + 's';
@@ -272,10 +272,10 @@ function startTimer() {
 function completePatient(success) {
   if (success) {
     smiles++;
-    patientResults.push('😁');
+    patientResults.push('');
     // Show happy mouth
-    document.getElementById('mouth-emoji').textContent = '😁';
-    document.getElementById('patient-status').textContent = '🎉 Bệnh nhân vui vẻ!';
+    document.getElementById('mouth-emoji').textContent = '';
+    document.getElementById('patient-status').textContent = '<img src="/img/party.png" class="em-icon"> Bệnh nhân vui vẻ!';
     // All teeth clean
     document.querySelectorAll('.tooth').forEach(t => {
       t.classList.remove('dirty');
@@ -284,9 +284,9 @@ function completePatient(success) {
     // All steps done
     document.querySelectorAll('.step-dot').forEach(d => d.classList.add('done'));
   } else {
-    patientResults.push('😢');
-    document.getElementById('mouth-emoji').textContent = '😢';
-    document.getElementById('patient-status').textContent = '😢 Bệnh nhân chuyển viện...';
+    patientResults.push('');
+    document.getElementById('mouth-emoji').textContent = '';
+    document.getElementById('patient-status').textContent = ' Bệnh nhân chuyển viện...';
   }
 
   document.getElementById('smiles').textContent = smiles;
@@ -312,11 +312,11 @@ function endGame() {
   if (smiles > highSmiles) {
     highSmiles = smiles;
     saveData();
-    document.getElementById('result-title').textContent = '🎉 Kỷ Lục Mới!';
+    document.getElementById('result-title').textContent = '<img src="/img/party.png" class="em-icon"> Kỷ Lục Mới!';
   } else if (smiles >= 5) {
-    document.getElementById('result-title').textContent = '🌟 Bác Sĩ Xuất Sắc!';
+    document.getElementById('result-title').textContent = ' Bác Sĩ Xuất Sắc!';
   } else {
-    document.getElementById('result-title').textContent = '🦷 Ca Trực Kết Thúc!';
+    document.getElementById('result-title').textContent = ' Ca Trực Kết Thúc!';
   }
 
   // Render smile collection
@@ -331,10 +331,10 @@ function endGame() {
   });
 
   document.getElementById('result-detail').innerHTML = `
-    ✅ Đúng: ${totalCorrect}/${totalAnswered} (${accuracy}%)<br>
-    😁 Chữa thành công: ${smiles}/${TOTAL_PATIENTS}<br>
-    😢 Chuyển viện: ${TOTAL_PATIENTS - smiles}<br>
-    🏆 Kỷ lục: ${highSmiles} nụ cười
+     Đúng: ${totalCorrect}/${totalAnswered} (${accuracy}%)<br>
+     Chữa thành công: ${smiles}/${TOTAL_PATIENTS}<br>
+     Chuyển viện: ${TOTAL_PATIENTS - smiles}<br>
+    <img src="/img/trophy.png" class="em-icon"> Kỷ lục: ${highSmiles} nụ cười
   `;
 
   spawnConfetti();
@@ -407,7 +407,7 @@ init();
       if (C && C.hasSpecies('dentist')) {
         dentistChar = C.createCharacter('dentist', dHost, { state: 'idle' });
       } else {
-        dHost.textContent = '🧑\u200d⚕️';
+        dHost.textContent = '\u200d';
       }
     }
     if (tHost && !toothChar) {
@@ -415,7 +415,7 @@ init();
       if (C && C.hasSpecies('tooth')) {
         toothChar = C.createCharacter('tooth', tHost, { state: 'idle' });
       } else {
-        tHost.textContent = '🦷';
+        tHost.textContent = '';
       }
     }
   }
@@ -479,7 +479,7 @@ init();
     if (mouth) {
       const obs2 = new MutationObserver(() => {
         const txt = mouth.textContent || '';
-        if (txt.indexOf('😁') !== -1) { toothCelebrate(); dentistCheer(); }
+        if (txt.indexOf('') !== -1) { toothCelebrate(); dentistCheer(); }
       });
       obs2.observe(mouth, { childList: true, characterData: true, subtree: true });
     }

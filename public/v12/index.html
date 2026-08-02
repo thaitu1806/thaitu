@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>🧩 Lật Hình Trí Tuệ - Học Vui</title>
+  <title> Lật Hình Trí Tuệ - Học Vui</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="/tts.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -15,11 +15,11 @@
     <!-- SETUP -->
     <section id="setup-screen" class="screen active">
       <div class="setup-container">
-        <h1 class="setup-title">🧩 Lật Hình Trí Tuệ</h1>
+        <h1 class="setup-title"> Lật Hình Trí Tuệ</h1>
         <p class="setup-subtitle">Ghép câu hỏi với đáp án!</p>
 
         <div class="setup-section">
-          <label class="setup-label">🎮 Chế độ</label>
+          <label class="setup-label"> Chế độ</label>
           <div class="btn-group" id="mode-group">
             <button class="btn-option active" data-mode="solo">Solo</button>
             <button class="btn-option" data-mode="versus">Đối đầu</button>
@@ -27,7 +27,7 @@
         </div>
 
         <div class="setup-section versus-only hidden">
-          <label class="setup-label">👥 Số người</label>
+          <label class="setup-label"> Số người</label>
           <div class="btn-group" id="player-count-group">
             <button class="btn-option active" data-count="2">2</button>
             <button class="btn-option" data-count="3">3</button>
@@ -36,7 +36,7 @@
         </div>
 
         <div class="setup-section">
-          <label class="setup-label">📚 Môn học</label>
+          <label class="setup-label"> Môn học</label>
           <div class="btn-group" id="subject-group">
             <button class="btn-option active" data-subject="math">Toán</button>
             <button class="btn-option" data-subject="vietnamese">Tiếng Việt</button>
@@ -46,7 +46,7 @@
         </div>
 
         <div class="setup-section">
-          <label class="setup-label">📊 Kích thước</label>
+          <label class="setup-label"> Kích thước</label>
           <div class="btn-group" id="size-group">
             <button class="btn-option active" data-size="8">4×4</button>
             <button class="btn-option" data-size="12">4×6</button>
@@ -54,9 +54,9 @@
           </div>
         </div>
 
-        <button class="btn-start" id="btn-start">🚀 Bắt đầu!</button>
-        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <button class="btn-start" id="btn-start"> Bắt đầu!</button>
+        <button class="btn-guide" id="btn-guide"> Hướng Dẫn Cách Chơi</button>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </section>
 
@@ -64,9 +64,9 @@
     <section id="game-screen" class="screen">
       <div class="game-layout">
         <div class="game-header">
-          <button class="btn-exit" id="btn-exit">🚪</button>
+          <button class="btn-exit" id="btn-exit"></button>
           <div class="game-info" id="game-info"></div>
-          <div class="timer" id="timer">⏱️ 0:00</div>
+          <div class="timer" id="timer">⏱ 0:00</div>
         </div>
         <div class="card-grid" id="card-grid"></div>
         <div class="turn-bar" id="turn-bar"></div>
@@ -74,12 +74,12 @@
       </div>
       <div class="exit-overlay" id="exit-overlay">
         <div class="modal-card exit-modal-card">
-          <div class="exit-modal-icon">🚪</div>
+          <div class="exit-modal-icon"></div>
           <p class="exit-modal-text">Thoát game?</p>
           <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
           <div class="exit-modal-actions">
             <button class="exit-modal-cancel" id="exit-cancel">Tiếp tục chơi</button>
-            <button class="exit-modal-confirm" id="exit-confirm">🚪 Thoát</button>
+            <button class="exit-modal-confirm" id="exit-confirm"> Thoát</button>
           </div>
         </div>
       </div>
@@ -93,14 +93,14 @@
 
   <div id="guide-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card">
-      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <h3 class="modal-title"> Cách Chơi</h3>
       <ul class="modal-rules">
-        <li>🧩 Lật các thẻ để tìm <b>cặp ghép đúng</b>: một thẻ câu hỏi và một thẻ đáp án.</li>
-        <li>✅ Ghép đúng = giữ cặp thẻ và <b>ăn điểm</b>. Ghép sai = thẻ lật úp lại.</li>
-        <li>🔥 Ghép đúng liên tiếp tạo <b>combo</b> — cú nhân khí thế!</li>
-        <li>👥 Chế độ <b>Đối đầu</b>: ghép sai là tới lượt người chơi kế tiếp.</li>
-        <li>📊 Chọn kích thước lớn hơn (<b>4×6</b>, <b>4×8</b>) để thử thách trí nhớ.</li>
-        <li>🏆 Lật hết tất cả các cặp là <b>chiến thắng</b> — nhanh và ít lượt lật là giỏi nhất!</li>
+        <li> Lật các thẻ để tìm <b>cặp ghép đúng</b>: một thẻ câu hỏi và một thẻ đáp án.</li>
+        <li> Ghép đúng = giữ cặp thẻ và <b>ăn điểm</b>. Ghép sai = thẻ lật úp lại.</li>
+        <li> Ghép đúng liên tiếp tạo <b>combo</b> — cú nhân khí thế!</li>
+        <li> Chế độ <b>Đối đầu</b>: ghép sai là tới lượt người chơi kế tiếp.</li>
+        <li> Chọn kích thước lớn hơn (<b>4×6</b>, <b>4×8</b>) để thử thách trí nhớ.</li>
+        <li> Lật hết tất cả các cặp là <b>chiến thắng</b> — nhanh và ít lượt lật là giỏi nhất!</li>
       </ul>
       <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
     </div>
@@ -114,6 +114,7 @@
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
   <script src="/help-rules.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

@@ -6,11 +6,11 @@ const STORAGE_KEY = 'v30_party';
 const TOTAL_ROUNDS = 10;
 
 const ROUND_TYPES = [
-  { id: 'normal', name: 'Bình thường', icon: '🎯', timer: 10, desc: '4 lựa chọn, 10 giây', cssClass: 'type-normal' },
-  { id: 'truefalse', name: 'Đúng/Sai', icon: '✅', timer: 8, desc: '2 nút: Đúng hoặc Sai', cssClass: 'type-truefalse' },
-  { id: 'speed', name: 'Tốc Độ', icon: '⚡', timer: 5, desc: '4 lựa chọn, chỉ 5 giây!', cssClass: 'type-speed' },
-  { id: 'golden', name: 'Vàng', icon: '🌟', timer: 10, desc: '3x điểm nếu đúng!', cssClass: 'type-golden' },
-  { id: 'reverse', name: 'Ngược', icon: '🔄', timer: 10, desc: 'Chọn đáp án SAI!', cssClass: 'type-reverse' }
+  { id: 'normal', name: 'Bình thường', icon: '', timer: 10, desc: '4 lựa chọn, 10 giây', cssClass: 'type-normal' },
+  { id: 'truefalse', name: 'Đúng/Sai', icon: '', timer: 8, desc: '2 nút: Đúng hoặc Sai', cssClass: 'type-truefalse' },
+  { id: 'speed', name: 'Tốc Độ', icon: '<img src="/img/bolt.png" class="em-icon">', timer: 5, desc: '4 lựa chọn, chỉ 5 giây!', cssClass: 'type-speed' },
+  { id: 'golden', name: 'Vàng', icon: '', timer: 10, desc: '3x điểm nếu đúng!', cssClass: 'type-golden' },
+  { id: 'reverse', name: 'Ngược', icon: '', timer: 10, desc: 'Chọn đáp án SAI!', cssClass: 'type-reverse' }
 ];
 
 // State
@@ -135,7 +135,7 @@ function showQuestion() {
   // Question text
   const qText = document.getElementById('q-text');
   if (roundType.id === 'reverse') {
-    qText.textContent = `🔄 Chọn đáp án SAI: ${q.question_text}`;
+    qText.textContent = ` Chọn đáp án SAI: ${q.question_text}`;
   } else {
     qText.textContent = q.question_text;
   }
@@ -184,12 +184,12 @@ function renderTrueFalse(q, roundType) {
 
   const btnTrue = document.createElement('button');
   btnTrue.className = 'option-btn';
-  btnTrue.textContent = '✅ Đúng';
+  btnTrue.textContent = ' Đúng';
   btnTrue.onclick = () => handleTrueFalse(showCorrect === true, roundType);
 
   const btnFalse = document.createElement('button');
   btnFalse.className = 'option-btn';
-  btnFalse.textContent = '❌ Sai';
+  btnFalse.textContent = ' Sai';
   btnFalse.onclick = () => handleTrueFalse(showCorrect === false, roundType);
 
   optionsGrid.appendChild(btnTrue);
@@ -292,10 +292,10 @@ function handleFourChoice(selected, correct, roundType) {
 function showFeedback(correct, points) {
   const fb = document.getElementById('q-feedback');
   if (correct) {
-    fb.textContent = `✅ Đúng! +${points} điểm`;
+    fb.textContent = ` Đúng! +${points} điểm`;
     fb.className = 'q-feedback correct';
   } else {
-    fb.textContent = '❌ Sai rồi!';
+    fb.textContent = ' Sai rồi!';
     fb.className = 'q-feedback wrong';
   }
   document.getElementById('q-score').textContent = `${score} điểm`;
@@ -359,17 +359,17 @@ function showResults() {
   
   const accuracy = Math.round((correctCount / TOTAL_ROUNDS) * 100);
   document.getElementById('result-detail').innerHTML = `
-    ✅ Đúng: ${correctCount}/${TOTAL_ROUNDS} (${accuracy}%)<br>
-    🎯 Trung bình: ${Math.round(score / TOTAL_ROUNDS)} điểm/vòng
+     Đúng: ${correctCount}/${TOTAL_ROUNDS} (${accuracy}%)<br>
+     Trung bình: ${Math.round(score / TOTAL_ROUNDS)} điểm/vòng
   `;
 
   const isNewHigh = score > highScore;
   if (isNewHigh) {
-    document.getElementById('result-highscore').textContent = '🎉 KỶ LỤC MỚI!';
-    document.getElementById('result-title').textContent = '🏆 Kỷ Lục Mới!';
+    document.getElementById('result-highscore').textContent = '<img src="/img/party.png" class="em-icon"> KỶ LỤC MỚI!';
+    document.getElementById('result-title').textContent = '<img src="/img/trophy.png" class="em-icon"> Kỷ Lục Mới!';
   } else {
-    document.getElementById('result-highscore').textContent = `🏆 Kỷ lục: ${highScore} điểm`;
-    document.getElementById('result-title').textContent = '🎪 Kết Quả!';
+    document.getElementById('result-highscore').textContent = `<img src="/img/trophy.png" class="em-icon"> Kỷ lục: ${highScore} điểm`;
+    document.getElementById('result-title').textContent = ' Kết Quả!';
   }
 
   saveHighScore(score);
@@ -492,9 +492,9 @@ init();
     const $ = id => document.getElementById(id);
 
     // Mount mascots: cheerful host on start + wheel, clown buddy in question header.
-    mountHost('host-stage', 'host', '🤹');
-    mountHost('wheel-host', 'host', '🤹');
-    mountHost('quiz-host', 'clown', '🤡');
+    mountHost('host-stage', 'host', '');
+    mountHost('wheel-host', 'host', '');
+    mountHost('quiz-host', 'clown', '');
 
     // Sync "happy" reaction to correct answers by observing the feedback node.
     const fb = $('q-feedback');

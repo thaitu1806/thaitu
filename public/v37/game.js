@@ -7,18 +7,18 @@ const TIMER_SECONDS = 10;
 const QUESTIONS_PER_EVENT = 5;
 
 const EVENTS = [
-  { emoji: '🏃', name: 'Chạy 100m', unit: 'giây', goodIsLow: true },
-  { emoji: '🤸', name: 'Nhảy xa', unit: 'mét', goodIsLow: false },
-  { emoji: '🏊', name: 'Bơi 50m', unit: 'giây', goodIsLow: true },
-  { emoji: '🎯', name: 'Bắn cung', unit: 'điểm', goodIsLow: false },
-  { emoji: '🚴', name: 'Xe đạp', unit: 'giây', goodIsLow: true }
+  { emoji: '', name: 'Chạy 100m', unit: 'giây', goodIsLow: true },
+  { emoji: '', name: 'Nhảy xa', unit: 'mét', goodIsLow: false },
+  { emoji: '', name: 'Bơi 50m', unit: 'giây', goodIsLow: true },
+  { emoji: '', name: 'Bắn cung', unit: 'điểm', goodIsLow: false },
+  { emoji: '', name: 'Xe đạp', unit: 'giây', goodIsLow: true }
 ];
 
 const COUNTRIES = [
-  { code: 'vn', flag: '🇻🇳', name: 'Bạn' },
-  { code: 'jp', flag: '🇯🇵', name: 'JP' },
-  { code: 'us', flag: '🇺🇸', name: 'US' },
-  { code: 'kr', flag: '🇰🇷', name: 'KR' }
+  { code: 'vn', flag: '', name: 'Bạn' },
+  { code: 'jp', flag: '', name: 'JP' },
+  { code: 'us', flag: '', name: 'US' },
+  { code: 'kr', flag: '', name: 'KR' }
 ];
 
 let bestMedals = 0;
@@ -307,10 +307,10 @@ function showEventResult(playerMedal) {
 
   let icon, text;
   switch (playerMedal) {
-    case 'gold': icon = '🥇'; text = 'Huy chương vàng!'; break;
-    case 'silver': icon = '🥈'; text = 'Huy chương bạc!'; break;
-    case 'bronze': icon = '🥉'; text = 'Huy chương đồng!'; break;
-    default: icon = '😅'; text = 'Chưa có huy chương...'; break;
+    case 'gold': icon = '<img src="/img/medal.png" class="em-icon">'; text = 'Huy chương vàng!'; break;
+    case 'silver': icon = ''; text = 'Huy chương bạc!'; break;
+    case 'bronze': icon = ''; text = 'Huy chương đồng!'; break;
+    default: icon = ''; text = 'Chưa có huy chương...'; break;
   }
 
   iconDiv.textContent = icon;
@@ -322,9 +322,9 @@ function showEventResult(playerMedal) {
   // Change button text if last event
   const nextBtn = document.getElementById('btn-next-event');
   if (currentEvent >= EVENTS.length - 1) {
-    nextBtn.textContent = '🏆 Xem Kết Quả!';
+    nextBtn.textContent = '<img src="/img/trophy.png" class="em-icon"> Xem Kết Quả!';
   } else {
-    nextBtn.textContent = 'Môn tiếp theo ➡️';
+    nextBtn.textContent = 'Môn tiếp theo ';
   }
 }
 
@@ -367,16 +367,16 @@ function endGame() {
   if (totalPlayerMedals > bestMedals) {
     bestMedals = totalPlayerMedals;
     saveData();
-    document.getElementById('result-title').textContent = '🎉 Kỷ Lục Mới!';
+    document.getElementById('result-title').textContent = '<img src="/img/party.png" class="em-icon"> Kỷ Lục Mới!';
   } else {
-    document.getElementById('result-title').textContent = playerRank === 1 ? '🏆 Vô Địch!' : '🏟️ Kết Quả Olympic!';
+    document.getElementById('result-title').textContent = playerRank === 1 ? '<img src="/img/trophy.png" class="em-icon"> Vô Địch!' : ' Kết Quả Olympic!';
   }
 
   document.getElementById('result-detail').innerHTML = `
-    🇻🇳 Xếp hạng: #${playerRank}/4<br>
-    ✅ Đúng: ${totalCorrect}/${totalAnswered} (${accuracy}%)<br>
-    🥇 Vàng: ${playerMedals.gold} | 🥈 Bạc: ${playerMedals.silver} | 🥉 Đồng: ${playerMedals.bronze}<br>
-    🏅 Tổng huy chương: ${totalPlayerMedals}
+     Xếp hạng: #${playerRank}/4<br>
+     Đúng: ${totalCorrect}/${totalAnswered} (${accuracy}%)<br>
+    <img src="/img/medal.png" class="em-icon"> Vàng: ${playerMedals.gold} |  Bạc: ${playerMedals.silver} |  Đồng: ${playerMedals.bronze}<br>
+    <img src="/img/medal.png" class="em-icon"> Tổng huy chương: ${totalPlayerMedals}
   `;
 
   spawnConfetti();
@@ -402,7 +402,7 @@ function renderPodium(rankings) {
     place.className = 'podium-place';
     place.innerHTML = `
       <span class="podium-flag">${r.flag}</span>
-      <span class="podium-medal">${i === 1 ? '🥇' : i === 0 ? '🥈' : '🥉'}</span>
+      <span class="podium-medal">${i === 1 ? '<img src="/img/medal.png" class="em-icon">' : i === 0 ? '' : ''}</span>
       <div class="podium-bar ${classes[i]}">${positions[i]}</div>
     `;
     podiumDiv.appendChild(place);
@@ -419,9 +419,9 @@ function renderMedalTally(rankings) {
     row.innerHTML = `
       <span class="tally-country">${r.flag} ${r.name}</span>
       <span class="tally-medals">
-        <span>🥇${r.medals.gold}</span>
-        <span>🥈${r.medals.silver}</span>
-        <span>🥉${r.medals.bronze}</span>
+        <span><img src="/img/medal.png" class="em-icon">${r.medals.gold}</span>
+        <span>${r.medals.silver}</span>
+        <span>${r.medals.bronze}</span>
       </span>
     `;
     tallyDiv.appendChild(row);
@@ -504,8 +504,8 @@ init();
       athChar = C.createCharacter(species, host, { state: 'idle' });
     } else {
       // Emoji fallback mirrors the event icon set.
-      const fb = { runner: '🏃', gymnast: '🤸', swimmer: '🏊', archer: '🎯', cyclist: '🚴' };
-      host.textContent = fb[species] || '🏃';
+      const fb = { runner: '', gymnast: '', swimmer: '', archer: '', cyclist: '' };
+      host.textContent = fb[species] || '';
     }
   }
 
@@ -574,7 +574,7 @@ init();
         const popup = $('event-result');
         const visible = popup && popup.style.display !== 'none';
         const txt = resultIcon.textContent || '';
-        if (visible && (txt.indexOf('🥇') !== -1 || txt.indexOf('🥈') !== -1 || txt.indexOf('🥉') !== -1)) {
+        if (visible && (txt.indexOf('<img src="/img/medal.png" class="em-icon">') !== -1 || txt.indexOf('') !== -1 || txt.indexOf('') !== -1)) {
           pulseHappy(athChar);
           spawnParticles(popup, 'confetti', 18);
         }

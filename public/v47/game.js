@@ -106,7 +106,7 @@
       if (C && C.hasSpecies(id)) {
         char = C.createCharacter(id, cell, { state: 'idle' });
       } else {
-        cell.textContent = s.rare ? '✨' : window.V47Logic.COLOR_EMOJIS[s.color];
+        cell.textContent = s.rare ? '' : window.V47Logic.COLOR_EMOJIS[s.color];
       }
       slimeRefs.push({ cell, char });
     });
@@ -167,13 +167,13 @@
     if (state.slimesCrafted > prevCraft) {
       const last = state.slimes[state.slimes.length - 1];
       fb.className = 'feedback craft';
-      fb.textContent = last.rare ? '✨ Slime hiếm xuất hiện!' : `🟢 Tạo slime ${last.color}!`;
+      fb.textContent = last.rare ? ' Slime hiếm xuất hiện!' : ` Tạo slime ${last.color}!`;
     } else if (ok) {
       fb.className = 'feedback good';
-      fb.textContent = '✅ Đúng! Thêm 1 giọt.';
+      fb.textContent = ' Đúng! Thêm 1 giọt.';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = '❌ Sai! Bình bị tràn, reset.';
+      fb.textContent = ' Sai! Bình bị tràn, reset.';
     }
     renderHud(); renderJar(); renderSlimes();
     // Sparkle burst on each correct drop.
@@ -215,14 +215,14 @@
     saveSession({ stars, acc, total });
     // Confetti celebration on a strong finish.
     if (state.slimesCrafted >= 5) spawnConfetti($('app'), 40);
-    const badges = state.slimes.map(s => s.rare ? '✨' : window.V47Logic.COLOR_EMOJIS[s.color]).join('  ') || '🧪';
+    const badges = state.slimes.map(s => s.rare ? '' : window.V47Logic.COLOR_EMOJIS[s.color]).join('  ') || '';
     $('result-badges').textContent = badges;
-    $('result-title').textContent = state.slimesCrafted >= 5 ? '🧪 Pháp Sư Slime!' : '🧪 Kết Thí Nghiệm';
+    $('result-title').textContent = state.slimesCrafted >= 5 ? ' Pháp Sư Slime!' : ' Kết Thí Nghiệm';
     $('result-detail').innerHTML = `
-      🧪 Slime tạo: ${state.slimesCrafted}/${state.maxSlimes}<br>
-      ✨ Hiếm: ${state.slimes.filter(s => s.rare).length}<br>
-      ✅ Đúng: ${state.correct}/${total} (${acc}%)<br>
-      ⭐ Sao: ${stars}/3
+       Slime tạo: ${state.slimesCrafted}/${state.maxSlimes}<br>
+       Hiếm: ${state.slimes.filter(s => s.rare).length}<br>
+       Đúng: ${state.correct}/${total} (${acc}%)<br>
+      <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3
     `;
     ss('result-screen');
     if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch(e){} }

@@ -76,7 +76,7 @@
     if (C && C.hasSpecies(id)) {
       custChar = C.createCharacter(id, host, { state: 'idle' });
     } else {
-      host.textContent = '🧑';
+      host.textContent = '';
     }
   }
 
@@ -186,7 +186,7 @@
     for (let i = 0; i < state.totalCustomers; i++) {
       const slot = document.createElement('div');
       slot.className = 'queue-slot';
-      slot.textContent = '🧑';
+      slot.textContent = '';
       if (i < state.customerIndex) {
         slot.classList.add(i < state.servedCount ? 'served' : 'lost');
       } else if (i === state.customerIndex) {
@@ -356,13 +356,13 @@
     fb.style.display = 'block';
     if (justServed) {
       fb.className = 'feedback tip';
-      fb.textContent = `🍕 Giao xong! +${reward}k`;
+      fb.textContent = ` Giao xong! +${reward}k`;
     } else if (isCorrect) {
       fb.className = 'feedback good';
-      fb.textContent = '✅ Đúng! Thêm 1 topping.';
+      fb.textContent = ' Đúng! Thêm 1 topping.';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = '❌ Sai mất! Thử lại.';
+      fb.textContent = ' Sai mất! Thử lại.';
     }
   }
 
@@ -386,13 +386,13 @@
     saveSession({ stars, accuracy, total });
 
     $('result-detail').innerHTML = `
-      💰 Lợi nhuận ca: ${state.earnings}k<br>
-      🍕 Khách đã phục vụ: ${state.servedCount}/${state.totalCustomers}<br>
-      ✅ Câu đúng: ${state.correct}/${total} (${accuracy}%)<br>
-      ⭐ Sao: ${stars}/3
+       Lợi nhuận ca: ${state.earnings}k<br>
+       Khách đã phục vụ: ${state.servedCount}/${state.totalCustomers}<br>
+       Câu đúng: ${state.correct}/${total} (${accuracy}%)<br>
+      <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3
     `;
     $('result-title').textContent =
-      state.servedCount === state.totalCustomers ? '🎉 Hoàn Hảo!' : '🍕 Kết Ca!';
+      state.servedCount === state.totalCustomers ? '<img src="/img/party.png" class="em-icon"> Hoàn Hảo!' : ' Kết Ca!';
     showScreen('result-screen');
 
     // Celebrate a productive shift with confetti.

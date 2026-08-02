@@ -28,7 +28,7 @@ let timeRemaining = 0;
       el.value = data.name;
       el.style.display = 'none';
       document.getElementById('exam-player-label').style.display = 'block';
-      document.getElementById('exam-player-label').textContent = `Chào ${data.name}! 📝`;
+      document.getElementById('exam-player-label').textContent = `Chào ${data.name}! `;
     }
   } catch {
     // Network error - trust local
@@ -37,7 +37,7 @@ let timeRemaining = 0;
       el.value = p.name;
       el.style.display = 'none';
       document.getElementById('exam-player-label').style.display = 'block';
-      document.getElementById('exam-player-label').textContent = `Chào ${p.name}! 📝`;
+      document.getElementById('exam-player-label').textContent = `Chào ${p.name}! `;
     }
   }
 })();
@@ -69,10 +69,10 @@ async function loadExams() {
       <div class="exam-card" onclick="startExam(${e.id})">
         <div class="exam-card-title">${e.title}</div>
         <div class="exam-card-meta">
-          <span>${e.subject === 'math' ? '🔢 Toán' : e.subject === 'vietnamese' ? '📖 TV' : '📚 Mix'}</span>
-          <span>${e.difficulty === 'easy' ? '⭐ Dễ' : e.difficulty === 'medium' ? '⭐⭐ TB' : e.difficulty === 'hard' ? '⭐⭐⭐ Khó' : '🎯 Mix'}</span>
-          <span>📝 ${e.total_questions} câu</span>
-          <span>⏱️ ${e.time_limit_minutes} phút</span>
+          <span>${e.subject === 'math' ? ' Toán' : e.subject === 'vietnamese' ? ' TV' : ' Mix'}</span>
+          <span>${e.difficulty === 'easy' ? '⭐ Dễ' : e.difficulty === 'medium' ? '⭐⭐ TB' : e.difficulty === 'hard' ? '⭐⭐⭐ Khó' : ' Mix'}</span>
+          <span> ${e.total_questions} câu</span>
+          <span>⏱ ${e.time_limit_minutes} phút</span>
         </div>
       </div>
     `).join('');
@@ -192,7 +192,7 @@ function updateTimerDisplay() {
   const el = document.getElementById('taking-timer');
   const min = Math.floor(timeRemaining / 60);
   const sec = timeRemaining % 60;
-  el.textContent = `⏱️ ${min}:${sec.toString().padStart(2, '0')}`;
+  el.textContent = `⏱ ${min}:${sec.toString().padStart(2, '0')}`;
   el.className = 'taking-timer';
   if (timeRemaining <= 60) el.classList.add('danger');
   else if (timeRemaining <= 180) el.classList.add('warning');
@@ -242,14 +242,14 @@ function showResult(result, timeSpent) {
 
   // Review
   const review = document.getElementById('result-review');
-  review.innerHTML = '<h3 style="margin-bottom:10px">📋 Chi tiết:</h3>' + result.detail.map((d, i) => {
+  review.innerHTML = '<h3 style="margin-bottom:10px"> Chi tiết:</h3>' + result.detail.map((d, i) => {
     const q = currentExam.questions[i];
     const optMap = { a: q.option_a, b: q.option_b, c: q.option_c, d: q.option_d };
     return `<div class="review-item ${d.is_correct ? 'correct' : 'wrong'}">
       <div class="review-q">${i + 1}. ${q.question_text}</div>
       <div class="review-a">
         ${d.answer ? `Chọn: ${d.answer.toUpperCase()}. ${optMap[d.answer] || ''}` : 'Chưa trả lời'}
-        ${!d.is_correct ? ` → Đáp án: ${d.correct_answer.toUpperCase()}. ${optMap[d.correct_answer]}` : ' ✓'}
+        ${!d.is_correct ? ` → Đáp án: ${d.correct_answer.toUpperCase()}. ${optMap[d.correct_answer]}` : ' '}
       </div>
     </div>`;
   }).join('');

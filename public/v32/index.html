@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>🔬 Nhà Khoa Học Nhí - Học Vui</title>
+  <title> Nhà Khoa Học Nhí - Học Vui</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="/quiz/quiz-modes.css">
   <link rel="stylesheet" href="/tts.css">
@@ -16,22 +16,22 @@
     <!-- START SCREEN -->
     <section id="start-screen" class="screen active">
       <div class="container">
-        <h1 class="main-title">🔬 Nhà Khoa Học Nhí</h1>
+        <h1 class="main-title"> Nhà Khoa Học Nhí</h1>
         <p class="subtitle">Trả lời đúng để tạo thí nghiệm!</p>
         <div class="collection-box">
-          <span>🧪 Bộ sưu tập: </span><span id="collection-count">0</span> phát minh
+          <span> Bộ sưu tập: </span><span id="collection-count">0</span> phát minh
         </div>
         <div class="subject-selector">
           <label>Môn học:</label>
           <div class="subject-btns">
-            <button class="subj-btn active" data-subject="math">🔢 Toán</button>
-            <button class="subj-btn" data-subject="vietnamese">📖 Tiếng Việt</button>
-            <button class="subj-btn" data-subject="english">🔤 English</button>
+            <button class="subj-btn active" data-subject="math"> Toán</button>
+            <button class="subj-btn" data-subject="vietnamese"> Tiếng Việt</button>
+            <button class="subj-btn" data-subject="english"> English</button>
           </div>
         </div>
-        <button class="btn-primary" id="btn-start">🧪 Bắt Đầu Thí Nghiệm!</button>
-        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <button class="btn-primary" id="btn-start"> Bắt Đầu Thí Nghiệm!</button>
+        <button class="btn-guide" id="btn-guide"> Hướng Dẫn Cách Chơi</button>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </section>
 
@@ -39,10 +39,10 @@
     <section id="game-screen" class="screen">
       <div class="game-container">
         <div class="game-header">
-          <span class="ingredient-count" id="ingredient-count">🧫 0/5</span>
+          <span class="ingredient-count" id="ingredient-count"> 0/5</span>
           <span class="experiment-num" id="experiment-num">Thí nghiệm 1</span>
           <span class="game-score" id="game-score">⭐ 0</span>
-          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
+          <button class="btn-exit" id="btn-exit" title="Thoát game"></button>
         </div>
 
         <!-- TEST TUBE -->
@@ -84,11 +84,11 @@
     <!-- REACTION SCREEN -->
     <section id="reaction-screen" class="screen">
       <div class="reaction-container">
-        <h2 class="reaction-title">🧪 Phản Ứng Thành Công!</h2>
+        <h2 class="reaction-title"> Phản Ứng Thành Công!</h2>
         <div class="reaction-stage" id="reaction-stage"></div>
-        <div class="reaction-result" id="reaction-result">🧪</div>
+        <div class="reaction-result" id="reaction-result"></div>
         <div class="reaction-name" id="reaction-name">Đang phản ứng...</div>
-        <button class="btn-secondary" id="btn-next-experiment">🔬 Thí Nghiệm Tiếp!</button>
+        <button class="btn-secondary" id="btn-next-experiment"> Thí Nghiệm Tiếp!</button>
       </div>
     </section>
 
@@ -96,27 +96,27 @@
     <section id="result-screen" class="screen">
       <div class="result-container">
         <div class="confetti" id="confetti"></div>
-        <h2 class="result-title" id="result-title">🔬 Kết Quả Phòng Thí Nghiệm!</h2>
+        <h2 class="result-title" id="result-title"> Kết Quả Phòng Thí Nghiệm!</h2>
         <div class="result-score" id="result-score">0</div>
         <div class="result-label">điểm</div>
         <div class="result-detail" id="result-detail"></div>
         <div class="result-collection" id="result-collection"></div>
-        <button class="btn-primary" id="btn-replay">🔄 Thí Nghiệm Mới!</button>
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <button class="btn-primary" id="btn-replay"> Thí Nghiệm Mới!</button>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </section>
   </div>
 
   <div id="guide-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card">
-      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <h3 class="modal-title"> Cách Chơi</h3>
       <ul class="modal-rules">
-        <li>🔬 Trả lời <b>đúng</b> = thêm một <b>nguyên liệu</b> vào ống nghiệm.</li>
-        <li>🧫 Gom đủ <b>5 nguyên liệu</b> để hoàn thành một <b>thí nghiệm</b>.</li>
-        <li>🧪 Mỗi thí nghiệm xong sẽ tạo ra một <b>phát minh</b> mới cho bộ sưu tập.</li>
-        <li>💨 Trả lời <b>sai</b> hoặc <b>hết giờ</b> = nguyên liệu bốc hơi.</li>
-        <li>⏱️ Mỗi câu có <b>10 giây</b> để trả lời.</li>
-        <li>🏆 Hoàn thành cả <b>3 thí nghiệm</b> để trở thành Nhà Khoa Học Xuất Sắc!</li>
+        <li> Trả lời <b>đúng</b> = thêm một <b>nguyên liệu</b> vào ống nghiệm.</li>
+        <li> Gom đủ <b>5 nguyên liệu</b> để hoàn thành một <b>thí nghiệm</b>.</li>
+        <li> Mỗi thí nghiệm xong sẽ tạo ra một <b>phát minh</b> mới cho bộ sưu tập.</li>
+        <li> Trả lời <b>sai</b> hoặc <b>hết giờ</b> = nguyên liệu bốc hơi.</li>
+        <li>⏱ Mỗi câu có <b>10 giây</b> để trả lời.</li>
+        <li> Hoàn thành cả <b>3 thí nghiệm</b> để trở thành Nhà Khoa Học Xuất Sắc!</li>
       </ul>
       <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
     </div>
@@ -124,12 +124,12 @@
 
   <div id="exit-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card exit-modal-card">
-      <div class="exit-modal-icon">🚪</div>
+      <div class="exit-modal-icon"></div>
       <p class="exit-modal-text">Thoát game?</p>
       <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
       <div class="exit-modal-actions">
         <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
-        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm"> Thoát</button>
       </div>
     </div>
   </div>
@@ -144,6 +144,7 @@
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
   <script src="/help-rules.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

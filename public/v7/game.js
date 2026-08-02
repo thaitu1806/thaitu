@@ -113,7 +113,7 @@
     if (outcome || served >= MAX_Q) { finish(); return; }
     curQ = nextQ(); served++; locked = false; qStart = Date.now();
     const subj = curQ.subject || subject;
-    $('q-badge').textContent = subj === 'vietnamese' ? '📖' : subj === 'english' ? '🔤' : '🔢';
+    $('q-badge').textContent = subj === 'vietnamese' ? '' : subj === 'english' ? '' : '';
     $('q-text').textContent = curQ.question_text;
     $('feedback').style.display = 'none';
     const opts = $('q-options'); opts.innerHTML = '';
@@ -157,12 +157,12 @@
       height = Math.min(HEIGHT, height + up);
       grabAnimate();
       positionClimber(true);
-      if (up >= 2) { fb.className = 'feedback bonus'; fb.textContent = '✨ Combo! Leo vọt 2 nấc!'; }
-      else { fb.className = 'feedback good'; fb.textContent = '✅ Bám chắc! Leo lên 1 nấc.'; }
+      if (up >= 2) { fb.className = 'feedback bonus'; fb.textContent = ' Combo! Leo vọt 2 nấc!'; }
+      else { fb.className = 'feedback good'; fb.textContent = ' Bám chắc! Leo lên 1 nấc.'; }
     } else {
       wrong++; combo = 0; stamina--;
       slipAnimate();
-      fb.className = 'feedback bad'; fb.textContent = stamina > 0 ? '❌ Trượt tay! Mất 1 sức.' : '❌ Hết sức rồi!';
+      fb.className = 'feedback bad'; fb.textContent = stamina > 0 ? ' Trượt tay! Mất 1 sức.' : ' Hết sức rồi!';
     }
     if (height > userData.bestHeight) userData.bestHeight = height;
     renderHud();
@@ -197,10 +197,10 @@
     if (window.HocVuiSound) window.HocVuiSound.play(outcome === 'won' ? 'win' : 'lose');
     if (window.HocVuiCollection) window.HocVuiCollection.reward(stars);
     setTimeout(() => {
-      $('result-emoji').textContent = outcome === 'won' ? '🏔️' : outcome === 'fell' ? '😵' : '🧗';
-      $('result-title').textContent = outcome === 'won' ? '🏔️ Chinh Phục Đỉnh Núi!' : outcome === 'fell' ? '😵 Trượt Chân Rồi!' : '🧗 Kết Thúc';
-      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}">⭐</span>`).join('');
-      $('result-detail').innerHTML = `🧗 Độ cao: ${height}/${HEIGHT} (${height * 25}m)<br>💪 Sức còn: ${Math.max(0, stamina)}/${MAX_STAMINA}<br>✅ Đúng: ${correct}/${total} (${acc}%)<br>✨ Combo cao nhất: ${maxCombo}`;
+      $('result-emoji').textContent = outcome === 'won' ? '' : outcome === 'fell' ? '' : '';
+      $('result-title').textContent = outcome === 'won' ? ' Chinh Phục Đỉnh Núi!' : outcome === 'fell' ? ' Trượt Chân Rồi!' : ' Kết Thúc';
+      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}"><img src="/img/star.png" class="em-icon"></span>`).join('');
+      $('result-detail').innerHTML = ` Độ cao: ${height}/${HEIGHT} (${height * 25}m)<br> Sức còn: ${Math.max(0, stamina)}/${MAX_STAMINA}<br> Đúng: ${correct}/${total} (${acc}%)<br> Combo cao nhất: ${maxCombo}`;
       ss('result-screen');
       if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch (e) {} }
     }, outcome === 'won' ? 1100 : 200);

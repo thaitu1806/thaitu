@@ -7,12 +7,12 @@
   const QUIZ_TOTAL = 10;
 
   const BUILDINGS = [
-    { id: 'house', emoji: '🏠', name: 'Nhà', cost: { brick: 5, wood: 0, glass: 0 }, pop: 4 },
-    { id: 'school', emoji: '🏫', name: 'Trường', cost: { brick: 8, wood: 0, glass: 3 }, pop: 10 },
-    { id: 'hospital', emoji: '🏥', name: 'Bệnh viện', cost: { brick: 10, wood: 0, glass: 5 }, pop: 8 },
-    { id: 'park', emoji: '🌳', name: 'Công viên', cost: { brick: 0, wood: 3, glass: 0 }, pop: 2 },
-    { id: 'shop', emoji: '🏪', name: 'Cửa hàng', cost: { brick: 6, wood: 2, glass: 0 }, pop: 5 },
-    { id: 'library', emoji: '🏛️', name: 'Thư viện', cost: { brick: 7, wood: 0, glass: 4 }, pop: 6 },
+    { id: 'house', emoji: '', name: 'Nhà', cost: { brick: 5, wood: 0, glass: 0 }, pop: 4 },
+    { id: 'school', emoji: '', name: 'Trường', cost: { brick: 8, wood: 0, glass: 3 }, pop: 10 },
+    { id: 'hospital', emoji: '', name: 'Bệnh viện', cost: { brick: 10, wood: 0, glass: 5 }, pop: 8 },
+    { id: 'park', emoji: '', name: 'Công viên', cost: { brick: 0, wood: 3, glass: 0 }, pop: 2 },
+    { id: 'shop', emoji: '', name: 'Cửa hàng', cost: { brick: 6, wood: 2, glass: 0 }, pop: 5 },
+    { id: 'library', emoji: '', name: 'Thư viện', cost: { brick: 7, wood: 0, glass: 4 }, pop: 6 },
   ];
 
   // === STATE ===
@@ -64,7 +64,7 @@
       cell.dataset.index = i;
       if (state.grid[i]) {
         const b = BUILDINGS.find(b => b.id === state.grid[i]);
-        cell.textContent = b ? b.emoji : '❓';
+        cell.textContent = b ? b.emoji : '';
       } else {
         cell.textContent = '+';
       }
@@ -106,9 +106,9 @@
 
   function formatCost(cost) {
     const parts = [];
-    if (cost.brick > 0) parts.push(`🧱${cost.brick}`);
-    if (cost.wood > 0) parts.push(`🌲${cost.wood}`);
-    if (cost.glass > 0) parts.push(`🔷${cost.glass}`);
+    if (cost.brick > 0) parts.push(`${cost.brick}`);
+    if (cost.wood > 0) parts.push(`${cost.wood}`);
+    if (cost.glass > 0) parts.push(`${cost.glass}`);
     return parts.join(' ');
   }
 
@@ -124,7 +124,7 @@
         <div class="build-info">
           <span class="build-name">${b.name}</span>
           <span class="build-cost">${formatCost(b.cost)}</span>
-          <span class="build-pop">+${b.pop} 👥</span>
+          <span class="build-pop">+${b.pop} </span>
         </div>
       `;
       if (affordable) {
@@ -246,7 +246,7 @@
 
     const q = quizQuestions[quizIndex];
     document.getElementById('quiz-progress').textContent = `Câu ${quizIndex + 1}/${quizQuestions.length}`;
-    document.getElementById('quiz-score').textContent = `✅ ${quizCorrect}`;
+    document.getElementById('quiz-score').textContent = ` ${quizCorrect}`;
     document.getElementById('quiz-question').textContent = q.question_text;
     document.getElementById('quiz-feedback').textContent = '';
 
@@ -286,11 +286,11 @@
     const feedback = document.getElementById('quiz-feedback');
     if (isCorrect) {
       quizCorrect++;
-      feedback.textContent = '🎉 Đúng rồi!';
+      feedback.textContent = '<img src="/img/party.png" class="em-icon"> Đúng rồi!';
       // Award random materials
       awardMaterial();
     } else {
-      feedback.textContent = '❌ Sai rồi!';
+      feedback.textContent = ' Sai rồi!';
     }
 
     // Next question after delay
@@ -321,9 +321,9 @@
     const matsEl = document.getElementById('result-materials');
     matsEl.innerHTML = '';
     const matData = [
-      { icon: '🧱', count: quizEarned.brick, name: 'Gạch' },
-      { icon: '🌲', count: quizEarned.wood, name: 'Gỗ' },
-      { icon: '🔷', count: quizEarned.glass, name: 'Kính' },
+      { icon: '', count: quizEarned.brick, name: 'Gạch' },
+      { icon: '', count: quizEarned.wood, name: 'Gỗ' },
+      { icon: '', count: quizEarned.glass, name: 'Kính' },
     ];
     matData.forEach(m => {
       const div = document.createElement('div');
@@ -418,7 +418,7 @@
     document.getElementById('btn-start-quiz').addEventListener('click', async () => {
       document.getElementById('btn-start-quiz').textContent = '⏳ Đang tải...';
       quizQuestions = await fetchQuestions();
-      document.getElementById('btn-start-quiz').textContent = '🚀 Bắt đầu!';
+      document.getElementById('btn-start-quiz').textContent = ' Bắt đầu!';
       startQuiz();
     });
 
@@ -495,8 +495,8 @@
     const $ = id => document.getElementById(id);
 
     // --- Mount sprites ---
-    mayorChar = mount('mayor-stage', 'mayor', '👷');
-    citizenChar = mount('quiz-mascot', 'citizen', '🙂');
+    mayorChar = mount('mayor-stage', 'mayor', '');
+    citizenChar = mount('quiz-mascot', 'citizen', '');
 
     // --- Celebrate correct answers: watch quiz feedback text ---
     const feedback = $('quiz-feedback');
@@ -532,7 +532,7 @@
       const csObs = new MutationObserver(() => {
         if (cityScreen.classList.contains('active') && !mayorChar &&
             C && C.hasSpecies('mayor')) {
-          mayorChar = mount('mayor-stage', 'mayor', '👷');
+          mayorChar = mount('mayor-stage', 'mayor', '');
         }
       });
       csObs.observe(cityScreen, { attributes: true, attributeFilter: ['class'] });

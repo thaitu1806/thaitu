@@ -3,7 +3,7 @@
   'use strict';
   const STORAGE_KEY = 'v52_moon';
   const QL = 26;
-  const MOON_PHASES = ['🌑', '🌒', '🌓', '🌔', '🌕'];
+  const MOON_PHASES = ['', '', '', '', ''];
   let userData = { totalLanterns: 0, totalFireworks: 0 };
   function loadData() { try { const r = localStorage.getItem(STORAGE_KEY); if (r) Object.assign(userData, JSON.parse(r)); } catch(e){} }
   function saveData() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(userData)); } catch(e){} }
@@ -125,7 +125,7 @@
         if (C && C.hasSpecies(id)) {
           char = C.createCharacter(id, el, { state: 'idle' });
         } else {
-          el.textContent = '🏮';   // emoji fallback for a lit lantern
+          el.textContent = '';   // emoji fallback for a lit lantern
         }
       } else {
         el.textContent = '⬜';      // dim placeholder for an unlit slot
@@ -191,13 +191,13 @@
     const gotFirework = state.fireworks.length > prevFw;
     if (gotFirework) {
       fb.className = 'feedback bonus';
-      fb.textContent = '🎆 Pháo bông rực rỡ!';
+      fb.textContent = ' Pháo bông rực rỡ!';
     } else if (ok) {
       fb.className = 'feedback good';
-      fb.textContent = '✅ Thắp đèn lồng!';
+      fb.textContent = ' Thắp đèn lồng!';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = '❌ Sai! Streak reset.';
+      fb.textContent = ' Sai! Streak reset.';
     }
     renderHud(); renderLanterns(); renderMoon(); renderFireworks();
     // Celebrate a freshly-lit lantern: bright happy bob + spark/glow burst.
@@ -242,15 +242,15 @@
     // Climax: confetti over the moon stage when the night is won (full moon brightest).
     const stage = document.querySelector('.moon-stage');
     if (state.outcome === 'won') spawnConfetti(stage, 40);
-    const badges = state.fireworks.join(' ') + ' ' + '🏮'.repeat(Math.min(state.litCount, 5));
-    $('result-badges').textContent = badges.trim() || '🌑';
-    $('result-title').textContent = state.outcome === 'won' ? '🌕 Đêm Trăng Rằm!' : '🏮 Kết Lễ Hội';
-    $('result-emoji').textContent = state.outcome === 'won' ? '🌕' : '🏮';
+    const badges = state.fireworks.join(' ') + ' ' + ''.repeat(Math.min(state.litCount, 5));
+    $('result-badges').textContent = badges.trim() || '';
+    $('result-title').textContent = state.outcome === 'won' ? ' Đêm Trăng Rằm!' : ' Kết Lễ Hội';
+    $('result-emoji').textContent = state.outcome === 'won' ? '' : '';
     $('result-detail').innerHTML = `
-      🏮 Đèn lồng: ${state.litCount}/${state.slots.length}<br>
-      🎆 Pháo bông: ${state.fireworks.length}<br>
-      ✅ Đúng: ${state.correct}/${total} (${acc}%)<br>
-      ⭐ Sao: ${stars}/3
+       Đèn lồng: ${state.litCount}/${state.slots.length}<br>
+       Pháo bông: ${state.fireworks.length}<br>
+       Đúng: ${state.correct}/${total} (${acc}%)<br>
+      <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3
     `;
     ss('result-screen');
     if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch(e){} }

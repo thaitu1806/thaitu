@@ -1,6 +1,6 @@
 // V10 — Đào Vàng Dò Mìn (Treasure-Dig Minesweeper)
 // Tap a covered cell to open a quiz; answer correctly to safely dig it, revealing
-// the adjacent-mine count, a gem 💎 or coin 💰. Wrong answers cost a life. Toggle
+// the adjacent-mine count, a gem <img src="/img/diamond.png" class="em-icon"> or coin . Wrong answers cost a life. Toggle
 // flag mode to mark suspected mines. Clear all safe cells to win.
 (function () {
   'use strict';
@@ -105,11 +105,11 @@
       el.dataset.idx = String(i);
       if (cell.dug) {
         el.classList.add('dug');
-        if (cell.gem) { el.textContent = '💎'; el.classList.add('gem'); }
+        if (cell.gem) { el.textContent = '<img src="/img/diamond.png" class="em-icon">'; el.classList.add('gem'); }
         else if (cell.count > 0) { el.textContent = cell.count; el.style.color = NUM_COLORS[cell.count]; }
         else { el.textContent = ''; }
       } else if (cell.flag) {
-        el.textContent = '🚩'; el.classList.add('flagged');
+        el.textContent = ''; el.classList.add('flagged');
       } else {
         el.textContent = '';
       }
@@ -146,7 +146,7 @@
   function openQuestion() {
     curQ = nextQ(); served++; locked = false; qStart = Date.now();
     const subj = curQ.subject || subject;
-    $('q-badge').textContent = subj === 'vietnamese' ? '📖' : subj === 'english' ? '🔤' : '🔢';
+    $('q-badge').textContent = subj === 'vietnamese' ? '' : subj === 'english' ? '' : '';
     $('q-text').textContent = curQ.question_text;
     $('feedback').style.display = 'none';
     const opts = $('q-options'); opts.innerHTML = '';
@@ -192,18 +192,18 @@
       if (cell.mine) {
         // answered right but the cell was a mine → defused safely, still dig it
         cell.dug = true; lives = Math.min(MAX_LIVES, lives); // no penalty: skill defused it
-        fb.className = 'feedback bonus'; fb.textContent = '🧨 Gỡ mìn an toàn nhờ trả lời đúng!';
+        fb.className = 'feedback bonus'; fb.textContent = ' Gỡ mìn an toàn nhờ trả lời đúng!';
       } else {
         cell.dug = true; dug++;
-        if (cell.gem) { gems += 5; fb.className = 'feedback bonus'; fb.textContent = '💎 Tìm thấy kim cương! +5 báu vật'; }
-        else { gems += 1; fb.className = 'feedback good'; fb.textContent = '✅ Đào an toàn! +1 báu vật'; }
+        if (cell.gem) { gems += 5; fb.className = 'feedback bonus'; fb.textContent = '<img src="/img/diamond.png" class="em-icon"> Tìm thấy kim cương! +5 báu vật'; }
+        else { gems += 1; fb.className = 'feedback good'; fb.textContent = ' Đào an toàn! +1 báu vật'; }
         // auto-flood reveal of adjacent empty cells (count 0)
         if (cell.count === 0 && !cell.gem) floodReveal(activeCell);
       }
     } else {
       wrong++; combo = 0;
       lives--;
-      fb.className = 'feedback bad'; fb.textContent = lives > 0 ? '❌ Sai! Mất 1 mạng.' : '❌ Sai! Hết mạng rồi!';
+      fb.className = 'feedback bad'; fb.textContent = lives > 0 ? ' Sai! Mất 1 mạng.' : ' Sai! Hết mạng rồi!';
     }
     renderBoard(); renderHud();
     setTimeout(() => {
@@ -260,10 +260,10 @@
     if (window.HocVuiSound) window.HocVuiSound.play(outcome === 'won' ? 'win' : 'lose');
     if (window.HocVuiCollection) window.HocVuiCollection.reward(stars);
     setTimeout(() => {
-      $('result-emoji').textContent = outcome === 'won' ? '💎' : '💣';
-      $('result-title').textContent = outcome === 'won' ? '💎 Dọn Sạch Mỏ Vàng!' : '💣 Hết Mạng Rồi!';
-      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}">⭐</span>`).join('');
-      $('result-detail').innerHTML = `⛏️ Đã đào: ${dug}/${safeTotal}<br>💎 Báu vật: ${gems}<br>❤️ Mạng còn: ${Math.max(0, lives)}/${MAX_LIVES}<br>✅ Đúng: ${correct}/${total} (${acc}%)`;
+      $('result-emoji').textContent = outcome === 'won' ? '<img src="/img/diamond.png" class="em-icon">' : '';
+      $('result-title').textContent = outcome === 'won' ? '<img src="/img/diamond.png" class="em-icon"> Dọn Sạch Mỏ Vàng!' : ' Hết Mạng Rồi!';
+      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}"><img src="/img/star.png" class="em-icon"></span>`).join('');
+      $('result-detail').innerHTML = ` Đã đào: ${dug}/${safeTotal}<br><img src="/img/diamond.png" class="em-icon"> Báu vật: ${gems}<br><img src="/img/heart.png" class="em-icon"> Mạng còn: ${Math.max(0, lives)}/${MAX_LIVES}<br> Đúng: ${correct}/${total} (${acc}%)`;
       ss('result-screen');
       if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch (e) {} }
     }, outcome === 'won' ? 1100 : 400);
@@ -317,7 +317,7 @@
     $('btn-guide').addEventListener('click', () => { guideModal.style.display = 'flex'; });
     $('btn-guide-close').addEventListener('click', () => { guideModal.style.display = 'none'; });
     guideModal.addEventListener('click', e => { if (e.target === guideModal) guideModal.style.display = 'none'; });
-    // Exit is handled by the shared floating 🚪 (help-rules.js) which returns to the
+    // Exit is handled by the shared floating  (help-rules.js) which returns to the
     // home page. The in-HUD exit button was removed; guard its wiring in case the
     // game-specific exit modal is absent.
     const btnExit = $('btn-exit');

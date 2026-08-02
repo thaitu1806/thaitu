@@ -89,7 +89,7 @@
     if (outcome || served >= MAX_Q) { finish(); return; }
     curQ = nextQ(); served++; locked = false; qStart = Date.now();
     const subj = curQ.subject || subject;
-    $('q-badge').textContent = subj === 'vietnamese' ? '📖' : subj === 'english' ? '🔤' : '🔢';
+    $('q-badge').textContent = subj === 'vietnamese' ? '' : subj === 'english' ? '' : '';
     $('q-text').textContent = curQ.question_text;
     $('feedback').style.display = 'none';
     $('btn-drop').style.display = 'none';
@@ -130,11 +130,11 @@
     const fb = $('feedback'); fb.style.display = 'block';
     if (ok) {
       correct++; combo++; if (combo > maxCombo) maxCombo = combo;
-      fb.className = 'feedback good'; fb.textContent = '✅ Đúng! Căn thời điểm thả khối.';
+      fb.className = 'feedback good'; fb.textContent = ' Đúng! Căn thời điểm thả khối.';
       startSwing();
     } else {
       wrong++; combo = 0;
-      fb.className = 'feedback bad'; fb.textContent = '❌ Sai! Mất lượt khối này.';
+      fb.className = 'feedback bad'; fb.textContent = ' Sai! Mất lượt khối này.';
       setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1100);
     }
   }
@@ -189,9 +189,9 @@
     $('tower').style.transform = `rotate(${lean * 0.12}deg)`;
 
     const fb = $('feedback'); fb.style.display = 'block';
-    if (absOff < 12) { fb.className = 'feedback bonus'; fb.textContent = '🎯 HOÀN HẢO! Tháp vững thêm!'; }
-    else if (absOff < 45) { fb.className = 'feedback good'; fb.textContent = '🏗️ Khá tốt! Xây thêm 1 tầng.'; }
-    else { fb.className = 'feedback bad'; fb.textContent = '⚠️ Lệch nhiều! Tháp nghiêng.'; }
+    if (absOff < 12) { fb.className = 'feedback bonus'; fb.textContent = ' HOÀN HẢO! Tháp vững thêm!'; }
+    else if (absOff < 45) { fb.className = 'feedback good'; fb.textContent = ' Khá tốt! Xây thêm 1 tầng.'; }
+    else { fb.className = 'feedback bad'; fb.textContent = ' Lệch nhiều! Tháp nghiêng.'; }
 
     if (floors > userData.bestTower) userData.bestTower = floors;
     renderHud();
@@ -218,10 +218,10 @@
     if (window.HocVuiCollection) window.HocVuiCollection.reward(stars);
 
     setTimeout(() => {
-      $('result-emoji').textContent = outcome === 'won' ? '🏰' : outcome === 'collapse' ? '🧱' : '🏗️';
-      $('result-title').textContent = outcome === 'won' ? '🏰 Lâu Đài Hoàn Thành!' : outcome === 'collapse' ? '🧱 Tháp Sụp Đổ!' : '🏗️ Kết Thúc';
-      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}">⭐</span>`).join('');
-      $('result-detail').innerHTML = `🏰 Số tầng: ${floors}<br>🎯 Thả hoàn hảo: ${perfects}<br>✅ Đúng: ${correct}/${total} (${acc}%)<br>✨ Combo cao nhất: ${maxCombo}`;
+      $('result-emoji').textContent = outcome === 'won' ? '' : outcome === 'collapse' ? '' : '';
+      $('result-title').textContent = outcome === 'won' ? ' Lâu Đài Hoàn Thành!' : outcome === 'collapse' ? ' Tháp Sụp Đổ!' : ' Kết Thúc';
+      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}"><img src="/img/star.png" class="em-icon"></span>`).join('');
+      $('result-detail').innerHTML = ` Số tầng: ${floors}<br> Thả hoàn hảo: ${perfects}<br> Đúng: ${correct}/${total} (${acc}%)<br> Combo cao nhất: ${maxCombo}`;
       ss('result-screen');
       $('tower').classList.remove('collapsing');
       if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch (e) {} }

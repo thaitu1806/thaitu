@@ -15,6 +15,27 @@ function renderSlide() {
   document.getElementById('lesson-dots').innerHTML = slides.map((_, i) =>
     `<div class="l-dot ${i === currentSlide ? 'active' : ''}" onclick="goSlide(${i})"></div>`
   ).join('');
+  // Post-render: replace emojis in visual elements with sprite icons
+  _replaceEmojiWithSprites(body);
+}
+
+// Replace emoji characters in .visual / .highlight / slide headings with sprite icons
+function _replaceEmojiWithSprites(container) {
+  if (!window.HocVuiSprite) return;
+  const SP = window.HocVuiSprite;
+  // Regex to match common emojis (supplementary plane + misc symbols)
+  const emojiRe = /[\u{1F300}-\u{1FAD6}\u{2600}-\u{27BF}\u{1F900}-\u{1F9FF}\u{2702}-\u{27B0}\u{FE0F}\u{200D}\u{20E3}]/gu;
+  // Only process text inside .visual spans/divs and h2 headings
+  const targets = container.querySelectorAll('.visual, h2');
+  targets.forEach(el => {
+    const text = el.innerHTML;
+    if (!emojiRe.test(text)) return;
+    emojiRe.lastIndex = 0;
+    // Pick a consistent random sprite for this slide element (seeded by text)
+    const item = SP.randomKidFriendlyData();
+    const size = el.classList.contains('visual') ? 40 : 24;
+    el.innerHTML = text.replace(emojiRe, () => SP.html(item.s, item.r, item.c, size));
+  });
 }
 
 function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; renderSlide(); } }
@@ -31,48 +52,71 @@ document.addEventListener('touchend', e => {
 
 const TOPIC_NAMES = {
   // 5 tuổi (mầm non)
-  count0: '🔢 Đếm 1-5',
-  compare0: '⚖️ Nhiều - Ít',
-  size0: '🐘 To - Nhỏ',
-  colors0: '🌈 Màu Sắc',
-  shapes0: '🔷 Hình Dạng',
-  animals0: '🐶 Con Vật',
+  count0: 'Đếm 1-5',
+  compare0: 'Nhiều - Ít',
+  size0: 'To - Nhỏ',
+  colors0: 'Màu Sắc',
+  shapes0: 'Hình Dạng',
+  animals0: 'Con Vật',
   // Lớp 1
-  count1: '🔢 Đếm Đến 20',
-  add1: '➕ Phép Cộng',
-  sub1: '➖ Phép Trừ',
-  compare1: '⚖️ So Sánh Số',
-  order1: '🔢 Thứ Tự Số',
-  shapes1: '🔷 Hình Khối',
+  count1: 'Đếm Đến 20',
+  add1: 'Phép Cộng',
+  sub1: 'Phép Trừ',
+  compare1: 'So Sánh Số',
+  order1: 'Thứ Tự Số',
+  shapes1: 'Hình Khối',
   // Grade 2
-  clock: '🕐 Đồng Hồ',
-  units: '📏 Đo Lường',
-  multiply: '✖️ Bảng Nhân',
-  carry: '➕ Cộng Có Nhớ',
-  shapes: '🔷 Hình Học',
-  money: '💰 Tiền Việt Nam',
+  clock: 'Đồng Hồ',
+  units: 'Đo Lường',
+  multiply: 'Bảng Nhân',
+  carry: 'Cộng Có Nhớ',
+  shapes: 'Hình Học',
+  money: 'Tiền Việt Nam',
   // Grade 3
-  mul3: '✖️ Bảng Nhân 6-9',
-  div3: '➗ Phép Chia',
-  fractions3: '🍕 Phân Số',
-  perimeter3: '📐 Chu Vi & Diện Tích',
-  time3: '📅 Thời Gian',
-  calc3: '🧮 Tính Nhẩm',
+  mul3: 'Bảng Nhân 6-9',
+  div3: 'Phép Chia',
+  fractions3: 'Phân Số',
+  perimeter3: 'Chu Vi & Diện Tích',
+  time3: 'Thời Gian',
+  calc3: 'Tính Nhẩm',
   // Grade 4
-  bignum4: '🔢 Số Lớn',
-  fractions4: '🍕 Phân Số',
-  angle4: '📐 Góc & Hình',
-  area4: '⬜ Diện Tích',
-  average4: '📊 Trung Bình Cộng',
-  expr4: '🧮 Biểu Thức',
+  bignum4: 'Số Lớn',
+  fractions4: 'Phân Số',
+  angle4: 'Góc & Hình',
+  area4: 'Diện Tích',
+  average4: 'Trung Bình Cộng',
+  expr4: 'Biểu Thức',
   // Grade 5
-  decimal5: '🔢 Số Thập Phân',
-  percent5: '💯 Phần Trăm',
-  area5: '📐 Diện Tích',
-  volume5: '📦 Thể Tích',
-  speed5: '🚗 Chuyển Động',
-  ratio5: '⚖️ Tỉ Lệ',
+  decimal5: 'Số Thập Phân',
+  percent5: 'Phần Trăm',
+  area5: 'Diện Tích',
+  volume5: 'Thể Tích',
+  speed5: 'Chuyển Động',
+  ratio5: 'Tỉ Lệ',
 };
+
+// Sprite icon for each topic (rendered via HocVuiSprite)
+function topicIcon(id, size) {
+  const SP = window.HocVuiSprite;
+  if (!SP) return '';
+  const map = {
+    count0: [2,0,0], compare0: [2,3,0], size0: [1,1,5], colors0: [2,3,0],
+    shapes0: [2,4,4], animals0: [1,0,0],
+    count1: [2,0,0], add1: [2,0,7], sub1: [2,0,7], compare1: [2,3,0],
+    order1: [2,0,0], shapes1: [2,4,4],
+    clock: [2,0,7], units: [4,0,0], multiply: [2,0,0], carry: [2,0,7],
+    shapes: [2,4,4], money: [3,0,0],
+    mul3: [2,0,0], div3: [2,0,0], fractions3: [3,0,0], perimeter3: [2,4,4],
+    time3: [2,0,7], calc3: [2,0,0],
+    bignum4: [2,0,0], fractions4: [3,0,0], angle4: [2,4,4], area4: [2,4,4],
+    average4: [2,0,0], expr4: [2,0,0],
+    decimal5: [2,0,0], percent5: [2,0,7], area5: [2,4,4], volume5: [4,0,0],
+    speed5: [4,0,0], ratio5: [2,3,0],
+  };
+  const coords = map[id];
+  if (!coords) return SP.named('star', size || 20);
+  return SP.html(coords[0], coords[1], coords[2], size || 20);
+}
 
 // SVG Clock generator
 function clockSVG(hour, minute, size = 180) {
@@ -1812,13 +1856,33 @@ function switchGrade(grade) {
 function renderTopicsGrid() {
   const grid = document.getElementById('topics-grid');
   const topics = GRADE_TOPICS[currentGrade] || [];
-  grid.innerHTML = topics.map(t => `
+  // Slogans for grade 2 topics (matching mockup style)
+  const SLOGANS = {
+    clock: 'Xoay thời gian,\nCứu giờ học!',
+    units: 'Thám hiểm đo lường.\nTìm vật lớn!',
+    multiply: 'Phép thuật nhân lên,\nBiến hóa đồ vật!',
+    carry: 'Cầu nối số 10,\nCứu số cộng!',
+    shapes: 'Kiến trúc sư\ntí hon,\nXây thế giới!',
+    money: 'Cửa hàng vui,\nHọc cách mua sắm!',
+    count0: 'Đếm cùng bạn robot!',
+    compare0: 'Ai nhiều hơn ai?',
+    size0: 'To nhỏ khác nhau thế nào?',
+    colors0: 'Cầu vồng bao nhiêu màu?',
+    shapes0: 'Khám phá hình dạng!',
+    animals0: 'Bạn thú cưng kêu gì?',
+  };
+  grid.innerHTML = topics.map(t => {
+    const slogan = SLOGANS[t.id] || t.desc;
+    return `
     <div class="topic-card" onclick="openTopic('${t.id}')">
-      <span class="topic-icon">${t.icon}</span>
-      <span class="topic-name">${t.name}</span>
-      <span class="topic-desc">${t.desc}</span>
-    </div>
-  `).join('');
+      <div class="topic-img-wrap">
+        <span class="topic-slogan">${slogan}</span>
+        <img class="topic-img" src="/img/learn/${t.id}.png" alt="${t.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <span class="topic-icon-fallback" style="display:none">${topicIcon(t.id, 48)}</span>
+      </div>
+      <div class="topic-label">${t.name}</div>
+    </div>`;
+  }).join('');
 }
 
 // Init grade from player profile
@@ -1992,7 +2056,7 @@ function openTopic(topic) {
   currentTopic = topic;
   currentSlide = 0;
   slides = LESSONS[topic] || [];
-  document.getElementById('lesson-title').textContent = TOPIC_NAMES[topic];
+  document.getElementById('lesson-title').innerHTML = topicIcon(topic, 20) + ' ' + TOPIC_NAMES[topic];
   showScreen('lesson-screen');
   renderSlide();
 }
@@ -2114,14 +2178,13 @@ practiceScores.animals0 = 0;
 
 // --- COUNT PRACTICE ---
 function newCount0Practice() {
-  const icons = ['🍎','🍌','🍓','⭐','🎈','🌸','🐥','🐟'];
-  const icon = icons[Math.floor(Math.random() * icons.length)];
+  const item = window.HocVuiSprite.randomKidFriendlyData();
   const n = Math.floor(Math.random() * 5) + 1;
-  const display = Array.from({length: n}, () => icon).join(' ');
+  const display = Array.from({length: n}, () => window.HocVuiSprite.html(item.s, item.r, item.c, 36)).join(' ');
   const wrongs = new Set();
   while (wrongs.size < 3) { const w = Math.floor(Math.random() * 6) + 1; if (w !== n) wrongs.add(w); }
   const { options, correctIdx } = makePracticeOptions(String(n), [...wrongs].map(String));
-  document.getElementById('count0-q').innerHTML = `Đếm xem có mấy ${icon}?<br><span style="font-size:1.6rem">${display}</span>`;
+  document.getElementById('count0-q').innerHTML = `Đếm xem có bao nhiêu hình?<br><span style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0">${display}</span>`;
   document.getElementById('count0-result').textContent = '';
   document.getElementById('count0-result').className = 'practice-result';
   const container = document.getElementById('count0-opts');
@@ -2132,123 +2195,138 @@ function newCount0Practice() {
 
 // --- COMPARE PRACTICE ---
 function newCompare0Practice() {
-  const icons = ['🍎','🍌','🍓','⭐','🎈','🌸','🐥','🐟','🐶','🐱'];
-  const i1 = icons[Math.floor(Math.random() * icons.length)];
-  let i2 = icons[Math.floor(Math.random() * icons.length)]; while (i2 === i1) i2 = icons[Math.floor(Math.random() * icons.length)];
+  const item1 = window.HocVuiSprite.randomKidFriendlyData();
+  let item2 = window.HocVuiSprite.randomKidFriendlyData();
+  while (item2.s === item1.s && item2.r === item1.r && item2.c === item1.c) item2 = window.HocVuiSprite.randomKidFriendlyData();
   let a = Math.floor(Math.random() * 5) + 1, b = Math.floor(Math.random() * 5) + 1; while (b === a) b = Math.floor(Math.random() * 5) + 1;
   const isMore = Math.random() > 0.5;
   const q = isMore ? 'Hàng nào NHIỀU hơn?' : 'Hàng nào ÍT hơn?';
-  const correct = isMore ? (a > b ? i1 : i2) : (a < b ? i1 : i2);
-  const display = `${i1}: ${Array.from({length:a},()=>i1).join(' ')}\n${i2}: ${Array.from({length:b},()=>i2).join(' ')}`;
-  const wrongs = icons.filter(x => x !== correct).slice(0, 3);
-  const { options, correctIdx } = makePracticeOptions(correct, wrongs);
-  document.getElementById('compare0-q').innerHTML = `${q}<br><span style="font-size:1.3rem">${display.replace('\n','<br>')}</span>`;
+  const row1 = Array.from({length:a}, () => window.HocVuiSprite.html(item1.s, item1.r, item1.c, 28)).join(' ');
+  const row2 = Array.from({length:b}, () => window.HocVuiSprite.html(item2.s, item2.r, item2.c, 28)).join(' ');
+  const correctIsRow1 = isMore ? (a > b) : (a < b);
+  const correctHtml = correctIsRow1 ? window.HocVuiSprite.html(item1.s, item1.r, item1.c, 32) : window.HocVuiSprite.html(item2.s, item2.r, item2.c, 32);
+  const wrongHtml = correctIsRow1 ? window.HocVuiSprite.html(item2.s, item2.r, item2.c, 32) : window.HocVuiSprite.html(item1.s, item1.r, item1.c, 32);
+  const extra1 = window.HocVuiSprite.randomKidFriendly(32);
+  const extra2 = window.HocVuiSprite.randomKidFriendly(32);
+  const allOpts = [correctHtml, wrongHtml, extra1, extra2].sort(() => Math.random() - 0.5);
+  const correctIdx = allOpts.indexOf(correctHtml);
+  document.getElementById('compare0-q').innerHTML = `${q}<br><div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin:6px 0">${row1}</div><div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin:6px 0">${row2}</div>`;
   document.getElementById('compare0-result').textContent = '';
   document.getElementById('compare0-result').className = 'practice-result';
   const container = document.getElementById('compare0-opts');
-  container.innerHTML = options.map((o, i) =>
-    `<button onclick="checkPractice('compare0', ${i}, ${correctIdx})" style="font-size:1.5rem">${o}</button>`
+  container.innerHTML = allOpts.map((o, i) =>
+    `<button onclick="checkPractice('compare0', ${i}, ${correctIdx})" style="padding:8px 12px">${o}</button>`
   ).join('');
 }
 
 // --- SIZE PRACTICE ---
 function newSize0Practice() {
+  // Use sprite pairs: big item shown larger, small item shown smaller
+  const SP = window.HocVuiSprite;
   const pairs = [
-    { big: '🐘', small: '🐭', label: 'Voi và chuột' },
-    { big: '🐳', small: '🐟', label: 'Cá voi và cá' },
-    { big: '🌳', small: '🌱', label: 'Cây và mầm' },
-    { big: '🚌', small: '🚲', label: 'Xe buýt và xe đạp' },
-    { big: '🍉', small: '🍒', label: 'Dưa hấu và anh đào' },
-    { big: '🦁', small: '🐈', label: 'Sư tử và mèo' },
-    { big: '🏠', small: '🏕️', label: 'Nhà và lều' },
+    { big: SP.named('dog', 48), small: SP.named('cat', 28), label: 'To và nhỏ' },
+    { big: SP.html(1, 0, 5, 48), small: SP.html(1, 0, 3, 28), label: 'Con lớn và con nhỏ' },
+    { big: SP.named('flower', 48), small: SP.named('leaf', 28), label: 'Hoa và lá' },
+    { big: SP.named('sun', 48), small: SP.named('star', 28), label: 'Mặt trời và sao' },
+    { big: SP.named('butterfly', 48), small: SP.html(2, 7, 1, 28), label: 'Bướm và bọ' },
   ];
   const p = pairs[Math.floor(Math.random() * pairs.length)];
   const isBig = Math.random() > 0.5;
-  const q = isBig ? `Cái nào TO hơn? ${p.big} và ${p.small}` : `Cái nào NHỎ hơn? ${p.big} và ${p.small}`;
-  const correct = isBig ? p.big : p.small;
-  const wrong = isBig ? p.small : p.big;
-  const others = ['⚽','🎈','🐝'];
-  const { options, correctIdx } = makePracticeOptions(correct, [wrong, others[0], others[1]]);
-  document.getElementById('size0-q').innerHTML = q;
+  const q = isBig ? `Cái nào TO hơn?` : `Cái nào NHỎ hơn?`;
+  const correct = isBig ? 'A' : 'B';
+  const wrongs = [isBig ? 'B' : 'A', 'C', 'D'];
+  const extra1 = SP.randomKidFriendly(36);
+  const extra2 = SP.randomKidFriendly(36);
+  const { options, correctIdx } = makePracticeOptions(correct, wrongs);
+  const display = `<div style="display:flex;gap:20px;justify-content:center;align-items:center;margin:10px 0"><div style="text-align:center"><div>A</div>${p.big}</div><div style="text-align:center"><div>B</div>${p.small}</div><div style="text-align:center"><div>C</div>${extra1}</div><div style="text-align:center"><div>D</div>${extra2}</div></div>`;
+  document.getElementById('size0-q').innerHTML = `${q}<br>${display}`;
   document.getElementById('size0-result').textContent = '';
   document.getElementById('size0-result').className = 'practice-result';
   const container = document.getElementById('size0-opts');
   container.innerHTML = options.map((o, i) =>
-    `<button onclick="checkPractice('size0', ${i}, ${correctIdx})" style="font-size:1.5rem">${o}</button>`
+    `<button onclick="checkPractice('size0', ${i}, ${correctIdx})">${o}</button>`
   ).join('');
 }
 
 // --- COLORS PRACTICE ---
 function newColors0Practice() {
   const colors = [
-    { name: 'ĐỎ', icon: '🔴', items: ['🍎','🍓','🌹','❤️'] },
-    { name: 'VÀNG', icon: '🟡', items: ['🍌','🌟','🌼'] },
-    { name: 'XANH LÁ', icon: '🟢', items: ['🍀','🥦','🐸'] },
-    { name: 'XANH DƯƠNG', icon: '🔵', items: ['💧','🐬','🌊'] },
-    { name: 'CAM', icon: '🟠', items: ['🍊','🥕','🦊'] },
-    { name: 'TÍM', icon: '🟣', items: ['🍇','🍆','🔮'] },
+    { name: 'ĐỎ', hex: '#e74c3c', items: ['quả táo', 'quả dâu', 'hoa hồng'] },
+    { name: 'VÀNG', hex: '#f1c40f', items: ['quả chuối', 'ngôi sao', 'mặt trời'] },
+    { name: 'XANH LÁ', hex: '#27ae60', items: ['chiếc lá', 'con ếch', 'cỏ'] },
+    { name: 'XANH DƯƠNG', hex: '#3498db', items: ['bầu trời', 'biển', 'giọt nước'] },
+    { name: 'CAM', hex: '#e67e22', items: ['quả cam', 'cà rốt', 'con cáo'] },
+    { name: 'TÍM', hex: '#9b59b6', items: ['quả nho', 'hoa oải hương'] },
   ];
   const c = colors[Math.floor(Math.random() * colors.length)];
   const others = colors.filter(x => x !== c);
-  const wrongs = others.sort(() => Math.random() - 0.5).slice(0, 3).map(x => x.icon);
-  const { options, correctIdx } = makePracticeOptions(c.icon, wrongs);
+  const wrongs = others.sort(() => Math.random() - 0.5).slice(0, 3);
+  const allOpts = [c, ...wrongs].sort(() => Math.random() - 0.5);
+  const correctIdx = allOpts.indexOf(c);
   const example = c.items[Math.floor(Math.random() * c.items.length)];
-  document.getElementById('colors0-q').innerHTML = `Chấm nào màu <strong>${c.name}</strong>?<br><span style="font-size:1.3rem">(Gợi ý: giống ${example})</span>`;
+  const colorDot = (hex) => `<span style="display:inline-block;width:36px;height:36px;border-radius:50%;background:${hex};box-shadow:0 2px 6px ${hex}44;"></span>`;
+  document.getElementById('colors0-q').innerHTML = `Chấm nào màu <strong>${c.name}</strong>?<br><span style="font-size:0.95rem;color:#666">(Gợi ý: giống ${example})</span>`;
   document.getElementById('colors0-result').textContent = '';
   document.getElementById('colors0-result').className = 'practice-result';
   const container = document.getElementById('colors0-opts');
-  container.innerHTML = options.map((o, i) =>
-    `<button onclick="checkPractice('colors0', ${i}, ${correctIdx})" style="font-size:2rem">${o}</button>`
+  container.innerHTML = allOpts.map((o, i) =>
+    `<button onclick="checkPractice('colors0', ${i}, ${correctIdx})" style="padding:10px 16px">${colorDot(o.hex)}</button>`
   ).join('');
 }
 
 // --- SHAPES0 PRACTICE ---
 function newShapes0Practice() {
   const shapes = [
-    { name: 'HÌNH TRÒN', icon: '⭕' },
-    { name: 'HÌNH VUÔNG', icon: '🟦' },
-    { name: 'HÌNH TAM GIÁC', icon: '🔺' },
-    { name: 'NGÔI SAO', icon: '⭐' },
-    { name: 'TRÁI TIM', icon: '❤️' },
+    { name: 'HÌNH TRÒN', html: '<span style="display:inline-block;width:36px;height:36px;border-radius:50%;background:#4facfe;"></span>' },
+    { name: 'HÌNH VUÔNG', html: '<span style="display:inline-block;width:36px;height:36px;border-radius:4px;background:#7c3aed;"></span>' },
+    { name: 'HÌNH TAM GIÁC', html: '<span style="display:inline-block;width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:36px solid #e74c3c;"></span>' },
+    { name: 'NGÔI SAO', html: window.HocVuiSprite.named('star', 36) },
+    { name: 'TRÁI TIM', html: '<span style="display:inline-block;width:36px;height:36px;color:#e91e63;font-size:36px;line-height:1;">&#9829;</span>' },
   ];
   const s = shapes[Math.floor(Math.random() * shapes.length)];
-  const wrongs = shapes.filter(x => x !== s).sort(() => Math.random() - 0.5).slice(0, 3).map(x => x.icon);
-  const { options, correctIdx } = makePracticeOptions(s.icon, wrongs);
+  const wrongs = shapes.filter(x => x !== s).sort(() => Math.random() - 0.5).slice(0, 3);
+  const allOpts = [s, ...wrongs].sort(() => Math.random() - 0.5);
+  const correctIdx = allOpts.indexOf(s);
   document.getElementById('shapes0-q').innerHTML = `Đâu là <strong>${s.name}</strong>?`;
   document.getElementById('shapes0-result').textContent = '';
   document.getElementById('shapes0-result').className = 'practice-result';
   const container = document.getElementById('shapes0-opts');
-  container.innerHTML = options.map((o, i) =>
-    `<button onclick="checkPractice('shapes0', ${i}, ${correctIdx})" style="font-size:2rem">${o}</button>`
+  container.innerHTML = allOpts.map((o, i) =>
+    `<button onclick="checkPractice('shapes0', ${i}, ${correctIdx})" style="padding:10px 16px;min-height:50px;display:inline-flex;align-items:center;justify-content:center;">${o.html}</button>`
   ).join('');
 }
 
 // --- ANIMALS PRACTICE ---
 function newAnimals0Practice() {
+  const SP = window.HocVuiSprite;
+  // Sheet 1 animals: row 0 = pets/farm, row 1 = wild, row 2 = more
   const animals = [
-    { q: 'Con gì kêu "Gâu gâu"?', a: '🐶' },
-    { q: 'Con gì kêu "Meo meo"?', a: '🐱' },
-    { q: 'Con gì kêu "Ò ó o"?', a: '🐓' },
-    { q: 'Con gì kêu "Ụt ịt"?', a: '🐷' },
-    { q: 'Con gì kêu "Cạp cạp"?', a: '🦆' },
-    { q: 'Con gì kêu "Bò ò"?', a: '🐮' },
-    { q: 'Con gì kêu "Be be"?', a: '🐑' },
-    { q: 'Con nào sống dưới nước?', a: '🐟' },
-    { q: 'Con nào bay được?', a: '🐦' },
-    { q: 'Con nào có 4 chân, trung thành?', a: '🐶' },
-    { q: 'Con nào bắt chuột giỏi?', a: '🐱' },
-    { q: 'Con nào có mai cứng, đi chậm?', a: '🐢' },
+    { q: 'Con gì kêu "Gâu gâu"?', a: 0 },   // dog (1,0,0)
+    { q: 'Con gì kêu "Meo meo"?', a: 1 },    // cat (1,0,1)
+    { q: 'Con gì kêu "Ò ó o"?', a: 4 },      // chicken (1,0,4)
+    { q: 'Con gì kêu "Ụt ịt"?', a: 5 },      // pig (1,0,5)
+    { q: 'Con gì kêu "Bò ò"?', a: 7 },       // cow (1,0,7)
+    { q: 'Con nào nhảy giỏi?', a: 3 },        // rabbit (1,0,3)
+    { q: 'Con nào sống dưới nước?', a: 10 },   // fish
+    { q: 'Con nào bay được?', a: 11 },          // bird
+  ];
+  // Map index to sprite position (sheet 1)
+  const animalSprites = [
+    {s:1,r:0,c:0},{s:1,r:0,c:1},{s:1,r:0,c:2},{s:1,r:0,c:3},{s:1,r:0,c:4},
+    {s:1,r:0,c:5},{s:1,r:0,c:6},{s:1,r:0,c:7},{s:1,r:0,c:8},{s:1,r:0,c:9},
+    {s:1,r:1,c:0},{s:2,r:9,c:2},
   ];
   const a = animals[Math.floor(Math.random() * animals.length)];
-  const allIcons = ['🐶','🐱','🐓','🐷','🦆','🐮','🐑','🐟','🐦','🐢','🐸','🐰'];
-  const wrongs = allIcons.filter(x => x !== a.a).sort(() => Math.random() - 0.5).slice(0, 3);
-  const { options, correctIdx } = makePracticeOptions(a.a, wrongs);
+  const correctSprite = animalSprites[a.a];
+  const wrongIndices = animalSprites.filter((_, i) => i !== a.a).sort(() => Math.random() - 0.5).slice(0, 3);
+  const allOpts = [correctSprite, ...wrongIndices].sort(() => Math.random() - 0.5);
+  const correctIdx = allOpts.indexOf(correctSprite);
   document.getElementById('animals0-q').innerHTML = a.q;
   document.getElementById('animals0-result').textContent = '';
   document.getElementById('animals0-result').className = 'practice-result';
   const container = document.getElementById('animals0-opts');
-  container.innerHTML = options.map((o, i) =>
-    `<button onclick="checkPractice('animals0', ${i}, ${correctIdx})" style="font-size:2rem">${o}</button>`
+  container.innerHTML = allOpts.map((o, i) =>
+    `<button onclick="checkPractice('animals0', ${i}, ${correctIdx})" style="padding:8px 12px">${SP.html(o.s, o.r, o.c, 36)}</button>`
   ).join('');
 }
 

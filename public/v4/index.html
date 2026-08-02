@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>🌻 vs 🧟 Online</title>
+  <title> vs  Online</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -23,13 +23,13 @@
     <!-- HOME -->
     <div id="home-screen" class="screen active">
       <div class="home-box">
-        <div class="home-logo">🌻⚡🧟</div>
+        <div class="home-logo"></div>
         <h1>Đấu Trí Online</h1>
         <p class="home-sub">Mỗi người 1 điện thoại!</p>
-        <button class="help-btn" id="help-btn-open">❓</button>
+        <button class="help-btn" id="help-btn-open"></button>
         <div class="help-popup" id="help-popup">
           <div class="help-content">
-            <h3>📱 Cách chơi Đấu Online</h3>
+            <h3> Cách chơi Đấu Online</h3>
             <p>• Mỗi bạn 1 điện thoại<br>
             • 1 người TẠO PHÒNG → chia mã 4 ký tự<br>
             • 1 người THAM GIA → nhập mã phòng<br>
@@ -42,47 +42,47 @@
         <p id="my-name-label" style="display:none;font-size:1.1rem;font-weight:700;color:var(--gold);margin-bottom:12px;"></p>
         <input type="text" id="my-name" placeholder="Tên của con..." maxlength="12">
         <div class="home-actions">
-          <button class="btn-create" id="btn-create">🏠 Tạo phòng</button>
-          <button class="btn-join" id="btn-join">🚪 Vào phòng</button>
+          <button class="btn-create" id="btn-create"> Tạo phòng</button>
+          <button class="btn-join" id="btn-join"> Vào phòng</button>
         </div>
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </div>
 
     <!-- CREATE ROOM -->
     <div id="create-screen" class="screen">
       <div class="room-box">
-        <h2>🏠 Phòng của bạn</h2>
+        <h2> Phòng của bạn</h2>
         <div class="room-code-display">
           <span>Mã phòng:</span>
           <div class="room-code" id="room-code">----</div>
           <p class="room-hint">Cho bạn nhập mã này để vào!</p>
         </div>
         <div class="room-settings">
-          <div class="rs-row"><label>🎮 Mode:</label>
-            <select id="rs-mode"><option value="duel">Đấu trí</option><option value="race">Đua xe 🏎️</option></select>
+          <div class="rs-row"><label> Mode:</label>
+            <select id="rs-mode"><option value="duel">Đấu trí</option><option value="race">Đua xe </option></select>
           </div>
-          <div class="rs-row"><label>📚 Môn:</label>
+          <div class="rs-row"><label> Môn:</label>
             <select id="rs-subject"><option value="mix">Mix</option><option value="math">Toán</option><option value="vietnamese">Tiếng Việt</option></select>
           </div>
-          <div class="rs-row"><label>📊 Mức độ:</label>
+          <div class="rs-row"><label> Mức độ:</label>
             <select id="rs-difficulty"><option value="easy">Dễ</option><option value="medium" selected>TB</option><option value="hard">Khó</option></select>
           </div>
-          <div class="rs-row"><label>🔢 Số câu:</label>
+          <div class="rs-row"><label> Số câu:</label>
             <select id="rs-rounds"><option value="5">5</option><option value="10" selected>10</option><option value="15">15</option></select>
           </div>
-          <div class="rs-row" id="rs-speed-row"><label>⏱️ Tốc độ:</label>
+          <div class="rs-row" id="rs-speed-row"><label>⏱ Tốc độ:</label>
             <select id="rs-speed"><option value="slow">Chậm</option><option value="normal" selected>BT</option><option value="fast">Nhanh</option></select>
           </div>
-          <div class="rs-row" id="rs-track-row" style="display:none;"><label>🏁 Đường đua:</label>
+          <div class="rs-row" id="rs-track-row" style="display:none;"><label> Đường đua:</label>
             <select id="rs-track"><option value="8">Ngắn (8)</option><option value="12" selected>TB (12)</option><option value="16">Dài (16)</option></select>
           </div>
         </div>
         <div class="room-players">
-          <div class="rp" id="rp-host"><span class="rp-icon">🌻</span><span class="rp-name">Đang chờ...</span></div>
-          <div class="rp rp-waiting" id="rp-guest"><span class="rp-icon">🧟</span><span class="rp-name">Chờ đối thủ...</span></div>
+          <div class="rp" id="rp-host"><span class="rp-icon"></span><span class="rp-name">Đang chờ...</span></div>
+          <div class="rp rp-waiting" id="rp-guest"><span class="rp-icon"></span><span class="rp-name">Chờ đối thủ...</span></div>
         </div>
-        <button class="btn-start-match hidden" id="btn-start-match">⚔️ Bắt đầu!</button>
+        <button class="btn-start-match hidden" id="btn-start-match"> Bắt đầu!</button>
         <button class="btn-back" id="btn-back-create">← Quay lại</button>
       </div>
     </div>
@@ -90,11 +90,11 @@
     <!-- JOIN ROOM -->
     <div id="join-screen" class="screen">
       <div class="room-box">
-        <h2>🚪 Vào phòng</h2>
+        <h2> Vào phòng</h2>
         <div class="join-input">
           <input type="text" id="join-code" placeholder="Nhập mã..." maxlength="4" style="text-transform:uppercase">
         </div>
-        <button class="btn-join-go" id="btn-join-go">🚪 Vào phòng</button>
+        <button class="btn-join-go" id="btn-join-go"> Vào phòng</button>
         <p class="join-status" id="join-status"></p>
         <button class="btn-back" id="btn-back-join">← Quay lại</button>
       </div>
@@ -112,7 +112,7 @@
     <div id="battle-screen" class="screen">
       <div class="ob-scoreboard">
         <div class="ob-p ob-p1">
-          <span class="ob-emoji">🌻</span>
+          <span class="ob-emoji"></span>
           <span class="ob-name" id="ob-p1-name">P1</span>
           <span class="ob-score" id="ob-p1-score">0</span>
         </div>
@@ -120,13 +120,13 @@
         <div class="ob-p ob-p2">
           <span class="ob-score" id="ob-p2-score">0</span>
           <span class="ob-name" id="ob-p2-name">P2</span>
-          <span class="ob-emoji">🧟</span>
+          <span class="ob-emoji"></span>
         </div>
       </div>
 
       <div class="ob-question">
         <div class="ob-timer"><div id="ob-timer-fill" class="ob-timer-fill"></div></div>
-        <div class="ob-badge" id="ob-badge">🔢</div>
+        <div class="ob-badge" id="ob-badge"></div>
         <div class="ob-text" id="ob-text">Câu hỏi...</div>
       </div>
 
@@ -143,18 +143,18 @@
     <!-- RACE MODE -->
     <div id="race-screen" class="screen">
       <div class="race-header">
-        <span class="race-p1-name" id="race-p1-name">🌻 P1</span>
-        <span class="race-vs">🏁</span>
-        <span class="race-p2-name" id="race-p2-name">🧟 P2</span>
+        <span class="race-p1-name" id="race-p1-name"> P1</span>
+        <span class="race-vs"></span>
+        <span class="race-p2-name" id="race-p2-name"> P2</span>
       </div>
       <div class="race-track">
         <div class="race-lane" id="race-lane-host">
-          <div class="race-car" id="race-car-host">🌻</div>
+          <div class="race-car" id="race-car-host"></div>
         </div>
         <div class="race-lane" id="race-lane-guest">
-          <div class="race-car" id="race-car-guest">🧟</div>
+          <div class="race-car" id="race-car-guest"></div>
         </div>
-        <div class="race-finish" id="race-finish">🏁</div>
+        <div class="race-finish" id="race-finish"></div>
       </div>
       <div class="race-positions">
         <span id="race-pos-host">0</span> / <span id="race-track-len">12</span>
@@ -176,16 +176,16 @@
     <!-- RESULT -->
     <div id="result-screen" class="screen">
       <div class="res-box">
-        <div class="res-icon" id="res-icon">🏆</div>
+        <div class="res-icon" id="res-icon"></div>
         <h2 id="res-title">Kết quả</h2>
         <div class="res-scores">
-          <div class="res-p"><span>🌻</span><span id="res-p1-name">P1</span><strong id="res-p1-score">0</strong></div>
-          <div class="res-p"><span>🧟</span><span id="res-p2-name">P2</span><strong id="res-p2-score">0</strong></div>
+          <div class="res-p"><span></span><span id="res-p1-name">P1</span><strong id="res-p1-score">0</strong></div>
+          <div class="res-p"><span></span><span id="res-p2-name">P2</span><strong id="res-p2-score">0</strong></div>
         </div>
         <div class="res-detail" id="res-detail"></div>
         <div class="res-btns">
-          <button class="btn-create" id="btn-rematch">🔄 Đấu lại</button>
-          <button class="btn-back" id="btn-home">🏠 Về</button>
+          <button class="btn-create" id="btn-rematch"> Đấu lại</button>
+          <button class="btn-back" id="btn-home"> Về</button>
         </div>
       </div>
     </div>
@@ -204,6 +204,7 @@
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
   <script src="/help-rules.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

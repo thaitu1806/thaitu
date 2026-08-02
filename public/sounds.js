@@ -162,7 +162,7 @@
   let btn = null;
   function updateBtn() {
     if (!btn) return;
-    btn.textContent = enabled ? '🔊' : '🔇';
+    btn.innerHTML = enabled ? '<img src="/img/sound-on.png" style="width:46px;height:46px;">' : '<img src="/img/sound-off.png" style="width:46px;height:46px;">';
     btn.classList.toggle('off', !enabled);
     btn.title = enabled ? 'Tắt âm thanh' : 'Bật âm thanh';
   }
@@ -175,7 +175,7 @@
     btn.style.cssText = [
       'position:fixed', 'left:8px', 'top:50%', 'transform:translateY(8px)', 'z-index:2147483000',
       'width:36px', 'height:36px', 'border-radius:50%', 'border:none',
-      'background:rgba(0,0,0,0.35)', 'color:#fff', 'font-size:1rem',
+      'background:transparent', 'color:#fff', 'font-size:1rem',
       'cursor:pointer', 'display:flex', 'align-items:center', 'justify-content:center',
       'box-shadow:0 2px 8px rgba(0,0,0,0.2)', 'backdrop-filter:blur(4px)',
       'padding:0', 'line-height:1', 'transition:transform .12s,opacity .2s', 'opacity:0.7',

@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>📝 Phòng Thi</title>
+  <title> Phòng Thi</title>
   <link rel="stylesheet" href="exam.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 </head>
@@ -14,14 +14,14 @@
     <!-- EXAM HOME -->
     <div id="exam-home" class="screen active">
       <div class="exam-box">
-        <h1>📝 Phòng Thi</h1>
+        <h1> Phòng Thi</h1>
         <div class="exam-name-input">
           <p id="exam-player-label" style="display:none;font-size:1.1rem;font-weight:700;color:#333;margin:8px 0;"></p>
           <input type="text" id="exam-player" placeholder="Tên con..." maxlength="15">
         </div>
         <div class="exam-tabs">
-          <button class="etab active" data-tab="available">📋 Bài thi</button>
-          <button class="etab" data-tab="history">📊 Lịch sử</button>
+          <button class="etab active" data-tab="available"> Bài thi</button>
+          <button class="etab" data-tab="history"> Lịch sử</button>
         </div>
         <div class="etab-content active" id="etab-available">
           <div id="exam-list" class="exam-list"><p>Đang tải...</p></div>
@@ -37,7 +37,7 @@
     <div id="exam-taking" class="screen">
       <div class="taking-header">
         <span id="taking-title">Bài thi</span>
-        <span id="taking-timer" class="taking-timer">⏱️ 15:00</span>
+        <span id="taking-timer" class="taking-timer">⏱ 15:00</span>
       </div>
       <div class="taking-progress">
         <div id="taking-progress-fill" class="progress-fill"></div>
@@ -47,7 +47,7 @@
           <div class="tq-number" id="tq-number">Câu 1/10</div>
           <div class="tq-text-row" style="display:flex;align-items:flex-start;gap:8px;">
             <div class="tq-text" id="tq-text" style="flex:1;"></div>
-            <button class="btn-speak" id="btn-speak-exam" title="Đọc câu hỏi">🔊</button>
+            <button class="btn-speak" id="btn-speak-exam" title="Đọc câu hỏi"></button>
           </div>
         </div>
         <div class="taking-options" id="taking-options">
@@ -63,7 +63,7 @@
         </div>
       </div>
       <div class="taking-footer">
-        <button id="btn-submit-exam" class="btn-submit">✅ Nộp bài</button>
+        <button id="btn-submit-exam" class="btn-submit"> Nộp bài</button>
       </div>
     </div>
 
@@ -79,7 +79,7 @@
         </div>
         <div id="result-review" class="result-review"></div>
         <div class="result-btns">
-          <button id="btn-back-exams" class="btn-back-exam">📋 Danh sách thi</button>
+          <button id="btn-back-exams" class="btn-back-exam"> Danh sách thi</button>
         </div>
       </div>
     </div>
@@ -87,6 +87,7 @@
   <link rel="stylesheet" href="/tts.css">
   <script src="/tts.js"></script>
   <script src="exam.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

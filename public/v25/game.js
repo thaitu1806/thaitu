@@ -2,7 +2,7 @@
 (function() {
   'use strict';
 
-  const BALLOON_EMOJIS = ['🎈', '❤️', '💚', '💛', '💜'];
+  const BALLOON_EMOJIS = ['', '<img src="/img/heart.png" class="em-icon">', '', '<img src="/img/heart.png" class="em-icon">', ''];
   const TIMER_DURATION = 8000; // 8 seconds
   const MAX_LIVES = 10;
   const BALLOONS_PER_WAVE = 5;
@@ -89,7 +89,7 @@
 
   function showBestWave() {
     const best = getBestWave();
-    els.bestWave.textContent = best > 0 ? `🏆 Kỷ lục: Đợt ${best}` : '';
+    els.bestWave.textContent = best > 0 ? `<img src="/img/trophy.png" class="em-icon"> Kỷ lục: Đợt ${best}` : '';
   }
 
   function setupStartScreen() {
@@ -168,7 +168,7 @@
     state.answering = false;
 
     els.btnStart.disabled = false;
-    els.btnStart.textContent = '🚀 Bắt đầu!';
+    els.btnStart.textContent = ' Bắt đầu!';
 
     updateHUD();
     clearBalloons();
@@ -438,18 +438,18 @@
       const popped = popBalloon(popCount);
 
       if (popCount > 1 && popped > 1) {
-        els.feedback.textContent = `🎯 Combo x${state.combo}! Bắn hạ 2 bóng!`;
+        els.feedback.textContent = ` Combo x${state.combo}! Bắn hạ 2 bóng!`;
       } else if (popped > 0) {
-        els.feedback.textContent = '🎯 Bắn trúng!';
+        els.feedback.textContent = ' Bắn trúng!';
       } else {
-        els.feedback.textContent = '✅ Đúng! (Không có bóng)';
+        els.feedback.textContent = ' Đúng! (Không có bóng)';
       }
       els.feedback.className = 'feedback correct-fb';
     } else {
       state.wrongCount++;
       state.combo = 0;
       updateHUD();
-      els.feedback.textContent = '❌ Sai rồi! Bóng bay thoát!';
+      els.feedback.textContent = ' Sai rồi! Bóng bay thoát!';
       els.feedback.className = 'feedback wrong-fb';
     }
 
@@ -544,9 +544,9 @@
     const isNewBest = saveBestWave(state.wave);
     const goEl = document.getElementById('go-best');
     if (isNewBest) {
-      goEl.textContent = '🏆 Kỷ lục mới!';
+      goEl.textContent = '<img src="/img/trophy.png" class="em-icon"> Kỷ lục mới!';
     } else {
-      goEl.textContent = `🏆 Kỷ lục: Đợt ${getBestWave()}`;
+      goEl.textContent = `<img src="/img/trophy.png" class="em-icon"> Kỷ lục: Đợt ${getBestWave()}`;
     }
 
     showScreen('gameover');
@@ -613,7 +613,7 @@
 
 // ===== CHARACTER SYSTEM INTEGRATION (presentation only) =====
 // Additive layer — does NOT touch the game-logic IIFE above. The fort guard
-// mascot is mounted alongside the existing 🏰 emoji and synced to gameplay by
+// mascot is mounted alongside the existing  emoji and synced to gameplay by
 // observing the HUD/feedback DOM, so the shooting logic stays untouched.
 (function () {
   'use strict';
@@ -626,7 +626,7 @@
     else fn();
   }
 
-  // Mount the chibi fort-guard into the fort zone (replaces the 🏰 emoji host,
+  // Mount the chibi fort-guard into the fort zone (replaces the  emoji host,
   // with an emoji fallback if the sprite engine is unavailable).
   function mountGuard() {
     const host = document.getElementById('fort-emoji');
@@ -637,7 +637,7 @@
       host.textContent = '';
       guardChar = C.createCharacter('fortguard', host, { state: 'idle' });
     }
-    // else: leave the existing 🏰 emoji as the fallback.
+    // else: leave the existing  emoji as the fallback.
   }
 
   function cheer() {

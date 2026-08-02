@@ -8,11 +8,11 @@ const QUESTIONS_PER_SESSION = 10;
 
 // Craft recipes
 const RECIPES = [
-  { id: 'fire', name: 'Lửa Trại', icon: '🔥', cost: { wood: 2, stone: 1, rope: 0 }, desc: 'Sưởi ấm & nấu ăn' },
-  { id: 'shelter', name: 'Lều Trại', icon: '⛺', cost: { wood: 4, stone: 2, rope: 0 }, desc: 'Chỗ ở an toàn' },
-  { id: 'fishing_rod', name: 'Cần Câu', icon: '🎣', cost: { wood: 2, stone: 0, rope: 2 }, desc: 'Bắt cá ăn' },
-  { id: 'water_filter', name: 'Lọc Nước', icon: '💧', cost: { wood: 1, stone: 1, rope: 2 }, desc: 'Nước sạch uống' },
-  { id: 'raft', name: 'Bè Tre', icon: '🚣', cost: { wood: 5, stone: 2, rope: 3 }, desc: 'Thoát khỏi đảo!' }
+  { id: 'fire', name: 'Lửa Trại', icon: '<img src="/img/fire.png" class="em-icon">', cost: { wood: 2, stone: 1, rope: 0 }, desc: 'Sưởi ấm & nấu ăn' },
+  { id: 'shelter', name: 'Lều Trại', icon: '', cost: { wood: 4, stone: 2, rope: 0 }, desc: 'Chỗ ở an toàn' },
+  { id: 'fishing_rod', name: 'Cần Câu', icon: '', cost: { wood: 2, stone: 0, rope: 2 }, desc: 'Bắt cá ăn' },
+  { id: 'water_filter', name: 'Lọc Nước', icon: '', cost: { wood: 1, stone: 1, rope: 2 }, desc: 'Nước sạch uống' },
+  { id: 'raft', name: 'Bè Tre', icon: '', cost: { wood: 5, stone: 2, rope: 3 }, desc: 'Thoát khỏi đảo!' }
 ];
 
 // Game state
@@ -63,7 +63,7 @@ function renderIsland() {
     div.innerHTML = `
       <span class="item-icon">${recipe.icon}</span>
       <span class="item-name">${recipe.name}</span>
-      <span class="item-status">${isCrafted ? '✅ Đã có' : '🔒 Chưa có'}</span>
+      <span class="item-status">${isCrafted ? ' Đã có' : ' Chưa có'}</span>
     `;
     grid.appendChild(div);
   });
@@ -195,11 +195,11 @@ function selectAnswer(selected, correct) {
     const weighted = ['wood', 'wood', 'wood', 'stone', 'stone', 'rope', 'rope'];
     const got = weighted[Math.floor(Math.random() * weighted.length)];
     sessionGathered[got]++;
-    const icons = { wood: '🌲', stone: '🧱', rope: '🎀' };
-    document.getElementById('feedback').textContent = `✅ Đúng! +1 ${icons[got]}`;
+    const icons = { wood: '', stone: '', rope: '' };
+    document.getElementById('feedback').textContent = ` Đúng! +1 ${icons[got]}`;
     document.getElementById('feedback').className = 'feedback correct';
   } else {
-    document.getElementById('feedback').textContent = '❌ Sai rồi!';
+    document.getElementById('feedback').textContent = ' Sai rồi!';
     document.getElementById('feedback').className = 'feedback wrong';
   }
 
@@ -209,7 +209,7 @@ function selectAnswer(selected, correct) {
 
 function updateGatherScore() {
   document.getElementById('gather-score').textContent = 
-    `🌲${sessionGathered.wood} 🧱${sessionGathered.stone} 🎀${sessionGathered.rope}`;
+    `${sessionGathered.wood} ${sessionGathered.stone} ${sessionGathered.rope}`;
 }
 
 function endGatherSession() {
@@ -278,9 +278,9 @@ function renderCraftList() {
     card.className = `craft-card ${isCrafted ? 'crafted' : canCraft ? 'available' : 'locked'}`;
 
     const costStr = [];
-    if (recipe.cost.wood) costStr.push(`🌲${recipe.cost.wood}`);
-    if (recipe.cost.stone) costStr.push(`🧱${recipe.cost.stone}`);
-    if (recipe.cost.rope) costStr.push(`🎀${recipe.cost.rope}`);
+    if (recipe.cost.wood) costStr.push(`${recipe.cost.wood}`);
+    if (recipe.cost.stone) costStr.push(`${recipe.cost.stone}`);
+    if (recipe.cost.rope) costStr.push(`${recipe.cost.rope}`);
 
     card.innerHTML = `
       <span class="craft-icon">${recipe.icon}</span>
@@ -293,13 +293,13 @@ function renderCraftList() {
     if (isCrafted) {
       const btn = document.createElement('button');
       btn.className = 'craft-btn done';
-      btn.textContent = '✅ Đã có';
+      btn.textContent = ' Đã có';
       btn.disabled = true;
       card.appendChild(btn);
     } else {
       const btn = document.createElement('button');
       btn.className = 'craft-btn';
-      btn.textContent = canCraft ? '🔨 Chế tạo' : '🔒';
+      btn.textContent = canCraft ? ' Chế tạo' : '';
       btn.disabled = !canCraft;
       btn.onclick = () => craftItem(recipe);
       card.appendChild(btn);
@@ -332,9 +332,9 @@ function showVictory() {
   showScreen('victory-screen');
   const stats = document.getElementById('victory-stats');
   stats.innerHTML = `
-    <p>📊 Tổng tài nguyên đã kiếm:</p>
-    <p>🌲 ${state.totalGathered.wood} gỗ | 🧱 ${state.totalGathered.stone} đá | 🎀 ${state.totalGathered.rope} dây</p>
-    <p>🔍 ${state.gatherSessions} lần thu thập</p>
+    <p> Tổng tài nguyên đã kiếm:</p>
+    <p> ${state.totalGathered.wood} gỗ |  ${state.totalGathered.stone} đá |  ${state.totalGathered.rope} dây</p>
+    <p> ${state.gatherSessions} lần thu thập</p>
   `;
 
   // Call checkAndShowPrompt if available
@@ -447,8 +447,8 @@ init();
 
   ready(function () {
     // Mount island avatar + crab mascot (always present on the island screen).
-    castaway = mount('island-castaway', 'castaway', '🧑', 88);
-    crab = mount('island-crab', 'crab', '🦀', 56);
+    castaway = mount('island-castaway', 'castaway', '', 88);
+    crab = mount('island-crab', 'crab', '', 56);
 
     // React to quiz feedback by observing the feedback element's class.
     const feedback = document.getElementById('feedback');
@@ -470,7 +470,7 @@ init();
     if (victory) {
       const vObs = new MutationObserver(() => {
         if (victory.classList.contains('active')) {
-          if (!victoryChar) victoryChar = mount('victory-castaway', 'castaway', '🚣', 110);
+          if (!victoryChar) victoryChar = mount('victory-castaway', 'castaway', '', 110);
           if (victoryChar) victoryChar.setState('happy');
           const card = victory.querySelector('.victory-container');
           if (card) spawnConfetti(card, 28);

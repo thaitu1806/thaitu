@@ -7,11 +7,11 @@
   const MAX_RETRIES = 2;
   const TIMER_SECONDS = 10;
 
-  const PETS = ['🐶','🐱','🐰','🐹','🐦','🐢','🐟','🐴','🦊','🐼','🐧','🐸'];
+  const PETS = ['','','','','','','','','','','',''];
   const ILLNESSES = ['Sốt','Đau bụng','Ho','Mệt mỏi','Đau chân','Không ăn được','Ngứa','Buồn ngủ nhiều'];
-  const STEP_LABELS = ['🩺 Bước khám bệnh:','💊 Bước chẩn đoán:','💉 Bước điều trị:','❤️ Bước hồi phục:'];
-  const STEP_ICONS = ['🩺','💊','💉','❤️'];
-  const TREATMENT_EFFECTS = ['🩺','💊','💉','❤️‍🩹'];
+  const STEP_LABELS = [' Bước khám bệnh:',' Bước chẩn đoán:',' Bước điều trị:','<img src="/img/heart.png" class="em-icon"> Bước hồi phục:'];
+  const STEP_ICONS = ['','','','<img src="/img/heart.png" class="em-icon">'];
+  const TREATMENT_EFFECTS = ['','','','<img src="/img/heart.png" class="em-icon">'];
 
   // ===== STATE =====
   let questions = [];
@@ -174,7 +174,7 @@
 
     generatePatients();
 
-    btnStart.textContent = '🩺 Bắt đầu ca trực!';
+    btnStart.textContent = ' Bắt đầu ca trực!';
     btnStart.disabled = false;
 
     showScreen(gameScreen);
@@ -193,7 +193,7 @@
     petEmoji.textContent = p.pet;
     petEmoji.className = 'pet-emoji';
     petIllness.textContent = `Bệnh: ${p.illness}`;
-    petMood.textContent = '😷';
+    petMood.textContent = '';
     retries = MAX_RETRIES;
     currentStep = 0;
     updateRetries();
@@ -205,8 +205,8 @@
   // ===== UPDATE RETRIES =====
   function updateRetries() {
     let hearts = '';
-    for (let i = 0; i < retries; i++) hearts += '❤️';
-    for (let i = retries; i < MAX_RETRIES; i++) hearts += '🖤';
+    for (let i = 0; i < retries; i++) hearts += '<img src="/img/heart.png" class="em-icon">';
+    for (let i = retries; i < MAX_RETRIES; i++) hearts += '';
     gameRetries.textContent = hearts;
   }
 
@@ -222,7 +222,7 @@
 
   // ===== UPDATE HEALED COUNT =====
   function updateHealedCount() {
-    healedCountEl.textContent = `❤️ Đã chữa: ${healedCount}`;
+    healedCountEl.textContent = `<img src="/img/heart.png" class="em-icon"> Đã chữa: ${healedCount}`;
   }
 
   // ===== SHOW QUESTION =====
@@ -284,7 +284,7 @@
   }
 
   function updateTimerDisplay() {
-    gameTimer.textContent = `⏱️ ${timer}`;
+    gameTimer.textContent = `⏱ ${timer}`;
     if (timer <= 3) {
       gameTimer.classList.add('warning');
     } else {
@@ -374,7 +374,7 @@
     updateRetries();
     petEmoji.classList.add('sad');
     setTimeout(() => petEmoji.classList.remove('sad'), 500);
-    petMood.textContent = retries > 0 ? '😰' : '😢';
+    petMood.textContent = retries > 0 ? '' : '';
 
     if (retries <= 0) {
       // Patient leaves sad
@@ -395,9 +395,9 @@
     updateHealedCount();
 
     petEmoji.classList.add('healed');
-    petMood.textContent = '😊';
+    petMood.textContent = '';
 
-    showTreatmentEffect('❤️‍🩹');
+    showTreatmentEffect('<img src="/img/heart.png" class="em-icon">');
 
     setTimeout(() => {
       currentPatient++;
@@ -408,7 +408,7 @@
   // ===== PATIENT FAILED =====
   function patientFailed() {
     patients[currentPatient].failed = true;
-    petMood.textContent = '😢';
+    petMood.textContent = '';
     petEmoji.style.opacity = '0.5';
 
     setTimeout(() => {
@@ -437,16 +437,16 @@
     showScreen(resultScreen);
 
     if (healedCount >= 7) {
-      resultIcon.textContent = '🏆';
+      resultIcon.textContent = '<img src="/img/trophy.png" class="em-icon">';
       resultTitle.textContent = 'Bác sĩ xuất sắc!';
     } else if (healedCount >= 5) {
-      resultIcon.textContent = '⭐';
+      resultIcon.textContent = '<img src="/img/star.png" class="em-icon">';
       resultTitle.textContent = 'Bác sĩ giỏi!';
     } else if (healedCount >= 3) {
-      resultIcon.textContent = '👍';
+      resultIcon.textContent = '';
       resultTitle.textContent = 'Cố gắng tốt!';
     } else {
-      resultIcon.textContent = '💪';
+      resultIcon.textContent = '';
       resultTitle.textContent = 'Lần sau sẽ tốt hơn!';
     }
 
@@ -454,7 +454,7 @@
     resultPets.innerHTML = patients.map(p => `
       <div class="result-pet ${p.healed ? 'healed' : 'failed'}">
         <span class="result-pet-emoji">${p.pet}</span>
-        <span class="result-pet-status">${p.healed ? '✓ Khỏe' : '✗ Buồn'}</span>
+        <span class="result-pet-status">${p.healed ? ' Khỏe' : ' Buồn'}</span>
       </div>
     `).join('');
 
@@ -555,7 +555,7 @@
 
   // Map the logic's pet emoji → registered sprite species. Pets without a
   // sprite simply keep their original emoji (fallback), so logic is unaffected.
-  const PET_SPECIES = { '🐶': 'puppy', '🐱': 'kitten', '🐰': 'bunny' };
+  const PET_SPECIES = { '': 'puppy', '': 'kitten', '': 'bunny' };
 
   let petChar = null;
   let vetChar = null;
@@ -584,7 +584,7 @@
     if (C && C.hasSpecies('vet')) {
       vetChar = C.createCharacter('vet', host, { state: 'idle' });
     } else {
-      host.textContent = '🧑‍⚕️';
+      host.textContent = '';
     }
   }
 

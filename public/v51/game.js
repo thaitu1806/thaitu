@@ -172,10 +172,10 @@
       fb.textContent = `${sp.emoji} Bắt được ${sp.name}!`;
     } else if (ok) {
       fb.className = 'feedback good';
-      fb.textContent = '✅ Đúng! Nhưng nó thoát mất...';
+      fb.textContent = ' Đúng! Nhưng nó thoát mất...';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = '❌ Sai! Streak reset.';
+      fb.textContent = ' Sai! Streak reset.';
     }
     renderHud(); renderPokedex();
     // Bounce + sparkle on the freshly-caught creature, then settle to idle.
@@ -218,15 +218,15 @@
     const badges = state.captured.map(id => {
       const sp = window.V51Logic.SPECIES.find(s => s.id === id);
       return sp ? sp.emoji : '';
-    }).join(' ') || '🐢';
+    }).join(' ') || '';
     $('result-badges').textContent = badges;
-    $('result-title').textContent = state.outcome === 'won' ? '🏆 Bộ Sưu Tập Hoàn Chỉnh!' : '🐢 Kết Thăm';
-    $('result-emoji').textContent = state.outcome === 'won' ? '🏆' : '🐢';
+    $('result-title').textContent = state.outcome === 'won' ? '<img src="/img/trophy.png" class="em-icon"> Bộ Sưu Tập Hoàn Chỉnh!' : ' Kết Thăm';
+    $('result-emoji').textContent = state.outcome === 'won' ? '<img src="/img/trophy.png" class="em-icon">' : '';
     $('result-detail').innerHTML = `
-      🎒 Loài: ${state.captured.length}/${state.totalSpecies}<br>
-      🎯 Lần bắt: ${state.catches}/${state.attempts}<br>
-      ✅ Đúng: ${state.correct}/${total} (${acc}%)<br>
-      ⭐ Sao: ${stars}/3
+       Loài: ${state.captured.length}/${state.totalSpecies}<br>
+       Lần bắt: ${state.catches}/${state.attempts}<br>
+       Đúng: ${state.correct}/${total} (${acc}%)<br>
+      <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3
     `;
     ss('result-screen');
     if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch(e){} }

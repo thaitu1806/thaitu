@@ -23,10 +23,12 @@
       const ladder = helpers.el('div', 'qz-ladder-rungs');
       let done = false;
       list.forEach((o, i) => {
-        const rung = helpers.el('button', 'option-btn qz-ladder-rung');
+        const rung = helpers.el('button', 'option-btn qz-ladder-rung qz-ladder-sprite');
         rung.textContent = o.text;
         rung.dataset.key = o.key;
         rung.style.setProperty('--i', String(i));
+        var col = Math.floor(Math.random() * 4);
+        rung.style.backgroundPosition = (col * 33.33) + '% 0';
         rung.addEventListener('click', () => {
           if (done) return;
           done = true;
@@ -48,8 +50,9 @@
       });
       field.appendChild(ladder);
 
-      // Character below the ladder (not overlapping answers)
-      const climber = helpers.el('div', 'qz-ladder-climber', '🧗');
+      // Character below the ladder
+      const climber = helpers.el('div', 'qz-ladder-climber');
+      climber.innerHTML = '<img src="/img/climber.png" style="width:48px;height:48px;">';
       field.appendChild(climber);
 
       ctx.onReveal(() => {

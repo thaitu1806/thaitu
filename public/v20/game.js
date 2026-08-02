@@ -3,18 +3,18 @@
 
   // ===== CROP DATA =====
   const CROPS = [
-    { id: 'rau', emoji: '🥬', name: 'Rau cải', growMinutes: 2, sellPrice: 8, seedCost: 5, unlockHarvests: 0 },
-    { id: 'carot', emoji: '🥕', name: 'Cà rốt', growMinutes: 3, sellPrice: 12, seedCost: 8, unlockHarvests: 0 },
-    { id: 'bap', emoji: '🌽', name: 'Bắp', growMinutes: 4, sellPrice: 15, seedCost: 10, unlockHarvests: 0 },
-    { id: 'cachua', emoji: '🍅', name: 'Cà chua', growMinutes: 5, sellPrice: 20, seedCost: 15, unlockHarvests: 10 },
-    { id: 'hoa', emoji: '🌻', name: 'Hoa hướng dương', growMinutes: 5, sellPrice: 18, seedCost: 12, unlockHarvests: 15 },
-    { id: 'dau', emoji: '🍓', name: 'Dâu tây', growMinutes: 6, sellPrice: 25, seedCost: 20, unlockHarvests: 25 },
-    { id: 'nho', emoji: '🍇', name: 'Nho', growMinutes: 8, sellPrice: 35, seedCost: 30, unlockHarvests: 50 },
-    { id: 'duahau', emoji: '🍉', name: 'Dưa hấu', growMinutes: 10, sellPrice: 50, seedCost: 40, unlockHarvests: 75 }
+    { id: 'rau', emoji: '', name: 'Rau cải', growMinutes: 2, sellPrice: 8, seedCost: 5, unlockHarvests: 0 },
+    { id: 'carot', emoji: '', name: 'Cà rốt', growMinutes: 3, sellPrice: 12, seedCost: 8, unlockHarvests: 0 },
+    { id: 'bap', emoji: '', name: 'Bắp', growMinutes: 4, sellPrice: 15, seedCost: 10, unlockHarvests: 0 },
+    { id: 'cachua', emoji: '', name: 'Cà chua', growMinutes: 5, sellPrice: 20, seedCost: 15, unlockHarvests: 10 },
+    { id: 'hoa', emoji: '', name: 'Hoa hướng dương', growMinutes: 5, sellPrice: 18, seedCost: 12, unlockHarvests: 15 },
+    { id: 'dau', emoji: '', name: 'Dâu tây', growMinutes: 6, sellPrice: 25, seedCost: 20, unlockHarvests: 25 },
+    { id: 'nho', emoji: '', name: 'Nho', growMinutes: 8, sellPrice: 35, seedCost: 30, unlockHarvests: 50 },
+    { id: 'duahau', emoji: '', name: 'Dưa hấu', growMinutes: 10, sellPrice: 50, seedCost: 40, unlockHarvests: 75 }
   ];
 
   // Growth stage emojis
-  const STAGE_EMOJIS = ['🌱', '🌿', '🌸'];
+  const STAGE_EMOJIS = ['', '', ''];
 
   // ===== STATE =====
   let farm = null;
@@ -90,7 +90,7 @@
     const popup = document.createElement('div');
     popup.className = 'daily-bonus-popup';
     popup.innerHTML = `
-      <div style="font-size:3rem;">🎁</div>
+      <div style="font-size:3rem;"><img src="/img/gift.png" class="em-icon"></div>
       <h3>Thưởng đăng nhập!</h3>
       <div class="bonus-amount">+${amount} xu</div>
       <p style="font-size:0.85rem;color:#888;font-weight:600;">Mỗi ngày nhận xu miễn phí!</p>
@@ -107,7 +107,7 @@
   // ===== RENDER FARM =====
   function renderFarm() {
     updateCoinDisplay();
-    document.getElementById('harvest-count').textContent = `🌿 Thu hoạch: ${farm.totalHarvests}`;
+    document.getElementById('harvest-count').textContent = ` Thu hoạch: ${farm.totalHarvests}`;
 
     const grid = document.getElementById('farm-grid');
     grid.innerHTML = '';
@@ -141,7 +141,7 @@
           div.addEventListener('click', () => harvest(i));
         } else {
           // Growing
-          const stageEmoji = STAGE_EMOJIS[plot.stage] || '🌱';
+          const stageEmoji = STAGE_EMOJIS[plot.stage] || '';
           div.innerHTML = `<span class="plot-emoji">${stageEmoji}</span><span class="plot-label">${crop.name}</span>`;
           const bar = document.createElement('div');
           bar.className = 'plot-progress';
@@ -242,7 +242,7 @@
             <span class="seed-card-name">${crop.name}</span>
             <span class="seed-card-detail">${crop.growMinutes} phút | Bán ${crop.sellPrice} xu</span>
           </div>
-          <span class="seed-card-lock">🔒 ${crop.unlockHarvests} thu hoạch</span>
+          <span class="seed-card-lock"> ${crop.unlockHarvests} thu hoạch</span>
         `;
       } else {
         card.innerHTML = `
@@ -291,7 +291,7 @@
       const btn = document.createElement('button');
       btn.className = 'shop-plot-btn';
       if (i < extraPlots) {
-        btn.textContent = `Ô đất ${7 + i} ✅ Đã mua`;
+        btn.textContent = `Ô đất ${7 + i}  Đã mua`;
         btn.disabled = true;
       } else {
         btn.innerHTML = `<span>Ô đất ${7 + i}</span><span style="color:#F57C00;font-weight:800;">100 xu</span>`;
@@ -418,14 +418,14 @@
   async function finishQuiz() {
     // Show result
     showScreen('result-screen');
-    document.getElementById('result-title').textContent = `💧 Tưới xong ${quizCorrect}/${quizQuestions.length} cây!`;
+    document.getElementById('result-title').textContent = ` Tưới xong ${quizCorrect}/${quizQuestions.length} cây!`;
     document.getElementById('result-detail').textContent = quizCorrect > 7 ? 'Tuyệt vời! Cây lớn nhanh lắm!' :
       quizCorrect > 4 ? 'Khá tốt! Cây đang phát triển.' : 'Cố gắng thêm nhé!';
 
     const wateredDiv = document.getElementById('result-watered');
     if (wateredCrops.length > 0) {
-      wateredDiv.innerHTML = `<p>🌱 Cây được tưới:</p>` +
-        wateredCrops.map(name => `<p style="margin-left:10px;">💧 ${name}</p>`).join('');
+      wateredDiv.innerHTML = `<p> Cây được tưới:</p>` +
+        wateredCrops.map(name => `<p style="margin-left:10px;"> ${name}</p>`).join('');
     } else {
       wateredDiv.innerHTML = `<p>Chưa có cây nào đang mọc để tưới.</p>`;
     }
@@ -526,7 +526,7 @@
     if (C && species && C.hasSpecies(species)) {
       chars[hostId] = C.createCharacter(species, host, { state: 'idle' });
     } else {
-      host.textContent = fallback || '🌻';
+      host.textContent = fallback || '';
     }
   }
 
@@ -581,12 +581,12 @@
 
   ready(function () {
     // Mount all decorative sprites (hosts always present in HTML).
-    mount('friend-farmer', '🧑\u200d🌾');
-    mount('friend-cow', '🐄');
-    mount('friend-chicken', '🐔');
-    mount('friend-pig', '🐷');
-    mount('quiz-mascot', '🧑\u200d🌾');
-    mount('result-mascot', '🐄');
+    mount('friend-farmer', '\u200d');
+    mount('friend-cow', '');
+    mount('friend-chicken', '');
+    mount('friend-pig', '');
+    mount('quiz-mascot', '\u200d');
+    mount('result-mascot', '');
 
     // Correct-answer celebration: the logic adds `.correct` to the picked
     // button. Listen on the answers container and react after it settles.

@@ -3,37 +3,37 @@
 
 const ANIMALS = [
   // Common (cost 30-60)
-  { id: 'chicken', emoji: '🐔', name: 'Gà', tier: 'common', cost: 30 },
-  { id: 'pig', emoji: '🐷', name: 'Heo', tier: 'common', cost: 35 },
-  { id: 'cow', emoji: '🐮', name: 'Bò', tier: 'common', cost: 40 },
-  { id: 'sheep', emoji: '🐑', name: 'Cừu', tier: 'common', cost: 40 },
-  { id: 'rabbit', emoji: '🐰', name: 'Thỏ', tier: 'common', cost: 35 },
-  { id: 'duck', emoji: '🦆', name: 'Vịt', tier: 'common', cost: 30 },
-  { id: 'horse', emoji: '🐴', name: 'Ngựa', tier: 'common', cost: 55 },
+  { id: 'chicken', emoji: '', name: 'Gà', tier: 'common', cost: 30 },
+  { id: 'pig', emoji: '', name: 'Heo', tier: 'common', cost: 35 },
+  { id: 'cow', emoji: '', name: 'Bò', tier: 'common', cost: 40 },
+  { id: 'sheep', emoji: '', name: 'Cừu', tier: 'common', cost: 40 },
+  { id: 'rabbit', emoji: '', name: 'Thỏ', tier: 'common', cost: 35 },
+  { id: 'duck', emoji: '', name: 'Vịt', tier: 'common', cost: 30 },
+  { id: 'horse', emoji: '', name: 'Ngựa', tier: 'common', cost: 55 },
   // Rare (cost 80-120)
-  { id: 'fox', emoji: '🦊', name: 'Cáo', tier: 'rare', cost: 80 },
-  { id: 'panda', emoji: '🐼', name: 'Gấu Trúc', tier: 'rare', cost: 100 },
-  { id: 'parrot', emoji: '🦜', name: 'Vẹt', tier: 'rare', cost: 90 },
-  { id: 'dolphin', emoji: '🐬', name: 'Cá Heo', tier: 'rare', cost: 110 },
-  { id: 'penguin', emoji: '🐧', name: 'Chim Cánh Cụt', tier: 'rare', cost: 100 },
-  { id: 'monkey', emoji: '🐵', name: 'Khỉ', tier: 'rare', cost: 85 },
+  { id: 'fox', emoji: '', name: 'Cáo', tier: 'rare', cost: 80 },
+  { id: 'panda', emoji: '', name: 'Gấu Trúc', tier: 'rare', cost: 100 },
+  { id: 'parrot', emoji: '', name: 'Vẹt', tier: 'rare', cost: 90 },
+  { id: 'dolphin', emoji: '', name: 'Cá Heo', tier: 'rare', cost: 110 },
+  { id: 'penguin', emoji: '', name: 'Chim Cánh Cụt', tier: 'rare', cost: 100 },
+  { id: 'monkey', emoji: '', name: 'Khỉ', tier: 'rare', cost: 85 },
   // Epic (cost 150-250)
-  { id: 'lion', emoji: '🦁', name: 'Sư Tử', tier: 'epic', cost: 160 },
-  { id: 'elephant', emoji: '🐘', name: 'Voi', tier: 'epic', cost: 200 },
-  { id: 'giraffe', emoji: '🦒', name: 'Hươu Cao Cổ', tier: 'epic', cost: 180 },
-  { id: 'whale', emoji: '🐋', name: 'Cá Voi', tier: 'epic', cost: 220 },
-  { id: 'tiger', emoji: '🐯', name: 'Hổ', tier: 'epic', cost: 240 },
+  { id: 'lion', emoji: '', name: 'Sư Tử', tier: 'epic', cost: 160 },
+  { id: 'elephant', emoji: '', name: 'Voi', tier: 'epic', cost: 200 },
+  { id: 'giraffe', emoji: '', name: 'Hươu Cao Cổ', tier: 'epic', cost: 180 },
+  { id: 'whale', emoji: '', name: 'Cá Voi', tier: 'epic', cost: 220 },
+  { id: 'tiger', emoji: '', name: 'Hổ', tier: 'epic', cost: 240 },
   // Legend (cost 350+)
-  { id: 'unicorn', emoji: '🦄', name: 'Kỳ Lân', tier: 'legend', cost: 350 },
-  { id: 'dragon', emoji: '🐲', name: 'Rồng', tier: 'legend', cost: 450 },
-  { id: 'phoenix', emoji: '🦅', name: 'Phượng Hoàng', tier: 'legend', cost: 400 },
+  { id: 'unicorn', emoji: '', name: 'Kỳ Lân', tier: 'legend', cost: 350 },
+  { id: 'dragon', emoji: '', name: 'Rồng', tier: 'legend', cost: 450 },
+  { id: 'phoenix', emoji: '', name: 'Phượng Hoàng', tier: 'legend', cost: 400 },
 ];
 
 const TIER_INFO = {
-  common: { label: '🟢 Thường', color: '#22c55e' },
-  rare: { label: '🔵 Hiếm', color: '#3b82f6' },
-  epic: { label: '🟣 Siêu hiếm', color: '#a855f7' },
-  legend: { label: '🟡 Huyền thoại', color: '#eab308' },
+  common: { label: ' Thường', color: '#22c55e' },
+  rare: { label: ' Hiếm', color: '#3b82f6' },
+  epic: { label: ' Siêu hiếm', color: '#a855f7' },
+  legend: { label: ' Huyền thoại', color: '#eab308' },
 };
 
 const ZOO_SLOTS = 20;
@@ -44,10 +44,10 @@ const DAILY_BONUS_PER_ANIMAL = 3;
 
 // Real-world rewards - unlocked by milestones
 const REWARDS = [
-  { id: 'r1', animals: 5, icon: '🍦', name: 'Một cây kem', desc: 'Sưu tập 5 con vật!' },
-  { id: 'r2', animals: 10, icon: '🎨', name: 'Bộ bút màu', desc: 'Sưu tập 10 con vật!' },
-  { id: 'r3', animals: 15, icon: '📚', name: 'Truyện tranh', desc: 'Sưu tập 15 con vật!' },
-  { id: 'r4', animals: 20, icon: '🎁', name: 'Quà bất ngờ!', desc: 'Hoàn thành vườn thú!' },
+  { id: 'r1', animals: 5, icon: '', name: 'Một cây kem', desc: 'Sưu tập 5 con vật!' },
+  { id: 'r2', animals: 10, icon: '', name: 'Bộ bút màu', desc: 'Sưu tập 10 con vật!' },
+  { id: 'r3', animals: 15, icon: '', name: 'Truyện tranh', desc: 'Sưu tập 15 con vật!' },
+  { id: 'r4', animals: 20, icon: '<img src="/img/gift.png" class="em-icon">', name: 'Quà bất ngờ!', desc: 'Hoàn thành vườn thú!' },
 ];
 
 // ===== PERSISTENCE =====
@@ -106,11 +106,11 @@ function renderZoo() {
   // Info text
   const info = document.getElementById('zoo-info');
   if (bonus > 0) {
-    info.textContent = `🎁 Bonus hôm nay: +${bonus} xu từ ${zoo.animals.length} con vật!`;
+    info.textContent = `<img src="/img/gift.png" class="em-icon"> Bonus hôm nay: +${bonus} xu từ ${zoo.animals.length} con vật!`;
     info.style.color = '#ffd700';
     setTimeout(() => { info.style.color = ''; }, 3000);
   } else {
-    info.textContent = `🐾 ${zoo.animals.length}/${ZOO_SLOTS} con vật | Chơi quiz để kiếm xu!`;
+    info.textContent = ` ${zoo.animals.length}/${ZOO_SLOTS} con vật | Chơi quiz để kiếm xu!`;
   }
 }
 
@@ -129,7 +129,7 @@ function renderShop() {
       <div class="si-emoji">${a.emoji}</div>
       <div class="si-name">${a.name}</div>
       <div class="si-tier" style="color:${TIER_INFO[a.tier].color}">${TIER_INFO[a.tier].label}</div>
-      <div class="si-price">${owned ? '✓ Đã có' : `💰 ${a.cost}`}</div>
+      <div class="si-price">${owned ? ' Đã có' : ` ${a.cost}`}</div>
     </div>`;
   }).join('');
 }
@@ -156,7 +156,7 @@ document.getElementById('shop-list').addEventListener('click', e => {
   const animal = ANIMALS.find(a => a.id === id);
 
   if (zoo.coins < cost) {
-    alert(`Cần ${cost} xu! Chơi quiz để kiếm thêm nhé! 💰`);
+    alert(`Cần ${cost} xu! Chơi quiz để kiếm thêm nhé! `);
     return;
   }
   if (zoo.animals.length >= ZOO_SLOTS) {
@@ -175,7 +175,7 @@ document.getElementById('shop-list').addEventListener('click', e => {
   const claimed = getClaimedRewards();
   const newReward = REWARDS.find(r => zoo.animals.length >= r.animals && !claimed.includes(r.id));
   if (newReward) {
-    setTimeout(() => alert(`🎁 Mốc mới! Sưu tập ${newReward.animals} con → nhận "${newReward.name}"!\nVào 🎁 Phần Thưởng để nhận nhé!`), 300);
+    setTimeout(() => alert(`<img src="/img/gift.png" class="em-icon"> Mốc mới! Sưu tập ${newReward.animals} con → nhận "${newReward.name}"!\nVào <img src="/img/gift.png" class="em-icon"> Phần Thưởng để nhận nhé!`), 300);
   }
 });
 
@@ -194,10 +194,10 @@ function renderRewards() {
     const isClaimed = claimed.includes(r.id);
     const isUnlocked = animalCount >= r.animals;
     const cls = isClaimed ? 'claimed' : isUnlocked ? 'unlocked' : '';
-    const progressText = isClaimed ? '✅ Đã nhận!' : `${animalCount}/${r.animals} con vật`;
+    const progressText = isClaimed ? ' Đã nhận!' : `${animalCount}/${r.animals} con vật`;
 
-    let badge = '🔒';
-    if (isClaimed) badge = '🏆';
+    let badge = '';
+    if (isClaimed) badge = '<img src="/img/trophy.png" class="em-icon">';
     else if (isUnlocked) badge = '';
 
     return `<div class="reward-card ${cls}">
@@ -207,7 +207,7 @@ function renderRewards() {
         <div class="reward-desc">${r.desc}</div>
         <div class="reward-progress">${progressText}</div>
       </div>
-      ${isClaimed ? '<div class="reward-badge">🏆</div>' : isUnlocked ? `<button class="reward-claim-btn" data-reward="${r.id}">🎉 Nhận!</button>` : `<div class="reward-badge">${badge}</div>`}
+      ${isClaimed ? '<div class="reward-badge"><img src="/img/trophy.png" class="em-icon"></div>' : isUnlocked ? `<button class="reward-claim-btn" data-reward="${r.id}"><img src="/img/party.png" class="em-icon"> Nhận!</button>` : `<div class="reward-badge">${badge}</div>`}
     </div>`;
   }).join('');
 }
@@ -221,7 +221,7 @@ document.addEventListener('click', e => {
     claimed.push(rewardId);
     saveClaimedRewards(claimed);
     const reward = REWARDS.find(r => r.id === rewardId);
-    alert(`🎉 Chúc mừng! Con đã đạt mốc "${reward.name}"!\n\n📸 Cho ba mẹ xem màn hình này để nhận quà thật nhé!`);
+    alert(`<img src="/img/party.png" class="em-icon"> Chúc mừng! Con đã đạt mốc "${reward.name}"!\n\n Cho ba mẹ xem màn hình này để nhận quà thật nhé!`);
     renderRewards();
   }
 });
@@ -258,7 +258,7 @@ function showQuizQuestion() {
   document.getElementById('quiz-question').textContent = q.question_text;
   document.getElementById('quiz-progress').textContent = `${Q.current + 1}/${QUIZ_TOTAL}`;
   document.getElementById('quiz-earned').textContent = Q.earned;
-  document.getElementById('quiz-combo').textContent = Q.combo >= 2 ? `🔥x${Q.combo}` : '';
+  document.getElementById('quiz-combo').textContent = Q.combo >= 2 ? `<img src="/img/fire.png" class="em-icon">x${Q.combo}` : '';
   document.getElementById('quiz-status').textContent = '';
 
   const answersEl = document.getElementById('quiz-answers');
@@ -273,13 +273,13 @@ function showQuizQuestion() {
         const bonus = Q.combo >= 5 ? 3 : Q.combo >= 3 ? 2 : 1;
         const coins = COINS_PER_CORRECT * bonus;
         Q.earned += coins;
-        document.getElementById('quiz-status').textContent = `✅ +${coins} xu!` + (Q.combo >= 3 ? ` 🔥x${Q.combo}` : '');
+        document.getElementById('quiz-status').textContent = ` +${coins} xu!` + (Q.combo >= 3 ? ` <img src="/img/fire.png" class="em-icon">x${Q.combo}` : '');
       } else {
         Q.incorrect++; Q.combo = 0;
-        document.getElementById('quiz-status').textContent = '❌ Sai rồi!';
+        document.getElementById('quiz-status').textContent = ' Sai rồi!';
       }
       document.getElementById('quiz-earned').textContent = Q.earned;
-      document.getElementById('quiz-combo').textContent = Q.combo >= 2 ? `🔥x${Q.combo}` : '';
+      document.getElementById('quiz-combo').textContent = Q.combo >= 2 ? `<img src="/img/fire.png" class="em-icon">x${Q.combo}` : '';
       logAnswer(q, selected, ck, ok);
       setTimeout(() => { Q.current++; showQuizQuestion(); }, 1000);
     }});
@@ -315,7 +315,7 @@ function quizTimeout() {
   const cb = document.querySelector(`.qa-btn[data-opt="${q.correct_answer}"]`);
   if (cb) cb.classList.add('correct');
   Q.incorrect++; Q.combo = 0;
-  document.getElementById('quiz-status').textContent = '⏱️ Hết giờ!';
+  document.getElementById('quiz-status').textContent = '⏱ Hết giờ!';
   document.getElementById('quiz-combo').textContent = '';
   setTimeout(() => { Q.current++; showQuizQuestion(); }, 1000);
 }
@@ -339,17 +339,17 @@ document.getElementById('quiz-answers').addEventListener('click', e => {
     const bonus = Q.combo >= 5 ? 3 : Q.combo >= 3 ? 2 : 1;
     const coins = COINS_PER_CORRECT * bonus;
     Q.earned += coins;
-    document.getElementById('quiz-status').textContent = `✅ +${coins} xu!` + (Q.combo >= 3 ? ` 🔥x${Q.combo}` : '');
+    document.getElementById('quiz-status').textContent = ` +${coins} xu!` + (Q.combo >= 3 ? ` <img src="/img/fire.png" class="em-icon">x${Q.combo}` : '');
   } else {
     btn.classList.add('wrong');
     const cb = document.querySelector(`.qa-btn[data-opt="${correct}"]`);
     if (cb) cb.classList.add('correct');
     Q.incorrect++; Q.combo = 0;
-    document.getElementById('quiz-status').textContent = '❌ Sai rồi!';
+    document.getElementById('quiz-status').textContent = ' Sai rồi!';
   }
 
   document.getElementById('quiz-earned').textContent = Q.earned;
-  document.getElementById('quiz-combo').textContent = Q.combo >= 2 ? `🔥x${Q.combo}` : '';
+  document.getElementById('quiz-combo').textContent = Q.combo >= 2 ? `<img src="/img/fire.png" class="em-icon">x${Q.combo}` : '';
 
   // Log answer
   logAnswer(q, selected, correct, isCorrect);
@@ -375,18 +375,18 @@ function endQuiz() {
   const stars = Q.correct >= 9 ? 3 : Q.correct >= 7 ? 2 : Q.correct >= 4 ? 1 : 0;
 
   document.getElementById('qr-container').innerHTML = `
-    <div class="qr-title">📝 Kết quả Quiz!</div>
-    <div class="qr-coins">+${Q.earned} 💰</div>
+    <div class="qr-title"> Kết quả Quiz!</div>
+    <div class="qr-coins">+${Q.earned} </div>
     <div class="qr-stats">
-      <div class="qr-stat"><span>✅ Đúng</span><strong>${Q.correct}/${QUIZ_TOTAL}</strong></div>
-      <div class="qr-stat"><span>🔥 Combo cao nhất</span><strong>x${Q.maxCombo}</strong></div>
-      <div class="qr-stat"><span>⭐ Sao</span><strong>${'⭐'.repeat(stars) || '—'}</strong></div>
-      <div class="qr-stat"><span>💰 Tổng xu</span><strong>${zoo.coins}</strong></div>
+      <div class="qr-stat"><span> Đúng</span><strong>${Q.correct}/${QUIZ_TOTAL}</strong></div>
+      <div class="qr-stat"><span><img src="/img/fire.png" class="em-icon"> Combo cao nhất</span><strong>x${Q.maxCombo}</strong></div>
+      <div class="qr-stat"><span><img src="/img/star.png" class="em-icon"> Sao</span><strong>${'<img src="/img/star.png" class="em-icon">'.repeat(stars) || '—'}</strong></div>
+      <div class="qr-stat"><span> Tổng xu</span><strong>${zoo.coins}</strong></div>
     </div>
-    ${unlocked.length ? `<div class="qr-unlock"><div class="qr-unlock-title">🎉 Mở khóa thú mới!</div><div class="qr-unlock-animals">${unlocked.map(a => a.emoji).join(' ')}</div></div>` : ''}
+    ${unlocked.length ? `<div class="qr-unlock"><div class="qr-unlock-title"><img src="/img/party.png" class="em-icon"> Mở khóa thú mới!</div><div class="qr-unlock-animals">${unlocked.map(a => a.emoji).join(' ')}</div></div>` : ''}
     <div class="qr-btns">
-      <button class="qr-btn primary" onclick="showScreen('zoo-screen');renderZoo();">🦁 Về Vườn Thú</button>
-      <button class="qr-btn secondary" onclick="startQuiz()">🔄 Chơi tiếp</button>
+      <button class="qr-btn primary" onclick="showScreen('zoo-screen');renderZoo();"> Về Vườn Thú</button>
+      <button class="qr-btn secondary" onclick="startQuiz()"> Chơi tiếp</button>
     </div>`;
   showScreen('quiz-result-screen');
 

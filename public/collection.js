@@ -361,7 +361,7 @@
     .hvc-cell.owned { background: #fff; border-color: var(--c,#a06bff); box-shadow: 0 4px 10px var(--g,rgba(160,107,255,0.25)); }
     .hvc-cell .hvc-sprite { width: 100%; height: 100%; border-radius: 12px; }
     .hvc-cell.locked { color: transparent; }
-    .hvc-cell.locked::after { content: '❓'; position: absolute; font-size: 1.4rem; color: #c9c3e0; }
+    .hvc-cell.locked::after { content: '?'; position: absolute; font-size: 1.4rem; color: #c9c3e0; font-weight: 900; }
     `;
     document.head.appendChild(s);
   }
@@ -387,17 +387,17 @@
       : `<div class="hvc-sticker" style="font-size:5.5rem;width:auto;height:auto;">${sticker.e}</div>`;
     overlay.innerHTML = `
       <div class="hvc-reveal" style="--rg:${rar.glow}">
-        <div class="hvc-banner">✨ NHÃN DÁN MỚI ✨</div>
+        <div class="hvc-banner">NHÃN DÁN MỚI</div>
         ${stickerHtml}
         <div class="hvc-name">${sticker.n}</div>
         <div class="hvc-rarity" style="background:${rar.color}">${rar.label}</div>
         <div class="hvc-progress">Bộ sưu tập: ${owned}/${total}</div>
-        <button class="hvc-btn" id="hvc-reveal-ok">Tuyệt vời! 🎉</button>
+        <button class="hvc-btn" id="hvc-reveal-ok">Tuyệt vời!</button>
       </div>`;
     overlay.classList.add('show');
     document.getElementById('hvc-reveal-ok').addEventListener('click', () => overlay.classList.remove('show'));
     if (window.HocVuiSound) window.HocVuiSound.play(sticker.r === 'epic' ? 'win' : 'star');
-    if (window.HocVuiMascot) window.HocVuiMascot.say('Có nhãn dán mới nè! 🎉', 'good');
+    if (window.HocVuiMascot) window.HocVuiMascot.say('Có nhãn dán mới nè!', 'good');
     burstConfetti();
   }
 
@@ -432,7 +432,7 @@
     overlay.innerHTML = `
       <div class="hvc-album">
         <div class="hvc-album-head">
-          <h2>📔 Bộ Sưu Tập</h2>
+          <h2>Bộ Sưu Tập</h2>
           <button class="hvc-close" id="hvc-album-close">✕</button>
         </div>
         <div class="hvc-album-sub">Đã sưu tập ${owned.length}/${total} nhãn dán — chơi tiếp để mở hết nhé!</div>

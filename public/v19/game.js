@@ -16,10 +16,10 @@
         'Có tiếng kêu "meo meo" từ gầm bàn'
       ],
       suspects: [
-        { name: 'Be Nam', nameDisplay: 'Bé Nam', emoji: '👦' },
-        { name: 'Co Lan', nameDisplay: 'Cô Lan', emoji: '👩' },
-        { name: 'Ong Ba', nameDisplay: 'Ông Ba', emoji: '👴' },
-        { name: 'Con meo', nameDisplay: 'Con mèo', emoji: '🐱' }
+        { name: 'Be Nam', nameDisplay: 'Bé Nam', emoji: '' },
+        { name: 'Co Lan', nameDisplay: 'Cô Lan', emoji: '' },
+        { name: 'Ong Ba', nameDisplay: 'Ông Ba', emoji: '' },
+        { name: 'Con meo', nameDisplay: 'Con mèo', emoji: '' }
       ],
       answer: 'Con meo'
     },
@@ -36,10 +36,10 @@
         'Bác bảo vệ thấy một bạn ở lại lớp giờ ra chơi'
       ],
       suspects: [
-        { name: 'Be Minh', nameDisplay: 'Bé Minh', emoji: '👦' },
-        { name: 'Be Hanh', nameDisplay: 'Bé Hạnh', emoji: '👧' },
-        { name: 'Bac bao ve', nameDisplay: 'Bác bảo vệ', emoji: '👮' },
-        { name: 'Be Tung', nameDisplay: 'Bé Tùng', emoji: '👦' }
+        { name: 'Be Minh', nameDisplay: 'Bé Minh', emoji: '' },
+        { name: 'Be Hanh', nameDisplay: 'Bé Hạnh', emoji: '' },
+        { name: 'Bac bao ve', nameDisplay: 'Bác bảo vệ', emoji: '' },
+        { name: 'Be Tung', nameDisplay: 'Bé Tùng', emoji: '' }
       ],
       answer: 'Be Tung'
     },
@@ -56,10 +56,10 @@
         'Bé Đức là người cuối cùng rời phòng giáo viên'
       ],
       suspects: [
-        { name: 'Thay Nam', nameDisplay: 'Thầy Nam', emoji: '🧑‍🏫' },
-        { name: 'Be Lan', nameDisplay: 'Bé Lan', emoji: '👧' },
-        { name: 'Be Duc', nameDisplay: 'Bé Đức', emoji: '👦' },
-        { name: 'Be Mai', nameDisplay: 'Bé Mai', emoji: '👧' }
+        { name: 'Thay Nam', nameDisplay: 'Thầy Nam', emoji: '' },
+        { name: 'Be Lan', nameDisplay: 'Bé Lan', emoji: '' },
+        { name: 'Be Duc', nameDisplay: 'Bé Đức', emoji: '' },
+        { name: 'Be Mai', nameDisplay: 'Bé Mai', emoji: '' }
       ],
       answer: 'Be Duc'
     },
@@ -76,10 +76,10 @@
         'Trong quà có kẹo bà ngoại hay mua'
       ],
       suspects: [
-        { name: 'Ba ngoai', nameDisplay: 'Bà ngoại', emoji: '👵' },
-        { name: 'Be An', nameDisplay: 'Bé An', emoji: '👦' },
-        { name: 'Chu hang xom', nameDisplay: 'Chú hàng xóm', emoji: '👨' },
-        { name: 'Buu ta', nameDisplay: 'Bưu tá', emoji: '📮' }
+        { name: 'Ba ngoai', nameDisplay: 'Bà ngoại', emoji: '' },
+        { name: 'Be An', nameDisplay: 'Bé An', emoji: '' },
+        { name: 'Chu hang xom', nameDisplay: 'Chú hàng xóm', emoji: '' },
+        { name: 'Buu ta', nameDisplay: 'Bưu tá', emoji: '' }
       ],
       answer: 'Ba ngoai'
     },
@@ -96,10 +96,10 @@
         'Con chó không với tới lọ kẹo trên kệ cao'
       ],
       suspects: [
-        { name: 'Em be', nameDisplay: 'Em bé', emoji: '👶' },
-        { name: 'Chi Hai', nameDisplay: 'Chị Hai', emoji: '👩' },
-        { name: 'Bo', nameDisplay: 'Bố', emoji: '👨' },
-        { name: 'Con cho', nameDisplay: 'Con chó', emoji: '🐕' }
+        { name: 'Em be', nameDisplay: 'Em bé', emoji: '' },
+        { name: 'Chi Hai', nameDisplay: 'Chị Hai', emoji: '' },
+        { name: 'Bo', nameDisplay: 'Bố', emoji: '' },
+        { name: 'Con cho', nameDisplay: 'Con chó', emoji: '' }
       ],
       answer: 'Em be'
     },
@@ -116,10 +116,10 @@
         'Tay Bé Thảo có vết gai hoa hồng cào'
       ],
       suspects: [
-        { name: 'Ca lop', nameDisplay: 'Cả lớp', emoji: '👫' },
-        { name: 'Be Hung', nameDisplay: 'Bé Hùng', emoji: '👦' },
-        { name: 'Be Thao', nameDisplay: 'Bé Thảo', emoji: '👧' },
-        { name: 'Phu huynh', nameDisplay: 'Phụ huynh', emoji: '👨‍👩‍👧' }
+        { name: 'Ca lop', nameDisplay: 'Cả lớp', emoji: '' },
+        { name: 'Be Hung', nameDisplay: 'Bé Hùng', emoji: '' },
+        { name: 'Be Thao', nameDisplay: 'Bé Thảo', emoji: '' },
+        { name: 'Phu huynh', nameDisplay: 'Phụ huynh', emoji: '' }
       ],
       answer: 'Be Thao'
     }
@@ -218,7 +218,7 @@
       const card = document.createElement('div');
       card.className = `case-card ${statusClass}`;
       card.innerHTML = `
-        <div class="case-number">${isSolved ? '✅' : isUnlocked ? c.id : '🔒'}</div>
+        <div class="case-number">${isSolved ? '' : isUnlocked ? c.id : ''}</div>
         <div class="case-info">
           <span class="case-name">${isUnlocked || isSolved ? c.titleDisplay : '???'}</span>
           <span class="case-status">${isSolved ? 'Đã phá án!' : isUnlocked ? 'Chưa giải' : 'Khóa'}</span>
@@ -334,9 +334,9 @@
     $('btn-deduce').style.display = 'inline-block';
 
     if (allRevealed) {
-      $('btn-deduce').textContent = '🧠 Phán đoán thủ phạm!';
+      $('btn-deduce').textContent = ' Phán đoán thủ phạm!';
     } else {
-      $('btn-deduce').textContent = '🧠 Đoán sớm (khó hơn!)';
+      $('btn-deduce').textContent = ' Đoán sớm (khó hơn!)';
     }
   }
 
@@ -451,7 +451,7 @@
   function showMagnifyAnimation(callback) {
     const overlay = document.createElement('div');
     overlay.className = 'magnify-overlay';
-    overlay.innerHTML = '<div class="magnify-icon">🔍</div>';
+    overlay.innerHTML = '<div class="magnify-icon"></div>';
     document.body.appendChild(overlay);
     setTimeout(() => {
       overlay.remove();
@@ -543,7 +543,7 @@
 
     if (caseSolved) {
       container.innerHTML = `
-        <div class="result-icon">🎉🕵️</div>
+        <div class="result-icon"><img src="/img/party.png" class="em-icon"></div>
         <h2 class="result-title">Vụ án đã phá!</h2>
         <p class="result-message">Tuyệt vời! Thám tử nhí đã tìm ra thủ phạm: <strong>${c.suspects.find(s => s.name === c.answer).nameDisplay} ${c.suspects.find(s => s.name === c.answer).emoji}</strong></p>
         <div class="result-stats">
@@ -553,12 +553,12 @@
           <div class="result-stat"><span class="result-stat-label">Thời gian</span><span class="result-stat-value">${timeSpent}s</span></div>
           <div class="result-stat"><span class="result-stat-label">Tổng vụ án phá</span><span class="result-stat-value">${progress.solved.length}/6</span></div>
         </div>
-        <button class="btn-result primary" id="btn-next-case">📁 Vụ án tiếp theo</button>
-        <button class="btn-result secondary" id="btn-back-cases">🏠 Danh sách vụ án</button>
+        <button class="btn-result primary" id="btn-next-case"> Vụ án tiếp theo</button>
+        <button class="btn-result secondary" id="btn-back-cases"> Danh sách vụ án</button>
       `;
     } else {
       container.innerHTML = `
-        <div class="result-icon">🤔</div>
+        <div class="result-icon"></div>
         <h2 class="result-title">Sai rồi!</h2>
         <p class="result-message">Đó không phải thủ phạm. Thủ phạm thật là: <strong>${c.suspects.find(s => s.name === c.answer).nameDisplay} ${c.suspects.find(s => s.name === c.answer).emoji}</strong></p>
         <div class="result-stats">
@@ -566,8 +566,8 @@
           <div class="result-stat"><span class="result-stat-label">Manh mối tìm được</span><span class="result-stat-value">${state.cluesRevealed}/5</span></div>
           <div class="result-stat"><span class="result-stat-label">Câu hỏi đúng</span><span class="result-stat-value">${state.correctAnswers}/${state.totalAnswered}</span></div>
         </div>
-        <button class="btn-result primary" id="btn-retry-case">🔄 Thử lại vụ này</button>
-        <button class="btn-result secondary" id="btn-back-cases">🏠 Danh sách vụ án</button>
+        <button class="btn-result primary" id="btn-retry-case"> Thử lại vụ này</button>
+        <button class="btn-result secondary" id="btn-back-cases"> Danh sách vụ án</button>
       `;
     }
 
@@ -704,7 +704,7 @@
       if (C && C.hasSpecies('detective')) {
         detectiveChar = C.createCharacter('detective', dHost, { state: 'idle' });
       } else {
-        dHost.textContent = '🕵️';
+        dHost.textContent = '';
       }
     }
     if (pHost && !pupChar) {
@@ -712,7 +712,7 @@
       if (C && C.hasSpecies('pup')) {
         pupChar = C.createCharacter('pup', pHost, { state: 'idle' });
       } else {
-        pHost.textContent = '🐶';
+        pHost.textContent = '';
       }
     }
   }

@@ -56,7 +56,7 @@
   }
   function renderLoom() {
     document.querySelectorAll('#loom .panel').forEach((p, i) => {
-      if (i < state.panels) { p.classList.add('stitched'); p.textContent = '🧵'; }
+      if (i < state.panels) { p.classList.add('stitched'); p.textContent = ''; }
       else { p.classList.remove('stitched'); p.textContent = '⬜'; }
     });
   }
@@ -106,9 +106,9 @@
     else { state = window.V57Logic.applyWrongOrTimeout(state); combo = 0; }
     logAns(sel, ck, ok, Date.now() - qStart);
     const fb = $('feedback'); fb.style.display = 'block';
-    if (state.garments.length > prev) { const last = state.garments[state.garments.length - 1]; fb.className = 'feedback bonus'; fb.textContent = last.gold ? `✨ Áo dài vàng — ${last.name}!` : `👘 Hoàn thành áo ${last.name}!`; }
-    else if (ok) { fb.className = 'feedback good'; fb.textContent = '✅ Khâu thêm 1 mảnh!'; }
-    else { fb.className = 'feedback bad'; fb.textContent = '❌ Sai! Tháo mảnh đang khâu.'; }
+    if (state.garments.length > prev) { const last = state.garments[state.garments.length - 1]; fb.className = 'feedback bonus'; fb.textContent = last.gold ? ` Áo dài vàng — ${last.name}!` : ` Hoàn thành áo ${last.name}!`; }
+    else if (ok) { fb.className = 'feedback good'; fb.textContent = ' Khâu thêm 1 mảnh!'; }
+    else { fb.className = 'feedback bad'; fb.textContent = ' Sai! Tháo mảnh đang khâu.'; }
     renderHud(); renderLoom(); renderGarments();
     // Thread/sparkle burst on a freshly stitched panel (no garment completed yet).
     if (ok && state.garments.length === prev) {
@@ -143,11 +143,11 @@
     let stars = 0; if (state.outcome === 'won') stars = 3; else if (state.garments.length >= 3) stars = 2; else if (state.garments.length >= 1) stars = 1;
     saveSession({ stars, acc, total });
     if (state.outcome === 'won') { garmentRefs.forEach(r => { if (r.char) r.char.setState('happy'); }); spawnConfetti($('shop-stage') || document.body, 44); }
-    const badges = state.garments.map(g => g.emoji).join(' ') || '👘';
+    const badges = state.garments.map(g => g.emoji).join(' ') || '';
     $('result-badges').textContent = badges;
-    $('result-title').textContent = state.outcome === 'won' ? '👘 Nhà May Bậc Thầy!' : '👘 Kết Buổi May';
-    $('result-emoji').textContent = state.outcome === 'won' ? '👘' : '🧵';
-    $('result-detail').innerHTML = `👘 Áo dài: ${state.garments.length}/${state.garmentsGoal}<br>✨ Vàng: ${state.garments.filter(g => g.gold).length}<br>✅ Đúng: ${state.correct}/${total} (${acc}%)<br>⭐ Sao: ${stars}/3`;
+    $('result-title').textContent = state.outcome === 'won' ? ' Nhà May Bậc Thầy!' : ' Kết Buổi May';
+    $('result-emoji').textContent = state.outcome === 'won' ? '' : '';
+    $('result-detail').innerHTML = ` Áo dài: ${state.garments.length}/${state.garmentsGoal}<br> Vàng: ${state.garments.filter(g => g.gold).length}<br> Đúng: ${state.correct}/${total} (${acc}%)<br><img src="/img/star.png" class="em-icon"> Sao: ${stars}/3`;
     ss('result-screen'); if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch(e){} }
   }
   async function saveSession({ stars, acc, total }) {

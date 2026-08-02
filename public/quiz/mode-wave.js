@@ -21,7 +21,7 @@
       var ck = helpers.correctKey(q);
       var list = helpers.shuffle(helpers.optionList(q));
 
-      var field = helpers.el('div', 'qz-wave-field');
+      var field = helpers.el('div', 'qz-wave-field qz-wave-bg');
       optionsEl.appendChild(field);
 
       var done = false;

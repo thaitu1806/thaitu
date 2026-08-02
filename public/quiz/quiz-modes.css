@@ -58,34 +58,44 @@
 .qz-tap-chip:active { transform: rotate(0) scale(0.96); }
 
 /* ── mystery boxes (🎁 open to reveal answers) ── */
-.qz-mystery-field { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.qz-mystery-field { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; justify-items: center; align-items: center; max-width: 280px; margin: 0 auto; }
 .qz-box {
-  position: relative; flex: 0 0 auto; width: 96px; min-height: 108px;
+  position: relative; flex: 1; max-width: 120px; min-height: 120px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  border-radius: 18px; cursor: pointer; overflow: hidden;
-  background: linear-gradient(145deg, #ff6b8b, #ff4081);
-  border: 3px solid rgba(255,255,255,0.5);
-  box-shadow: 0 6px 18px rgba(255,64,129,0.35), inset 0 2px 6px rgba(255,255,255,0.4);
+  border-radius: 20px; cursor: pointer; overflow: hidden;
+  background: transparent;
+  border: none;
+  box-shadow: none;
   animation: qzBoxBounce 2s ease-in-out infinite, qzChipIn .3s ease both;
   animation-delay: var(--d, 0s), var(--d, 0s);
 }
-.qz-box:nth-child(2) { background: linear-gradient(145deg, #7c4dff, #536dfe); box-shadow: 0 6px 18px rgba(83,109,254,0.35), inset 0 2px 6px rgba(255,255,255,0.4); }
-.qz-box:nth-child(3) { background: linear-gradient(145deg, #ffd740, #ff9100); box-shadow: 0 6px 18px rgba(255,145,0,0.35), inset 0 2px 6px rgba(255,255,255,0.4); }
+.qz-box:nth-child(2) { background: transparent; box-shadow: none; }
+.qz-box:nth-child(3) { background: transparent; box-shadow: none; }
 .qz-box:active { transform: scale(0.92); }
 @keyframes qzBoxBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 .qz-box-lid {
-  font-size: 2.6rem; transition: opacity .3s, transform .3s;
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  transition: opacity .3s, transform .3s;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
-.qz-box::before {
-  content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
-  width: 70%; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.5);
-}
+.qz-box::before { display: none; }
 .qz-box-val {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem; font-weight: 900; color: #fff; opacity: 0; transform: scale(0.6);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3); padding: 8px;
+  font-size: 1.4rem; font-weight: 900; color: #5a3d00; opacity: 0; transform: scale(0.6);
+  text-shadow: none; padding: 8px;
+  background: linear-gradient(135deg, #fff9e6, #ffe4a0); border-radius: 14px;
+  border: 2px solid #ffd27a;
+  box-shadow: 0 3px 10px rgba(255,180,0,0.2);
   transition: opacity .3s, transform .3s;
+}
+.qz-box.correct .qz-box-val {
+  background: linear-gradient(135deg, #e8f9ec, #a5d6a7);
+  border-color: #46c246; color: #1b5e20;
+  box-shadow: 0 0 12px rgba(70,194,70,0.4);
+}
+.qz-box.wrong .qz-box-val {
+  background: linear-gradient(135deg, #ffeaea, #ffcdd2);
+  border-color: #ef5350; color: #b71c1c;
 }
 .qz-box.open { animation: qzBoxOpen .4s ease forwards; }
 .qz-box.open .qz-box-lid { opacity: 0; transform: translateY(-20px) rotate(-15deg) scale(0.3); }
@@ -129,7 +139,7 @@
 .qz-catch-chip.disabled { pointer-events: none; }
 
 /* ── balloon (🎈 tap drifting balloons) ── */
-.qz-balloon-field { grid-column: 1 / -1; position: relative; width: 100%; height: 200px; overflow: hidden; }
+.qz-balloon-field { grid-column: 1 / -1; position: relative; width: 100%; height: 260px; overflow: visible; }
 .qz-balloon {
   position: absolute; bottom: 0; transform: translateX(-50%);
   width: 64px; height: 80px; border: none; padding: 0; cursor: pointer;
@@ -174,8 +184,8 @@
 
 /* ── whack (🔨 moles popping from holes) ── */
 .qz-whack-field { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-.qz-hole { position: relative; height: 90px; background: radial-gradient(ellipse at 50% 100%, #8a5a2b 0%, #6b431f 70%); border-radius: 0 0 50% 50% / 0 0 60px 60px; }
-.qz-hole::after { content: ''; position: absolute; left: 8%; right: 8%; bottom: 6px; height: 14px; background: rgba(0,0,0,0.25); border-radius: 50%; z-index: 0; }
+.qz-hole { position: relative; height: 110px; background: transparent; border-radius: 0; overflow: visible; }
+.qz-hole::after { display: none; }
 .qz-mole { position: absolute; left: 50%; bottom: 6px; transform: translate(-50%, 80px); opacity: 0; pointer-events: none; transition: transform .25s cubic-bezier(.34,1.56,.64,1), opacity .15s; display: flex; flex-direction: column; align-items: center; gap: 2px; border: none; background: transparent; cursor: pointer; padding: 6px; z-index: 2; }
 .qz-hole.up .qz-mole { transform: translate(-50%, -10px); opacity: 1; pointer-events: auto; }
 .qz-mole-face { font-size: 2rem; line-height: 1; }
@@ -271,7 +281,7 @@
 .qz-archer-field { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 12px; align-items: center; }
 .qz-archer-targets { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 .qz-archer-target {
-  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 8px;
   border-radius: 14px; background: #f8fafc; border: 2px solid #e0e6f0; min-width: 64px; transition: .2s;
   animation: archerSway 2.5s ease-in-out infinite;
 }
@@ -394,9 +404,9 @@
 @keyframes ladderSparkle { to { transform: translateY(-12px) scale(0); opacity: 0; } }
 .qz-ladder-climber.fall { animation: ladderFall .6s ease forwards; }
 @keyframes ladderFall { 50% { transform: translateY(10px) rotate(15deg); } 100% { transform: translateY(20px) rotate(25deg); opacity: 0.3; } }
-.qz-ladder-rungs { display: flex; flex-direction: column-reverse; gap: 6px; width: 100%; max-width: 280px; }
+.qz-ladder-rungs { display: flex; flex-direction: column-reverse; gap: 2px; width: 100%; max-width: 320px; }
 .qz-ladder-rung {
-  padding: 12px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; text-align: center; cursor: pointer;
+  padding: 18px 12px; border-radius: 16px; font-weight: 800; font-size: 1rem; text-align: center; cursor: pointer;
   background: linear-gradient(90deg, #fff8e1, #ffe082); border: 2.5px solid #f9a825;
   box-shadow: 0 3px 0 #f57f17, inset 0 1px 0 rgba(255,255,255,0.6), 0 5px 12px rgba(249,168,37,0.15);
   transition: transform .1s, box-shadow .1s;
@@ -631,7 +641,7 @@
 .qz-spin-item.disabled { pointer-events: none; opacity: .8; }
 
 /* ── spell (🪄 potion bottles) ── */
-.qz-spell-field { grid-column: 1 / -1; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding: 10px 0; }
+.qz-spell-field { grid-column: 1 / -1; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding: 10px 0; position: relative; overflow: visible; min-height: 180px; }
 .qz-spell-bottle {
   position: relative; padding: 18px 14px 14px; border-radius: 18px; font-weight: 800; font-size: 0.9rem;
   background: linear-gradient(180deg, #ede7f6, #d1c4e9); border: 2.5px solid #7e57c2;
@@ -671,9 +681,17 @@
 .qz-launch-rocket::after { content: '🔥'; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; opacity: .6; }
 @keyframes rocketVib { from { transform: translateY(0) rotate(-0.5deg); } to { transform: translateY(-2px) rotate(0.5deg); } }
 .qz-launch-rocket.liftoff { animation: rocketLiftoff .8s cubic-bezier(.34,1.56,.64,1) forwards; }
-@keyframes rocketLiftoff { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-20px) scale(1.05); } 100% { transform: translateY(-100px) scale(0.8); opacity: .2; } }
+@keyframes rocketLiftoff { 0% { transform: translateY(0) scale(1); } 20% { transform: translateY(-5px) scale(1.08); } 40% { transform: translateY(-30px) scale(1.05); } 100% { transform: translateY(-120px) scale(0.7); opacity: 0; } }
+/* Liftoff fire trail particles */
+.qz-launch-rocket.liftoff::after { content: ''; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); width: 20px; height: 40px; background: radial-gradient(ellipse, #ff9800 0%, #ff5722 40%, transparent 70%); border-radius: 50%; opacity: 1; animation: rocketFlame .4s ease-out infinite; }
+@keyframes rocketFlame { 0% { transform: translateX(-50%) scaleY(1); opacity: 1; } 50% { transform: translateX(-50%) scaleY(1.5); opacity: 0.8; } 100% { transform: translateX(-50%) scaleY(0.5); opacity: 0.4; } }
+/* Explosion on correct */
+.qz-launch-rocket.liftoff.correct::before { content: ''; position: absolute; top: -30px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background: radial-gradient(circle, rgba(255,215,0,0.8) 0%, rgba(255,152,0,0.4) 40%, transparent 70%); border-radius: 50%; animation: rocketExplode .6s ease-out forwards; pointer-events: none; }
+@keyframes rocketExplode { 0% { transform: translateX(-50%) scale(0); opacity: 1; } 50% { transform: translateX(-50%) scale(1.5); opacity: 0.8; } 100% { transform: translateX(-50%) scale(2.5); opacity: 0; } }
 .qz-launch-rocket.broken { animation: rocketBroken .6s ease; background: linear-gradient(180deg, #cfd8dc, #78909c); border-color: #37474f; }
-@keyframes rocketBroken { 0% { transform: scale(1); } 20% { transform: translateX(-5px) rotate(-5deg); } 40% { transform: translateX(5px) rotate(5deg); } 60% { transform: translateX(-3px) rotate(-3deg); } 100% { transform: scale(0.95); } }
+.qz-launch-rocket.broken::after { content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 30px; height: 30px; background: radial-gradient(circle, rgba(100,100,100,0.6) 0%, transparent 70%); border-radius: 50%; animation: rocketSmoke .8s ease-out forwards; }
+@keyframes rocketSmoke { 0% { transform: translateX(-50%) scale(0.5); opacity: 1; } 100% { transform: translateX(-50%) scale(2) translateY(-20px); opacity: 0; } }
+@keyframes rocketBroken { 0% { transform: scale(1); } 15% { transform: translateX(-6px) rotate(-8deg); } 30% { transform: translateX(6px) rotate(8deg); } 45% { transform: translateX(-4px) rotate(-5deg); } 60% { transform: translateX(4px) rotate(5deg); } 100% { transform: scale(0.9); opacity: 0.7; } }
 .qz-launch-rocket.correct { border-color: #2e7d32; }
 .qz-launch-rocket.disabled { pointer-events: none; animation: none; }
 
@@ -949,4 +967,424 @@
   white-space: nowrap; pointer-events: none;
   background: rgba(255,255,255,0.95); padding: 5px 12px; border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+ * AI SPRITE GRIDS — shared sprite utilities for quiz modes
+ * Each grid image is a single PNG containing multiple variants arranged in a
+ * regular grid. JS picks a random cell index; CSS background-position shows it.
+ * ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Balloon sprites (5 cols × 2 rows, 788×317 → cell ~158×159) */
+.qz-balloon-sprite {
+  background-image: url('/img/balloons-grid.png');
+  background-size: 500% 200%;
+  background-repeat: no-repeat;
+}
+
+/* Crystal sprites (4 cols × 2 rows, 711×351 → cell ~178×176) */
+.qz-crystal-sprite {
+  background-image: url('/img/crystals-grid.png');
+  background-size: 400% 200%;
+  background-repeat: no-repeat;
+}
+
+/* Mole sprites (4 cols × 1 row, 1003×249) */
+.qz-mole-sprite {
+  background-image: url('/img/moles-grid.png');
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+}
+
+/* Hole sprites (4 cols × 1 row, 1003×249) */
+.qz-hole-sprite {
+  background-image: url('/img/holes-grid.png');
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+}
+
+/* Arrow sprites (4 cols × 1 row, 1003×249) */
+.qz-arrow-sprite {
+  background-image: url('/img/arrows-grid.png');
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+}
+
+/* Scratch cover sprites (4 cols × 1 row, 1003×249) */
+.qz-scratch-sprite {
+  background-image: url('/img/scratch-grid.png');
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+}
+
+/* Slot frame sprites (4 cols × 1 row, 1003×249) */
+.qz-slot-sprite {
+  background-image: url('/img/slots-grid.png');
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+}
+
+
+/* Override balloon CSS-gradient shape when sprite is used */
+.qz-balloon.qz-balloon-sprite {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 50% 50% 50% 50% / 55% 55% 45% 45% !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+}
+.qz-balloon.qz-balloon-sprite::before,
+.qz-balloon.qz-balloon-sprite::after { display: none !important; }
+.qz-balloon.qz-balloon-sprite .qz-balloon-label {
+  margin-top: 30%; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+
+/* Override whack hole with sprite */
+.qz-hole.qz-hole-sprite {
+  background: none;
+  background-image: url('/img/holes-grid.png');
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+.qz-hole.qz-hole-sprite::after { display: none; }
+
+/* Mole face sprite (replaces 🐹 emoji) */
+.qz-mole-face.qz-mole-sprite {
+  display: inline-block;
+  width: 48px; height: 48px;
+  background-image: url('/img/moles-grid.png');
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+  font-size: 0; line-height: 0;
+}
+
+
+/* Arrow sprite (replaces 🏹 emoji) */
+.qz-arrow.qz-arrow-sprite {
+  display: inline-block;
+  width: 90px; height: 40px;
+  background-image: url('/img/arrows-grid.png');
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+  font-size: 0; line-height: 0;
+  cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  transform: rotate(-30deg);
+  transform-origin: center center;
+}
+.qz-arrow.qz-arrow-sprite.dragging { cursor: grabbing; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); transform: rotate(-30deg); }
+.qz-arrow.qz-arrow-sprite.qz-arrow-hit { animation: arrowHit .4s ease forwards; }
+
+
+/* Scratch cover sprite (replaces ❓ + diagonal stripes) */
+.qz-scratch-cover.qz-scratch-sprite {
+  background-image: url('/img/scratch-grid.png');
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  font-size: 0;
+}
+
+
+/* Slot machine frame sprite (replaces dark gradient) */
+.qz-slot-machine.qz-slot-sprite {
+  background-image: url('/img/slots-grid.png');
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+  background-color: transparent;
+}
+
+
+/* Crystal gem sprite (replaces 💎 emoji) */
+.qz-gem-icon.qz-crystal-sprite {
+  display: inline-block;
+  width: 44px; height: 44px;
+  background-image: url('/img/crystals-grid.png');
+  background-size: 400% 200%;
+  background-repeat: no-repeat;
+  font-size: 0; line-height: 0;
+  filter: drop-shadow(0 2px 4px rgba(168,85,247,0.3));
+  animation: gemFloat 2s ease-in-out infinite;
+}
+
+
+/* Remove white card frame around whack holes when using sprites */
+.qz-hole.qz-hole-sprite .qz-mole {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+.qz-whack-field {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  gap: 10px;
+}
+
+
+/* Force no frame on whack holes (overrides .option-btn defaults) */
+.qz-whack-field .option-btn.qz-mole {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+.qz-whack-field .qz-hole {
+  border: none !important;
+  box-shadow: none !important;
+  overflow: visible;
+}
+
+
+/* Ensure balloon sprite overrides the base gradient background */
+.qz-balloon-field .qz-balloon.qz-balloon-sprite {
+  background-image: url('/img/balloons-grid.png') !important;
+  background-repeat: no-repeat !important;
+  background-size: 400px 160px !important;
+  width: 80px; height: 80px;
+  border-radius: 50% !important;
+}
+/* Label below the balloon (answer text) */
+.qz-balloon.qz-balloon-sprite .qz-balloon-label {
+  position: absolute;
+  bottom: -32px; left: 50%; transform: translateX(-50%);
+  margin-top: 0;
+  background: rgba(255,255,255,0.92);
+  padding: 3px 10px; border-radius: 10px;
+  font-size: 0.85rem; font-weight: 900; color: #333;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  text-shadow: none;
+}
+/* String/dây treo bóng bay */
+.qz-balloon.qz-balloon-sprite::after {
+  display: block !important;
+  content: '';
+  position: absolute; bottom: -18px; left: 50%;
+  width: 2px; height: 18px;
+  background: rgba(0,0,0,0.25);
+  transform: translateX(-50%);
+  border-radius: 1px;
+}
+
+
+
+/* Scratch card with canvas overlay (real scratch interaction) */
+.qz-scratch { position: relative; overflow: hidden; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+.qz-scratch-label { font-size: 1.1rem; font-weight: 900; color: #333; text-align: center; padding: 8px; z-index: 1; }
+.qz-scratch-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  z-index: 2; cursor: crosshair; touch-action: none;
+  border-radius: inherit;
+  transition: opacity 0.3s;
+}
+.qz-scratch.revealed .qz-scratch-canvas { opacity: 0; pointer-events: none; }
+
+
+/* ── New sprite grids (batch 2) ── */
+
+/* Ladder sprites (4×1, 1003×249) — display cell 60px tall */
+.qz-ladder-sprite {
+  background-image: url('/img/ladder-grid.png');
+  background-size: 240px 60px;
+  background-repeat: no-repeat;
+}
+
+/* Stack/brick sprites (4×1, 1003×249) — display cell 60px */
+.qz-stack-sprite {
+  background-image: url('/img/stack-grid.png');
+  background-size: 240px 60px;
+  background-repeat: no-repeat;
+}
+
+/* Wave background (single image, covers full field) */
+.qz-wave-bg {
+  background-image: url('/img/wave-bg.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Magnet sprites (4×1, 1003×249) — display cell 60px */
+.qz-magnet-sprite {
+  background-image: url('/img/magnet-grid.png');
+  background-size: 240px 60px;
+  background-repeat: no-repeat;
+}
+
+/* Launch/rocket sprites (4×1, 1003×249) — display cell 60px */
+.qz-launch-sprite {
+  background-image: url('/img/launch-grid.png');
+  background-size: 240px 60px;
+  background-repeat: no-repeat;
+}
+
+/* Spell/wand sprites (4×1, 1003×249) — display cell 60px */
+.qz-spell-sprite {
+  background-image: url('/img/spell-grid.png');
+  background-size: 240px 60px;
+  background-repeat: no-repeat;
+}
+
+/* Music sprites (4×1, 1003×249) — display cell 60px */
+.qz-music-sprite {
+  background-image: url('/img/music-grid.png');
+  background-size: 240px 60px;
+  background-repeat: no-repeat;
+}
+
+/* Bubble sprites (4×2, 711×351) — display cell 44px */
+.qz-bubble-sprite {
+  background-image: url('/img/bubble-grid.png');
+  background-size: 176px 88px;
+  background-repeat: no-repeat;
+}
+
+/* Pong/paddle sprites (4×1, 1003×249) — display cell 60px */
+.qz-pong-sprite {
+  background-image: url('/img/pong-grid.png');
+  background-size: 240px 60px;
+  background-repeat: no-repeat;
+}
+
+
+/* Pong ball sprite — remove white circle background */
+.qz-pong-ball .qz-pong-sprite {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+.qz-pong-ball {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+
+/* Pong ball z-index above the court lines */
+.qz-pong-ball {
+  z-index: 10 !important;
+  position: relative;
+}
+
+
+/* Bubble sprite — show AI bubble image, remove white card look */
+.qz-bubble-item.qz-bubble-sprite {
+  background-image: url('/img/bubble-grid.png') !important;
+  background-size: 296px 148px !important;
+  background-repeat: no-repeat !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 50% !important;
+  width: 74px; height: 74px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  font-size: 0.95rem;
+}
+
+
+/* Bubble label below the bubble */
+.qz-bubble-item .qz-bubble-label {
+  position: absolute;
+  bottom: -24px; left: 50%; transform: translateX(-50%);
+  background: rgba(255,255,255,0.92);
+  padding: 2px 10px; border-radius: 10px;
+  font-size: 0.8rem; font-weight: 900; color: #333;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  pointer-events: none;
+}
+
+
+/* Launch intro — mini rockets fly then explode */
+.qz-launch-intro {
+  position: absolute;
+  width: 50px; height: 50px;
+  display: inline-block;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  z-index: 10; pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+.qz-launch-intro.explode {
+  transition: none !important;
+  animation: launchExplode 0.5s ease-out forwards !important;
+}
+@keyframes launchExplode {
+  0% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+  30% { transform: translate(-50%,-50%) scale(1.8); opacity: 0.9; filter: brightness(2); }
+  60% { transform: translate(-50%,-50%) scale(2.5); opacity: 0.5; }
+  100% { transform: translate(-50%,-50%) scale(3); opacity: 0; }
+}
+
+
+/* Spell mode — floating wand particles */
+.qz-spell-particle {
+  position: absolute;
+  width: 36px; height: 36px;
+  border-radius: 0;
+  pointer-events: none;
+  z-index: 5;
+  background-image: url('/img/spell-grid.png');
+  background-size: 144px 36px;
+  background-repeat: no-repeat;
+  transform: translate(-50%, -50%);
+}
+.qz-spell-particle.burst {
+  transition: none !important;
+  animation: spellBurst 0.4s ease-out forwards;
+}
+@keyframes spellBurst {
+  0% { transform: translate(-50%,-50%) scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: translate(-50%,-50%) scale(1.8) rotate(20deg); opacity: 0.6; filter: brightness(1.5); }
+  100% { transform: translate(-50%,-50%) scale(0) rotate(45deg); opacity: 0; }
+}
+.qz-spell-field { position: relative; overflow: visible; }
+
+
+/* Mystery boxes — remove all card framing, only show gift PNG */
+.qz-mystery-field .option-btn.qz-box {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+
+/* Ladder rung sprite — stretch to fit horizontal rung shape */
+.qz-ladder-rung.qz-ladder-sprite {
+  background-image: url('/img/ladder-grid.png') !important;
+  background-size: 400% 100% !important;
+  background-repeat: no-repeat !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15) !important;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+.qz-ladder-rung.qz-ladder-sprite::before,
+.qz-ladder-rung.qz-ladder-sprite::after { display: none !important; }
+.qz-ladder-rung.qz-ladder-sprite.correct { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+.qz-ladder-rung.qz-ladder-sprite.wrong { color: #fff; }
+
+
+/* Remove option-btn frame on ladder rungs */
+.qz-ladder-rungs .option-btn.qz-ladder-rung {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  height: 80px;
+}
+.qz-ladder-rungs .option-btn.qz-ladder-rung.qz-ladder-sprite {
+  background-image: url('/img/ladder-grid.png') !important;
+  background-size: 400% 100% !important;
+  background-repeat: no-repeat !important;
 }

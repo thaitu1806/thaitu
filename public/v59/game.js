@@ -62,7 +62,7 @@
     if (C && C.hasSpecies(id)) {
       riderChar = C.createCharacter(id, host, { state: 'idle' });
     } else {
-      host.textContent = '🚴'; // emoji fallback
+      host.textContent = ''; // emoji fallback
     }
   }
   // Sync the cyclist to its resting state (idle, or tired/scared when stamina is low).
@@ -85,15 +85,15 @@
   function renderStamina() {
     const row = $('stamina-row'); row.innerHTML = '';
     for (let i = 0; i < state.maxStamina; i++) {
-      const p = document.createElement('span'); p.className = 'stamina-pip' + (i < state.stamina ? ' on' : ''); p.textContent = '💪'; row.appendChild(p);
+      const p = document.createElement('span'); p.className = 'stamina-pip' + (i < state.stamina ? ' on' : ''); p.textContent = ''; row.appendChild(p);
     }
   }
   function renderGear() {
     const speed = window.V59Logic.getSpeed(state.streak, state.stamina);
     let label = `Tốc độ: ${speed}m/lượt`;
     if (state.stamina === 0) label += ' (kiệt sức)';
-    else if (state.streak >= window.V59Logic.FAST_STREAK) label += ' 🚀 (siêu tốc!)';
-    else if (state.streak >= window.V59Logic.MID_STREAK) label += ' ⚡ (đang nhanh)';
+    else if (state.streak >= window.V59Logic.FAST_STREAK) label += '  (siêu tốc!)';
+    else if (state.streak >= window.V59Logic.MID_STREAK) label += ' <img src="/img/bolt.png" class="em-icon"> (đang nhanh)';
     $('gear-info').textContent = label;
   }
   function showNextQ() {
@@ -125,12 +125,12 @@
     logAns(sel, ck, ok, Date.now() - qStart);
     const fb = $('feedback'); fb.style.display = 'block';
     if (ok) {
-      const adv = state.distance - prev; fb.className = 'feedback good'; fb.textContent = `✅ Đạp thêm ${adv}m!`;
+      const adv = state.distance - prev; fb.className = 'feedback good'; fb.textContent = ` Đạp thêm ${adv}m!`;
       // Speed burst: lean forward, faster pedalling, dust/speed-line trail.
       if (riderChar) { riderChar.setState('happy'); setTimeout(syncRider, 650); }
       spawnParticles($('rider'), 'dust', 9);
     } else {
-      fb.className = 'feedback bad'; fb.textContent = '❌ Sai! Mất sức.';
+      fb.className = 'feedback bad'; fb.textContent = ' Sai! Mất sức.';
       // Tired puff + brief wobble.
       if (riderChar) { riderChar.setState('scared'); setTimeout(syncRider, 650); }
       spawnParticles($('rider'), 'puff', 6);
@@ -152,10 +152,10 @@
     userData.totalKm += state.distance; if (state.outcome === 'won') userData.totalWins += 1; saveData();
     let stars = 0; if (state.outcome === 'won') stars = state.stamina >= 3 ? 3 : 2; else if (state.distance >= 60) stars = 1;
     saveSession({ stars, acc, total });
-    $('result-badges').textContent = state.outcome === 'won' ? '🏁🚴🏆' : `🚴 ${state.distance}m`;
-    $('result-title').textContent = state.outcome === 'won' ? '🏆 Cán Đích!' : '🚴 Kết Cuộc Đua';
-    $('result-emoji').textContent = state.outcome === 'won' ? '🏆' : '🚴';
-    $('result-detail').innerHTML = `📏 Quãng đường: ${state.distance}/${state.finishLine}m<br>💪 Sức: ${state.stamina}/${state.maxStamina}<br>✅ Đúng: ${state.correct}/${total} (${acc}%)<br>⭐ Sao: ${stars}/3`;
+    $('result-badges').textContent = state.outcome === 'won' ? '<img src="/img/trophy.png" class="em-icon">' : ` ${state.distance}m`;
+    $('result-title').textContent = state.outcome === 'won' ? '<img src="/img/trophy.png" class="em-icon"> Cán Đích!' : ' Kết Cuộc Đua';
+    $('result-emoji').textContent = state.outcome === 'won' ? '<img src="/img/trophy.png" class="em-icon">' : '';
+    $('result-detail').innerHTML = ` Quãng đường: ${state.distance}/${state.finishLine}m<br> Sức: ${state.stamina}/${state.maxStamina}<br> Đúng: ${state.correct}/${total} (${acc}%)<br><img src="/img/star.png" class="em-icon"> Sao: ${stars}/3`;
     if (state.outcome === 'won') { if (riderChar) riderChar.setState('happy'); spawnConfetti($('app'), 40); }
     ss('result-screen'); if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch(e){} }
   }

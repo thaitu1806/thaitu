@@ -14,7 +14,7 @@
   let buildChar = null;          // growing snowman/pile in the build area
   let snowmanRefs = [];          // [{ cell, char }] per completed snowman
   // Map V56 accessory emoji → registered sprite id.
-  const ACC_SPECIES = { '🧣': 'snowman-scarf', '🎩': 'snowman-hat', '🥕': 'snowman-carrot', '🧤': 'snowman-gloves', '👒': 'snowman-bonnet' };
+  const ACC_SPECIES = { '': 'snowman-scarf', '': 'snowman-hat', '': 'snowman-carrot', '': 'snowman-gloves', '': 'snowman-bonnet' };
   const $ = id => document.getElementById(id);
   const ss = id => { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); $(id).classList.add('active'); };
 
@@ -65,8 +65,8 @@
   }
   function renderBuild() {
     const parts = ['⬜','⬜','⬜'];
-    if (state.currentPieces >= 1) parts[0] = '❄️';
-    if (state.currentPieces >= 2) parts[1] = '☃️';
+    if (state.currentPieces >= 1) parts[0] = '';
+    if (state.currentPieces >= 2) parts[1] = '';
     $('current-build').textContent = parts.join(' ');
     // Mount/refresh a growing snowman that reflects currentPieces (0 = pile, 1-2 = stacking).
     const host = $('build-char');
@@ -92,7 +92,7 @@
       if (C && C.hasSpecies(id)) {
         char = C.createCharacter(id, el, { state: 'idle' });
       } else {
-        el.textContent = `⛄${sn.accessory}`;
+        el.textContent = `${sn.accessory}`;
       }
       snowmanRefs.push({ cell: el, char });
     });
@@ -125,9 +125,9 @@
     else { state = window.V56Logic.applyWrongOrTimeout(state); combo = 0; }
     logAns(sel, ck, ok, Date.now() - qStart);
     const fb = $('feedback'); fb.style.display = 'block';
-    if (state.snowmen.length > prev) { fb.className = 'feedback bonus'; fb.textContent = `⛄ Người tuyết hoàn thành!`; }
-    else if (ok) { fb.className = 'feedback good'; fb.textContent = '✅ Thêm 1 viên!'; }
-    else { fb.className = 'feedback bad'; fb.textContent = '☀️ Bị nắng làm tan 1 viên!'; }
+    if (state.snowmen.length > prev) { fb.className = 'feedback bonus'; fb.textContent = ` Người tuyết hoàn thành!`; }
+    else if (ok) { fb.className = 'feedback good'; fb.textContent = ' Thêm 1 viên!'; }
+    else { fb.className = 'feedback bad'; fb.textContent = ' Bị nắng làm tan 1 viên!'; }
     renderHud(); renderBuild(); renderSnowmen();
     // Snowflake/sparkle burst on a correct piece.
     if (ok) spawnParticles($('build-char'), 'flake', 6);
@@ -159,11 +159,11 @@
     let stars = 0; if (state.outcome === 'won') stars = 3; else if (state.snowmen.length >= 5) stars = 2; else if (state.snowmen.length >= 2) stars = 1;
     saveSession({ stars, acc, total });
     if (state.outcome === 'won') spawnConfetti($('app'), 44);
-    const badges = state.snowmen.map(s => `⛄${s.accessory}`).join(' ') || '⛄';
+    const badges = state.snowmen.map(s => `${s.accessory}`).join(' ') || '';
     $('result-badges').textContent = badges;
-    $('result-title').textContent = state.outcome === 'won' ? '❄️ Cứu Bắc Cực Thành Công!' : '⛄ Kết Buổi Xây';
-    $('result-emoji').textContent = state.outcome === 'won' ? '❄️' : '⛄';
-    $('result-detail').innerHTML = `⛄ Người tuyết: ${state.snowmen.length}/${state.snowmenGoal}<br>✅ Đúng: ${state.correct}/${total} (${acc}%)<br>⭐ Sao: ${stars}/3`;
+    $('result-title').textContent = state.outcome === 'won' ? ' Cứu Bắc Cực Thành Công!' : ' Kết Buổi Xây';
+    $('result-emoji').textContent = state.outcome === 'won' ? '' : '';
+    $('result-detail').innerHTML = ` Người tuyết: ${state.snowmen.length}/${state.snowmenGoal}<br> Đúng: ${state.correct}/${total} (${acc}%)<br><img src="/img/star.png" class="em-icon"> Sao: ${stars}/3`;
     ss('result-screen'); if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch(e){} }
   }
   async function saveSession({ stars, acc, total }) {
@@ -207,7 +207,7 @@
     for (let i = 0; i < count; i++) {
       const p = document.createElement('span');
       p.className = 'pfx pfx-' + kind;
-      if (kind === 'flake') p.textContent = i % 2 ? '❄' : '✦';
+      if (kind === 'flake') p.textContent = i % 2 ? '' : '';
       const tx = (Math.random() * 80 - 40);
       const ty = kind === 'drip' ? (Math.random() * 30 + 16) : -(Math.random() * 40 + 20);
       p.style.setProperty('--tx', tx + 'px');

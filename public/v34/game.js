@@ -7,17 +7,17 @@ const NOTES_PER_SONG = 8;
 const TIMER_SECONDS = 10;
 
 const SONGS = [
-  { name: 'Twinkle Star', icon: '⭐' },
-  { name: 'Happy Song', icon: '😊' },
-  { name: 'River Flow', icon: '🌊' },
-  { name: 'Morning Bird', icon: '🐦' },
-  { name: 'Dancing Rain', icon: '🌧️' }
+  { name: 'Twinkle Star', icon: '<img src="/img/star.png" class="em-icon">' },
+  { name: 'Happy Song', icon: '' },
+  { name: 'River Flow', icon: '' },
+  { name: 'Morning Bird', icon: '' },
+  { name: 'Dancing Rain', icon: '' }
 ];
 
 // Note frequencies for C major scale (C4 to C5)
 const NOTE_FREQS = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
 const NOTE_NAMES = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C'];
-const NOTE_EMOJIS = ['🎵', '🎶', '🎵', '🎶', '🎵', '🎶', '🎵', '🎶'];
+const NOTE_EMOJIS = ['', '', '', '', '', '', '', ''];
 
 // Audio context
 let audioCtx = null;
@@ -193,7 +193,7 @@ function startSong() {
   state.combo = 0;
 
   document.getElementById('song-name').textContent = `${song.icon} ${song.name}`;
-  document.getElementById('combo-display').textContent = `🔥 0/${NOTES_PER_SONG}`;
+  document.getElementById('combo-display').textContent = `<img src="/img/fire.png" class="em-icon"> 0/${NOTES_PER_SONG}`;
   document.getElementById('notes-row').innerHTML = '';
 
   showQuestion();
@@ -279,7 +279,7 @@ function handleAnswer(btn, question) {
 
   if (selected === correct) {
     btn.classList.add('correct');
-    document.getElementById('q-feedback').textContent = '✅ Đúng! +1 nốt nhạc';
+    document.getElementById('q-feedback').textContent = ' Đúng! +1 nốt nhạc';
     state.totalCorrect++;
     handleCorrectNote();
   } else {
@@ -287,7 +287,7 @@ function handleAnswer(btn, question) {
     document.querySelectorAll('.q-option').forEach(b => {
       if (b.dataset.answer.toLowerCase() === correct) b.classList.add('correct');
     });
-    document.getElementById('q-feedback').textContent = '❌ Sai! Lệch nhịp...';
+    document.getElementById('q-feedback').textContent = ' Sai! Lệch nhịp...';
     handleWrongNote();
   }
 }
@@ -304,7 +304,7 @@ function handleCorrectNote() {
 
   // Update combo display
   const comboEl = document.getElementById('combo-display');
-  comboEl.textContent = `🔥 ${state.combo}/${NOTES_PER_SONG}`;
+  comboEl.textContent = `<img src="/img/fire.png" class="em-icon"> ${state.combo}/${NOTES_PER_SONG}`;
   comboEl.classList.add('pulse');
   setTimeout(() => comboEl.classList.remove('pulse'), 300);
 
@@ -329,7 +329,7 @@ function handleWrongNote() {
   state.combo = keptNotes;
 
   // Update display
-  document.getElementById('combo-display').textContent = `🔥 ${state.combo}/${NOTES_PER_SONG}`;
+  document.getElementById('combo-display').textContent = `<img src="/img/fire.png" class="em-icon"> ${state.combo}/${NOTES_PER_SONG}`;
 
   // Rebuild notes display
   setTimeout(() => {
@@ -344,7 +344,7 @@ function addNoteToStaff(noteIndex, isDiscordant) {
   noteEl.className = 'note-item' + (isDiscordant ? ' discordant' : '');
 
   if (isDiscordant) {
-    noteEl.textContent = '💥';
+    noteEl.textContent = '';
   } else {
     noteEl.textContent = NOTE_EMOJIS[noteIndex % NOTE_EMOJIS.length];
   }
@@ -372,7 +372,7 @@ function songComplete() {
   playSongComplete();
 
   document.getElementById('song-anim').textContent = song.icon;
-  document.getElementById('song-msg').textContent = `🎉 Hoàn thành "${song.name}"!`;
+  document.getElementById('song-msg').textContent = `<img src="/img/party.png" class="em-icon"> Hoàn thành "${song.name}"!`;
   document.getElementById('song-detail').textContent = `${NOTE_EMOJIS.join(' ')}`;
 
   showScreen('song-screen');
@@ -401,15 +401,15 @@ function endGame() {
   const songsEl = document.getElementById('result-songs');
   songsEl.innerHTML = SONGS.map(s => {
     const done = state.completedSongs.includes(s.name);
-    return `<div class="song-result ${done ? '' : 'incomplete'}">${s.icon} ${s.name} ${done ? '✅' : '❌'}</div>`;
+    return `<div class="song-result ${done ? '' : 'incomplete'}">${s.icon} ${s.name} ${done ? '' : ''}</div>`;
   }).join('');
 
   if (completed >= 4) {
-    document.getElementById('result-title').textContent = '🏆 Nhạc Sĩ Tài Năng!';
+    document.getElementById('result-title').textContent = '<img src="/img/trophy.png" class="em-icon"> Nhạc Sĩ Tài Năng!';
   } else if (completed >= 2) {
-    document.getElementById('result-title').textContent = '⭐ Nghệ Sĩ Nhí!';
+    document.getElementById('result-title').textContent = '<img src="/img/star.png" class="em-icon"> Nghệ Sĩ Nhí!';
   } else {
-    document.getElementById('result-title').textContent = '💪 Tập luyện thêm nhé!';
+    document.getElementById('result-title').textContent = ' Tập luyện thêm nhé!';
   }
 
   savePersist(state.completedSongs);
@@ -494,7 +494,7 @@ init();
       if (C && C.hasSpecies('violinist')) {
         musicianChar = C.createCharacter(pick(MUSICIANS), host, { state: 'idle' });
       } else {
-        host.textContent = '🎻';
+        host.textContent = '';
       }
     }
     if (birdHost) {
@@ -503,7 +503,7 @@ init();
       if (C && C.hasSpecies('songbird')) {
         birdChar = C.createCharacter('songbird', birdHost, { state: 'idle' });
       } else {
-        birdHost.textContent = '🐦';
+        birdHost.textContent = '';
       }
     }
   }
@@ -523,7 +523,7 @@ init();
   // Particle helper — floating music notes / sparkles around the stage.
   function spawnParticles(parent, kind, count) {
     if (!parent) return;
-    const NOTES = ['\u266A', '\u266B', '\u2669']; // ♪ ♫ ♩ (legacy-safe glyphs)
+    const NOTES = ['\u266A', '\u266B', '\u2669']; //    (legacy-safe glyphs)
     for (let i = 0; i < count; i++) {
       const p = document.createElement('span');
       p.className = 'pfx pfx-' + kind;

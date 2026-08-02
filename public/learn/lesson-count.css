@@ -1,0 +1,265 @@
+/* === Interactive Counting Lesson — Grade 0 (5 tuổi) === */
+
+/* Screen container */
+#count0-interactive-screen {
+  flex-direction: column; height: 100%;
+  background: linear-gradient(180deg, #f0e6ff 0%, #e8f4fd 100%);
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+
+#count0-interactive-screen .lc-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; position: relative;
+}
+#count0-interactive-screen .lc-header .btn-back-menu {
+  background: rgba(255,255,255,0.7); border: none; border-radius: 20px;
+  padding: 8px 14px; font-size: 0.85rem; font-weight: 700;
+  color: #6b4fa0; cursor: pointer; font-family: inherit;
+}
+#count0-interactive-screen .lc-header .lc-progress-wrap {
+  flex: 1; margin: 0 14px; height: 8px; background: rgba(0,0,0,0.08);
+  border-radius: 4px; overflow: hidden;
+}
+#count0-interactive-screen .lc-progress-bar {
+  height: 100%; background: linear-gradient(90deg, #a78bfa, #7c3aed);
+  border-radius: 4px; transition: width 0.4s ease; width: 25%;
+}
+
+/* Body */
+#count0-interactive-screen .lc-body {
+  flex: 1; overflow-y: auto; padding: 16px 20px 24px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── INTRO ── */
+.lc-intro {
+  text-align: center; max-width: 320px; animation: lcFadeIn 0.4s ease;
+}
+.lc-intro-icon {
+  font-size: 5rem; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+  animation: lcBounce 1.5s ease-in-out infinite;
+}
+.lc-title {
+  font-size: 1.6rem; font-weight: 900; color: #4a2c8a; margin-bottom: 8px;
+}
+.lc-desc {
+  font-size: 1.1rem; color: #555; margin-bottom: 16px; line-height: 1.5;
+}
+.lc-tip {
+  background: #fff9e6; border: 2px solid #ffe082; border-radius: 14px;
+  padding: 12px 16px; margin-bottom: 20px; font-size: 0.95rem;
+  color: #6d4c00; display: flex; align-items: center; gap: 8px;
+  text-align: left;
+}
+.lc-tip-icon { font-size: 1.3rem; }
+
+/* ── BUTTONS ── */
+.lc-btn {
+  border: none; border-radius: 16px; padding: 14px 28px;
+  font-size: 1.1rem; font-weight: 800; cursor: pointer;
+  font-family: inherit; transition: transform 0.15s, box-shadow 0.15s;
+}
+.lc-btn:active { transform: scale(0.95); }
+.lc-btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  color: white; box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+}
+.lc-btn-primary:hover { box-shadow: 0 6px 20px rgba(124,58,237,0.5); }
+.lc-btn-secondary {
+  background: white; color: #7c3aed; border: 2px solid #7c3aed;
+}
+.lc-speak-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 50%; border: none;
+  background: rgba(124,58,237,0.12); cursor: pointer;
+  vertical-align: middle; margin-left: 6px; transition: transform 0.15s, background 0.15s;
+}
+.lc-speak-btn:hover { background: rgba(124,58,237,0.25); }
+.lc-speak-btn:active { transform: scale(0.85); }
+
+/* ── TAP-TO-COUNT ── */
+.lc-tap-section {
+  text-align: center; width: 100%; max-width: 360px;
+  animation: lcFadeIn 0.3s ease;
+}
+.lc-instruction {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; padding: 0 4px;
+}
+.lc-inst-text {
+  font-size: 1rem; font-weight: 700; color: #4a2c8a;
+}
+.lc-counter {
+  background: #7c3aed; color: white; border-radius: 20px;
+  padding: 4px 12px; font-size: 0.9rem; font-weight: 800;
+}
+
+.lc-items-grid {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
+  margin-bottom: 20px; min-height: 120px; align-items: center;
+}
+
+.lc-item {
+  width: 80px; height: 80px; border-radius: 20px;
+  background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; cursor: pointer; position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: lcPopIn 0.3s ease both;
+}
+.lc-item:hover { transform: scale(1.05); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+.lc-item:active { transform: scale(0.92); }
+.lc-item-tapped {
+  background: linear-gradient(135deg, #d4fc79, #96e6a1);
+  box-shadow: 0 4px 12px rgba(76,175,80,0.3);
+  pointer-events: none;
+}
+.lc-item-tapped .lc-item-emoji { transform: scale(1.1); }
+
+.lc-item-emoji { font-size: 2.5rem; transition: transform 0.2s; }
+.lc-sprite { border-radius: 8px; }
+.lc-item-tapped .lc-sprite { transform: scale(1.1); }
+.lc-item-number {
+  position: absolute; top: -8px; right: -8px;
+  background: #7c3aed; color: white; width: 24px; height: 24px;
+  border-radius: 50%; font-size: 0.8rem; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(124,58,237,0.4);
+}
+
+.lc-number-display {
+  margin-bottom: 12px;
+}
+.lc-big-number {
+  font-size: 3.5rem; font-weight: 900; color: #7c3aed;
+  display: inline-block; animation: lcPulse 0.4s ease;
+}
+.lc-big-number.lc-placeholder { color: #ccc; }
+
+.lc-feedback { min-height: 80px; }
+.lc-success-msg {
+  background: linear-gradient(135deg, #d4fc79, #96e6a1);
+  border-radius: 16px; padding: 14px 20px; margin-bottom: 12px;
+  font-size: 1.05rem; font-weight: 700; color: #2e7d32;
+  display: flex; align-items: center; gap: 8px; justify-content: center;
+}
+.lc-success-icon { font-size: 1.5rem; }
+
+/* ── QUIZ ── */
+.lc-quiz-section {
+  text-align: center; width: 100%; max-width: 360px;
+  animation: lcFadeIn 0.3s ease;
+}
+.lc-quiz-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+}
+.lc-quiz-progress {
+  font-size: 0.85rem; font-weight: 700; color: #888;
+  background: rgba(0,0,0,0.05); border-radius: 12px; padding: 4px 10px;
+}
+.lc-quiz-score {
+  font-size: 1rem; font-weight: 800; color: #f59e0b;
+}
+.lc-quiz-question {
+  font-size: 1.2rem; font-weight: 800; color: #4a2c8a; margin-bottom: 14px;
+}
+.lc-quiz-items {
+  display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 20px; min-height: 60px;
+}
+.lc-quiz-item {
+  font-size: 2.5rem; animation: lcPopIn 0.3s ease both;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
+.lc-quiz-options {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;
+}
+.lc-quiz-opt {
+  padding: 16px; border: 3px solid #e0e0e0; border-radius: 16px;
+  background: white; font-size: 1.8rem; font-weight: 900;
+  cursor: pointer; transition: all 0.2s; font-family: inherit;
+  color: #333;
+}
+.lc-quiz-opt:hover { border-color: #a78bfa; background: #f5f0ff; }
+.lc-quiz-opt:active { transform: scale(0.95); }
+.lc-quiz-opt:disabled { pointer-events: none; }
+.lc-opt-correct {
+  border-color: #4caf50 !important; background: #e8f5e9 !important;
+  color: #2e7d32 !important; animation: lcCorrectPop 0.3s ease;
+}
+.lc-opt-wrong {
+  border-color: #ef5350 !important; background: #ffebee !important;
+  color: #c62828 !important; animation: lcShake 0.4s ease;
+}
+
+.lc-quiz-feedback { min-height: 40px; margin-top: 8px; }
+.lc-fb-correct {
+  color: #2e7d32; font-weight: 700; font-size: 1.05rem;
+  animation: lcFadeIn 0.3s ease;
+}
+.lc-fb-wrong {
+  color: #c62828; font-weight: 700; font-size: 1.05rem;
+  animation: lcFadeIn 0.3s ease;
+}
+
+/* ── REWARD ── */
+.lc-reward {
+  text-align: center; max-width: 320px; animation: lcFadeIn 0.4s ease;
+}
+.lc-reward-stars {
+  font-size: 3rem; margin-bottom: 12px; letter-spacing: 8px;
+  animation: lcBounce 1.5s ease-in-out infinite;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.lc-star-dim { opacity: 0.3; filter: grayscale(1); }
+.lc-reward-title {
+  font-size: 1.5rem; font-weight: 900; color: #4a2c8a; margin-bottom: 8px;
+}
+.lc-reward-score {
+  font-size: 1.1rem; color: #666; margin-bottom: 24px;
+}
+.lc-reward-actions {
+  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+}
+
+/* ── Animations ── */
+@keyframes lcFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes lcBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes lcPopIn {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes lcPulse {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+@keyframes lcCorrectPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+@keyframes lcShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 380px) {
+  .lc-item { width: 65px; height: 65px; }
+  .lc-item-emoji { font-size: 2rem; }
+  .lc-quiz-item { font-size: 2rem; }
+  .lc-quiz-opt { font-size: 1.4rem; padding: 12px; }
+}

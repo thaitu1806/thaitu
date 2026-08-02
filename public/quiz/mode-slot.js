@@ -22,7 +22,9 @@
       const field = helpers.el('div', 'qz-slot-field');
       optionsEl.appendChild(field);
 
-      const machine = helpers.el('div', 'qz-slot-machine');
+      const machine = helpers.el('div', 'qz-slot-machine qz-slot-sprite');
+      // Random slot frame variant (4 cols × 1 row)
+      machine.style.backgroundPosition = (Math.floor(Math.random() * 4) * 33.33) + '% 0%';
       field.appendChild(machine);
 
       // Chase lights

@@ -42,7 +42,9 @@
       });
 
       // Ball in center
-      var ball = helpers.el('div', 'qz-pong-ball', '⚽');
+      var col = Math.floor(Math.random() * 4);
+      var ball = helpers.el('div', 'qz-pong-ball');
+      ball.innerHTML = '<span class="qz-pong-sprite" style="display:inline-block;width:60px;height:60px;background-position:' + (-col * 60) + 'px 0px"></span>';
       field.appendChild(ball);
 
       var hint = helpers.el('div', 'qz-pong-hint', '👆 Vuốt bóng về đáp án đúng!');
@@ -118,7 +120,7 @@
             }
             // Bounce back
             ball.className = 'qz-pong-ball';
-            ball.textContent = '⚽';
+            ball.innerHTML = '<span class="qz-pong-sprite" style="display:inline-block;width:60px;height:60px;background-position:' + (-col * 60) + 'px 0px"></span>';
             animating = false;
 
             if (tries >= maxTries) {

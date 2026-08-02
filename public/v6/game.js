@@ -71,7 +71,7 @@
     deco.innerHTML = '';
     bananas.forEach(b => {
       const el = document.createElement('span');
-      el.className = 'banana'; el.textContent = '🍌';
+      el.className = 'banana'; el.textContent = '';
       el.style.left = (b / TRACK * 100) + '%';
       deco.appendChild(el);
     });
@@ -107,7 +107,7 @@
     if (outcome || served >= MAX_Q) { finish(); return; }
     curQ = nextQ(); served++; locked = false; qStart = Date.now();
     const subj = curQ.subject || subject;
-    $('q-badge').textContent = subj === 'vietnamese' ? '📖' : subj === 'english' ? '🔤' : '🔢';
+    $('q-badge').textContent = subj === 'vietnamese' ? '' : subj === 'english' ? '' : '';
     $('q-text').textContent = curQ.question_text;
     $('feedback').style.display = 'none';
     const opts = $('q-options'); opts.innerHTML = '';
@@ -158,13 +158,13 @@
       if (usedNitro) { move = 2; revNitro(); }
       p1 = Math.min(TRACK, p1 + move);
       // banana check
-      if (bananas.has(p1)) { p1 = Math.max(0, p1 - 1); bananaSlip(); fb.className = 'feedback bad'; fb.textContent = '🍌 Trượt vỏ chuối! Lùi 1 ô.'; }
-      else if (usedNitro) { fb.className = 'feedback bonus'; fb.textContent = '🔥 NITRO! Vọt 2 ô!'; }
-      else { fb.className = 'feedback good'; fb.textContent = '✅ Đúng! Tăng tốc!'; }
+      if (bananas.has(p1)) { p1 = Math.max(0, p1 - 1); bananaSlip(); fb.className = 'feedback bad'; fb.textContent = ' Trượt vỏ chuối! Lùi 1 ô.'; }
+      else if (usedNitro) { fb.className = 'feedback bonus'; fb.textContent = '<img src="/img/fire.png" class="em-icon"> NITRO! Vọt 2 ô!'; }
+      else { fb.className = 'feedback good'; fb.textContent = ' Đúng! Tăng tốc!'; }
       $('racer-1').classList.add('boost'); setTimeout(() => $('racer-1').classList.remove('boost'), 450);
     } else {
       wrong++; combo = 0;
-      fb.className = 'feedback bad'; fb.textContent = '❌ Sai! Xe đứng yên.';
+      fb.className = 'feedback bad'; fb.textContent = ' Sai! Xe đứng yên.';
     }
     moveRival();
     placeCars(); renderHud();
@@ -199,10 +199,10 @@
     if (window.HocVuiSound) window.HocVuiSound.play(outcome === 'won' ? 'win' : 'lose');
     if (window.HocVuiCollection) window.HocVuiCollection.reward(stars);
     setTimeout(() => {
-      $('result-emoji').textContent = outcome === 'won' ? '🏆' : '🏁';
-      $('result-title').textContent = outcome === 'won' ? '🏆 Về Đích Đầu Tiên!' : '🏁 Về Đích Sau!';
-      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}">⭐</span>`).join('');
-      $('result-detail').innerHTML = `🏎️ Bạn: ${p1}/${TRACK}<br>🚗 Đối thủ: ${p2}/${TRACK}<br>✅ Đúng: ${correct}/${total} (${acc}%)<br>✨ Combo cao nhất: ${maxCombo}`;
+      $('result-emoji').textContent = outcome === 'won' ? '<img src="/img/trophy.png" class="em-icon">' : '';
+      $('result-title').textContent = outcome === 'won' ? '<img src="/img/trophy.png" class="em-icon"> Về Đích Đầu Tiên!' : ' Về Đích Sau!';
+      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}"><img src="/img/star.png" class="em-icon"></span>`).join('');
+      $('result-detail').innerHTML = ` Bạn: ${p1}/${TRACK}<br> Đối thủ: ${p2}/${TRACK}<br> Đúng: ${correct}/${total} (${acc}%)<br> Combo cao nhất: ${maxCombo}`;
       ss('result-screen');
       if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch (e) {} }
     }, outcome === 'won' ? 1100 : 200);

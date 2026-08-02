@@ -31,7 +31,7 @@
   let answering = false;
 
   const racerNames = ['Bạn', 'Sao Băng', 'Tia Chớp', 'Gió Lốc'];
-  const racerEmojis = ['🚙', '🚗', '🚕', '🚐'];
+  const racerEmojis = ['', '', '', ''];
 
   // ===== DOM =====
   const $ = id => document.getElementById(id);
@@ -156,7 +156,7 @@
     raceFinished = false;
     answering = false;
 
-    btnStart.textContent = '🏁 Bắt đầu đua!';
+    btnStart.textContent = ' Bắt đầu đua!';
     btnStart.disabled = false;
 
     showScreen(raceScreen);
@@ -176,7 +176,7 @@
     let count = 3;
     function tick() {
       if (count === 0) {
-        overlay.innerHTML = '<div class="countdown-number">🏁 GO!</div>';
+        overlay.innerHTML = '<div class="countdown-number"> GO!</div>';
         setTimeout(() => {
           overlay.remove();
           callback();
@@ -258,7 +258,7 @@
   }
 
   function updateTimerDisplay() {
-    raceTimer.textContent = `⏱️ ${timer}`;
+    raceTimer.textContent = `⏱ ${timer}`;
     if (timer <= 3) {
       raceTimer.classList.add('warning');
     } else {
@@ -339,11 +339,11 @@
   // ===== COMBO DISPLAY =====
   function updateComboDisplay() {
     if (combo >= COMBO_THRESHOLD) {
-      raceCombo.textContent = `🔥 Combo x${combo}!`;
+      raceCombo.textContent = `<img src="/img/fire.png" class="em-icon"> Combo x${combo}!`;
       raceCombo.classList.add('boost');
       setTimeout(() => raceCombo.classList.remove('boost'), 500);
     } else if (combo > 0) {
-      raceCombo.textContent = `⚡ x${combo}`;
+      raceCombo.textContent = `<img src="/img/bolt.png" class="em-icon"> x${combo}`;
       raceCombo.classList.remove('boost');
     } else {
       raceCombo.textContent = '';
@@ -453,17 +453,17 @@
     showScreen(resultScreen);
 
     if (playerWon) {
-      resultIcon.textContent = '🏆';
+      resultIcon.textContent = '<img src="/img/trophy.png" class="em-icon">';
       resultTitle.textContent = 'Bạn thắng cuộc đua!';
       resultTitle.style.color = '#ffd700';
     } else {
-      resultIcon.textContent = playerPos <= 2 ? '🥈' : '😅';
+      resultIcon.textContent = playerPos <= 2 ? '' : '';
       resultTitle.textContent = playerPos === 2 ? 'Gần thắng rồi!' : `Bạn về thứ ${playerPos}`;
       resultTitle.style.color = 'white';
     }
 
     // Standings list
-    const posEmojis = ['🥇', '🥈', '🥉', '4️⃣'];
+    const posEmojis = ['<img src="/img/medal.png" class="em-icon">', '', '', '4⃣'];
     resultStandings.innerHTML = standings.map((s, i) => `
       <div class="standing-row ${s.index === 0 ? 'player-row' : ''}">
         <span class="standing-pos">${posEmojis[i]}</span>
@@ -575,7 +575,7 @@
   // mirrors gameplay events (correct answer / combo boost) onto sprite states.
   // No game logic is changed — advanceRacer is wrapped additively.
   const SPECIES = ['speedster-blue', 'speedster-red', 'speedster-green', 'speedster-gold'];
-  const FALLBACK = ['🚙', '🚗', '🚕', '🚐'];
+  const FALLBACK = ['', '', '', ''];
   const carChars = [null, null, null, null];
 
   function mountCars() {

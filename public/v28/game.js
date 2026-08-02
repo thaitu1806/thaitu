@@ -10,30 +10,30 @@ const TALES = [
   {
     id: 'tam-cam',
     name: 'Tấm Cám',
-    icon: '👸',
+    icon: '',
     pages: [
       {
-        illustration: '👧✨🧹',
+        illustration: '',
         text: 'Ngày xưa có cô Tấm hiền lành, chăm chỉ. Tấm sống với dì ghẻ và em Cám. Hàng ngày Tấm phải làm việc vất vả từ sáng đến tối.'
       },
       {
-        illustration: '🐟💛🏺',
+        illustration: '<img src="/img/heart.png" class="em-icon">',
         text: 'Tấm có một con cá bống làm bạn. Mỗi ngày Tấm cho cá ăn cơm. Nhưng Cám lén giết mất cá bống, Tấm buồn lắm và khóc rất nhiều.'
       },
       {
-        illustration: '👗✨🎉',
+        illustration: '<img src="/img/party.png" class="em-icon">',
         text: 'Bụt hiện lên giúp Tấm. Bụt cho Tấm quần áo đẹp để đi dự hội. Tấm vui mừng mặc đồ đẹp đi chơi hội làng.'
       },
       {
-        illustration: '👠💫👑',
+        illustration: '',
         text: 'Trên đường về, Tấm đánh rơi một chiếc giày. Hoàng tử nhặt được chiếc giày nhỏ xinh. Hoàng tử muốn tìm chủ nhân của chiếc giày.'
       },
       {
-        illustration: '👸🤴💒',
+        illustration: '',
         text: 'Hoàng tử đi khắp nơi tìm người vừa giày. Tấm thử giày vừa khít. Hoàng tử vui mừng và cưới Tấm làm vợ.'
       },
       {
-        illustration: '🏰🌈🎊',
+        illustration: '',
         text: 'Tấm trở thành hoàng hậu, sống hạnh phúc trong cung điện. Người hiền lành cuối cùng luôn được hưởng phúc. Hết!'
       }
     ]
@@ -41,30 +41,30 @@ const TALES = [
   {
     id: 'thach-sanh',
     name: 'Thạch Sanh',
-    icon: '⚔️',
+    icon: '',
     pages: [
       {
-        illustration: '👦🪓🌲',
+        illustration: '',
         text: 'Thạch Sanh là chàng trai mồ côi, nghèo khổ. Chàng sống một mình dưới gốc đa. Thạch Sanh chặt củi kiếm sống qua ngày.'
       },
       {
-        illustration: '🐍⚔️💥',
+        illustration: '',
         text: 'Một đêm, trăn tinh khổng lồ đến ăn thịt người. Thạch Sanh dũng cảm cầm rìu chiến đấu. Chàng chém chết trăn tinh, cứu dân làng.'
       },
       {
-        illustration: '🎸✨🎶',
+        illustration: '',
         text: 'Từ xác trăn tinh, Thạch Sanh nhận được cây đàn thần. Tiếng đàn vang lên ai cũng mê say. Cây đàn có sức mạnh kỳ diệu.'
       },
       {
-        illustration: '🦅👸😱',
+        illustration: '',
         text: 'Đại bàng khổng lồ bắt công chúa bay đi. Cả nước lo lắng, không ai dám cứu. Thạch Sanh quyết tâm đi cứu công chúa.'
       },
       {
-        illustration: '⚔️🦅🔥',
+        illustration: '<img src="/img/fire.png" class="em-icon">',
         text: 'Thạch Sanh chiến đấu với đại bàng dưới hang sâu. Chàng dùng rìu và sức mạnh phi thường. Cuối cùng Thạch Sanh hạ được đại bàng, cứu công chúa.'
       },
       {
-        illustration: '👑🎸🏰',
+        illustration: '',
         text: 'Nhà vua gả công chúa cho Thạch Sanh. Chàng dùng đàn thần đuổi giặc ngoại xâm. Thạch Sanh trở thành vua hiền, đất nước thái bình. Hết!'
       }
     ]
@@ -72,30 +72,30 @@ const TALES = [
   {
     id: 'so-dua',
     name: 'Sọ Dừa',
-    icon: '🥥',
+    icon: '',
     pages: [
       {
-        illustration: '👩🥥😢',
+        illustration: '',
         text: 'Ngày xưa có bà mẹ nghèo sinh ra đứa con hình tròn như quả dừa. Bà đặt tên con là Sọ Dừa. Dù xấu xí nhưng bà vẫn thương con.'
       },
       {
-        illustration: '🥥🐃🌾',
+        illustration: '',
         text: 'Sọ Dừa xin đi chăn bò cho nhà phú ông. Mọi người cười chê nhưng Sọ Dừa chăn bò rất giỏi. Bò ngày nào cũng béo tốt, ai cũng ngạc nhiên.'
       },
       {
-        illustration: '👧💕🥥',
+        illustration: '',
         text: 'Phú ông có ba cô con gái mang cơm cho Sọ Dừa. Hai cô chị khinh thường, chỉ có cô út tốt bụng. Cô út luôn mang cơm đầy đủ cho Sọ Dừa.'
       },
       {
-        illustration: '🥥📚🎓',
+        illustration: '',
         text: 'Sọ Dừa thật ra rất thông minh. Chàng xin phú ông cho đi thi. Sọ Dừa đỗ trạng nguyên, ai cũng kinh ngạc.'
       },
       {
-        illustration: '✨👦🤵',
+        illustration: '',
         text: 'Đêm trăng sáng, Sọ Dừa biến thành chàng trai tuấn tú. Cô út nhìn thấy và rất vui mừng. Sọ Dừa cầu hôn cô út, phú ông đồng ý.'
       },
       {
-        illustration: '🎊👫🏰',
+        illustration: '',
         text: 'Sọ Dừa cưới cô út, sống hạnh phúc bên nhau. Chàng trở thành quan lớn, giúp đỡ dân nghèo. Ai hiền lành, tốt bụng sẽ được hưởng phúc. Hết!'
       }
     ]
@@ -103,30 +103,30 @@ const TALES = [
   {
     id: 'cay-tre',
     name: 'Cây Tre Trăm Đốt',
-    icon: '🎋',
+    icon: '',
     pages: [
       {
-        illustration: '👴💪🌾',
+        illustration: '',
         text: 'Ngày xưa có anh nông dân hiền lành, chăm chỉ. Anh làm thuê cho phú ông. Phú ông hứa gả con gái nếu anh làm tốt.'
       },
       {
-        illustration: '😈🤥💰',
+        illustration: '',
         text: 'Phú ông là người gian xảo, muốn lừa anh nông dân. Ông ta bảo anh phải tìm cây tre trăm đốt. Phú ông nghĩ rằng không ai tìm được cây tre như vậy.'
       },
       {
-        illustration: '🌲😰🔍',
+        illustration: '',
         text: 'Anh nông dân vào rừng sâu tìm kiếm. Anh tìm mãi nhưng không thấy cây tre nào trăm đốt. Anh buồn lắm, ngồi khóc giữa rừng.'
       },
       {
-        illustration: '✨👼💫',
+        illustration: '',
         text: 'Bụt hiện lên hỏi anh vì sao khóc. Anh kể chuyện phú ông bắt tìm tre trăm đốt. Bụt dạy anh câu thần chú: "Khắc nhập, khắc xuất".'
       },
       {
-        illustration: '🎋✨💯',
+        illustration: '',
         text: 'Anh nông dân lấy nhiều đốt tre, đọc "Khắc nhập!" Các đốt tre dính liền thành cây tre trăm đốt. Anh vui mừng mang tre về cho phú ông.'
       },
       {
-        illustration: '😈🎋😱',
+        illustration: '',
         text: 'Phú ông sờ vào cây tre, anh đọc "Khắc nhập!" Phú ông bị dính vào tre, van xin tha. Cuối cùng phú ông phải giữ lời hứa gả con gái. Hết!'
       }
     ]
@@ -134,30 +134,30 @@ const TALES = [
   {
     id: 'dua-hau',
     name: 'Sự Tích Dưa Hấu',
-    icon: '🍉',
+    icon: '',
     pages: [
       {
-        illustration: '👦👑🏰',
+        illustration: '',
         text: 'An Tiêm là con nuôi của nhà vua. Chàng thông minh, được vua yêu quý. An Tiêm sống sung sướng trong cung điện.'
       },
       {
-        illustration: '😡🏝️😢',
+        illustration: '',
         text: 'Có kẻ xấu ghen ghét, nói xấu An Tiêm với vua. Vua tức giận, đày An Tiêm ra đảo hoang. An Tiêm cùng vợ con sống trên đảo vắng.'
       },
       {
-        illustration: '🐦🌱✨',
+        illustration: '',
         text: 'Một hôm chim lạ bay tới đảo, thả mấy hạt giống. An Tiêm trồng hạt giống xuống đất. Cây mọc lên xanh tốt, ra quả to tròn.'
       },
       {
-        illustration: '🍉😋💚',
+        illustration: '',
         text: 'Quả chín có vỏ xanh, ruột đỏ, ngọt lịm. An Tiêm đặt tên là dưa hấu. Cả gia đình vui mừng vì có thức ăn ngon.'
       },
       {
-        illustration: '🍉🚢🤝',
+        illustration: '',
         text: 'An Tiêm khắc tên lên dưa, thả trôi ra biển. Thuyền buôn nhặt được, tìm đến đảo đổi hàng. Dần dần ai cũng biết đến dưa hấu ngon.'
       },
       {
-        illustration: '👑🍉🎉',
+        illustration: '<img src="/img/party.png" class="em-icon">',
         text: 'Tin đồn về dưa hấu đến tai nhà vua. Vua biết An Tiêm tài giỏi, cho đón về. An Tiêm dạy mọi người trồng dưa hấu, ai cũng giàu có. Hết!'
       }
     ]
@@ -223,7 +223,7 @@ function renderTaleSelect() {
       <span class="tale-icon">${tale.icon}</span>
       <div class="tale-info">
         <span class="tale-name">${tale.name}</span>
-        <span class="tale-progress">${completed ? 'Đã đọc xong ✨' : `Đã mở ${readCount}/6 trang`}</span>
+        <span class="tale-progress">${completed ? 'Đã đọc xong ' : `Đã mở ${readCount}/6 trang`}</span>
         <div class="tale-dots">
           ${unlocked.map((u, i) => `<span class="tale-dot ${u ? 'read' : (i === readCount ? 'current' : '')}"></span>`).join('')}
         </div>
@@ -282,9 +282,9 @@ function renderPage() {
     // Locked page
     bookPage.innerHTML = `
       <div class="page-locked">
-        <span class="lock-icon">🔒</span>
+        <span class="lock-icon"></span>
         <span class="lock-text">Trả lời câu hỏi để mở trang này!</span>
-        <button class="btn-unlock" id="btn-unlock">🧠 Trả lời ngay</button>
+        <button class="btn-unlock" id="btn-unlock"> Trả lời ngay</button>
       </div>
     `;
     document.getElementById('btn-unlock').addEventListener('click', () => startQuiz());
@@ -297,7 +297,7 @@ function renderPage() {
   document.getElementById('btn-prev').disabled = (pageIdx === 0);
   const nextBtn = document.getElementById('btn-next');
   if (pageIdx === 5 && unlocked[5]) {
-    nextBtn.textContent = '🎉 Xong!';
+    nextBtn.textContent = '<img src="/img/party.png" class="em-icon"> Xong!';
     nextBtn.disabled = false;
   } else if (pageIdx >= 5) {
     nextBtn.textContent = 'Tiếp ▶';
@@ -410,11 +410,11 @@ function handleAnswer(selected, correct) {
 
   const feedback = document.getElementById('quiz-feedback');
   if (selectedLower === correctLower) {
-    feedback.textContent = '🎉 Đúng rồi! Trang mới đã mở!';
+    feedback.textContent = '<img src="/img/party.png" class="em-icon"> Đúng rồi! Trang mới đã mở!';
     feedback.style.color = '#2e7d32';
     setTimeout(() => unlockCurrentPage(), 1200);
   } else {
-    feedback.textContent = '❌ Sai rồi! Thử lại câu khác nhé!';
+    feedback.textContent = ' Sai rồi! Thử lại câu khác nhé!';
     feedback.style.color = '#c62828';
     setTimeout(() => startQuiz(), 1500);
   }
@@ -562,7 +562,7 @@ init();
   // ----- Mascot mounting --------------------------------------------------
   // Rotate the royal/fairy/dragon cast so the select screen feels alive.
   const CAST = ['fairy', 'princess', 'prince', 'dragon'];
-  const CAST_FALLBACK = { fairy: '🧚', princess: '👸', prince: '🤴', dragon: '🐉' };
+  const CAST_FALLBACK = { fairy: '', princess: '', prince: '', dragon: '' };
   let castIdx = 0;
 
   function mountMascot() {

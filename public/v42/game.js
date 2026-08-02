@@ -80,7 +80,7 @@
     const layer = $('cloud-layer');
     if (!layer) return;
     layer.innerHTML = '';
-    const cloud = ['☁️', '🌥️', '⛅'];
+    const cloud = ['', '', ''];
     for (let i = 0; i < 6; i++) {
       const s = document.createElement('span');
       s.textContent = cloud[i % cloud.length];
@@ -209,7 +209,7 @@
     if (C && C.hasSpecies(id)) {
       balloonChar = C.createCharacter(id, host, { state: 'idle' });
     } else {
-      host.textContent = '🎈'; // emoji fallback retained
+      host.textContent = ''; // emoji fallback retained
     }
   }
 
@@ -340,17 +340,17 @@
       const B = window.V42Logic.BADGES;
       const label = B.filter((b) => earnedBadges.includes(b.id)).map((b) => b.icon + ' ' + b.label).join(' · ');
       fb.className = 'feedback badge';
-      fb.textContent = `🎖️ Huy hiệu mới: ${label}`;
+      fb.textContent = ` Huy hiệu mới: ${label}`;
       return;
     }
     if (isCorrect) {
       const bonus = window.V42Logic.computeBonus(msRemaining);
       const total = 10 + bonus;
       fb.className = 'feedback good';
-      fb.textContent = `✅ Đúng rồi! +${total} m bay cao`;
+      fb.textContent = ` Đúng rồi! +${total} m bay cao`;
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = '❌ Sai mất! Khí cầu rơi 5 m.';
+      fb.textContent = ' Sai mất! Khí cầu rơi 5 m.';
     }
   }
 
@@ -395,10 +395,10 @@
 
   function renderDetail({ accuracy, total }) {
     return `
-      📈 Độ cao: ${state.altitude}/${state.maxAltitude} m<br>
-      ✅ Đúng: ${state.correct}/${total} (${accuracy}%)<br>
-      🏷️ Huy hiệu lần này: ${state.badges.length}/3<br>
-      🔥 Combo dài nhất: ${maxCombo}
+       Độ cao: ${state.altitude}/${state.maxAltitude} m<br>
+       Đúng: ${state.correct}/${total} (${accuracy}%)<br>
+       Huy hiệu lần này: ${state.badges.length}/3<br>
+      <img src="/img/fire.png" class="em-icon"> Combo dài nhất: ${maxCombo}
     `;
   }
 
@@ -488,7 +488,7 @@
     for (let i = 0; i < count; i++) {
       const p = document.createElement('span');
       p.className = 'pfx pfx-' + kind;
-      if (kind === 'star') p.textContent = '✦';
+      if (kind === 'star') p.textContent = '';
       const tx = (Math.random() * 80 - 40);
       const ty = -(Math.random() * 40 + 20);
       p.style.setProperty('--tx', tx + 'px');

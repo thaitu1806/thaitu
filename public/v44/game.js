@@ -160,7 +160,7 @@
     if (C && C.hasSpecies(id)) {
       racerChar = C.createCharacter(id, racerHost, { state: 'idle' });
     } else {
-      racerHost.textContent = '🚀'; // emoji fallback
+      racerHost.textContent = ''; // emoji fallback
     }
 
     const bossHost = $('boss-creature');
@@ -169,7 +169,7 @@
     if (C && C.hasSpecies('kraken')) {
       bossChar = C.createCharacter('kraken', bossHost, { state: 'idle' });
     } else {
-      bossHost.textContent = '🦑'; // emoji fallback (boss)
+      bossHost.textContent = ''; // emoji fallback (boss)
     }
   }
 
@@ -179,10 +179,10 @@
     const badge = $('phase-badge');
     if (phase === 'boss') {
       badge.classList.add('boss');
-      badge.textContent = '🦑 TRÙM';
+      badge.textContent = ' TRÙM';
     } else {
       badge.classList.remove('boss');
-      badge.textContent = '🚀 ĐUA';
+      badge.textContent = ' ĐUA';
     }
     $('racer').style.left = state.distance + '%';
 
@@ -322,11 +322,11 @@
     if (isCorrect) {
       const gain = phaseBefore === 'boss' ? window.V44Logic.BOSS_GAIN : window.V44Logic.RACE_GAIN;
       fb.className = phaseBefore === 'boss' ? 'feedback boss' : 'feedback good';
-      fb.textContent = `✅ Đúng! +${gain} bay nhanh`;
+      fb.textContent = ` Đúng! +${gain} bay nhanh`;
     } else {
       const penalty = phaseBefore === 'boss' ? window.V44Logic.BOSS_PENALTY : window.V44Logic.RACE_PENALTY;
       fb.className = 'feedback bad';
-      fb.textContent = `❌ Sai mất! −${penalty} chậm lại`;
+      fb.textContent = ` Sai mất! −${penalty} chậm lại`;
     }
   }
 
@@ -353,10 +353,10 @@
     saveSession({ stars, accuracy, total });
 
     const detail = `
-      📏 Khoảng cách: ${state.distance}/${window.V44Logic.GOAL_DISTANCE}<br>
-      ✅ Đúng: ${state.correct}/${total} (${accuracy}%)<br>
-      🦈 Lần đấu boss: ${state.bossAttempts}/${window.V44Logic.MAX_BOSS_ATTEMPTS}<br>
-      ⭐ Sao: ${stars}/3
+       Khoảng cách: ${state.distance}/${window.V44Logic.GOAL_DISTANCE}<br>
+       Đúng: ${state.correct}/${total} (${accuracy}%)<br>
+       Lần đấu boss: ${state.bossAttempts}/${window.V44Logic.MAX_BOSS_ATTEMPTS}<br>
+      <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3
     `;
     if (state.outcome === 'won') {
       $('victory-detail').innerHTML = detail;

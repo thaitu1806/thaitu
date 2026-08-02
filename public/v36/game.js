@@ -8,10 +8,10 @@ const TIMER_SECONDS = 10;
 
 // Grid distribution: 10 coin, 5 diamond, 4 map, 6 bomb = 25
 const TILE_TYPES = {
-  coin: { emoji: '💰', count: 10, points: 10, label: 'Xu' },
-  diamond: { emoji: '💎', count: 5, points: 30, label: 'Kim cương' },
-  map: { emoji: '🗺️', count: 4, points: 20, label: 'Mảnh bản đồ' },
-  bomb: { emoji: '💣', count: 6, points: -1, label: 'Bom' }
+  coin: { emoji: '', count: 10, points: 10, label: 'Xu' },
+  diamond: { emoji: '<img src="/img/diamond.png" class="em-icon">', count: 5, points: 30, label: 'Kim cương' },
+  map: { emoji: '', count: 4, points: 20, label: 'Mảnh bản đồ' },
+  bomb: { emoji: '', count: 6, points: -1, label: 'Bom' }
 };
 
 const TREASURE_BONUS = 100;
@@ -134,11 +134,11 @@ function updateUI() {
   const chest = document.getElementById('treasure-chest');
   if (mapPieces >= 4) {
     chest.classList.add('found');
-    chest.querySelector('.chest-icon').textContent = '🎁';
+    chest.querySelector('.chest-icon').textContent = '<img src="/img/gift.png" class="em-icon">';
     chest.querySelector('.chest-label').textContent = 'Kho báu đã mở! +100 xu!';
   } else {
     chest.classList.remove('found');
-    chest.querySelector('.chest-icon').textContent = '🧳';
+    chest.querySelector('.chest-icon').textContent = '';
     chest.querySelector('.chest-label').textContent = `Tìm ${4 - mapPieces} mảnh bản đồ nữa!`;
   }
 }
@@ -288,20 +288,20 @@ function revealTile() {
       break;
     case 'diamond':
       coins += tile.points;
-      showExplosion('💎');
+      showExplosion('<img src="/img/diamond.png" class="em-icon">');
       break;
     case 'map':
       mapPieces++;
       coins += tile.points;
-      showExplosion('🗺️');
+      showExplosion('');
       if (mapPieces >= 4) {
         coins += TREASURE_BONUS;
-        setTimeout(() => showExplosion('🎁'), 300);
+        setTimeout(() => showExplosion('<img src="/img/gift.png" class="em-icon">'), 300);
       }
       break;
     case 'bomb':
       lives--;
-      showExplosion('💥');
+      showExplosion('');
       break;
   }
 
@@ -371,17 +371,17 @@ function endGame() {
   if (coins > highScore) {
     highScore = coins;
     saveData();
-    document.getElementById('result-title').textContent = '🎉 Kỷ Lục Mới!';
+    document.getElementById('result-title').textContent = '<img src="/img/party.png" class="em-icon"> Kỷ Lục Mới!';
   } else {
-    document.getElementById('result-title').textContent = treasureFound ? '🎁 Tìm Được Kho Báu!' : '🤿 Kết Quả!';
+    document.getElementById('result-title').textContent = treasureFound ? '<img src="/img/gift.png" class="em-icon"> Tìm Được Kho Báu!' : ' Kết Quả!';
   }
 
   document.getElementById('result-detail').innerHTML = `
-    ✅ Đúng: ${totalCorrect}/${totalAnswered} (${accuracy}%)<br>
-    🗺️ Bản đồ: ${mapPieces}/4 ${treasureFound ? '✅' : ''}<br>
-    💣 Bom trúng: ${3 - lives}<br>
-    📦 Ô đã lật: ${tilesRevealed}/${GRID_SIZE}<br>
-    🏆 Kỷ lục: ${highScore} xu
+     Đúng: ${totalCorrect}/${totalAnswered} (${accuracy}%)<br>
+     Bản đồ: ${mapPieces}/4 ${treasureFound ? '' : ''}<br>
+     Bom trúng: ${3 - lives}<br>
+     Ô đã lật: ${tilesRevealed}/${GRID_SIZE}<br>
+    <img src="/img/trophy.png" class="em-icon"> Kỷ lục: ${highScore} xu
   `;
 
   spawnConfetti();
@@ -442,7 +442,7 @@ function mountDiver() {
   if (C && C.hasSpecies('diver')) {
     diverChar = C.createCharacter('diver', host, { state: 'idle' });
   } else {
-    host.textContent = '🤿';
+    host.textContent = '';
   }
 }
 

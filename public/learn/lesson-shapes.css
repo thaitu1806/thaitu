@@ -1,0 +1,153 @@
+/* === Interactive "Hình Dạng" (Shapes) Lesson — Grade 0 (5 tuổi) === */
+
+#shapes0-interactive-screen {
+  flex-direction: column; height: 100%;
+  background: linear-gradient(180deg, #e3f2fd 0%, #fff3e0 100%);
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+#shapes0-interactive-screen .lsh-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
+}
+#shapes0-interactive-screen .lsh-header .btn-back-menu {
+  background: rgba(255,255,255,0.7); border: none; border-radius: 20px;
+  padding: 8px 14px; font-size: 0.85rem; font-weight: 700;
+  color: #1565c0; cursor: pointer; font-family: inherit;
+}
+#shapes0-interactive-screen .lsh-progress-wrap {
+  flex: 1; margin: 0 14px; height: 8px; background: rgba(0,0,0,0.08);
+  border-radius: 4px; overflow: hidden;
+}
+#shapes0-interactive-screen .lsh-progress-bar {
+  height: 100%; background: linear-gradient(90deg, #42a5f5, #1565c0);
+  border-radius: 4px; transition: width 0.4s ease; width: 25%;
+}
+#shapes0-interactive-screen .lsh-body {
+  flex: 1; overflow-y: auto; padding: 12px 16px 24px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── EXPLORE ── */
+.lsh-explore {
+  text-align: center; max-width: 380px; animation: lshFadeIn 0.3s ease;
+}
+.lsh-title {
+  font-size: 1.15rem; font-weight: 800; color: #1565c0; margin-bottom: 14px;
+}
+.lsh-shape-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px;
+}
+.lsh-shape-card {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 12px 6px; border-radius: 16px; background: white;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06); cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: lshPopIn 0.3s ease both;
+}
+.lsh-shape-card:hover { transform: scale(1.04); }
+.lsh-shape-card:active { transform: scale(0.93); }
+.lsh-shape-card.lsh-explored { background: #e3f2fd; pointer-events: none; }
+.lsh-shape-name { font-size: 0.8rem; font-weight: 800; color: #999; transition: color 0.3s; }
+
+.lsh-explore-info { min-height: 50px; }
+.lsh-info-bubble {
+  background: white; border-radius: 12px; padding: 10px 14px;
+  text-align: left; font-size: 0.9rem; font-weight: 600; color: #333;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); animation: lshFadeIn 0.3s ease;
+}
+
+/* ── MATCH ── */
+.lsh-match-section, .lsh-puzzle-section {
+  text-align: center; width: 100%; max-width: 380px; animation: lshFadeIn 0.3s ease;
+}
+.lsh-match-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+}
+.lsh-round-badge {
+  font-size: 0.85rem; font-weight: 700; color: #666;
+  background: rgba(0,0,0,0.05); border-radius: 12px; padding: 4px 10px;
+}
+.lsh-score-badge {
+  font-size: 0.95rem; font-weight: 800; color: #f59e0b;
+  display: flex; align-items: center; gap: 4px;
+}
+.lsh-question {
+  font-size: 1.15rem; font-weight: 900; color: #333; margin-bottom: 10px;
+}
+.lsh-hint {
+  font-size: 0.85rem; color: #888; margin-bottom: 10px; font-style: italic;
+}
+
+.lsh-match-options {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;
+}
+.lsh-match-opt {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 12px 8px; border-radius: 16px; background: white;
+  border: 3px solid #e0e0e0; cursor: pointer; font-family: inherit;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.lsh-match-opt:hover { border-color: #64b5f6; transform: scale(1.02); }
+.lsh-match-opt:active { transform: scale(0.94); }
+.lsh-opt-label { font-size: 0.8rem; font-weight: 700; color: #555; }
+.lsh-opt-correct { border-color: #4caf50 !important; background: #e8f5e9 !important; animation: lshCorrectPop 0.3s ease; }
+.lsh-opt-wrong { border-color: #ef5350 !important; background: #ffebee !important; animation: lshShake 0.4s ease; }
+
+/* ── PUZZLE ── */
+.lsh-puzzle-slots {
+  display: flex; justify-content: center; gap: 8px; margin-bottom: 16px;
+  min-height: 70px; align-items: center;
+}
+.lsh-puzzle-slot {
+  width: 64px; height: 64px; border: 2px dashed #bbb; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s; background: rgba(255,255,255,0.6);
+}
+.lsh-slot-hint { font-size: 0.65rem; color: #aaa; font-weight: 600; text-align: center; }
+.lsh-slot-filled { border-style: solid; border-color: #4caf50; background: #e8f5e9; }
+
+.lsh-puzzle-pieces {
+  display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;
+}
+.lsh-puzzle-piece {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 10px; border-radius: 14px; background: white;
+  border: 2px solid #e0e0e0; cursor: pointer;
+  transition: transform 0.2s, opacity 0.3s;
+}
+.lsh-puzzle-piece:hover { transform: scale(1.05); border-color: #64b5f6; }
+.lsh-puzzle-piece:active { transform: scale(0.92); }
+.lsh-puzzle-piece.lsh-piece-placed { opacity: 0.3; pointer-events: none; }
+.lsh-puzzle-piece.lsh-piece-shake { animation: lshShake 0.4s ease; }
+.lsh-piece-label { font-size: 0.7rem; color: #666; font-weight: 600; }
+
+/* ── FEEDBACK ── */
+.lsh-feedback { min-height: 36px; margin-top: 8px; }
+.lsh-fb-ok { color: #2e7d32; font-weight: 700; font-size: 1.05rem; animation: lshFadeIn 0.3s ease; }
+.lsh-fb-wrong { color: #c62828; font-weight: 700; font-size: 1.05rem; animation: lshFadeIn 0.3s ease; }
+
+/* ── REWARD ── */
+.lsh-reward {
+  text-align: center; max-width: 340px; animation: lshFadeIn 0.4s ease;
+}
+.lsh-reward-stars {
+  margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  animation: lshBounce 1.5s ease-in-out infinite;
+}
+.lsh-star-dim { opacity: 0.3; filter: grayscale(1); }
+.lsh-reward-title { font-size: 1.4rem; font-weight: 900; color: #1565c0; margin-bottom: 8px; }
+.lsh-reward-palette { display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; }
+.lsh-reward-score { font-size: 1.05rem; color: #555; margin-bottom: 16px; }
+.lsh-reward-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ── Animations ── */
+@keyframes lshFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes lshPopIn { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+@keyframes lshBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes lshCorrectPop { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
+@keyframes lshShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+
+@media (max-width: 380px) {
+  .lsh-shape-grid { grid-template-columns: repeat(2, 1fr); }
+  .lsh-match-options { gap: 8px; }
+  .lsh-puzzle-slot { width: 54px; height: 54px; }
+}

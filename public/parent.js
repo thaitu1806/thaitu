@@ -262,7 +262,7 @@
 
       // Success
       const childName = data.player ? data.player.name : '';
-      showLinkCodeMessage(`✅ Đã liên kết thành công với ${childName}!`, 'success');
+      showLinkCodeMessage(` Đã liên kết thành công với ${childName}!`, 'success');
       input.value = '';
 
       // Clear URL params after successful link
@@ -343,7 +343,7 @@
           <div class="child-avatar">${(child.name || '?')[0].toUpperCase()}</div>
           <div class="child-info">
             <div class="child-name">${child.name || 'Chưa đặt tên'}</div>
-            <div class="child-meta">⭐ ${child.total_stars || 0} · 🎮 ${child.total_games || 0} lượt · ${child.grade === 0 ? '5 tuổi' : 'Lớp ' + (child.grade ?? '?')}</div>
+            <div class="child-meta">⭐ ${child.total_stars || 0} ·  ${child.total_games || 0} lượt · ${child.grade === 0 ? '5 tuổi' : 'Lớp ' + (child.grade ?? '?')}</div>
           </div>
         </div>
       `).join('');
@@ -366,15 +366,15 @@
     const detailEl = document.getElementById('child-detail');
     detailEl.classList.remove('hidden');
 
-    document.getElementById('child-detail-name').textContent = `📚 ${childData.name || 'Học sinh'}`;
+    document.getElementById('child-detail-name').textContent = ` ${childData.name || 'Học sinh'}`;
 
     // Overview stats
     const overview = document.getElementById('child-overview');
     overview.innerHTML = `
       <div class="stat-box"><div class="stat-value">⭐ ${childData.total_stars || 0}</div><div class="stat-label">Sao</div></div>
-      <div class="stat-box"><div class="stat-value">💎 ${childData.total_diamonds || 0}</div><div class="stat-label">Kim cương</div></div>
-      <div class="stat-box"><div class="stat-value">🔥 ${childData.current_streak || 0}</div><div class="stat-label">Streak</div></div>
-      <div class="stat-box"><div class="stat-value">🎮 ${childData.total_games || 0}</div><div class="stat-label">Lượt chơi</div></div>
+      <div class="stat-box"><div class="stat-value"> ${childData.total_diamonds || 0}</div><div class="stat-label">Kim cương</div></div>
+      <div class="stat-box"><div class="stat-value"> ${childData.current_streak || 0}</div><div class="stat-label">Streak</div></div>
+      <div class="stat-box"><div class="stat-value"> ${childData.total_games || 0}</div><div class="stat-label">Lượt chơi</div></div>
     `;
 
     // Load detailed stats
@@ -402,7 +402,7 @@
         sessTab.innerHTML = stats.sessions.map(s => `
           <div style="padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:0.85rem;">
             <div style="font-weight:700;">${s.subject} - ${s.difficulty}</div>
-            <div style="color:#666;">📅 ${s.played_at ? new Date(s.played_at).toLocaleDateString('vi-VN') : '?'} · ✅ ${s.correct_answers}/${s.total_questions} · ⭐ ${s.stars_earned || 0}</div>
+            <div style="color:#666;"> ${s.played_at ? new Date(s.played_at).toLocaleDateString('vi-VN') : '?'} ·  ${s.correct_answers}/${s.total_questions} · ⭐ ${s.stars_earned || 0}</div>
           </div>
         `).join('');
       } else {
@@ -415,7 +415,7 @@
         examTab.innerHTML = stats.exams.map(e => `
           <div style="padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:0.85rem;">
             <div style="font-weight:700;">${e.title || e.subject}</div>
-            <div style="color:#666;">📅 ${e.taken_at ? new Date(e.taken_at).toLocaleDateString('vi-VN') : '?'} · Điểm: ${e.score} · Hạng: ${e.grade}</div>
+            <div style="color:#666;"> ${e.taken_at ? new Date(e.taken_at).toLocaleDateString('vi-VN') : '?'} · Điểm: ${e.score} · Hạng: ${e.grade}</div>
           </div>
         `).join('');
       } else {
@@ -429,12 +429,12 @@
           <div style="padding:10px 0;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;">
             <div>
               <div style="font-weight:700;font-size:0.9rem;">${v.item_name}</div>
-              <div style="color:#666;font-size:0.8rem;">💎 ${v.price_diamonds} · ${v.requested_at ? new Date(v.requested_at).toLocaleDateString('vi-VN') : ''}</div>
+              <div style="color:#666;font-size:0.8rem;"> ${v.price_diamonds} · ${v.requested_at ? new Date(v.requested_at).toLocaleDateString('vi-VN') : ''}</div>
             </div>
             <div>${v.status === 'pending'
-              ? `<button class="btn-small btn-accent" onclick="approveVoucher(${v.id}, 'approved')">✅</button>
-                 <button class="btn-small" onclick="approveVoucher(${v.id}, 'rejected')" style="background:#dc2626;margin-left:4px;">❌</button>`
-              : `<span style="font-size:0.8rem;color:${v.status === 'approved' ? '#16a34a' : '#dc2626'};">${v.status === 'approved' ? '✅ Đã duyệt' : '❌ Từ chối'}</span>`
+              ? `<button class="btn-small btn-accent" onclick="approveVoucher(${v.id}, 'approved')"></button>
+                 <button class="btn-small" onclick="approveVoucher(${v.id}, 'rejected')" style="background:#dc2626;margin-left:4px;"></button>`
+              : `<span style="font-size:0.8rem;color:${v.status === 'approved' ? '#16a34a' : '#dc2626'};">${v.status === 'approved' ? ' Đã duyệt' : ' Từ chối'}</span>`
             }</div>
           </div>
         `).join('');
@@ -450,7 +450,7 @@
   }
 
   // ─── Parent-created rewards ───────────────────────────────────
-  let rewardIcon = '🎁';
+  let rewardIcon = '';
   let rewardPlayerId = null;
 
   async function loadRewards(playerId) {
@@ -466,12 +466,12 @@
       }
       listEl.innerHTML = rewards.map(r => `
         <div class="reward-item">
-          <span class="reward-item-icon">${r.icon || '🎁'}</span>
+          <span class="reward-item-icon">${r.icon || ''}</span>
           <div class="reward-item-info">
             <div class="reward-item-title">${escapeHtml(r.title)}</div>
-            <div class="reward-item-price">💎 ${r.price_diamonds}${r.max_per_week ? ` · tối đa ${r.max_per_week} lần/tuần` : ''}</div>
+            <div class="reward-item-price"> ${r.price_diamonds}${r.max_per_week ? ` · tối đa ${r.max_per_week} lần/tuần` : ''}</div>
           </div>
-          <button class="btn-small reward-del" data-id="${r.id}" style="background:#dc2626;">🗑️</button>
+          <button class="btn-small reward-del" data-id="${r.id}" style="background:#dc2626;"></button>
         </div>
       `).join('');
       listEl.querySelectorAll('.reward-del').forEach(btn => {
@@ -495,12 +495,12 @@
       }
       el.innerHTML = items.map(c => `
         <div class="rh-item">
-          <span class="rh-icon">${c.icon || '🎁'}</span>
+          <span class="rh-icon">${c.icon || ''}</span>
           <div class="rh-info">
             <div class="rh-title">${escapeHtml(c.title)}</div>
-            <div class="rh-meta">💎 ${c.price_diamonds} · ${c.claimed_at ? new Date(c.claimed_at).toLocaleDateString('vi-VN') : ''}</div>
+            <div class="rh-meta"> ${c.price_diamonds} · ${c.claimed_at ? new Date(c.claimed_at).toLocaleDateString('vi-VN') : ''}</div>
           </div>
-          <span class="rh-status ${c.status === 'fulfilled' ? 'done' : 'pending'}">${c.status === 'fulfilled' ? '✅ Đã tặng' : '⏳ Chờ tặng'}</span>
+          <span class="rh-status ${c.status === 'fulfilled' ? 'done' : 'pending'}">${c.status === 'fulfilled' ? ' Đã tặng' : '⏳ Chờ tặng'}</span>
         </div>
       `).join('');
     } catch (err) { el.innerHTML = ''; }
@@ -550,15 +550,15 @@
       const pending = (Array.isArray(claims) ? claims : []).filter(c => c.status === 'pending');
       if (pending.length === 0) { banner.classList.add('hidden'); banner.innerHTML = ''; return; }
       banner.classList.remove('hidden');
-      banner.innerHTML = `<div class="claims-title">🎁 Con đã đổi quà — hãy tặng con nhé!</div>` +
+      banner.innerHTML = `<div class="claims-title"> Con đã đổi quà — hãy tặng con nhé!</div>` +
         pending.map(c => `
           <div class="claim-item">
-            <span class="claim-icon">${c.icon || '🎁'}</span>
+            <span class="claim-icon">${c.icon || ''}</span>
             <div class="claim-info">
               <div class="claim-title">${escapeHtml(c.title)}</div>
-              <div class="claim-meta">${escapeHtml(c.player_name || '')} · 💎 ${c.price_diamonds} · ${c.claimed_at ? new Date(c.claimed_at).toLocaleDateString('vi-VN') : ''}</div>
+              <div class="claim-meta">${escapeHtml(c.player_name || '')} ·  ${c.price_diamonds} · ${c.claimed_at ? new Date(c.claimed_at).toLocaleDateString('vi-VN') : ''}</div>
             </div>
-            <button class="btn-small btn-accent claim-done" data-id="${c.id}">✅ Đã tặng</button>
+            <button class="btn-small btn-accent claim-done" data-id="${c.id}"> Đã tặng</button>
           </div>
         `).join('');
       banner.querySelectorAll('.claim-done').forEach(btn => {

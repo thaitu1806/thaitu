@@ -4,41 +4,41 @@
   // === SPELL DATA ===
   const SPELLS = {
     fire: [
-      { id: 'fire_1', name: 'Lửa Nhỏ', emoji: '🔥', element: 'fire' },
-      { id: 'fire_2', name: 'Cầu Lửa', emoji: '🔥', element: 'fire' },
-      { id: 'fire_3', name: 'Bão Lửa', emoji: '🔥', element: 'fire' },
-      { id: 'fire_4', name: 'Phượng Hoàng', emoji: '🔥', element: 'fire' },
-      { id: 'fire_5', name: 'Mặt Trời', emoji: '🔥', element: 'fire' },
+      { id: 'fire_1', name: 'Lửa Nhỏ', emoji: '<img src="/img/fire.png" class="em-icon">', element: 'fire' },
+      { id: 'fire_2', name: 'Cầu Lửa', emoji: '<img src="/img/fire.png" class="em-icon">', element: 'fire' },
+      { id: 'fire_3', name: 'Bão Lửa', emoji: '<img src="/img/fire.png" class="em-icon">', element: 'fire' },
+      { id: 'fire_4', name: 'Phượng Hoàng', emoji: '<img src="/img/fire.png" class="em-icon">', element: 'fire' },
+      { id: 'fire_5', name: 'Mặt Trời', emoji: '<img src="/img/fire.png" class="em-icon">', element: 'fire' },
     ],
     water: [
-      { id: 'water_1', name: 'Giọt Nước', emoji: '💧', element: 'water' },
-      { id: 'water_2', name: 'Sóng', emoji: '💧', element: 'water' },
-      { id: 'water_3', name: 'Thủy Triều', emoji: '💧', element: 'water' },
-      { id: 'water_4', name: 'Mưa Bão', emoji: '💧', element: 'water' },
-      { id: 'water_5', name: 'Đại Dương', emoji: '💧', element: 'water' },
+      { id: 'water_1', name: 'Giọt Nước', emoji: '', element: 'water' },
+      { id: 'water_2', name: 'Sóng', emoji: '', element: 'water' },
+      { id: 'water_3', name: 'Thủy Triều', emoji: '', element: 'water' },
+      { id: 'water_4', name: 'Mưa Bão', emoji: '', element: 'water' },
+      { id: 'water_5', name: 'Đại Dương', emoji: '', element: 'water' },
     ],
     earth: [
-      { id: 'earth_1', name: 'Mầm Cây', emoji: '🌿', element: 'earth' },
-      { id: 'earth_2', name: 'Rễ Quấn', emoji: '🌿', element: 'earth' },
-      { id: 'earth_3', name: 'Động Đất', emoji: '🌿', element: 'earth' },
-      { id: 'earth_4', name: 'Núi Đá', emoji: '🌿', element: 'earth' },
-      { id: 'earth_5', name: 'Rừng Già', emoji: '🌿', element: 'earth' },
+      { id: 'earth_1', name: 'Mầm Cây', emoji: '', element: 'earth' },
+      { id: 'earth_2', name: 'Rễ Quấn', emoji: '', element: 'earth' },
+      { id: 'earth_3', name: 'Động Đất', emoji: '', element: 'earth' },
+      { id: 'earth_4', name: 'Núi Đá', emoji: '', element: 'earth' },
+      { id: 'earth_5', name: 'Rừng Già', emoji: '', element: 'earth' },
     ],
     wind: [
-      { id: 'wind_1', name: 'Gió Nhẹ', emoji: '💨', element: 'wind' },
-      { id: 'wind_2', name: 'Lốc Xoáy', emoji: '💨', element: 'wind' },
-      { id: 'wind_3', name: 'Bão Tố', emoji: '💨', element: 'wind' },
-      { id: 'wind_4', name: 'Sấm Sét', emoji: '💨', element: 'wind' },
-      { id: 'wind_5', name: 'Vũ Bão', emoji: '💨', element: 'wind' },
+      { id: 'wind_1', name: 'Gió Nhẹ', emoji: '', element: 'wind' },
+      { id: 'wind_2', name: 'Lốc Xoáy', emoji: '', element: 'wind' },
+      { id: 'wind_3', name: 'Bão Tố', emoji: '', element: 'wind' },
+      { id: 'wind_4', name: 'Sấm Sét', emoji: '', element: 'wind' },
+      { id: 'wind_5', name: 'Vũ Bão', emoji: '', element: 'wind' },
     ],
   };
 
   const BOSSES = [
-    { id: 'boss_1', name: 'Quỷ Đá', emoji: '🗿', weakness: 'water', hp: 3, desc: 'Yếu: Nước 💧' },
-    { id: 'boss_2', name: 'Rồng Nước', emoji: '🐉', weakness: 'wind', hp: 3, desc: 'Yếu: Gió 💨' },
-    { id: 'boss_3', name: 'Chim Bão', emoji: '🦅', weakness: 'earth', hp: 3, desc: 'Yếu: Đất 🌿' },
-    { id: 'boss_4', name: 'Cây Ma', emoji: '🌳', weakness: 'fire', hp: 3, desc: 'Yếu: Lửa 🔥' },
-    { id: 'boss_5', name: 'Bóng Tối', emoji: '👻', weakness: 'any', hp: 3, desc: 'Yếu: Bất kỳ (3 đòn)' },
+    { id: 'boss_1', name: 'Quỷ Đá', emoji: '', weakness: 'water', hp: 3, desc: 'Yếu: Nước ' },
+    { id: 'boss_2', name: 'Rồng Nước', emoji: '', weakness: 'wind', hp: 3, desc: 'Yếu: Gió ' },
+    { id: 'boss_3', name: 'Chim Bão', emoji: '', weakness: 'earth', hp: 3, desc: 'Yếu: Đất ' },
+    { id: 'boss_4', name: 'Cây Ma', emoji: '', weakness: 'fire', hp: 3, desc: 'Yếu: Lửa <img src="/img/fire.png" class="em-icon">' },
+    { id: 'boss_5', name: 'Bóng Tối', emoji: '', weakness: 'any', hp: 3, desc: 'Yếu: Bất kỳ (3 đòn)' },
   ];
 
   // === STATE ===
@@ -234,18 +234,18 @@
         if (spell) {
           state.spells[spell.id] = 3;
           saveState();
-          feedbackEl.textContent = '🌟 Học được phép: ' + spell.emoji + ' ' + spell.name + '!';
+          feedbackEl.textContent = ' Học được phép: ' + spell.emoji + ' ' + spell.name + '!';
           feedbackEl.className = 'quiz-feedback spell-fb';
           createSparkles(window.innerWidth / 2, window.innerHeight / 2, 20);
         } else {
-          feedbackEl.textContent = '✨ Đã học hết phép thuật!';
+          feedbackEl.textContent = ' Đã học hết phép thuật!';
           feedbackEl.className = 'quiz-feedback spell-fb';
         }
         // Reset fragments for next spell
         state.currentFragments = 0;
         setTimeout(() => updateFragmentBar(), 300);
       } else {
-        feedbackEl.textContent = '✅ Đúng! +1 mảnh ghép';
+        feedbackEl.textContent = ' Đúng! +1 mảnh ghép';
         feedbackEl.className = 'quiz-feedback correct-fb';
       }
 
@@ -256,7 +256,7 @@
         saveState();
       }
     } else {
-      feedbackEl.textContent = '❌ Sai rồi! Đáp án: ' + correct;
+      feedbackEl.textContent = ' Sai rồi! Đáp án: ' + correct;
       feedbackEl.className = 'quiz-feedback wrong-fb';
     }
 
@@ -315,7 +315,7 @@
       card.innerHTML = `
         <div class="spell-emoji">${spell.emoji}</div>
         <div class="spell-name">${spell.name}</div>
-        <div class="spell-fragments">${isLearned ? '✨ Đã học' : fragments + '/3 mảnh'}</div>
+        <div class="spell-fragments">${isLearned ? ' Đã học' : fragments + '/3 mảnh'}</div>
       `;
       grid.appendChild(card);
     });
@@ -324,7 +324,7 @@
   // === BOSS ===
   function showBossSelect() {
     showScreen('boss-screen');
-    document.getElementById('boss-title').textContent = '⚔️ Chọn Boss';
+    document.getElementById('boss-title').textContent = ' Chọn Boss';
     document.getElementById('boss-arena').style.display = 'none';
     document.getElementById('boss-list').style.display = 'flex';
 
@@ -351,7 +351,7 @@
           <div class="boss-item-name">${boss.name}</div>
           <div class="boss-item-weakness">${boss.desc}</div>
         </div>
-        <div class="boss-item-status">${isDefeated ? '✅ Đã hạ' : (isLocked ? '🔒' : '⚔️ Đấu')}</div>
+        <div class="boss-item-status">${isDefeated ? ' Đã hạ' : (isLocked ? '' : ' Đấu')}</div>
       `;
 
       if (!isLocked && !isDefeated) {
@@ -369,10 +369,10 @@
 
     document.getElementById('boss-list').style.display = 'none';
     document.getElementById('boss-arena').style.display = 'block';
-    document.getElementById('boss-title').textContent = '⚔️ ' + boss.name;
+    document.getElementById('boss-title').textContent = ' ' + boss.name;
     document.getElementById('boss-emoji').textContent = boss.emoji;
     document.getElementById('boss-name').textContent = boss.name;
-    document.getElementById('battle-log').innerHTML = '<p>🧙 Bắt đầu trận đấu với ' + boss.name + '!</p>';
+    document.getElementById('battle-log').innerHTML = '<p> Bắt đầu trận đấu với ' + boss.name + '!</p>';
 
     updateBossHp();
     renderPlayerSpells();
@@ -421,7 +421,7 @@
       bossEl.classList.add('boss-hit');
       setTimeout(() => bossEl.classList.remove('boss-hit'), 400);
 
-      log.innerHTML = '<p>🌟 ' + spell.emoji + ' ' + spell.name + ' gây sát thương!</p>' + log.innerHTML;
+      log.innerHTML = '<p> ' + spell.emoji + ' ' + spell.name + ' gây sát thương!</p>' + log.innerHTML;
       createSparkles(window.innerWidth / 2, 200, 10);
       updateBossHp();
 
@@ -432,7 +432,7 @@
     } else {
       btnEl.classList.add('ineffective');
       setTimeout(() => btnEl.classList.remove('ineffective'), 400);
-      log.innerHTML = '<p>💨 ' + spell.emoji + ' ' + spell.name + ' không hiệu quả...</p>' + log.innerHTML;
+      log.innerHTML = '<p> ' + spell.emoji + ' ' + spell.name + ' không hiệu quả...</p>' + log.innerHTML;
     }
   }
 
@@ -442,7 +442,7 @@
       saveState();
     }
 
-    document.getElementById('victory-title').textContent = '🏆 Đánh bại ' + boss.name + '!';
+    document.getElementById('victory-title').textContent = '<img src="/img/trophy.png" class="em-icon"> Đánh bại ' + boss.name + '!';
     document.getElementById('victory-desc').textContent = 'Phép thuật của bạn đã thắng bóng tối!';
     showScreen('victory-screen');
     createSparkles(window.innerWidth / 2, window.innerHeight / 2, 30);
@@ -575,32 +575,32 @@
     if (menuHost) {
       menuHost.innerHTML = '<div class="mascot-slot" id="menu-mascot-wizard"></div>' +
                            '<div class="mascot-slot mascot-slot--owl" id="menu-mascot-owl"></div>';
-      menuWizard = mount('menu-mascot-wizard', 'wizard', '🧙');
-      menuOwl = mount('menu-mascot-owl', 'owl', '🦉');
+      menuWizard = mount('menu-mascot-wizard', 'wizard', '');
+      menuOwl = mount('menu-mascot-owl', 'owl', '');
     }
     // Quiz: the student wizard replaces the static wand emoji.
-    quizWizard = mount('wand-display', 'wizard', '🪄');
+    quizWizard = mount('wand-display', 'wizard', '');
     // Boss arena: owl familiar fights alongside the player (boss emoji stays the enemy).
-    bossOwl = mount('boss-sprite', 'owl', '🦉');
+    bossOwl = mount('boss-sprite', 'owl', '');
 
     // --- Sync wizard happy on a correct answer / spell learned ---
     const feedback = $('quiz-feedback');
     if (feedback) {
       const fbObserver = new MutationObserver(() => {
         const txt = feedback.textContent || '';
-        if (txt.includes('✅') || txt.includes('🌟') || txt.includes('✨')) {
+        if (txt.includes('') || txt.includes('') || txt.includes('')) {
           pulseHappy(quizWizard, $('wand-display'));
         }
       });
       fbObserver.observe(feedback, { childList: true, characterData: true, subtree: true });
     }
 
-    // --- Sync owl happy on an effective boss hit (battle log gains a 🌟 line) ---
+    // --- Sync owl happy on an effective boss hit (battle log gains a  line) ---
     const log = $('battle-log');
     if (log) {
       const logObserver = new MutationObserver(() => {
         const first = log.querySelector('p');
-        if (first && (first.textContent || '').includes('🌟')) {
+        if (first && (first.textContent || '').includes('')) {
           pulseHappy(bossOwl, $('boss-sprite'));
         }
       });

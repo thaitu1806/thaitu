@@ -27,7 +27,10 @@
       const crystals = [];
       list.forEach((o, i) => {
         const gem = helpers.el('button', 'option-btn qz-crystal-gem');
-        gem.innerHTML = '<span class="qz-gem-icon">💎</span><span class="qz-gem-label">' + o.text + '</span>';
+        // Random crystal variant (4 cols × 2 rows = 8 variants)
+        const col = i % 4;
+        const row = Math.floor(Math.random() * 2);
+        gem.innerHTML = '<span class="qz-gem-icon qz-crystal-sprite" style="background-position:' + (col * 33.33) + '% ' + (row * 100) + '%"></span><span class="qz-gem-label">' + o.text + '</span>';
         gem.dataset.key = o.key;
         gem.style.setProperty('--orbit-i', String(i));
         gem.style.setProperty('--orbit-n', String(list.length));

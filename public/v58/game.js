@@ -62,7 +62,7 @@
     const C = window.HocVuiCharacters;
     const id = FARMER_POOL[Math.floor(Math.random() * FARMER_POOL.length)];
     if (C && C.hasSpecies(id)) { farmerChar = C.createCharacter(id, host, { state: 'idle' }); }
-    else { host.textContent = '🌾'; }
+    else { host.textContent = ''; }
   }
   // Rebuild the stage ladder each turn. Mounts a growing rice sprite into the
   // current stage circle, scaled via data-stage; done/future circles keep emoji.
@@ -95,13 +95,13 @@
     for (let i = 0; i < state.bonusCycles; i++) {
       const b = document.createElement('span'); b.className = 'bushel-slot bonus';
       if (hasSack) { C.createCharacter('bushel', b, { state: 'idle' }); const tag = document.createElement('span'); tag.className = 'bonus-tag'; tag.textContent = '+2'; b.appendChild(tag); }
-      else { b.textContent = '🍚🍚'; }
+      else { b.textContent = ''; }
       row.appendChild(b);
     }
     for (let i = 0; i < normal && i < 20; i++) {
       const b = document.createElement('span'); b.className = 'bushel-slot';
       if (hasSack) { C.createCharacter('bushel', b, { state: 'idle' }); }
-      else { b.textContent = '🍚'; }
+      else { b.textContent = ''; }
       row.appendChild(b);
     }
   }
@@ -135,9 +135,9 @@
     const harvested = state.cycles > prev;
     const bonus = harvested && (state.bushels - (state.bonusCycles * 2) < state.cycles);
     const fb = $('feedback'); fb.style.display = 'block';
-    if (harvested) { fb.className = 'feedback bonus'; fb.textContent = bonus ? '🌾 Thu hoạch bội thu! +2 lúa' : '🌾 Thu hoạch vụ mùa!'; }
-    else if (ok) { fb.className = 'feedback good'; fb.textContent = '✅ Lúa lớn lên!'; }
-    else { fb.className = 'feedback bad'; fb.textContent = '❌ Sai! Sâu phá hại.'; }
+    if (harvested) { fb.className = 'feedback bonus'; fb.textContent = bonus ? ' Thu hoạch bội thu! +2 lúa' : ' Thu hoạch vụ mùa!'; }
+    else if (ok) { fb.className = 'feedback good'; fb.textContent = ' Lúa lớn lên!'; }
+    else { fb.className = 'feedback bad'; fb.textContent = ' Sai! Sâu phá hại.'; }
     renderHud(); renderLadder(); renderBushels();
     const ladder = $('stage-ladder');
     if (harvested) {
@@ -172,10 +172,10 @@
     let stars = 0; if (state.outcome === 'won') stars = 3; else if (state.cycles >= 3) stars = 2; else if (state.cycles >= 1) stars = 1;
     saveSession({ stars, acc, total });
     if (state.outcome === 'won') { if (farmerChar) farmerChar.setState('happy'); spawnConfetti($('farm-stage'), 40); }
-    $('result-badges').textContent = '🍚'.repeat(Math.min(state.bushels, 10)) || '🌾';
-    $('result-title').textContent = state.outcome === 'won' ? '🌾 Vụ Mùa Bội Thu!' : '🌾 Kết Vụ Mùa';
-    $('result-emoji').textContent = state.outcome === 'won' ? '🌾' : '🌱';
-    $('result-detail').innerHTML = `🌾 Vụ mùa: ${state.cycles}/${state.cyclesGoal}<br>🍚 Lúa thu: ${state.bushels}<br>✨ Bội thu: ${state.bonusCycles}<br>✅ Đúng: ${state.correct}/${total} (${acc}%)<br>⭐ Sao: ${stars}/3`;
+    $('result-badges').textContent = ''.repeat(Math.min(state.bushels, 10)) || '';
+    $('result-title').textContent = state.outcome === 'won' ? ' Vụ Mùa Bội Thu!' : ' Kết Vụ Mùa';
+    $('result-emoji').textContent = state.outcome === 'won' ? '' : '';
+    $('result-detail').innerHTML = ` Vụ mùa: ${state.cycles}/${state.cyclesGoal}<br> Lúa thu: ${state.bushels}<br> Bội thu: ${state.bonusCycles}<br> Đúng: ${state.correct}/${total} (${acc}%)<br><img src="/img/star.png" class="em-icon"> Sao: ${stars}/3`;
     ss('result-screen'); if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch(e){} }
   }
   async function saveSession({ stars, acc, total }) {

@@ -85,7 +85,7 @@
     if (C && C.hasSpecies(id)) {
       witchChar = C.createCharacter(id, host, { state: 'idle' });
     } else {
-      host.textContent = '🧙';
+      host.textContent = '';
     }
   }
 
@@ -185,13 +185,13 @@
     if (state.potions.length > prevPot) {
       const last = state.potions[state.potions.length - 1];
       fb.className = 'feedback bonus';
-      fb.textContent = last.legendary ? '⚗️ Thuốc huyền thoại!' : '🧪 Một bình thuốc!';
+      fb.textContent = last.legendary ? ' Thuốc huyền thoại!' : ' Một bình thuốc!';
     } else if (ok) {
       fb.className = 'feedback good';
-      fb.textContent = '✅ Thêm nguyên liệu!';
+      fb.textContent = ' Thêm nguyên liệu!';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = '❌ Sai! Vạc nổ tung.';
+      fb.textContent = ' Sai! Vạc nổ tung.';
     }
     renderHud(); renderCauldron(); renderPotions();
     if (ok) spawnParticles($('cauldron-content'), 'bubble', 6);
@@ -256,15 +256,15 @@
       if (witchChar) witchChar.setState('happy');
       spawnConfetti($('app'), 44);
     }
-    const badges = state.potions.map(p => p.legendary ? window.V54Logic.LEGENDARY_EMOJI : window.V54Logic.POTION_EMOJI).join(' ') || '🧙';
+    const badges = state.potions.map(p => p.legendary ? window.V54Logic.LEGENDARY_EMOJI : window.V54Logic.POTION_EMOJI).join(' ') || '';
     $('result-badges').textContent = badges;
-    $('result-title').textContent = state.outcome === 'won' ? '🧙‍♀️ Bậc Thầy Phù Thủy!' : '🧙 Kết Buổi Pha Chế';
-    $('result-emoji').textContent = state.outcome === 'won' ? '🧙‍♀️' : '🧙';
+    $('result-title').textContent = state.outcome === 'won' ? ' Bậc Thầy Phù Thủy!' : ' Kết Buổi Pha Chế';
+    $('result-emoji').textContent = state.outcome === 'won' ? '' : '';
     $('result-detail').innerHTML = `
-      🧪 Thuốc: ${state.potions.length}/${state.potionsGoal}<br>
-      ⚗️ Huyền thoại: ${state.potions.filter(p => p.legendary).length}<br>
-      ✅ Đúng: ${state.correct}/${total} (${acc}%)<br>
-      ⭐ Sao: ${stars}/3
+       Thuốc: ${state.potions.length}/${state.potionsGoal}<br>
+       Huyền thoại: ${state.potions.filter(p => p.legendary).length}<br>
+       Đúng: ${state.correct}/${total} (${acc}%)<br>
+      <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3
     `;
     ss('result-screen');
     if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch(e){} }

@@ -25,7 +25,7 @@
       list.forEach((o) => {
         const t = helpers.el('div', 'qz-archer-target');
         t.dataset.key = o.key;
-        t.innerHTML = '<span class="qz-target-ring">🎯</span><span class="qz-target-label">' + o.text + '</span>';
+        t.innerHTML = '<span class="qz-target-ring"><img src="/img/target.png" style="width:64px;height:64px;"></span><span class="qz-target-label">' + o.text + '</span>';
         targetRow.appendChild(t);
         targets.push(t);
       });
@@ -33,7 +33,8 @@
 
       // Arrow (drag source)
       const bow = helpers.el('div', 'qz-archer-bow');
-      bow.innerHTML = '<span class="qz-arrow">🏹</span><span class="qz-bow-hint">← Kéo mũi tên vào bia đúng!</span>';
+      const arrowCol = Math.floor(Math.random() * 4);
+      bow.innerHTML = '<span class="qz-arrow qz-arrow-sprite" style="background-position:' + (arrowCol * 33.33) + '% 0%"></span><span class="qz-bow-hint">\u2190 Kéo mũi tên vào bia đúng!</span>';
       field.appendChild(bow);
 
       let done = false;

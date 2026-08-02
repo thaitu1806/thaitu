@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>🚒 Siêu Nhân Cứu Hỏa - Học Vui</title>
+  <title> Siêu Nhân Cứu Hỏa - Học Vui</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="/quiz/quiz-modes.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
     <!-- SETUP SCREEN -->
     <section id="setup-screen" class="screen active">
       <div class="setup-container">
-        <div class="setup-hero">🚒</div>
+        <div class="setup-hero"></div>
         <h1 class="setup-title">Siêu Nhân Cứu Hỏa</h1>
         <p class="setup-desc">Trả lời đúng để dập lửa, cứu người khỏi tòa nhà cháy!</p>
 
@@ -37,9 +37,9 @@
           </div>
         </div>
 
-        <button class="btn-start" id="btn-start">🧑‍🚒 Xuất phát cứu hỏa!</button>
-        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <button class="btn-start" id="btn-start"> Xuất phát cứu hỏa!</button>
+        <button class="btn-guide" id="btn-guide"> Hướng Dẫn Cách Chơi</button>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </section>
 
@@ -49,18 +49,18 @@
         <!-- HUD -->
         <div class="game-hud">
           <div class="hud-item fire-counter">
-            <span class="hud-icon">🔥</span>
+            <span class="hud-icon"></span>
             <span id="fire-count">15</span>/<span id="fire-max">20</span>
           </div>
           <div class="hud-item rescued-counter">
-            <span class="hud-icon">👨‍👩‍👧‍👦</span>
+            <span class="hud-icon"></span>
             <span id="rescued-count">0</span>/5
           </div>
           <div class="hud-item timer-display">
-            <span class="hud-icon">⏱️</span>
+            <span class="hud-icon">⏱</span>
             <span id="timer-text">10</span>s
           </div>
-          <button class="btn-exit" id="btn-exit" title="Thoát game">🚪</button>
+          <button class="btn-exit" id="btn-exit" title="Thoát game"></button>
         </div>
 
         <!-- BUILDING VISUAL -->
@@ -69,30 +69,30 @@
             <div class="floor" data-floor="5">
               <span class="floor-label">5F</span>
               <div class="floor-fires" id="fires-5"></div>
-              <div class="floor-person" id="person-5">👤</div>
+              <div class="floor-person" id="person-5"></div>
             </div>
             <div class="floor" data-floor="4">
               <span class="floor-label">4F</span>
               <div class="floor-fires" id="fires-4"></div>
-              <div class="floor-person" id="person-4">👤</div>
+              <div class="floor-person" id="person-4"></div>
             </div>
             <div class="floor" data-floor="3">
               <span class="floor-label">3F</span>
               <div class="floor-fires" id="fires-3"></div>
-              <div class="floor-person" id="person-3">👤</div>
+              <div class="floor-person" id="person-3"></div>
             </div>
             <div class="floor" data-floor="2">
               <span class="floor-label">2F</span>
               <div class="floor-fires" id="fires-2"></div>
-              <div class="floor-person" id="person-2">👤</div>
+              <div class="floor-person" id="person-2"></div>
             </div>
             <div class="floor" data-floor="1">
               <span class="floor-label">1F</span>
               <div class="floor-fires" id="fires-1"></div>
-              <div class="floor-person" id="person-1">👤</div>
+              <div class="floor-person" id="person-1"></div>
             </div>
           </div>
-          <div class="firefighter" id="firefighter">🧑‍🚒</div>
+          <div class="firefighter" id="firefighter"></div>
         </div>
 
         <!-- QUESTION AREA -->
@@ -118,14 +118,14 @@
 
   <div id="guide-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card">
-      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <h3 class="modal-title"> Cách Chơi</h3>
       <ul class="modal-rules">
-        <li>🔥 Trả lời <b>đúng</b> = phun nước <b>dập một ngọn lửa</b> ở tầng đang cháy.</li>
-        <li>🧑‍🚒 Dập hết lửa một tầng = <b>cứu được người</b> ở tầng đó.</li>
-        <li>❌ Trả lời <b>sai</b> hoặc <b>hết giờ</b> = <b>lửa lan thêm</b> sang một tầng.</li>
-        <li>⏱️ Mỗi câu chỉ có <b>10 giây</b> để trả lời.</li>
-        <li>🏚️ Nếu lửa lan tới <b>20 ngọn</b>, tòa nhà <b>sụp đổ</b> — thua cuộc.</li>
-        <li>🦸 Cứu được <b>cả 5 người</b> là chiến thắng, càng cứu nhiều càng nhiều sao!</li>
+        <li> Trả lời <b>đúng</b> = phun nước <b>dập một ngọn lửa</b> ở tầng đang cháy.</li>
+        <li> Dập hết lửa một tầng = <b>cứu được người</b> ở tầng đó.</li>
+        <li> Trả lời <b>sai</b> hoặc <b>hết giờ</b> = <b>lửa lan thêm</b> sang một tầng.</li>
+        <li>⏱ Mỗi câu chỉ có <b>10 giây</b> để trả lời.</li>
+        <li> Nếu lửa lan tới <b>20 ngọn</b>, tòa nhà <b>sụp đổ</b> — thua cuộc.</li>
+        <li> Cứu được <b>cả 5 người</b> là chiến thắng, càng cứu nhiều càng nhiều sao!</li>
       </ul>
       <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
     </div>
@@ -133,12 +133,12 @@
 
   <div id="exit-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card exit-modal-card">
-      <div class="exit-modal-icon">🚪</div>
+      <div class="exit-modal-icon"></div>
       <p class="exit-modal-text">Thoát game?</p>
       <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
       <div class="exit-modal-actions">
         <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
-        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm"> Thoát</button>
       </div>
     </div>
   </div>
@@ -154,6 +154,7 @@
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
   <script src="/help-rules.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

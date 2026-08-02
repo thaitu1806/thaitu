@@ -84,7 +84,7 @@
     if (C && C.hasSpecies(id)) {
       subChar = C.createCharacter(id, host, { state: 'idle' });
     } else {
-      host.textContent = '🛥️'; // emoji fallback
+      host.textContent = ''; // emoji fallback
     }
   }
 
@@ -183,10 +183,10 @@
       fb.textContent = `${last.emoji} Tìm thấy báu vật!`;
     } else if (ok) {
       fb.className = 'feedback good';
-      fb.textContent = '✅ Lặn sâu hơn 1 tầng!';
+      fb.textContent = ' Lặn sâu hơn 1 tầng!';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = '❌ Sai! Mất 1 oxy.';
+      fb.textContent = ' Sai! Mất 1 oxy.';
     }
     renderHud(); renderSub(); renderTreasures(); renderZone(); syncStage();
     // Submarine reactions + particles.
@@ -229,19 +229,19 @@
     else if (state.depth >= 3) stars = 1;
     saveSession({ stars, acc, total });
     if (state.outcome === 'won' && subChar) subChar.setState('happy');
-    const badges = state.treasures.map(t => t.emoji).join(' ') || '🌊';
+    const badges = state.treasures.map(t => t.emoji).join(' ') || '';
     $('result-badges').textContent = badges;
-    let title = '⚓ Kết Hải Trình';
-    if (state.outcome === 'won') title = '🐋 Tới Đáy Đại Dương!';
-    else if (state.outcome === 'surfaced') title = '💨 Hết Oxy!';
+    let title = ' Kết Hải Trình';
+    if (state.outcome === 'won') title = ' Tới Đáy Đại Dương!';
+    else if (state.outcome === 'surfaced') title = ' Hết Oxy!';
     $('result-title').textContent = title;
-    $('result-emoji').textContent = state.outcome === 'won' ? '🐋' : state.outcome === 'surfaced' ? '🛥️' : '⚓';
+    $('result-emoji').textContent = state.outcome === 'won' ? '' : state.outcome === 'surfaced' ? '' : '';
     $('result-detail').innerHTML = `
-      🌊 Lặn sâu: ${state.depth}/${state.maxDepth}<br>
-      💎 Báu vật: ${state.treasures.length}<br>
-      💨 Oxy còn: ${state.oxygen}/${state.maxOxygen}<br>
-      ✅ Đúng: ${state.correct}/${total} (${acc}%)<br>
-      ⭐ Sao: ${stars}/3
+       Lặn sâu: ${state.depth}/${state.maxDepth}<br>
+      <img src="/img/diamond.png" class="em-icon"> Báu vật: ${state.treasures.length}<br>
+       Oxy còn: ${state.oxygen}/${state.maxOxygen}<br>
+       Đúng: ${state.correct}/${total} (${acc}%)<br>
+      <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3
     `;
     ss('result-screen');
     if (state.outcome === 'won') spawnConfetti($('result-screen'), 44);
@@ -305,7 +305,7 @@
     for (let i = 0; i < count; i++) {
       const p = document.createElement('span');
       p.className = 'pfx pfx-' + kind;
-      if (kind === 'gem') p.textContent = ['💎', '✨', '🐚'][i % 3];
+      if (kind === 'gem') p.textContent = ['<img src="/img/diamond.png" class="em-icon">', '', ''][i % 3];
       const tx = (Math.random() * 80 - 40);
       const ty = -(Math.random() * 44 + 22);
       p.style.setProperty('--tx', tx + 'px');

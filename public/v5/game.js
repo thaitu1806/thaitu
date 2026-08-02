@@ -17,9 +17,9 @@ import {
 
 // ===== CONSTANTS =====
 const COLORS = ['red', 'blue', 'green', 'yellow'];
-const COLOR_EMOJIS = { red: '🐴', blue: '🦄', green: '🏇', yellow: '🎠' };
+const COLOR_EMOJIS = { red: '', blue: '', green: '', yellow: '' };
 const BOT_NAMES = ['Bot 1', 'Bot 2', 'Bot 3'];
-const ZOMBIE_SET = ['💀', '🧟', '👻', '👹', '👺', '🤖', '👾', '🦇', '🐛', '🦠','🎃', '☠️', '🕷️', '🦂', '🐍', '🦎', '🐲', '🐉', '🦖', '🦕','🐊', '🦈', '🐙', '🦑', '🐜', '🦗', '🕸️', '🦟','🐺', '🦁', '🐗', '🦍', '🐏', '🦏', '🐻', '🧛', '🧙'];
+const ZOMBIE_SET = ['', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', '', '','', '', '', '', '', '', '', '','', '', '', '', '', '', '', '', ''];
 
 // ===== BOARD CONFIGURATION =====
 // Import from game-logic.js and add layout for rendering
@@ -208,10 +208,10 @@ const SetupManager = {
         <div class="player-slot-color color-${player.color}">${COLOR_EMOJIS[player.color]}</div>
         <div class="player-slot-info">
           <input type="text" class="player-slot-name-input" data-slot="${index}" value="${player.name}" maxlength="12">
-          <div class="player-slot-type">${player.type === 'human' ? '👤 Người chơi' : '🤖 Máy'}</div>
+          <div class="player-slot-type">${player.type === 'human' ? ' Người chơi' : ' Máy'}</div>
         </div>
         <button class="btn-toggle-type ${player.type === 'human' ? 'is-human' : 'is-bot'}" data-slot="${index}">
-          ${player.type === 'human' ? '👤' : '🤖'}
+          ${player.type === 'human' ? '' : ''}
         </button>
       `;
       container.appendChild(slot);
@@ -338,7 +338,7 @@ function renderBoard() {
       <!-- Exit confirm popup -->
       <div class="exit-confirm-overlay" id="exit-confirm-overlay">
         <div class="exit-confirm-card">
-          <div class="exit-confirm-icon">🚪</div>
+          <div class="exit-confirm-icon"></div>
           <div class="exit-confirm-text">Bạn muốn thoát trò chơi?</div>
           <div class="exit-confirm-buttons">
             <button class="exit-confirm-btn cancel" id="exit-cancel">Tiếp tục</button>
@@ -351,7 +351,7 @@ function renderBoard() {
       <div class="turn-indicator" id="turn-indicator">
         <span class="turn-indicator-dot" id="turn-dot"></span>
         <span class="turn-indicator-text" id="turn-text">Lượt chơi</span>
-        <button class="btn-exit-game" id="btn-exit-game" title="Thoát">✕</button>
+        <button class="btn-exit-game" id="btn-exit-game" title="Thoát"></button>
       </div>
 
       <!-- Board Grid (dice area inside center) -->
@@ -364,7 +364,7 @@ function renderBoard() {
             <div class="dice-wrapper" id="dice-2" data-showing="1"></div>
           </div>
           <div class="dice-result" id="dice-result"></div>
-          <button class="btn-roll" id="btn-roll" disabled>🎲 Tung xúc xắc</button>
+          <button class="btn-roll" id="btn-roll" disabled> Tung xúc xắc</button>
         </div>
       </div>
     </div>
@@ -395,13 +395,13 @@ function renderTiles() {
 
     if (type === 'star') {
       tileClass += ' tile-star';
-      tileContent = '⭐';
+      tileContent = '<img src="/img/star.png" class="em-icon">';
     } else if (type === 'trap') {
       tileClass += ' tile-trap';
-      tileContent = '⚠️';
+      tileContent = '';
     } else if (type === 'finish') {
       tileClass += ' tile-finish';
-      tileContent = '🏆';
+      tileContent = '<img src="/img/trophy.png" class="em-icon">';
     }
 
     tilesHTML += `<div class="${tileClass}" data-tile="${i}" style="grid-row: ${pos.row}; grid-column: ${pos.col};">${tileContent}</div>`;
@@ -509,13 +509,13 @@ function updateTurnIndicator() {
 
 // ===== DICE SYSTEM =====
 
-const DICE_FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+const DICE_FACES = ['', '', '', '', '', ''];
 
 /**
  * Get the emoji face for a die value (1-6) - kept for fallback/display
  */
 function getDiceFace(value) {
-  return DICE_FACES[value - 1] || '⚀';
+  return DICE_FACES[value - 1] || '';
 }
 
 /**
@@ -958,7 +958,7 @@ function showZombieBattle(player) {
     overlay.innerHTML = `
       <div class="zombie-battle-scene">
         <div class="zombie-attacker">${zombie}</div>
-        <div class="zombie-vs">⚔️</div>
+        <div class="zombie-vs"></div>
         <div class="zombie-victim">${COLOR_EMOJIS[player.color]}</div>
       </div>
       <div class="zombie-text">${zombie} tấn công!</div>
@@ -1157,7 +1157,7 @@ function showBotQuestionPopup(question, botSelectedAnswer) {
             </button>
           `).join('')}
         </div>
-        <p class="bot-thinking">🤖 Đang suy nghĩ...</p>
+        <p class="bot-thinking"> Đang suy nghĩ...</p>
       </div>
     `;
 
@@ -1259,7 +1259,7 @@ function handleIncorrectAnswer() {
   // Position doesn't change — the question popup already showed the correct answer
   // Just show a brief toast
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-  showToast(`❌ ${currentPlayer.name} trả lời sai!`, 1500);
+  showToast(` ${currentPlayer.name} trả lời sai!`, 1500);
 }
 
 /**
@@ -1318,7 +1318,7 @@ async function handleSpecialTileEffect(player, tileType) {
   if (tileType === 'star') {
     const newPos = Math.min(currentPos + 2, BOARD_CONFIG.finishPosition);
     AudioManager.play('star');
-    showToast('⭐ Tiến thêm 2 ô!', 2000);
+    showToast('<img src="/img/star.png" class="em-icon"> Tiến thêm 2 ô!', 2000);
     if (newPos !== currentPos) {
       await animateTokenMovement(player, currentPos, newPos);
     }
@@ -1333,7 +1333,7 @@ async function handleSpecialTileEffect(player, tileType) {
       AudioManager.play('trap');
       await showZombieBattle(player);
       const newPos = Math.max(currentPos - 3, 0);
-      showToast('💀 Zombie thắng! Lùi 3 ô!', 2500);
+      showToast(' Zombie thắng! Lùi 3 ô!', 2500);
       if (newPos !== currentPos) {
         await animateTokenBackward(player, currentPos, newPos);
       }
@@ -1342,13 +1342,13 @@ async function handleSpecialTileEffect(player, tileType) {
       // Player wins → stay
       AudioManager.play('correct');
       const zombie = ZOMBIE_SET[Math.floor(Math.random() * ZOMBIE_SET.length)];
-      showToast(`⚔️ ${COLOR_EMOJIS[player.color]} đánh bại ${zombie}! Ở lại chỗ cũ!`, 2500);
+      showToast(` ${COLOR_EMOJIS[player.color]} đánh bại ${zombie}! Ở lại chỗ cũ!`, 2500);
       await wait(1500);
       return currentPos;
     } else {
       // Challenge → answer question
       AudioManager.play('trap');
-      showToast('❓ Cơ hội thử thách! Trả lời đúng +1, sai -3!', 2500);
+      showToast(' Cơ hội thử thách! Trả lời đúng +1, sai -3!', 2500);
       await wait(1500);
 
       const question = QuestionManager.getNextQuestion();
@@ -1368,7 +1368,7 @@ async function handleSpecialTileEffect(player, tileType) {
       if (answerResult.isCorrect) {
         AudioManager.play('correct');
         const newPos = Math.min(currentPos + 1, BOARD_CONFIG.finishPosition);
-        showToast('✅ Đúng! Tiến thêm 1 ô!', 2000);
+        showToast(' Đúng! Tiến thêm 1 ô!', 2000);
         if (newPos !== currentPos) {
           await animateTokenMovement(player, currentPos, newPos);
         }
@@ -1376,7 +1376,7 @@ async function handleSpecialTileEffect(player, tileType) {
       } else {
         AudioManager.play('wrong');
         const newPos = Math.max(currentPos - 3, 0);
-        showToast('❌ Sai! Lùi 3 ô!', 2500);
+        showToast(' Sai! Lùi 3 ô!', 2500);
         if (newPos !== currentPos) {
           await animateTokenBackward(player, currentPos, newPos);
         }
@@ -1433,7 +1433,7 @@ async function handleKickEffect(kickedIndex) {
   const kickerPlayer = gameState.players[gameState.currentPlayerIndex];
 
   AudioManager.play('kick');
-  showToast(`🦶 Đá ${kickedPlayer.name} về vạch xuất phát!`, 2500);
+  showToast(` Đá ${kickedPlayer.name} về vạch xuất phát!`, 2500);
 
   // Animate kick — fly back to 0
   await animateKick(kickedPlayer);
@@ -1482,7 +1482,7 @@ async function handleGameEnd() {
   if (!gameState) return;
 
   const winner = gameState.players[gameState.winner];
-  showToast(`🎉 ${winner.name} đã về đích!`, 3000);
+  showToast(`<img src="/img/party.png" class="em-icon"> ${winner.name} đã về đích!`, 3000);
 
   // Save session for all human players
   await saveSession();
@@ -1614,7 +1614,7 @@ function showVictoryScreen() {
     <div class="victory-container">
       <div class="confetti-container" id="confetti-container"></div>
       <div class="victory-content">
-        <div class="victory-trophy">🏆</div>
+        <div class="victory-trophy"><img src="/img/trophy.png" class="em-icon"></div>
         <h1 class="victory-title">Chúc mừng!</h1>
         <div class="victory-winner">
           <span class="victory-winner-emoji">${COLOR_EMOJIS[winner.color]}</span>
@@ -1624,7 +1624,7 @@ function showVictoryScreen() {
 
         <div class="victory-stats">
           <div class="victory-stat-row victory-stat-header">
-            <span>📊 Thống kê trận đấu</span>
+            <span> Thống kê trận đấu</span>
           </div>
           <div class="victory-stat-row">
             <span>Tổng lượt chơi:</span>
@@ -1633,14 +1633,14 @@ function showVictoryScreen() {
           ${playerStats.map(p => `
             <div class="victory-stat-row">
               <span>${COLOR_EMOJIS[p.color]} ${p.name}:</span>
-              <span class="victory-stat-value">✅ ${p.correct} / ❌ ${p.incorrect}</span>
+              <span class="victory-stat-value"> ${p.correct} /  ${p.incorrect}</span>
             </div>
           `).join('')}
         </div>
 
         <div class="victory-buttons">
-          <button class="btn-victory btn-play-again" id="btn-play-again">🔄 Chơi lại</button>
-          <button class="btn-victory btn-go-home" id="btn-go-home">🏠 Về trang chủ</button>
+          <button class="btn-victory btn-play-again" id="btn-play-again"> Chơi lại</button>
+          <button class="btn-victory btn-go-home" id="btn-go-home"> Về trang chủ</button>
         </div>
       </div>
     </div>
@@ -1897,8 +1897,8 @@ const QuestionManager = {
       overlay.className = 'question-overlay';
       overlay.innerHTML = `
         <div class="question-card">
-          <p class="question-text">❌ Không thể tải câu hỏi. Vui lòng kiểm tra kết nối mạng.</p>
-          <button class="answer-btn answer-btn-back" id="btn-back-to-setup">🏠 Về cài đặt</button>
+          <p class="question-text"> Không thể tải câu hỏi. Vui lòng kiểm tra kết nối mạng.</p>
+          <button class="answer-btn answer-btn-back" id="btn-back-to-setup"> Về cài đặt</button>
         </div>
       `;
       document.body.appendChild(overlay);
@@ -1965,7 +1965,7 @@ function showQuestionPopup(question) {
       <div class="question-card">
         <div class="question-timer-bar"><div class="question-timer-fill"></div></div>
         <p class="question-text">${question.question_text}</p>
-        <button class="btn-speak" onclick="window.ttsSpeak('${question.question_text.replace(/'/g,"\\'")}. A: ${question.option_a.replace(/'/g,"\\'")}. B: ${question.option_b.replace(/'/g,"\\'")}. C: ${question.option_c.replace(/'/g,"\\'")}. D: ${question.option_d.replace(/'/g,"\\'")}', 'vi')" style="margin:6px auto 10px;display:flex;width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:#fff;font-size:1.2rem;cursor:pointer;align-items:center;justify-content:center;">🔊</button>
+        <button class="btn-speak" onclick="window.ttsSpeak('${question.question_text.replace(/'/g,"\\'")}. A: ${question.option_a.replace(/'/g,"\\'")}. B: ${question.option_b.replace(/'/g,"\\'")}. C: ${question.option_c.replace(/'/g,"\\'")}. D: ${question.option_d.replace(/'/g,"\\'")}', 'vi')" style="margin:6px auto 10px;display:flex;width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:#fff;font-size:1.2rem;cursor:pointer;align-items:center;justify-content:center;"></button>
         <div class="answer-grid">
           ${options.map(opt => `
             <button class="answer-btn" data-answer="${opt.key}">
@@ -2305,7 +2305,7 @@ function v5SyncTurn(data) {
     v5QuestionShowing = false;
     clearTileHighlight();
     if (isMyTurn) {
-      if (btnRoll) { btnRoll.disabled = false; btnRoll.textContent = '🎲 Tung xúc xắc'; }
+      if (btnRoll) { btnRoll.disabled = false; btnRoll.textContent = ' Tung xúc xắc'; }
       gameState.state = 'waiting_roll';
     } else {
       if (btnRoll) { btnRoll.disabled = true; btnRoll.textContent = `⏳ Đợi ${data.players[data.currentPlayerIdx]?.name}...`; }
@@ -2318,7 +2318,7 @@ function v5SyncTurn(data) {
       gameState.targetTile = targetTile;
       gameState.state = 'waiting_tile_tap';
       highlightTargetTile(targetTile);
-      if (btnRoll) { btnRoll.disabled = true; btnRoll.textContent = '👆 Bấm vào ô đích'; }
+      if (btnRoll) { btnRoll.disabled = true; btnRoll.textContent = ' Bấm vào ô đích'; }
       // Bind click on highlighted tile
       v5BindOnlineTileTap();
     }
@@ -2591,7 +2591,7 @@ document.addEventListener('click', (e) => {
     };
   }
 
-  // Wrap renderBoard to inject a styled 🚪 exit button into the HUD.
+  // Wrap renderBoard to inject a styled  exit button into the HUD.
   if (typeof renderBoard === 'function') {
     const origRenderBoard = renderBoard;
     renderBoard = function () {
@@ -2603,7 +2603,7 @@ document.addEventListener('click', (e) => {
           btn.className = 'btn-exit';
           btn.id = 'btn-exit';
           btn.title = 'Thoát game';
-          btn.textContent = '🚪';
+          btn.textContent = '';
           indicator.insertBefore(btn, indicator.firstChild);
           btn.addEventListener('click', () => {
             const modal = document.getElementById('exit-modal');

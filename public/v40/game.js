@@ -7,32 +7,32 @@ const TIMER_SECONDS = 10;
 const CUSTOMERS_PER_SHIFT = 8;
 
 const SHOP_LEVELS = [
-  { id: 0, name: 'Xe Đẩy', emoji: '🛒', cost: 0, items: 5 },
-  { id: 1, name: 'Quán Nhỏ', emoji: '🏪', cost: 100, items: 8 },
-  { id: 2, name: 'Siêu Thị', emoji: '🏬', cost: 300, items: 12 },
-  { id: 3, name: 'Mega Market', emoji: '🏢', cost: 500, items: 16 }
+  { id: 0, name: 'Xe Đẩy', emoji: '', cost: 0, items: 5 },
+  { id: 1, name: 'Quán Nhỏ', emoji: '', cost: 100, items: 8 },
+  { id: 2, name: 'Siêu Thị', emoji: '', cost: 300, items: 12 },
+  { id: 3, name: 'Mega Market', emoji: '', cost: 500, items: 16 }
 ];
 
 const ALL_ITEMS = [
-  { emoji: '🍎', name: 'Táo', price: 2000 },
-  { emoji: '🥛', name: 'Sữa', price: 5000 },
-  { emoji: '🍞', name: 'Bánh mì', price: 3000 },
-  { emoji: '🥚', name: 'Trứng', price: 4000 },
-  { emoji: '🍌', name: 'Chuối', price: 1000 },
-  { emoji: '🧃', name: 'Nước ép', price: 6000 },
-  { emoji: '🍪', name: 'Bánh quy', price: 3000 },
-  { emoji: '🍜', name: 'Mì gói', price: 4000 },
-  { emoji: '🧁', name: 'Bánh cupcake', price: 7000 },
-  { emoji: '🍫', name: 'Sô-cô-la', price: 8000 },
-  { emoji: '🥤', name: 'Nước ngọt', price: 5000 },
-  { emoji: '🍭', name: 'Kẹo', price: 2000 },
-  { emoji: '🧀', name: 'Phô mai', price: 9000 },
-  { emoji: '🍿', name: 'Bắp rang', price: 6000 },
-  { emoji: '🥐', name: 'Bánh sừng bò', price: 7000 },
-  { emoji: '🍩', name: 'Donut', price: 5000 }
+  { emoji: '', name: 'Táo', price: 2000 },
+  { emoji: '', name: 'Sữa', price: 5000 },
+  { emoji: '', name: 'Bánh mì', price: 3000 },
+  { emoji: '', name: 'Trứng', price: 4000 },
+  { emoji: '', name: 'Chuối', price: 1000 },
+  { emoji: '', name: 'Nước ép', price: 6000 },
+  { emoji: '', name: 'Bánh quy', price: 3000 },
+  { emoji: '', name: 'Mì gói', price: 4000 },
+  { emoji: '', name: 'Bánh cupcake', price: 7000 },
+  { emoji: '', name: 'Sô-cô-la', price: 8000 },
+  { emoji: '', name: 'Nước ngọt', price: 5000 },
+  { emoji: '', name: 'Kẹo', price: 2000 },
+  { emoji: '', name: 'Phô mai', price: 9000 },
+  { emoji: '', name: 'Bắp rang', price: 6000 },
+  { emoji: '', name: 'Bánh sừng bò', price: 7000 },
+  { emoji: '', name: 'Donut', price: 5000 }
 ];
 
-const CUSTOMER_EMOJIS = ['🧑', '👩', '👨', '👧', '👦', '🧓', '👴', '👵'];
+const CUSTOMER_EMOJIS = ['', '', '', '', '', '', '', ''];
 
 // State
 let gameData = {
@@ -282,7 +282,7 @@ function showApiQuestion() {
     correct: q[`option_${q.correct_answer.toLowerCase()}`],
     correct_key: q.correct_answer.toLowerCase(),
     options: [q.option_a, q.option_b, q.option_c, q.option_d],
-    cartItems: [{ emoji: '📚', name: 'Câu hỏi', price: 0 }],
+    cartItems: [{ emoji: '', name: 'Câu hỏi', price: 0 }],
     profit: 2000,
     isApi: true,
     raw: q
@@ -290,7 +290,7 @@ function showApiQuestion() {
 
   // Show cart
   const cartDiv = document.getElementById('customer-cart');
-  cartDiv.innerHTML = '<span class="cart-item">📚 Câu hỏi bonus!</span>';
+  cartDiv.innerHTML = '<span class="cart-item"> Câu hỏi bonus!</span>';
 
   // Show question
   document.getElementById('q-text').textContent = q.question_text;
@@ -369,14 +369,14 @@ function showFeedback(isCorrect, profitAmount) {
     shiftProfit += profitAmount;
     document.getElementById('profit').textContent = shiftProfit;
     fb.className = 'feedback good';
-    fb.textContent = `✅ Đúng rồi! +${formatPrice(profitAmount)}`;
+    fb.textContent = ` Đúng rồi! +${formatPrice(profitAmount)}`;
   } else {
     // Lose some money on wrong answer
     const loss = 1000;
     shiftProfit = Math.max(0, shiftProfit - loss);
     document.getElementById('profit').textContent = shiftProfit;
     fb.className = 'feedback bad';
-    fb.textContent = `❌ Sai! -${formatPrice(loss)}`;
+    fb.textContent = ` Sai! -${formatPrice(loss)}`;
   }
 
   setTimeout(() => nextCustomer(), 1200);
@@ -443,17 +443,17 @@ function endShift() {
   const accuracy = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
 
   if (shiftProfit >= 10000) {
-    document.getElementById('result-title').textContent = '🌟 Ca Xuất Sắc!';
+    document.getElementById('result-title').textContent = ' Ca Xuất Sắc!';
   } else if (shiftProfit >= 5000) {
-    document.getElementById('result-title').textContent = '👍 Ca Tốt!';
+    document.getElementById('result-title').textContent = ' Ca Tốt!';
   } else {
-    document.getElementById('result-title').textContent = '🧾 Kết Ca!';
+    document.getElementById('result-title').textContent = ' Kết Ca!';
   }
 
   document.getElementById('result-detail').innerHTML = `
-    ✅ Đúng: ${totalCorrect}/${totalAnswered} (${accuracy}%)<br>
-    🧑 Khách phục vụ: ${CUSTOMERS_PER_SHIFT}<br>
-    💰 Tổng lợi nhuận: ${gameData.profit}<br>
+     Đúng: ${totalCorrect}/${totalAnswered} (${accuracy}%)<br>
+     Khách phục vụ: ${CUSTOMERS_PER_SHIFT}<br>
+     Tổng lợi nhuận: ${gameData.profit}<br>
     ${SHOP_LEVELS[gameData.level].emoji} Shop: ${SHOP_LEVELS[gameData.level].name}
   `;
 
@@ -492,7 +492,7 @@ function showUpgradeScreen() {
         <span class="upgrade-name">${lvl.name} ${isCurrent ? '(Hiện tại)' : ''}</span>
         <span class="upgrade-desc">${lvl.items} mặt hàng</span>
       </div>
-      <span class="upgrade-cost">${isUnlocked ? '✅' : formatPrice(lvl.cost * 1000)}</span>
+      <span class="upgrade-cost">${isUnlocked ? '' : formatPrice(lvl.cost * 1000)}</span>
     `;
 
     if (isNext && canAfford) {

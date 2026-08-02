@@ -6,9 +6,9 @@
   const QUESTION_LIMIT = 20;
 
   const CMD_ICONS = {
-    forward: { icon: '⬆️', label: 'tiến' },
-    left:    { icon: '↩️', label: 'trái' },
-    right:   { icon: '↪️', label: 'phải' },
+    forward: { icon: '⬆', label: 'tiến' },
+    left:    { icon: '↩', label: 'trái' },
+    right:   { icon: '↪', label: 'phải' },
     jump:    { icon: '⏫', label: 'nhảy' },
   };
 
@@ -229,10 +229,10 @@
         cell.className = 'grid-cell';
         if (obsSet.has(`${r},${c}`)) {
           cell.classList.add('obstacle');
-          cell.textContent = '🧱';
+          cell.textContent = '';
         } else if (r === state.goal.row && c === state.goal.col) {
           cell.classList.add('goal');
-          cell.textContent = '🏁';
+          cell.textContent = '';
         }
         if (r === state.robot.row && c === state.robot.col) {
           cell.classList.add('robot', `face-${state.robot.facing}`);
@@ -335,13 +335,13 @@
       if (comboStreak > maxCombo) maxCombo = comboStreak;
       const last = state.pool[state.pool.length - 1];
       const info = CMD_ICONS[last] || { icon: '?', label: last };
-      showFeedback('good', `✅ Đúng! Mở khóa lệnh ${info.icon} ${info.label}`);
+      showFeedback('good', ` Đúng! Mở khóa lệnh ${info.icon} ${info.label}`);
       setRobotState('happy', 800);
       spawnParticles(robotHost(), 'spark', 8);
     } else {
       state = window.V45Logic.applyWrongOrTimeout(state);
       comboStreak = 0;
-      showFeedback('bad', '❌ Sai mất! Thử câu sau.');
+      showFeedback('bad', ' Sai mất! Thử câu sau.');
       setRobotState('scared', 700);
     }
 
@@ -419,10 +419,10 @@
     saveSession({ stars, accuracy, total });
 
     const detail = `
-      🎯 Cấp: ${state.level}/${window.V45Logic.LEVELS.length}<br>
-      ✅ Đúng: ${state.correct}/${total} (${accuracy}%)<br>
-      💾 Lệnh đã mở: ${state.correct}<br>
-      ⭐ Sao: ${stars}/3
+       Cấp: ${state.level}/${window.V45Logic.LEVELS.length}<br>
+       Đúng: ${state.correct}/${total} (${accuracy}%)<br>
+       Lệnh đã mở: ${state.correct}<br>
+      <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3
     `;
     if (state.outcome === 'won') {
       $('victory-detail').innerHTML = detail;

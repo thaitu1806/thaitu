@@ -164,7 +164,7 @@
     const pct = (pull / WIN_PULL) * 32; // up to 32% shift each way
     rope.style.transform = `translateX(${pct}%)`;
     const flag = $('flag');
-    flag.textContent = pull < 0 ? '🚩' : pull > 0 ? '🏴' : '🚩';
+    flag.textContent = pull < 0 ? '' : pull > 0 ? '' : '';
   }
   function renderScore() {
     $('score-1').textContent = score1;
@@ -182,13 +182,13 @@
   function finish() {
     clearInterval(tH); clearTimeout(botTimer);
     const p1won = pull < 0;
-    const winnerName = p1won ? '🧒 Bạn 1' : (mode === 'bot' ? '🤖 Máy' : '👧 Bạn 2');
-    $('result-emoji').textContent = '🏆';
+    const winnerName = p1won ? ' Bạn 1' : (mode === 'bot' ? ' Máy' : ' Bạn 2');
+    $('result-emoji').textContent = '<img src="/img/trophy.png" class="em-icon">';
     $('result-title').textContent = winnerName + ' Thắng!';
     $('result-detail').innerHTML = `
-      🧒 Bạn 1: ${score1} câu đúng<br>
-      ${mode === 'bot' ? '🤖 Máy' : '👧 Bạn 2'}: ${score2} câu đúng<br>
-      💪 Đã chơi: ${round} câu
+       Bạn 1: ${score1} câu đúng<br>
+      ${mode === 'bot' ? ' Máy' : ' Bạn 2'}: ${score2} câu đúng<br>
+       Đã chơi: ${round} câu
     `;
     ss('result-screen');
     spawnConfetti($('result-screen'), 40);

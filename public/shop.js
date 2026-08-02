@@ -9,11 +9,11 @@
 
   // Level labels (Vietnamese)
   const LEVEL_LABELS = {
-    bronze: '🥉 Đồng',
-    silver: '🥈 Bạc',
-    gold: '🥇 Vàng',
-    diamond: '💎 Kim Cương',
-    master: '👑 Bậc Thầy',
+    bronze: ' Đồng',
+    silver: ' Bạc',
+    gold: ' Vàng',
+    diamond: ' Kim Cương',
+    master: ' Bậc Thầy',
   };
 
   const LEVEL_ORDER = ['bronze', 'silver', 'gold', 'diamond', 'master'];
@@ -59,7 +59,7 @@
       if (!Array.isArray(rewards) || rewards.length === 0) return;
       const wrap = document.createElement('div');
       wrap.className = 'parent-rewards-section';
-      wrap.innerHTML = `<h2 class="pr-title">🎁 Quà từ bố mẹ</h2><p class="pr-sub">Quà thật do bố mẹ tặng — đổi bằng kim cương con kiếm được!</p><div class="pr-grid" id="pr-grid"></div>`;
+      wrap.innerHTML = `<h2 class="pr-title"> Quà từ bố mẹ</h2><p class="pr-sub">Quà thật do bố mẹ tặng — đổi bằng kim cương con kiếm được!</p><div class="pr-grid" id="pr-grid"></div>`;
       const container = document.querySelector('.shop-container');
       const grid = container.querySelector('.items-grid');
       container.insertBefore(wrap, grid);
@@ -70,13 +70,13 @@
         const soldOut = r.remaining === 0;
         const canAfford = playerDiamonds >= r.price_diamonds && !soldOut;
         const limitTxt = (r.max_per_week != null) ? `<div class="pr-limit">${soldOut ? 'Hết lượt tuần này' : 'Còn ' + r.remaining + ' lần/tuần'}</div>` : '';
-        let btnLabel = 'Đổi quà 🎁';
+        let btnLabel = 'Đổi quà ';
         if (soldOut) btnLabel = 'Hết lượt tuần';
-        else if (playerDiamonds < r.price_diamonds) btnLabel = 'Chưa đủ 💎';
+        else if (playerDiamonds < r.price_diamonds) btnLabel = 'Chưa đủ ';
         card.innerHTML = `
-          <div class="pr-icon">${r.icon || '🎁'}</div>
+          <div class="pr-icon">${r.icon || ''}</div>
           <div class="pr-name">${escapeHtml(r.title)}</div>
-          <div class="pr-price">💎 ${r.price_diamonds}</div>
+          <div class="pr-price"> ${r.price_diamonds}</div>
           ${limitTxt}
           <button class="pr-buy ${canAfford ? '' : 'cannot-buy'}" ${canAfford ? '' : 'disabled'}>${btnLabel}</button>`;
         const btn = card.querySelector('.pr-buy');
@@ -89,7 +89,7 @@
   function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
   async function redeemParentReward(reward, card) {
-    if (!confirm(`Đổi "${reward.title}" với 💎 ${reward.price_diamonds}?`)) return;
+    if (!confirm(`Đổi "${reward.title}" với  ${reward.price_diamonds}?`)) return;
     try {
       const res = await fetch('/api/parent?action=redeem-reward', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -100,13 +100,13 @@
         playerDiamonds = data.new_balance;
         diamondCountEl.textContent = playerDiamonds;
         if (window.HocVuiSound) window.HocVuiSound.play('win');
-        showToast(`🎉 Đã đổi "${reward.title}"! Bố mẹ sẽ tặng con nhé!`);
+        showToast(` Đã đổi "${reward.title}"! Bố mẹ sẽ tặng con nhé!`);
         // refresh affordability across the section
         loadParentRewardsRefresh();
       } else {
-        showToast(`❌ ${data.error || 'Lỗi khi đổi quà'}`);
+        showToast(` ${data.error || 'Lỗi khi đổi quà'}`);
       }
-    } catch (e) { showToast('❌ Lỗi kết nối!'); }
+    } catch (e) { showToast(' Lỗi kết nối!'); }
   }
 
   function loadParentRewardsRefresh() {
@@ -265,7 +265,7 @@
     // Price
     const priceEl = document.createElement('span');
     priceEl.className = 'item-price';
-    priceEl.textContent = `💎 ${item.price_diamonds}`;
+    priceEl.textContent = ` ${item.price_diamonds}`;
     card.appendChild(priceEl);
 
     // Buy button
@@ -278,15 +278,15 @@
     if (!meetsLevel) {
       buyBtn.className += ' cannot-buy';
       const levelNames = { silver: 'Bạc', gold: 'Vàng', diamond: 'Kim Cương', master: 'Bậc Thầy' };
-      buyBtn.textContent = `🔒 Cần ${levelNames[item.min_level] || item.min_level}`;
+      buyBtn.textContent = ` Cần ${levelNames[item.min_level] || item.min_level}`;
       buyBtn.disabled = true;
     } else if (!canAfford) {
       buyBtn.className += ' cannot-buy';
-      buyBtn.textContent = 'Chưa đủ 💎';
+      buyBtn.textContent = 'Chưa đủ ';
       buyBtn.disabled = true;
     } else {
       buyBtn.className += ' can-buy';
-      buyBtn.textContent = 'Mua 🛒';
+      buyBtn.textContent = 'Mua ';
       buyBtn.addEventListener('click', () => openPurchaseModal(item));
     }
 
@@ -297,13 +297,13 @@
   // Get default emoji for category
   function getCategoryEmoji(category) {
     const emojis = {
-      avatar: '🧑',
-      frame: '🖼️',
+      avatar: '',
+      frame: '',
       sticker: '⭐',
-      powerup: '🧪',
-      voucher: '🎁',
+      powerup: '',
+      voucher: '',
     };
-    return emojis[category] || '🎀';
+    return emojis[category] || '';
   }
 
   // Open purchase confirmation modal
@@ -313,7 +313,7 @@
       ? item.image_url
       : getCategoryEmoji(item.category);
     modalText.textContent = `Bạn muốn mua "${item.name}"?`;
-    modalPrice.textContent = `💎 ${item.price_diamonds}`;
+    modalPrice.textContent = ` ${item.price_diamonds}`;
     modalOverlay.style.display = 'flex';
   }
 
@@ -344,20 +344,20 @@
         playerDiamonds = data.new_balance;
         diamondCountEl.textContent = playerDiamonds;
         closeModal();
-        showToast(`🎉 Đã mua "${item.name}" thành công!`);
+        showToast(` Đã mua "${item.name}" thành công!`);
         // Reload items to update button states
         loadItems(currentCategory);
       } else {
         closeModal();
-        showToast(`❌ ${data.error || 'Lỗi khi mua!'}`);
+        showToast(` ${data.error || 'Lỗi khi mua!'}`);
       }
     } catch {
       closeModal();
-      showToast('❌ Lỗi kết nối!');
+      showToast(' Lỗi kết nối!');
     }
 
     modalConfirm.disabled = false;
-    modalConfirm.textContent = 'Mua nào! 🎉';
+    modalConfirm.textContent = 'Mua nào! ';
   }
 
   // Show toast notification

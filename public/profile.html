@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>👤 Hồ Sơ - Học Vui</title>
+  <title> Hồ Sơ - Học Vui</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -111,9 +111,23 @@
       padding: 10px 14px; border: 2px solid #e0e0e0; border-radius: 12px;
       background: white; font-size: 0.9rem; font-weight: 700; cursor: pointer;
       font-family: inherit; transition: all 0.2s; color: #333;
+      display: inline-flex; align-items: center; gap: 6px;
     }
     .grade-btn:hover { border-color: #90caf9; background: #f5faff; }
     .grade-btn.active { border-color: #4facfe; background: #e3f2fd; color: #1976d2; }
+    .grade-icon {
+      display: inline-block; width: 24px; height: 24px;
+      background-image: url('/img/stickers-2-clean.png');
+      background-size: 240px 267px;
+      background-repeat: no-repeat;
+      vertical-align: middle; flex-shrink: 0;
+    }
+    .grade-icon-0 { background-position: -168px -146px; }
+    .grade-icon-1 { background-position: 0px -146px; }
+    .grade-icon-2 { background-position: -24px -146px; }
+    .grade-icon-3 { background-position: -48px -146px; }
+    .grade-icon-4 { background-position: -72px -146px; }
+    .grade-icon-5 { background-position: -120px -146px; }
 
     .btn-save-profile {
       padding: 12px; background: linear-gradient(135deg, #4facfe, #00f2fe);
@@ -265,15 +279,15 @@
   <div class="profile-container">
     <!-- Header -->
     <div class="profile-header">
-      <a href="/" class="back-btn">🏠</a>
+      <a href="/" class="back-btn"></a>
       <div class="header-title">Hồ Sơ</div>
-      <a href="/shop.html" class="shop-link">🛒 Shop</a>
+      <a href="/shop.html" class="shop-link"> Shop</a>
     </div>
 
     <!-- Avatar + Level card -->
     <div class="avatar-card">
       <div class="avatar-display" id="avatar-display">
-        <span id="avatar-emoji">🧒</span>
+        <span id="avatar-emoji"></span>
         <div class="avatar-frame" id="avatar-frame"></div>
       </div>
       <div class="player-name" id="player-name">Tạo hồ sơ</div>
@@ -282,42 +296,42 @@
         <div class="level-bar-bg">
           <div class="level-bar-fill" id="level-bar" style="width: 0%"></div>
         </div>
-        <div class="level-text" id="level-text">0 / 100 💎</div>
+        <div class="level-text" id="level-text">0 / 100 </div>
       </div>
       <div class="stats-row">
-        <div class="stat-item">💎 <span class="stat-val" id="diamond-balance">0</span></div>
-        <div class="stat-item">🔥 <span class="stat-val" id="streak-display">0 ngày</span></div>
+        <div class="stat-item"> <span class="stat-val" id="diamond-balance">0</span></div>
+        <div class="stat-item"> <span class="stat-val" id="streak-display">0 ngày</span></div>
       </div>
     </div>
 
     <!-- Quick actions + stats (from home) -->
     <div class="avatar-card" style="padding:14px 16px;">
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px;">
-        <span class="chip-stat" id="pf-streak" style="background:#fff;border-radius:20px;padding:8px 14px;font-weight:800;font-size:0.85rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);">🔥 0 ngày</span>
-        <span class="chip-stat" id="pf-diamonds" style="background:#fff;border-radius:20px;padding:8px 14px;font-weight:800;font-size:0.85rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);">💎 0</span>
-        <span class="chip-stat" id="pf-quests" style="background:#fff;border-radius:20px;padding:8px 14px;font-weight:800;font-size:0.85rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);">📋 0/5 NV</span>
+        <span class="chip-stat" id="pf-streak" style="background:#fff;border-radius:20px;padding:8px 14px;font-weight:800;font-size:0.85rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);"> 0 ngày</span>
+        <span class="chip-stat" id="pf-diamonds" style="background:#fff;border-radius:20px;padding:8px 14px;font-weight:800;font-size:0.85rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);"> 0</span>
+        <span class="chip-stat" id="pf-quests" style="background:#fff;border-radius:20px;padding:8px 14px;font-weight:800;font-size:0.85rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);"> 0/5 NV</span>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px;">
-        <a href="/shop.html" style="background:linear-gradient(135deg,#ffb300,#ff8f00);color:#fff;border-radius:20px;padding:8px 16px;font-weight:900;font-size:0.85rem;text-decoration:none;box-shadow:0 3px 8px rgba(255,152,0,0.3);">🛒 Shop</a>
-        <button type="button" id="pf-album" style="background:linear-gradient(135deg,#a06bff,#7a3bd6);color:#fff;border-radius:20px;padding:8px 16px;font-weight:900;font-size:0.85rem;border:none;cursor:pointer;box-shadow:0 3px 8px rgba(124,77,255,0.3);">📔 Sưu tập</button>
+        <a href="/shop.html" style="background:linear-gradient(135deg,#ffb300,#ff8f00);color:#fff;border-radius:20px;padding:8px 16px;font-weight:900;font-size:0.85rem;text-decoration:none;box-shadow:0 3px 8px rgba(255,152,0,0.3);"> Shop</a>
+        <button type="button" id="pf-album" style="background:linear-gradient(135deg,#a06bff,#7a3bd6);color:#fff;border-radius:20px;padding:8px 16px;font-weight:900;font-size:0.85rem;border:none;cursor:pointer;box-shadow:0 3px 8px rgba(124,77,255,0.3);"> Sưu tập</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <a href="/guide.html" style="background:#f5f3ff;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:800;font-size:0.8rem;color:#555;">📖 Hướng dẫn</a>
-        <a href="#" id="pf-report" style="background:#f5f3ff;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:800;font-size:0.8rem;color:#555;">🏅 Phiếu bé ngoan</a>
-        <a href="/lab/" style="background:#f5f3ff;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:800;font-size:0.8rem;color:#555;">🧪 Trò chơi mới</a>
-        <a href="/parent.html" style="background:#f5f3ff;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:800;font-size:0.8rem;color:#555;">👨‍👩‍👧 Phụ huynh</a>
+        <a href="/guide.html" style="background:#f5f3ff;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:800;font-size:0.8rem;color:#555;"> Hướng dẫn</a>
+        <a href="#" id="pf-report" style="background:#f5f3ff;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:800;font-size:0.8rem;color:#555;"> Phiếu bé ngoan</a>
+        <a href="/lab/" style="background:#f5f3ff;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:800;font-size:0.8rem;color:#555;"> Trò chơi mới</a>
+        <a href="/parent.html" style="background:#f5f3ff;border-radius:14px;padding:10px;text-align:center;text-decoration:none;font-weight:800;font-size:0.8rem;color:#555;"> Phụ huynh</a>
       </div>
     </div>
 
     <!-- Link status section -->
     <div class="link-status-card" id="link-status-section" style="display:none">
 
-    <!-- 👫 Friends section -->
+    <!--  Friends section -->
     <div class="profile-box" id="friends-section">
-      <h3 style="margin-bottom:12px;font-size:1.1rem;">👫 Bạn bè</h3>
+      <h3 style="margin-bottom:12px;font-size:1.1rem;"> Bạn bè</h3>
       <!-- Pending requests -->
       <div id="friends-pending" style="display:none;">
-        <p style="font-size:0.85rem;font-weight:800;color:#e65100;margin-bottom:6px;">📩 Lời mời kết bạn</p>
+        <p style="font-size:0.85rem;font-weight:800;color:#e65100;margin-bottom:6px;"> Lời mời kết bạn</p>
         <div id="friends-pending-list"></div>
       </div>
       <!-- My friends list -->
@@ -327,10 +341,10 @@
       </div>
       <!-- Search / discover -->
       <div style="margin-top:12px;">
-        <p style="font-size:0.85rem;font-weight:800;color:#1976d2;margin-bottom:8px;">💡 Gợi ý kết bạn</p>
+        <p style="font-size:0.85rem;font-weight:800;color:#1976d2;margin-bottom:8px;"> Gợi ý kết bạn</p>
         <div id="friends-suggest"></div>
         <div style="display:flex;gap:8px;margin-top:10px;">
-          <input type="text" id="friend-search" placeholder="🔍 Tìm bạn theo tên..." style="flex:1;padding:10px 14px;border:2px solid #e0e0e0;border-radius:12px;font-size:0.9rem;font-family:inherit;font-weight:700;">
+          <input type="text" id="friend-search" placeholder=" Tìm bạn theo tên..." style="flex:1;padding:10px 14px;border:2px solid #e0e0e0;border-radius:12px;font-size:0.9rem;font-family:inherit;font-weight:700;">
           <button id="friend-search-btn" type="button" style="padding:10px 16px;border:none;border-radius:12px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:#fff;font-weight:900;cursor:pointer;">Tìm</button>
         </div>
         <div id="friend-search-results" style="margin-top:8px;"></div>
@@ -338,14 +352,14 @@
     </div>
       <!-- Unlinked / prompted state -->
       <div id="link-unlinked">
-        <h3>🔗 Mã liên kết phụ huynh</h3>
+        <h3> Mã liên kết phụ huynh</h3>
         <div class="link-code-display" id="link-code-text">------</div>
         <div class="link-code-instruction">Đưa mã này cho ba mẹ để liên kết nhé!</div>
-        <button class="btn-copy-code" id="btn-copy-code">📋 Sao chép mã</button>
+        <button class="btn-copy-code" id="btn-copy-code"> Sao chép mã</button>
       </div>
       <!-- Linked state -->
       <div id="link-linked" style="display:none">
-        <div class="link-status-linked">✅ Đã liên kết ba mẹ</div>
+        <div class="link-status-linked"> Đã liên kết ba mẹ</div>
         <div class="linked-parents" id="linked-parents"></div>
       </div>
     </div>
@@ -358,34 +372,34 @@
         <label>Lớp của con:</label>
         <div class="grade-selector">
           <div class="grade-options" id="pf-grade-options">
-            <button type="button" data-grade="0" class="grade-btn">🧸 5 tuổi</button>
-            <button type="button" data-grade="1" class="grade-btn">🎒 Lớp 1</button>
-            <button type="button" data-grade="2" class="grade-btn active">📚 Lớp 2</button>
-            <button type="button" data-grade="3" class="grade-btn">📖 Lớp 3</button>
-            <button type="button" data-grade="4" class="grade-btn">📘 Lớp 4</button>
-            <button type="button" data-grade="5" class="grade-btn">📗 Lớp 5</button>
+            <button type="button" data-grade="0" class="grade-btn"><span class="grade-icon grade-icon-0"></span> 5 tuổi</button>
+            <button type="button" data-grade="1" class="grade-btn"><span class="grade-icon grade-icon-1"></span> Lớp 1</button>
+            <button type="button" data-grade="2" class="grade-btn active"><span class="grade-icon grade-icon-2"></span> Lớp 2</button>
+            <button type="button" data-grade="3" class="grade-btn"><span class="grade-icon grade-icon-3"></span> Lớp 3</button>
+            <button type="button" data-grade="4" class="grade-btn"><span class="grade-icon grade-icon-4"></span> Lớp 4</button>
+            <button type="button" data-grade="5" class="grade-btn"><span class="grade-icon grade-icon-5"></span> Lớp 5</button>
           </div>
         </div>
-        <button class="btn-save-profile" id="btn-save-pf">💾 Lưu hồ sơ</button>
+        <button class="btn-save-profile" id="btn-save-pf"> Lưu hồ sơ</button>
       </div>
       <div class="profile-msg" id="pf-msg"></div>
     </div>
 
     <!-- Tab navigation -->
     <div class="tabs-nav" id="tabs-nav" style="display:none">
-      <button class="tab-btn active" data-tab="info">📊 Hồ Sơ</button>
-      <button class="tab-btn" data-tab="inventory">🎒 Kho Đồ</button>
-      <button class="tab-btn" data-tab="history">📜 Lịch Sử Thưởng</button>
+      <button class="tab-btn active" data-tab="info"> Hồ Sơ</button>
+      <button class="tab-btn" data-tab="inventory"> Kho Đồ</button>
+      <button class="tab-btn" data-tab="history"> Lịch Sử Thưởng</button>
     </div>
 
     <!-- Tab: Hồ Sơ (existing info) -->
     <div class="tab-content active" id="tab-info" style="display:none">
       <div class="profile-info">
         <div class="pi-row"><span>⭐ Tổng sao:</span><strong id="pi-stars">0</strong></div>
-        <div class="pi-row"><span>🎮 Lượt chơi:</span><strong id="pi-games">0</strong></div>
-        <div class="pi-row"><span>🗺️ Level phiêu lưu:</span><strong id="pi-level">1</strong></div>
-        <div class="pi-row"><span>🔥 Streak dài nhất:</span><strong id="pi-longest-streak">0 ngày</strong></div>
-        <div class="pi-row"><span>💎 Tổng đã kiếm:</span><strong id="pi-lifetime">0</strong></div>
+        <div class="pi-row"><span> Lượt chơi:</span><strong id="pi-games">0</strong></div>
+        <div class="pi-row"><span> Level phiêu lưu:</span><strong id="pi-level">1</strong></div>
+        <div class="pi-row"><span> Streak dài nhất:</span><strong id="pi-longest-streak">0 ngày</strong></div>
+        <div class="pi-row"><span> Tổng đã kiếm:</span><strong id="pi-lifetime">0</strong></div>
       </div>
     </div>
 
@@ -393,7 +407,7 @@
     <div class="tab-content" id="tab-inventory" style="display:none">
       <div class="inventory-grid" id="inventory-grid">
         <div class="empty-state" style="grid-column: 1/-1;">
-          <div class="empty-emoji">🎒</div>
+          <div class="empty-emoji"></div>
           <p>Đang tải...</p>
         </div>
       </div>
@@ -403,7 +417,7 @@
     <div class="tab-content" id="tab-history" style="display:none">
       <div class="tx-list" id="tx-list">
         <div class="empty-state">
-          <div class="empty-emoji">📜</div>
+          <div class="empty-emoji"></div>
           <p>Đang tải...</p>
         </div>
       </div>
@@ -411,8 +425,8 @@
 
     <!-- Links -->
     <div class="profile-links">
-      <a href="/">🏠 Trang chủ</a>
-      <a href="/shop.html">🛒 Cửa hàng</a>
+      <a href="/"> Trang chủ</a>
+      <a href="/shop.html"> Cửa hàng</a>
     </div>
   </div>
 
@@ -435,20 +449,20 @@
 
     function getLevelProgress(lifetimeDiamonds) {
       const level = getPlayerLevel(lifetimeDiamonds);
-      if (level.max === Infinity) return { percent: 100, text: 'MAX 🏆' };
+      if (level.max === Infinity) return { percent: 100, text: 'MAX ' };
       const range = level.max - level.min + 1;
       const progress = lifetimeDiamonds - level.min;
       const percent = Math.min(100, Math.round((progress / range) * 100));
-      return { percent, text: `${progress} / ${range} 💎` };
+      return { percent, text: `${progress} / ${range} ` };
     }
 
     const SOURCE_LABELS = {
-      answer: '✅ Trả lời đúng',
-      quest: '📋 Nhiệm vụ',
-      streak: '🔥 Streak bonus',
-      level_up: '⬆️ Lên cấp',
-      shop: '🛒 Mua đồ',
-      all_quests_bonus: '🎯 Hoàn thành tất cả NV',
+      answer: ' Trả lời đúng',
+      quest: ' Nhiệm vụ',
+      streak: ' Streak bonus',
+      level_up: '⬆ Lên cấp',
+      shop: ' Mua đồ',
+      all_quests_bonus: ' Hoàn thành tất cả NV',
     };
 
     // --- State ---
@@ -479,7 +493,7 @@
     if (profile) {
       document.getElementById('pf-name').value = profile.name;
       document.getElementById('player-name').textContent = profile.name;
-      document.getElementById('btn-save-pf').textContent = '✏️ Cập nhật';
+      document.getElementById('btn-save-pf').textContent = ' Cập nhật';
       document.getElementById('tabs-nav').style.display = 'flex';
       document.getElementById('tab-info').style.display = 'block';
       loadAllData();
@@ -499,13 +513,13 @@
           });
           const data = await res.json();
           if (data.error) {
-            document.getElementById('pf-msg').textContent = '❌ ' + data.error;
+            document.getElementById('pf-msg').textContent = ' ' + data.error;
             document.getElementById('pf-msg').className = 'profile-msg err';
             return;
           }
           profile = { id: data.id, name: data.name, grade: data.grade ?? selectedGrade };
           localStorage.setItem('hocvui_profile', JSON.stringify(profile));
-          document.getElementById('pf-msg').textContent = '✅ Đã cập nhật!';
+          document.getElementById('pf-msg').textContent = ' Đã cập nhật!';
           document.getElementById('pf-msg').className = 'profile-msg ok';
           document.getElementById('player-name').textContent = name;
         } else {
@@ -518,16 +532,16 @@
           const data = await res.json();
           profile = { id: data.id, name: data.name, grade: data.grade ?? selectedGrade };
           localStorage.setItem('hocvui_profile', JSON.stringify(profile));
-          document.getElementById('pf-msg').textContent = '✅ Đã lưu!';
+          document.getElementById('pf-msg').textContent = ' Đã lưu!';
           document.getElementById('pf-msg').className = 'profile-msg ok';
           document.getElementById('player-name').textContent = name;
-          document.getElementById('btn-save-pf').textContent = '✏️ Cập nhật';
+          document.getElementById('btn-save-pf').textContent = ' Cập nhật';
           document.getElementById('tabs-nav').style.display = 'flex';
           document.getElementById('tab-info').style.display = 'block';
           loadAllData();
         }
       } catch {
-        document.getElementById('pf-msg').textContent = '❌ Lỗi!';
+        document.getElementById('pf-msg').textContent = ' Lỗi!';
         document.getElementById('pf-msg').className = 'profile-msg err';
       }
     });
@@ -580,7 +594,7 @@
         document.getElementById('pi-lifetime').textContent = lifetime;
         // Sync to quick-action bar
         var pfDia = document.getElementById('pf-diamonds');
-        if (pfDia) pfDia.textContent = '💎 ' + totalDiamonds;
+        if (pfDia) pfDia.textContent = ' ' + totalDiamonds;
 
         // Level badge
         const level = getPlayerLevel(lifetime);
@@ -614,7 +628,7 @@
         document.getElementById('pi-longest-streak').textContent = (data.longest_streak || 0) + ' ngày';
         // Sync to quick-action bar
         var pfStreak = document.getElementById('pf-streak');
-        if (pfStreak) pfStreak.textContent = '🔥 ' + streak + ' ngày';
+        if (pfStreak) pfStreak.textContent = ' ' + streak + ' ngày';
       } catch {}
     }
 
@@ -643,18 +657,18 @@
         const items = data.inventory || data || [];
 
         if (!items.length) {
-          grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-emoji">🎒</div><p>Chưa có đồ nào. Ghé Shop mua nhé!</p></div>`;
+          grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-emoji"></div><p>Chưa có đồ nào. Ghé Shop mua nhé!</p></div>`;
           return;
         }
 
         grid.innerHTML = items.map(item => {
-          const emoji = item.image_url || '🎁';
+          const emoji = item.image_url || '';
           const isEquippable = item.category === 'avatar' || item.category === 'frame';
           const isEquipped = item.is_equipped === 1;
           let btnHtml = '';
           if (isEquippable) {
             if (isEquipped) {
-              btnHtml = `<button class="equip-btn equipped">✓ Đang dùng</button>`;
+              btnHtml = `<button class="equip-btn equipped"> Đang dùng</button>`;
             } else {
               btnHtml = `<button class="equip-btn can-equip" onclick="equipItem(${item.inventory_id || item.id}, '${item.category}')">Trang bị</button>`;
             }
@@ -670,10 +684,10 @@
         // Update avatar display from equipped items
         const equippedAvatar = items.find(i => i.category === 'avatar' && i.is_equipped === 1);
         if (equippedAvatar) {
-          document.getElementById('avatar-emoji').textContent = equippedAvatar.image_url || '🧒';
+          document.getElementById('avatar-emoji').textContent = equippedAvatar.image_url || '';
         }
       } catch {
-        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-emoji">🎒</div><p>Chưa có đồ nào. Ghé Shop mua nhé!</p></div>`;
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-emoji"></div><p>Chưa có đồ nào. Ghé Shop mua nhé!</p></div>`;
       }
     }
 
@@ -691,14 +705,14 @@
           body: JSON.stringify({ player_id: profile.id, inventory_id: inventoryId })
         });
         if (res.ok) {
-          showToast('✅ Đã trang bị!');
+          showToast(' Đã trang bị!');
           loadInventory();
         } else {
           const err = await res.json();
-          showToast('❌ ' + (err.error || 'Lỗi'));
+          showToast(' ' + (err.error || 'Lỗi'));
         }
       } catch {
-        showToast('❌ Lỗi kết nối');
+        showToast(' Lỗi kết nối');
       }
     }
 
@@ -706,12 +720,12 @@
     function renderTransactions(transactions) {
       const list = document.getElementById('tx-list');
       if (!transactions.length) {
-        list.innerHTML = `<div class="empty-state"><div class="empty-emoji">📜</div><p>Chưa có giao dịch nào</p></div>`;
+        list.innerHTML = `<div class="empty-state"><div class="empty-emoji"></div><p>Chưa có giao dịch nào</p></div>`;
         return;
       }
       list.innerHTML = transactions.slice(0, 50).map(tx => {
         const isEarn = tx.type === 'earn';
-        const icon = isEarn ? '💎' : '🛒';
+        const icon = isEarn ? '' : '';
         const amountStr = isEarn ? `+${tx.amount}` : `-${tx.amount}`;
         const cls = isEarn ? 'earn' : 'spend';
         const desc = SOURCE_LABELS[tx.source] || tx.description || tx.source;
@@ -722,7 +736,7 @@
             <div class="tx-desc">${desc}</div>
             <div class="tx-date">${date}</div>
           </div>
-          <div class="tx-amount ${cls}">${amountStr} 💎</div>
+          <div class="tx-amount ${cls}">${amountStr} </div>
         </div>`;
       }).join('');
     }
@@ -766,9 +780,9 @@
       const code = document.getElementById('link-code-text').textContent;
       if (code && code !== '------') {
         navigator.clipboard.writeText(code).then(() => {
-          showToast('✅ Đã sao chép mã: ' + code);
+          showToast(' Đã sao chép mã: ' + code);
         }).catch(() => {
-          showToast('📋 Mã: ' + code);
+          showToast(' Mã: ' + code);
         });
       }
     });
@@ -836,7 +850,7 @@
         try {
           const res = await fetch(`/api/friends?action=search&q=${encodeURIComponent(q)}&player_id=${pid}`);
           const results = await res.json();
-          if (!results.length) { wrap.innerHTML = '<p style="color:#999;font-size:0.85rem;text-align:center;">Không tìm thấy 🔍</p>'; return; }
+          if (!results.length) { wrap.innerHTML = '<p style="color:#999;font-size:0.85rem;text-align:center;">Không tìm thấy </p>'; return; }
           wrap.innerHTML = results.map(r => searchCard(r)).join('');
           wrap.querySelectorAll('.fc-btn-add').forEach(btn => {
             btn.addEventListener('click', async () => {
@@ -870,42 +884,42 @@
       }
 
       function friendCard(f, type) {
-        const avatar = f.equipped_avatar || '🧒';
+        const avatar = f.equipped_avatar || '';
         const active = f.last_active_date || '';
         return `<div class="friend-card">
           <div class="fc-avatar">${avatar}</div>
           <div class="fc-info">
             <div class="fc-name">${esc(f.name)}</div>
-            <div class="fc-stats">⭐ ${f.total_stars || 0} · 💎 ${f.lifetime_diamonds || 0}${active ? ' · ' + active : ''}</div>
+            <div class="fc-stats">⭐ ${f.total_stars || 0} ·  ${f.lifetime_diamonds || 0}${active ? ' · ' + active : ''}</div>
           </div>
           <button class="fc-btn fc-btn-unfriend" data-friend-id="${f.friend_id}">Hủy</button>
         </div>`;
       }
 
       function pendingCard(p) {
-        const avatar = p.equipped_avatar || '🧒';
+        const avatar = p.equipped_avatar || '';
         return `<div class="friend-card">
           <div class="fc-avatar">${avatar}</div>
           <div class="fc-info">
             <div class="fc-name">${esc(p.name)}</div>
-            <div class="fc-stats">⭐ ${p.total_stars || 0} · 💎 ${p.lifetime_diamonds || 0}</div>
+            <div class="fc-stats">⭐ ${p.total_stars || 0} ·  ${p.lifetime_diamonds || 0}</div>
           </div>
-          <button class="fc-btn fc-btn-accept" data-fid="${p.friendship_id}">✓</button>
-          <button class="fc-btn fc-btn-reject" data-fid="${p.friendship_id}">✗</button>
+          <button class="fc-btn fc-btn-accept" data-fid="${p.friendship_id}"></button>
+          <button class="fc-btn fc-btn-reject" data-fid="${p.friendship_id}"></button>
         </div>`;
       }
 
       function searchCard(r) {
-        const avatar = r.equipped_avatar || '🧒';
+        const avatar = r.equipped_avatar || '';
         let btnHtml = '';
-        if (r.friendship_status === 'accepted') btnHtml = '<span class="fc-btn fc-btn-friends">✓ Bạn bè</span>';
+        if (r.friendship_status === 'accepted') btnHtml = '<span class="fc-btn fc-btn-friends"> Bạn bè</span>';
         else if (r.friendship_status === 'pending') btnHtml = '<span class="fc-btn fc-btn-pending">⏳ Chờ</span>';
         else btnHtml = `<button class="fc-btn fc-btn-add" data-receiver-id="${r.id}">+ Kết bạn</button>`;
         return `<div class="friend-card">
           <div class="fc-avatar">${avatar}</div>
           <div class="fc-info">
             <div class="fc-name">${esc(r.name)}</div>
-            <div class="fc-stats">Lớp ${r.grade || 2} · ⭐ ${r.total_stars || 0} · 💎 ${r.lifetime_diamonds || 0}</div>
+            <div class="fc-stats">Lớp ${r.grade || 2} · ⭐ ${r.total_stars || 0} ·  ${r.lifetime_diamonds || 0}</div>
           </div>
           ${btnHtml}
         </div>`;
@@ -914,6 +928,7 @@
       function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
     })();
   </script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

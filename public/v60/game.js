@@ -57,7 +57,7 @@
     const row = $('chapter-row'); row.innerHTML = '';
     for (let i = 0; i < state.chaptersPerStory; i++) {
       const p = document.createElement('div'); p.className = 'chapter-page' + (i < state.chapters ? ' opened' : '');
-      p.textContent = i < state.chapters ? '📖' : '📜';
+      p.textContent = i < state.chapters ? '' : '';
       row.appendChild(p);
     }
   }
@@ -116,10 +116,10 @@
     const fb = $('feedback'); fb.style.display = 'block';
     const newStory = state.storiesDone.length > prevS;
     const newMoral = state.morals.length > prevM;
-    if (newStory) { const last = state.storiesDone[state.storiesDone.length - 1]; fb.className = 'feedback bonus'; fb.textContent = `📖 Đọc xong "${last.name}"!`; }
-    else if (newMoral) { fb.className = 'feedback bonus'; fb.textContent = `✨ Bài học mới: ${state.morals[state.morals.length - 1].text}`; }
-    else if (ok) { fb.className = 'feedback good'; fb.textContent = '✅ Lật trang!'; }
-    else { fb.className = 'feedback bad'; fb.textContent = '❌ Sai! Lùi 1 trang.'; }
+    if (newStory) { const last = state.storiesDone[state.storiesDone.length - 1]; fb.className = 'feedback bonus'; fb.textContent = ` Đọc xong "${last.name}"!`; }
+    else if (newMoral) { fb.className = 'feedback bonus'; fb.textContent = ` Bài học mới: ${state.morals[state.morals.length - 1].text}`; }
+    else if (ok) { fb.className = 'feedback good'; fb.textContent = ' Lật trang!'; }
+    else { fb.className = 'feedback bad'; fb.textContent = ' Sai! Lùi 1 trang.'; }
     renderHud(); renderChapters(); renderStories(); renderMorals();
     // Page-turn sparkle when a chapter is freshly opened (but no story completed this turn).
     if (ok && !newStory && state.chapters > prevCh) {
@@ -161,11 +161,11 @@
     if (state.outcome === 'won') { spawnConfetti($('book-stage'), 40); delay = 1300; }
 
     setTimeout(() => {
-      const badges = state.storiesDone.map(s => s.emoji).join(' ') || '📜';
+      const badges = state.storiesDone.map(s => s.emoji).join(' ') || '';
       $('result-badges').textContent = badges;
-      $('result-title').textContent = state.outcome === 'won' ? '📚 Bậc Thầy Cổ Tích!' : '📜 Kết Buổi Đọc';
-      $('result-emoji').textContent = state.outcome === 'won' ? '📚' : '📜';
-      $('result-detail').innerHTML = `📖 Truyện: ${state.storiesDone.length}/${state.storiesGoal}<br>✨ Bài học: ${state.morals.length}<br>✅ Đúng: ${state.correct}/${total} (${acc}%)<br>⭐ Sao: ${stars}/3`;
+      $('result-title').textContent = state.outcome === 'won' ? ' Bậc Thầy Cổ Tích!' : ' Kết Buổi Đọc';
+      $('result-emoji').textContent = state.outcome === 'won' ? '' : '';
+      $('result-detail').innerHTML = ` Truyện: ${state.storiesDone.length}/${state.storiesGoal}<br> Bài học: ${state.morals.length}<br> Đúng: ${state.correct}/${total} (${acc}%)<br><img src="/img/star.png" class="em-icon"> Sao: ${stars}/3`;
       ss('result-screen'); if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch(e){} }
     }, delay);
   }

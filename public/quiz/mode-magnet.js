@@ -20,7 +20,9 @@
       optionsEl.appendChild(field);
 
       // Central magnet
-      const magnet = helpers.el('div', 'qz-magnet-center', '🧲');
+      const col = Math.floor(Math.random() * 4);
+      const magnet = helpers.el('div', 'qz-magnet-center');
+      magnet.innerHTML = '<span class="qz-magnet-sprite" style="display:inline-block;width:60px;height:60px;background-position:' + (-col * 60) + 'px 0px"></span>';
       field.appendChild(magnet);
 
       // Chips drifting in from edges

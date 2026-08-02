@@ -23,11 +23,16 @@
       const field = helpers.el('div', 'qz-whack-field');
       optionsEl.appendChild(field);
       const list = helpers.shuffle(helpers.optionList(q));
-      const holes = list.map(o => {
-        const hole = helpers.el('div', 'qz-hole');
+      const holes = list.map((o, i) => {
+        const hole = helpers.el('div', 'qz-hole qz-hole-sprite');
+        // Random hole variant (4 cols × 1 row) — percentage: 0%, 33.33%, 66.66%, 100%
+        var holeCol = Math.floor(Math.random() * 4);
+        hole.style.backgroundPosition = (holeCol * 33.33) + '% 0';
         const mole = helpers.el('button', 'option-btn qz-mole');
         mole.dataset.key = o.key;
-        mole.innerHTML = '<span class="qz-mole-face">🐹</span><span class="qz-mole-sign">' + o.text + '</span>';
+        // Random mole variant (4 cols × 1 row) — percentage
+        const moleCol = Math.floor(Math.random() * 4);
+        mole.innerHTML = '<span class="qz-mole-face qz-mole-sprite" style="background-position:' + (moleCol * 33.33) + '% 0"></span><span class="qz-mole-sign">' + o.text + '</span>';
         mole.addEventListener('click', () => {
           if (!hole.classList.contains('up')) return;   // only catchable while up
           const ok = o.key === ck;

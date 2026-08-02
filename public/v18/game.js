@@ -3,11 +3,11 @@
 
 const BELTS = [
   { name: 'Trắng', color: 'belt-white', emoji: '⬜', minWaves: 0 },
-  { name: 'Vàng', color: 'belt-yellow', emoji: '🟡', minWaves: 10 },
-  { name: 'Xanh Lá', color: 'belt-green', emoji: '🟢', minWaves: 25 },
-  { name: 'Xanh Dương', color: 'belt-blue', emoji: '🔵', minWaves: 50 },
-  { name: 'Nâu', color: 'belt-brown', emoji: '🟤', minWaves: 80 },
-  { name: 'Đen', color: 'belt-black', emoji: '⚫', minWaves: 120 },
+  { name: 'Vàng', color: 'belt-yellow', emoji: '', minWaves: 10 },
+  { name: 'Xanh Lá', color: 'belt-green', emoji: '', minWaves: 25 },
+  { name: 'Xanh Dương', color: 'belt-blue', emoji: '', minWaves: 50 },
+  { name: 'Nâu', color: 'belt-brown', emoji: '', minWaves: 80 },
+  { name: 'Đen', color: 'belt-black', emoji: '', minWaves: 120 },
 ];
 
 const BASE_TIMER = 8; // seconds
@@ -386,7 +386,7 @@ function updateBossProgress() {
   const el = document.getElementById('boss-progress');
   let display = '';
   for (let i = 0; i < BOSS_REQUIRED; i++) {
-    display += i < S.bossCorrect ? '🟢' : '⬜';
+    display += i < S.bossCorrect ? '' : '⬜';
   }
   el.textContent = display;
 }
@@ -395,7 +395,7 @@ function updateBossProgress() {
 function updateHUD() {
   // Lives
   let hearts = '';
-  for (let i = 0; i < 3; i++) hearts += i < S.lives ? '❤️' : '🖤';
+  for (let i = 0; i < 3; i++) hearts += i < S.lives ? '<img src="/img/heart.png" class="em-icon">' : '';
   document.getElementById('hud-lives').textContent = hearts;
 
   // Belt
@@ -406,12 +406,12 @@ function updateHUD() {
   document.getElementById('hud-wave').textContent = `Sóng ${S.wave}`;
 
   // Score
-  document.getElementById('hud-score').textContent = `⭐ ${S.score}`;
+  document.getElementById('hud-score').textContent = `<img src="/img/star.png" class="em-icon"> ${S.score}`;
 
   // Combo
   const comboEl = document.getElementById('hud-combo');
   if (S.combo >= 2) {
-    comboEl.textContent = `🔥x${S.combo}`;
+    comboEl.textContent = `<img src="/img/fire.png" class="em-icon">x${S.combo}`;
   } else {
     comboEl.textContent = '';
   }
@@ -434,27 +434,27 @@ function endGame() {
   let beltUpgrade = '';
   const prevBelt = getBeltForWaves(totalWaves - wavesThisGame);
   if (belt.name !== prevBelt.name) {
-    beltUpgrade = `<div class="result-belt"><div class="result-belt-text">🎉 Lên đai! ${prevBelt.emoji} ${prevBelt.name} ➜ ${belt.emoji} <span class="${belt.color}">${belt.name}</span></div></div>`;
+    beltUpgrade = `<div class="result-belt"><div class="result-belt-text"><img src="/img/party.png" class="em-icon"> Lên đai! ${prevBelt.emoji} ${prevBelt.name}  ${belt.emoji} <span class="${belt.color}">${belt.name}</span></div></div>`;
   }
 
   document.getElementById('result-container').innerHTML = `
-    <div class="result-title">⚔️ Trận Đấu Kết Thúc!</div>
+    <div class="result-title"> Trận Đấu Kết Thúc!</div>
     <div class="result-subtitle">Ninja đã chiến đấu dũng cảm!</div>
     <div class="result-stats">
-      <div class="result-stat"><span>🌊 Sóng vượt</span><strong>${wavesThisGame}</strong></div>
-      <div class="result-stat"><span>⭐ Điểm</span><strong>${S.score}</strong></div>
-      <div class="result-stat"><span>✅ Đúng</span><strong>${S.totalCorrect}</strong></div>
-      <div class="result-stat"><span>❌ Sai</span><strong>${S.totalWrong}</strong></div>
-      <div class="result-stat"><span>🔥 Combo max</span><strong>${S.maxCombo}</strong></div>
-      <div class="result-stat"><span>🎯 Chính xác</span><strong>${accuracy}%</strong></div>
+      <div class="result-stat"><span> Sóng vượt</span><strong>${wavesThisGame}</strong></div>
+      <div class="result-stat"><span><img src="/img/star.png" class="em-icon"> Điểm</span><strong>${S.score}</strong></div>
+      <div class="result-stat"><span> Đúng</span><strong>${S.totalCorrect}</strong></div>
+      <div class="result-stat"><span> Sai</span><strong>${S.totalWrong}</strong></div>
+      <div class="result-stat"><span><img src="/img/fire.png" class="em-icon"> Combo max</span><strong>${S.maxCombo}</strong></div>
+      <div class="result-stat"><span> Chính xác</span><strong>${accuracy}%</strong></div>
     </div>
     ${beltUpgrade}
     <div class="result-belt">
       <div class="result-belt-text">${belt.emoji} Đai: <span class="${belt.color}">${belt.name}</span> | Tổng sóng: ${totalWaves}</div>
     </div>
     <div class="result-btns">
-      <button class="result-btn primary" onclick="resetAndPlay()">⚔️ Chiến tiếp</button>
-      <button class="result-btn secondary" onclick="goHome()">🏠 Trang chủ</button>
+      <button class="result-btn primary" onclick="resetAndPlay()"> Chiến tiếp</button>
+      <button class="result-btn secondary" onclick="goHome()"> Trang chủ</button>
     </div>
   `;
 
@@ -538,7 +538,7 @@ async function logAnswer(q, selected, correct, isCorrect) {
     if (C && C.hasSpecies('ninja')) {
       ninjaChar = C.createCharacter('ninja', host, { state: 'idle' });
     } else {
-      host.textContent = '⚔️'; // emoji fallback
+      host.textContent = ''; // emoji fallback
     }
   }
 
@@ -558,7 +558,7 @@ async function logAnswer(q, selected, correct, isCorrect) {
     if (C && C.hasSpecies('oni')) {
       oniChar = C.createCharacter('oni', host, { state: 'idle' });
     } else {
-      host.textContent = '👹'; // emoji fallback
+      host.textContent = ''; // emoji fallback
     }
   }
 

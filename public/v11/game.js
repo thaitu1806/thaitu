@@ -11,43 +11,43 @@
 // --- Board data (34 cells, full 8x11 rectangular loop) ---
 const BOARD = [
   // Top row (left to right): 0-7
-  { id: 0, type: 'start', name: 'Xuất phát', icon: '🏠', price: 0, rent: 0 },
-  { id: 1, type: 'land', name: 'Hà Nội', icon: '🏙️', price: 300, rent: 60 },
-  { id: 2, type: 'quiz', name: 'Câu hỏi', icon: '❓', price: 0, rent: 0 },
-  { id: 3, type: 'land', name: 'Hải Phòng', icon: '🌾', price: 200, rent: 40 },
-  { id: 4, type: 'land', name: 'Ninh Bình', icon: '⛰️', price: 220, rent: 44 },
-  { id: 5, type: 'lucky', name: 'Hộp quà', icon: '🎁', price: 0, rent: 0 },
-  { id: 6, type: 'land', name: 'Huế', icon: '🏛️', price: 250, rent: 50 },
-  { id: 7, type: 'land', name: 'Đà Nẵng', icon: '🏖️', price: 280, rent: 55 },
+  { id: 0, type: 'start', name: 'Xuất phát', icon: '', price: 0, rent: 0 },
+  { id: 1, type: 'land', name: 'Hà Nội', icon: '', price: 300, rent: 60 },
+  { id: 2, type: 'quiz', name: 'Câu hỏi', icon: '', price: 0, rent: 0 },
+  { id: 3, type: 'land', name: 'Hải Phòng', icon: '', price: 200, rent: 40 },
+  { id: 4, type: 'land', name: 'Ninh Bình', icon: '', price: 220, rent: 44 },
+  { id: 5, type: 'lucky', name: 'Hộp quà', icon: '<img src="/img/gift.png" class="em-icon">', price: 0, rent: 0 },
+  { id: 6, type: 'land', name: 'Huế', icon: '', price: 250, rent: 50 },
+  { id: 7, type: 'land', name: 'Đà Nẵng', icon: '', price: 280, rent: 55 },
   // Right column (top to bottom): 8-16
-  { id: 8, type: 'tax', name: 'Thuế', icon: '💰', price: 0, rent: 100 },
-  { id: 9, type: 'land', name: 'Nha Trang', icon: '🌴', price: 260, rent: 50 },
-  { id: 10, type: 'land', name: 'Quy Nhơn', icon: '🐟', price: 230, rent: 46 },
-  { id: 11, type: 'quiz', name: 'Câu hỏi', icon: '❓', price: 0, rent: 0 },
-  { id: 12, type: 'land', name: 'Đà Lạt', icon: '🌺', price: 270, rent: 55 },
-  { id: 13, type: 'land', name: 'Buôn Ma Thuột', icon: '☕', price: 200, rent: 40 },
-  { id: 14, type: 'lucky', name: 'Hộp quà', icon: '🎁', price: 0, rent: 0 },
-  { id: 15, type: 'land', name: 'TP.HCM', icon: '🏙️', price: 350, rent: 70 },
-  { id: 16, type: 'land', name: 'Vũng Tàu', icon: '🌊', price: 230, rent: 45 },
+  { id: 8, type: 'tax', name: 'Thuế', icon: '', price: 0, rent: 100 },
+  { id: 9, type: 'land', name: 'Nha Trang', icon: '', price: 260, rent: 50 },
+  { id: 10, type: 'land', name: 'Quy Nhơn', icon: '', price: 230, rent: 46 },
+  { id: 11, type: 'quiz', name: 'Câu hỏi', icon: '', price: 0, rent: 0 },
+  { id: 12, type: 'land', name: 'Đà Lạt', icon: '', price: 270, rent: 55 },
+  { id: 13, type: 'land', name: 'Buôn Ma Thuột', icon: '', price: 200, rent: 40 },
+  { id: 14, type: 'lucky', name: 'Hộp quà', icon: '<img src="/img/gift.png" class="em-icon">', price: 0, rent: 0 },
+  { id: 15, type: 'land', name: 'TP.HCM', icon: '', price: 350, rent: 70 },
+  { id: 16, type: 'land', name: 'Vũng Tàu', icon: '', price: 230, rent: 45 },
   // Bottom row (right to left): 17-24
-  { id: 17, type: 'tax', name: 'Thuế', icon: '💰', price: 0, rent: 150 },
-  { id: 18, type: 'land', name: 'Cần Thơ', icon: '🍜', price: 220, rent: 45 },
-  { id: 19, type: 'land', name: 'Phú Quốc', icon: '🏝️', price: 300, rent: 60 },
-  { id: 20, type: 'quiz', name: 'Câu hỏi', icon: '❓', price: 0, rent: 0 },
-  { id: 21, type: 'land', name: 'Cà Mau', icon: '🦐', price: 180, rent: 36 },
-  { id: 22, type: 'land', name: 'Rạch Giá', icon: '🐠', price: 190, rent: 38 },
-  { id: 23, type: 'lucky', name: 'Hộp quà', icon: '🎁', price: 0, rent: 0 },
-  { id: 24, type: 'land', name: 'Long An', icon: '🌻', price: 200, rent: 40 },
+  { id: 17, type: 'tax', name: 'Thuế', icon: '', price: 0, rent: 150 },
+  { id: 18, type: 'land', name: 'Cần Thơ', icon: '', price: 220, rent: 45 },
+  { id: 19, type: 'land', name: 'Phú Quốc', icon: '', price: 300, rent: 60 },
+  { id: 20, type: 'quiz', name: 'Câu hỏi', icon: '', price: 0, rent: 0 },
+  { id: 21, type: 'land', name: 'Cà Mau', icon: '', price: 180, rent: 36 },
+  { id: 22, type: 'land', name: 'Rạch Giá', icon: '', price: 190, rent: 38 },
+  { id: 23, type: 'lucky', name: 'Hộp quà', icon: '<img src="/img/gift.png" class="em-icon">', price: 0, rent: 0 },
+  { id: 24, type: 'land', name: 'Long An', icon: '', price: 200, rent: 40 },
   // Left column (bottom to top): 25-33
-  { id: 25, type: 'land', name: 'Hạ Long', icon: '🎋', price: 290, rent: 55 },
-  { id: 26, type: 'land', name: 'Sapa', icon: '🌿', price: 240, rent: 48 },
-  { id: 27, type: 'land', name: 'Hội An', icon: '🏺', price: 280, rent: 55 },
-  { id: 28, type: 'tax', name: 'Thuế', icon: '💰', price: 0, rent: 120 },
-  { id: 29, type: 'land', name: 'Mũi Né', icon: '🏄', price: 250, rent: 50 },
-  { id: 30, type: 'land', name: 'Tây Ninh', icon: '⛩️', price: 210, rent: 42 },
-  { id: 31, type: 'quiz', name: 'Câu hỏi', icon: '❓', price: 0, rent: 0 },
-  { id: 32, type: 'land', name: 'Bắc Ninh', icon: '🏯', price: 230, rent: 46 },
-  { id: 33, type: 'land', name: 'Thanh Hoá', icon: '🌾', price: 220, rent: 44 },
+  { id: 25, type: 'land', name: 'Hạ Long', icon: '', price: 290, rent: 55 },
+  { id: 26, type: 'land', name: 'Sapa', icon: '', price: 240, rent: 48 },
+  { id: 27, type: 'land', name: 'Hội An', icon: '', price: 280, rent: 55 },
+  { id: 28, type: 'tax', name: 'Thuế', icon: '', price: 0, rent: 120 },
+  { id: 29, type: 'land', name: 'Mũi Né', icon: '', price: 250, rent: 50 },
+  { id: 30, type: 'land', name: 'Tây Ninh', icon: '', price: 210, rent: 42 },
+  { id: 31, type: 'quiz', name: 'Câu hỏi', icon: '', price: 0, rent: 0 },
+  { id: 32, type: 'land', name: 'Bắc Ninh', icon: '', price: 230, rent: 46 },
+  { id: 33, type: 'land', name: 'Thanh Hoá', icon: '', price: 220, rent: 44 },
 ];
 
 // Grid positions for 34 cells on 8 cols × 11 rows (full perimeter)
@@ -65,11 +65,11 @@ const GRID_POSITIONS = [
 const BOARD_SIZE = 34;
 
 const LUCKY_EVENTS = [
-  { text: '🎉 Trúng xổ số! +200 coin', amount: 200, type: 'gain' },
-  { text: '💸 Phạt vi phạm! -100 coin', amount: -100, type: 'lose' },
-  { text: '🎁 Quà sinh nhật! +150 coin', amount: 150, type: 'gain' },
-  { text: '🏠 Nhận thừa kế! +1 đất miễn phí', amount: 0, type: 'free_land' },
-  { text: '⚡ Sét đánh! Mất 1 đất', amount: 0, type: 'lose_land' },
+  { text: '<img src="/img/party.png" class="em-icon"> Trúng xổ số! +200 coin', amount: 200, type: 'gain' },
+  { text: ' Phạt vi phạm! -100 coin', amount: -100, type: 'lose' },
+  { text: '<img src="/img/gift.png" class="em-icon"> Quà sinh nhật! +150 coin', amount: 150, type: 'gain' },
+  { text: ' Nhận thừa kế! +1 đất miễn phí', amount: 0, type: 'free_land' },
+  { text: '<img src="/img/bolt.png" class="em-icon"> Sét đánh! Mất 1 đất', amount: 0, type: 'lose_land' },
 ];
 
 const PLAYER_COLORS = ['#FF5722', '#2196F3', '#4CAF50', '#9C27B0'];
@@ -260,7 +260,7 @@ function renderPlayerSlots() {
       <div class="player-slot">
         <div class="slot-color" style="background:${PLAYER_COLORS[i]}"></div>
         <input type="text" class="slot-name" data-idx="${i}" value="${defaultName}" maxlength="10">
-        <button class="slot-toggle ${isBot ? 'bot' : 'human'}" data-idx="${i}">${isBot ? '🤖' : '👤'}</button>
+        <button class="slot-toggle ${isBot ? 'bot' : 'human'}" data-idx="${i}">${isBot ? '' : ''}</button>
       </div>
     `;
   }
@@ -272,7 +272,7 @@ function renderPlayerSlots() {
       const isBot = btn.classList.contains('bot');
       btn.classList.toggle('bot', !isBot);
       btn.classList.toggle('human', isBot);
-      btn.textContent = isBot ? '👤' : '🤖';
+      btn.textContent = isBot ? '' : '';
     });
   });
 }
@@ -339,7 +339,7 @@ async function startGame() {
   if (questions.length < 5) {
     questions = [...FALLBACK_QUESTIONS];
   }
-  $startBtn.textContent = '🎲 Bắt đầu chơi!';
+  $startBtn.textContent = ' Bắt đầu chơi!';
   $startBtn.disabled = false;
 
   // Init state
@@ -427,7 +427,7 @@ function renderBoard() {
     // Players on this cell
     const playersHere = state.players.filter(p => !p.bankrupt && p.position === idx);
     const tokensHTML = playersHere.map(p =>
-      `<div class="token" style="background:${p.color}" title="${p.name}">🐴</div>`
+      `<div class="token" style="background:${p.color}" title="${p.name}"></div>`
     ).join('');
 
     const isHighlight = playersHere.length > 0;
@@ -451,7 +451,7 @@ function renderBoard() {
         <div class="dice-wrapper" id="dice-box-1" data-showing="1"></div>
         <div class="dice-wrapper" id="dice-box-2" data-showing="1"></div>
       </div>
-      <button id="center-roll-btn" class="btn-dice">🎲 Tung xúc xắc</button>
+      <button id="center-roll-btn" class="btn-dice"> Tung xúc xắc</button>
       <div class="center-info" id="center-info"></div>
     </div>
   `;
@@ -495,8 +495,8 @@ function renderPlayersBar() {
     html += `
       <div class="player-badge ${activeClass} ${bankruptClass}" style="border-color:${isActive ? p.color : 'transparent'}">
         <div class="badge-dot" style="background:${p.color}"></div>
-        <span>${p.name}${p.isBot ? '🤖' : ''}</span>
-        <span class="badge-money">${p.bankrupt ? '💀' : p.money + '💰'}</span>
+        <span>${p.name}${p.isBot ? '' : ''}</span>
+        <span class="badge-money">${p.bankrupt ? '' : p.money + ''}</span>
       </div>
     `;
   });
@@ -590,7 +590,7 @@ function rollDice() {
     if (w1) { w1.classList.remove('rolling'); w1.classList.add('bounce'); showDiceFace('dice-box-1', die1); }
     if (w2) { w2.classList.remove('rolling'); w2.classList.add('bounce'); showDiceFace('dice-box-2', die2); }
     state.lastDice = [die1, die2];
-    setActionInfo(`🎲 ${die1} + ${die2} = ${totalSteps} bước`);
+    setActionInfo(` ${die1} + ${die2} = ${totalSteps} bước`);
     setTimeout(() => {
       if (w1) w1.classList.remove('bounce');
       if (w2) w2.classList.remove('bounce');
@@ -608,7 +608,7 @@ function movePlayer(steps) {
   // Check if passed START
   if (newPos < oldPos || (oldPos + steps >= BOARD_SIZE)) {
     player.money += 200;
-    $actionInfo.textContent = `${player.name} đi qua Xuất phát! +200 💰`;
+    $actionInfo.textContent = `${player.name} đi qua Xuất phát! +200 `;
   }
 
   player.position = newPos;
@@ -662,7 +662,7 @@ function handleLand(player, cell) {
     sfxRent();
     player.money -= rent;
     owner.money += rent;
-    $actionInfo.textContent = `${player.name} trả ${rent}💰 thuê cho ${owner.name}`;
+    $actionInfo.textContent = `${player.name} trả ${rent} thuê cho ${owner.name}`;
     renderPlayersBar();
 
     if (player.money <= 0) {
@@ -682,10 +682,10 @@ function showQuizForLand(player, cell) {
   const questionText = q.question_text;
 
   let html = `
-    <h3>🏘️ ${cell.name} (${cell.price}💰)</h3>
+    <h3> ${cell.name} (${cell.price})</h3>
     <p>Trả lời đúng = mua miễn phí!</p>
     <p style="margin-top:10px; font-size:1.05rem; font-weight:800;">${questionText}</p>
-    <button class="btn-speak" onclick="window.ttsSpeak('${q.question_text.replace(/'/g,"\\'")}. A: ${q.option_a.replace(/'/g,"\\'")}. B: ${q.option_b.replace(/'/g,"\\'")}. C: ${q.option_c.replace(/'/g,"\\'")}. D: ${q.option_d.replace(/'/g,"\\'")}', 'vi')" style="margin:8px auto;display:flex;">🔊</button>
+    <button class="btn-speak" onclick="window.ttsSpeak('${q.question_text.replace(/'/g,"\\'")}. A: ${q.option_a.replace(/'/g,"\\'")}. B: ${q.option_b.replace(/'/g,"\\'")}. C: ${q.option_c.replace(/'/g,"\\'")}. D: ${q.option_d.replace(/'/g,"\\'")}', 'vi')" style="margin:8px auto;display:flex;"></button>
     <div class="quiz-options">
       <button class="quiz-opt" data-ans="A">A. ${q.option_a}</button>
       <button class="quiz-opt" data-ans="B">B. ${q.option_b}</button>
@@ -714,7 +714,7 @@ function showQuizForLand(player, cell) {
         player.properties.push(cell.id);
         setTimeout(() => {
           hidePopup();
-          $actionInfo.textContent = `✅ Đúng! ${player.name} mua ${cell.name} miễn phí!`;
+          $actionInfo.textContent = ` Đúng! ${player.name} mua ${cell.name} miễn phí!`;
           renderBoard();
           renderPlayersBar();
           endTurn();
@@ -732,11 +732,11 @@ function showQuizForLand(player, cell) {
 function showBuyOrSkipPopup(player, cell) {
   const canAfford = player.money >= cell.price;
   let html = `
-    <h3>❌ Sai rồi!</h3>
-    <p>Mua ${cell.name} với giá ${cell.price}💰?</p>
-    <p style="font-size:0.85rem; opacity:0.7;">Tiền hiện tại: ${player.money}💰</p>
+    <h3> Sai rồi!</h3>
+    <p>Mua ${cell.name} với giá ${cell.price}?</p>
+    <p style="font-size:0.85rem; opacity:0.7;">Tiền hiện tại: ${player.money}</p>
     <div style="margin-top:14px;">
-      ${canAfford ? `<button class="popup-btn btn-yes" id="popup-buy">Mua (${cell.price}💰)</button>` : ''}
+      ${canAfford ? `<button class="popup-btn btn-yes" id="popup-buy">Mua (${cell.price})</button>` : ''}
       <button class="popup-btn btn-no" id="popup-skip">Bỏ qua</button>
     </div>
   `;
@@ -772,10 +772,10 @@ function handleQuiz(player, isForLand) {
 
   const q = getNextQuestion();
   let html = `
-    <h3>❓ Câu hỏi</h3>
-    <p>Đúng +100 💰!</p>
+    <h3> Câu hỏi</h3>
+    <p>Đúng +100 !</p>
     <p style="margin-top:10px; font-size:1.05rem; font-weight:800;">${q.question_text}</p>
-    <button class="btn-speak" onclick="window.ttsSpeak('${q.question_text.replace(/'/g,"\\'")}. A: ${q.option_a.replace(/'/g,"\\'")}. B: ${q.option_b.replace(/'/g,"\\'")}. C: ${q.option_c.replace(/'/g,"\\'")}. D: ${q.option_d.replace(/'/g,"\\'")}', 'vi')" style="margin:8px auto;display:flex;">🔊</button>
+    <button class="btn-speak" onclick="window.ttsSpeak('${q.question_text.replace(/'/g,"\\'")}. A: ${q.option_a.replace(/'/g,"\\'")}. B: ${q.option_b.replace(/'/g,"\\'")}. C: ${q.option_c.replace(/'/g,"\\'")}. D: ${q.option_d.replace(/'/g,"\\'")}', 'vi')" style="margin:8px auto;display:flex;"></button>
     <div class="quiz-options">
       <button class="quiz-opt" data-ans="A">A. ${q.option_a}</button>
       <button class="quiz-opt" data-ans="B">B. ${q.option_b}</button>
@@ -802,7 +802,7 @@ function handleQuiz(player, isForLand) {
         player.money += 100;
         setTimeout(() => {
           hidePopup();
-          $actionInfo.textContent = `✅ Đúng! ${player.name} +100💰!`;
+          $actionInfo.textContent = ` Đúng! ${player.name} +100!`;
           renderPlayersBar();
           endTurn();
         }, 1000);
@@ -810,7 +810,7 @@ function handleQuiz(player, isForLand) {
         sfxWrong();
         setTimeout(() => {
           hidePopup();
-          $actionInfo.textContent = `❌ Sai! Đáp án đúng: ${correct}`;
+          $actionInfo.textContent = ` Sai! Đáp án đúng: ${correct}`;
           endTurn();
         }, 1000);
       }
@@ -836,7 +836,7 @@ function handleLucky(player) {
       player.properties.push(land.id);
       message += ` → ${land.name}`;
     } else {
-      message = '🎁 Không còn đất trống! +100💰';
+      message = '<img src="/img/gift.png" class="em-icon"> Không còn đất trống! +100';
       player.money += 100;
     }
   } else if (event.type === 'lose_land') {
@@ -849,7 +849,7 @@ function handleLucky(player) {
         message += ` → Mất ${cell.name}`;
       }
     } else {
-      message = '⚡ Không có đất để mất! An toàn~';
+      message = '<img src="/img/bolt.png" class="em-icon"> Không có đất để mất! An toàn~';
     }
   }
 
@@ -866,7 +866,7 @@ function handleLucky(player) {
   }
 
   let html = `
-    <h3>🎁 Hộp quà!</h3>
+    <h3><img src="/img/gift.png" class="em-icon"> Hộp quà!</h3>
     <p style="font-size:1.1rem; margin-top:10px;">${message}</p>
     <div style="margin-top:16px;">
       <button class="popup-btn btn-ok" id="popup-lucky-ok">OK</button>
@@ -888,7 +888,7 @@ function handleLucky(player) {
 // --- Tax cell logic ---
 function handleTax(player, cell) {
   player.money -= cell.rent;
-  $actionInfo.textContent = `${player.name} nộp thuế -${cell.rent}💰`;
+  $actionInfo.textContent = `${player.name} nộp thuế -${cell.rent}`;
   renderPlayersBar();
 
   if (player.money <= 0) {
@@ -908,7 +908,7 @@ function handleBankrupt(player) {
   });
   player.properties = [];
 
-  $actionInfo.textContent = `💀 ${player.name} phá sản!`;
+  $actionInfo.textContent = ` ${player.name} phá sản!`;
   renderBoard();
   renderPlayersBar();
 
@@ -945,16 +945,16 @@ function botHandleLand(player, cell) {
       sfxBuy();
       cell.owner = player.id;
       player.properties.push(cell.id);
-      $actionInfo.textContent = `✅ ${player.name} trả lời đúng! Mua ${cell.name} miễn phí!`;
+      $actionInfo.textContent = ` ${player.name} trả lời đúng! Mua ${cell.name} miễn phí!`;
     } else {
       if (player.money >= cell.price) {
         player.money -= cell.price;
         cell.owner = player.id;
         player.properties.push(cell.id);
         sfxBuy();
-        $actionInfo.textContent = `❌ ${player.name} sai, mua ${cell.name} (${cell.price}💰)`;
+        $actionInfo.textContent = ` ${player.name} sai, mua ${cell.name} (${cell.price})`;
       } else {
-        $actionInfo.textContent = `❌ ${player.name} sai, không đủ tiền. Bỏ qua!`;
+        $actionInfo.textContent = ` ${player.name} sai, không đủ tiền. Bỏ qua!`;
       }
     }
     renderBoard();
@@ -971,10 +971,10 @@ function botHandleQuiz(player) {
     if (isCorrect) {
       sfxCorrect();
       player.money += 100;
-      $actionInfo.textContent = `✅ ${player.name} trả lời đúng! +100💰`;
+      $actionInfo.textContent = ` ${player.name} trả lời đúng! +100`;
     } else {
       sfxWrong();
-      $actionInfo.textContent = `❌ ${player.name} trả lời sai!`;
+      $actionInfo.textContent = ` ${player.name} trả lời sai!`;
     }
     renderPlayersBar();
     endTurn();
@@ -1042,7 +1042,7 @@ function endGame() {
     return b.money - a.money;
   });
 
-  const medals = ['🥇', '🥈', '🥉', '4️⃣'];
+  const medals = ['<img src="/img/medal.png" class="em-icon">', '', '', '4⃣'];
 
   let html = '';
   ranked.forEach((p, i) => {
@@ -1051,8 +1051,8 @@ function endGame() {
       <div class="rank-item ${isWinner ? 'winner' : ''}">
         <div class="rank-pos">${medals[i] || ''}</div>
         <div class="rank-info">
-          <div class="rank-name">${p.name}${p.isBot ? ' 🤖' : ''}</div>
-          <div class="rank-money">${p.bankrupt ? '💀 Phá sản' : p.money + ' 💰'}</div>
+          <div class="rank-name">${p.name}${p.isBot ? ' ' : ''}</div>
+          <div class="rank-money">${p.bankrupt ? ' Phá sản' : p.money + ' '}</div>
           <div class="rank-props">${p.properties.length} tỉnh thành</div>
         </div>
       </div>
@@ -1060,7 +1060,7 @@ function endGame() {
   });
 
   $resultRankings.innerHTML = html;
-  $resultTitle.textContent = `🏆 ${ranked[0].name} thắng!`;
+  $resultTitle.textContent = `<img src="/img/trophy.png" class="em-icon"> ${ranked[0].name} thắng!`;
   showScreen('result');
 
   // Check and show parent linking prompt after game ends
@@ -1240,7 +1240,7 @@ async function startOnlineGame() {
 function onRoomUpdate(snapshot) {
   const data = snapshot.val();
   if (!data) {
-    showPopup('<h3>😢 Phòng đã bị đóng</h3><div style="margin-top:14px;"><button class="popup-btn btn-ok" onclick="hidePopup(); showScreen(\'mode\');">OK</button></div>');
+    showPopup('<h3> Phòng đã bị đóng</h3><div style="margin-top:14px;"><button class="popup-btn btn-ok" onclick="hidePopup(); showScreen(\'mode\');">OK</button></div>');
     roomRef.off(); roomCode = null; return;
   }
 
@@ -1262,7 +1262,7 @@ function onRoomUpdate(snapshot) {
     if (myRole === 'host' && players.length >= 2) {
       document.getElementById('start-online-btn').classList.remove('hidden');
       document.getElementById('start-online-btn').disabled = false;
-      document.getElementById('start-online-btn').textContent = '🎲 Bắt đầu!';
+      document.getElementById('start-online-btn').textContent = ' Bắt đầu!';
     }
   }
 
@@ -1323,7 +1323,7 @@ function onRoomUpdate(snapshot) {
       state.lastDice = [data.lastDice.die1, data.lastDice.die2];
       showDiceFace('dice-box-1', data.lastDice.die1);
       showDiceFace('dice-box-2', data.lastDice.die2);
-      setActionInfo(`🎲 ${data.lastDice.die1} + ${data.lastDice.die2} = ${data.lastDice.die1 + data.lastDice.die2} bước`);
+      setActionInfo(` ${data.lastDice.die1} + ${data.lastDice.die2} = ${data.lastDice.die1 + data.lastDice.die2} bước`);
     }
 
     if (data.actionText) setActionInfo(data.actionText);
@@ -1371,7 +1371,7 @@ function onlineDiceClick() {
       [`players/${state.myIdx}/money`]: newMoney,
       lastDice: { die1, die2, timestamp: Date.now() },
       turnAction: 'landed',
-      actionText: `🎲 ${player.name}: ${die1} + ${die2} = ${total} bước`,
+      actionText: ` ${player.name}: ${die1} + ${die2} = ${total} bước`,
     };
 
     roomRef.update(updates).then(() => {
@@ -1395,7 +1395,7 @@ function handleOnlineLanding(cellIdx) {
     roomRef.update({
       [`players/${state.myIdx}/money`]: player.money - rent,
       [`players/${cell.owner}/money`]: state.players[cell.owner].money + rent,
-      actionText: `💰 ${player.name} trả ${rent}💰 tiền thuê cho ${state.players[cell.owner].name}`,
+      actionText: ` ${player.name} trả ${rent} tiền thuê cho ${state.players[cell.owner].name}`,
       turnAction: 'done',
     });
     sfxRent();
@@ -1411,7 +1411,7 @@ function handleOnlineLanding(cellIdx) {
   } else if (cell.type === 'tax') {
     roomRef.update({
       [`players/${state.myIdx}/money`]: player.money - cell.rent,
-      actionText: `💰 ${player.name} nộp thuế ${cell.rent}💰`,
+      actionText: ` ${player.name} nộp thuế ${cell.rent}`,
       turnAction: 'done',
     });
   } else {
@@ -1444,8 +1444,8 @@ function showOnlineQuiz(player, cell) {
     roomRef.update({ questionIdx: idx + 1 });
 
     const isLand = cell.type === 'land';
-    const title = isLand ? `🏘️ ${cell.name} (${cell.price}💰)` : '❓ Câu hỏi';
-    const desc = isLand ? 'Đúng = mua miễn phí!' : 'Đúng +100💰!';
+    const title = isLand ? ` ${cell.name} (${cell.price})` : ' Câu hỏi';
+    const desc = isLand ? 'Đúng = mua miễn phí!' : 'Đúng +100!';
 
     showPopup(`
       <h3>${title}</h3><p>${desc}</p>
@@ -1476,20 +1476,20 @@ function showOnlineQuiz(player, cell) {
               sfxBuy();
               roomRef.update({
                 [`board/${cell.id}/owner`]: state.myIdx,
-                actionText: `✅ ${player.name} mua ${cell.name}!`,
+                actionText: ` ${player.name} mua ${cell.name}!`,
                 turnAction: 'done',
               });
             } else {
               roomRef.update({
                 [`players/${state.myIdx}/money`]: player.money + 100,
-                actionText: `✅ ${player.name} đúng! +100💰`,
+                actionText: ` ${player.name} đúng! +100`,
                 turnAction: 'done',
               });
             }
           } else {
             sfxWrong();
             roomRef.update({
-              actionText: `❌ ${player.name} sai!`,
+              actionText: ` ${player.name} sai!`,
               turnAction: 'done',
             });
           }
@@ -1509,14 +1509,14 @@ function handleOnlineGameOver(data) {
     return b.money - a.money;
   });
 
-  const medals = ['🥇', '🥈', '🥉', '4️⃣'];
+  const medals = ['<img src="/img/medal.png" class="em-icon">', '', '', '4⃣'];
   let html = '';
   ranked.forEach((p, i) => {
-    html += `<div class="rank-item ${i===0?'winner':''}"><div class="rank-pos">${medals[i]||''}</div><div class="rank-info"><div class="rank-name">${p.name}</div><div class="rank-money">${p.bankrupt?'💀 Phá sản':p.money+' 💰'}</div></div></div>`;
+    html += `<div class="rank-item ${i===0?'winner':''}"><div class="rank-pos">${medals[i]||''}</div><div class="rank-info"><div class="rank-name">${p.name}</div><div class="rank-money">${p.bankrupt?' Phá sản':p.money+' '}</div></div></div>`;
   });
 
   $resultRankings.innerHTML = html;
-  $resultTitle.textContent = `🏆 ${ranked[0].name} thắng!`;
+  $resultTitle.textContent = `<img src="/img/trophy.png" class="em-icon"> ${ranked[0].name} thắng!`;
   showScreen('result');
   roomCode = null;
 }
@@ -1597,7 +1597,7 @@ initSetup();
     if (C && C.hasSpecies('moneybag')) {
       bagChar = C.createCharacter('moneybag', host, { state: 'idle' });
     } else {
-      host.textContent = '💰';
+      host.textContent = '';
     }
   }
 

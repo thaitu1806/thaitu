@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>🏰 Xếp Tháp Thăng Bằng - Học Vui</title>
+  <title> Xếp Tháp Thăng Bằng - Học Vui</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="/quiz/quiz-modes.css">
   <link rel="stylesheet" href="/tts.css">
@@ -20,36 +20,36 @@
           <span class="logo-block b1"></span>
           <span class="logo-block b2"></span>
           <span class="logo-block b3"></span>
-          <span class="logo-castle">🏰</span>
+          <span class="logo-castle"></span>
         </div>
-        <h1 class="main-title">🏰 Xếp Tháp Thăng Bằng</h1>
+        <h1 class="main-title"> Xếp Tháp Thăng Bằng</h1>
         <p class="subtitle">Trả lời đúng rồi căn thời điểm thả khối, xây tháp thật cao!</p>
-        <div class="hero-card"><div class="hero-stats"><span>🏰 Tháp cao nhất: <span id="best-tower">0</span></span><span>🏆 Hoàn hảo: <span id="total-perfect">0</span></span></div></div>
+        <div class="hero-card"><div class="hero-stats"><span> Tháp cao nhất: <span id="best-tower">0</span></span><span> Hoàn hảo: <span id="total-perfect">0</span></span></div></div>
 
-        <div class="selector-group"><label class="selector-label">📚 Môn học:</label><div class="selector-options" data-group="subject">
-          <button type="button" class="sel-btn active" data-value="mix">🎲 Trộn</button>
-          <button type="button" class="sel-btn" data-value="math">🔢 Toán</button>
-          <button type="button" class="sel-btn" data-value="vietnamese">📖 T.Việt</button>
-          <button type="button" class="sel-btn" data-value="english">🔤 Anh</button>
+        <div class="selector-group"><label class="selector-label"> Môn học:</label><div class="selector-options" data-group="subject">
+          <button type="button" class="sel-btn active" data-value="mix"> Trộn</button>
+          <button type="button" class="sel-btn" data-value="math"> Toán</button>
+          <button type="button" class="sel-btn" data-value="vietnamese"> T.Việt</button>
+          <button type="button" class="sel-btn" data-value="english"> Anh</button>
         </div></div>
-        <div class="selector-group"><label class="selector-label">⚡ Độ khó:</label><div class="selector-options" data-group="difficulty">
-          <button type="button" class="sel-btn active" data-value="easy">🌱 Dễ</button>
-          <button type="button" class="sel-btn" data-value="medium">🌿 Vừa</button>
-          <button type="button" class="sel-btn" data-value="hard">🌳 Khó</button>
+        <div class="selector-group"><label class="selector-label"> Độ khó:</label><div class="selector-options" data-group="difficulty">
+          <button type="button" class="sel-btn active" data-value="easy"> Dễ</button>
+          <button type="button" class="sel-btn" data-value="medium"> Vừa</button>
+          <button type="button" class="sel-btn" data-value="hard"> Khó</button>
         </div></div>
-        <button class="btn-primary" id="btn-start">🏰 Bắt Đầu Xây!</button>
-        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn</button>
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <button class="btn-primary" id="btn-start"> Bắt Đầu Xây!</button>
+        <button class="btn-guide" id="btn-guide"> Hướng Dẫn</button>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </section>
 
     <!-- GAME -->
     <section id="game-screen" class="screen">
       <div class="game-hud">
-        <button class="btn-exit" id="btn-exit" title="Thoát">🚪</button>
-        <span class="hud-item">🏰 <span id="floor-text">0</span></span>
-        <span class="hud-item">⚖️ <span id="balance-text">Vững</span></span>
-        <span class="hud-item">❓ <span id="progress-text">0/15</span></span>
+        <button class="btn-exit" id="btn-exit" title="Thoát"></button>
+        <span class="hud-item"> <span id="floor-text">0</span></span>
+        <span class="hud-item"> <span id="balance-text">Vững</span></span>
+        <span class="hud-item"> <span id="progress-text">0/15</span></span>
       </div>
 
       <!-- Tower stage -->
@@ -61,14 +61,14 @@
         </div>
         <div class="tower-wrap" id="tower-wrap">
           <div class="tower" id="tower"></div>
-          <div class="ground-base">🏝️</div>
+          <div class="ground-base"></div>
         </div>
-        <button class="btn-drop" id="btn-drop" style="display:none;">⬇️ THẢ KHỐI!</button>
+        <button class="btn-drop" id="btn-drop" style="display:none;">⬇ THẢ KHỐI!</button>
       </div>
 
       <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
       <div class="question-card">
-        <div class="q-top"><span class="q-badge" id="q-badge">🔢</span></div>
+        <div class="q-top"><span class="q-badge" id="q-badge"></span></div>
         <p class="q-text" id="q-text"></p>
         <div class="q-options" id="q-options"></div>
         <div class="feedback" id="feedback" style="display:none;"></div>
@@ -78,26 +78,26 @@
     <!-- RESULT -->
     <section id="result-screen" class="screen">
       <div class="container">
-        <div class="result-emoji" id="result-emoji">🏰</div>
+        <div class="result-emoji" id="result-emoji"></div>
         <h2 class="result-title" id="result-title">Kết Thúc</h2>
         <div class="star-row" id="result-stars"></div>
         <div class="result-detail" id="result-detail"></div>
-        <button class="btn-primary" id="btn-replay">🔄 Xây Lại</button>
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <button class="btn-primary" id="btn-replay"> Xây Lại</button>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </section>
   </div>
 
   <div id="guide-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card">
-      <h3 class="modal-title">📖 Cách Chơi</h3>
+      <h3 class="modal-title"> Cách Chơi</h3>
       <ul class="modal-rules">
-        <li>❓ Trả lời <b>đúng</b> để được 1 khối xây.</li>
-        <li>🏗️ Khối đung đưa qua lại — bấm <b>THẢ KHỐI</b> đúng lúc giữa tháp.</li>
-        <li>🎯 Thả càng chính giữa = tháp càng vững, điểm càng cao.</li>
-        <li>⚖️ Thả lệch nhiều lần = tháp nghiêng và sụp đổ.</li>
-        <li>❌ Trả lời sai = mất lượt khối đó.</li>
-        <li>🏰 Xây 15 tầng vững vàng = chiến thắng!</li>
+        <li> Trả lời <b>đúng</b> để được 1 khối xây.</li>
+        <li> Khối đung đưa qua lại — bấm <b>THẢ KHỐI</b> đúng lúc giữa tháp.</li>
+        <li> Thả càng chính giữa = tháp càng vững, điểm càng cao.</li>
+        <li> Thả lệch nhiều lần = tháp nghiêng và sụp đổ.</li>
+        <li> Trả lời sai = mất lượt khối đó.</li>
+        <li> Xây 15 tầng vững vàng = chiến thắng!</li>
       </ul>
       <button class="btn-primary" id="btn-guide-close">Hiểu rồi!</button>
     </div>
@@ -105,11 +105,11 @@
 
   <div id="exit-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card exit-card">
-      <div class="exit-icon">🚪</div>
+      <div class="exit-icon"></div>
       <p class="exit-text">Thoát game?</p>
       <div class="exit-actions">
         <button class="exit-cancel" id="btn-exit-cancel">Tiếp tục</button>
-        <button class="exit-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+        <button class="exit-confirm" id="btn-exit-confirm"> Thoát</button>
       </div>
     </div>
   </div>
@@ -122,6 +122,7 @@
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
   <script src="/help-rules.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

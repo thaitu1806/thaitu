@@ -2,10 +2,10 @@
 // Full ocean view with diving submarine, swimming creatures, and popup questions
 
 const DEPTH_ZONES = [
-  { maxDepth: 100, name: 'Vùng Nắng', bg: ['#1a8fbe', '#106a8e'], creatures: ['🐠', '🐟', '🦐'], ambientFish: ['🐠','🐟','🐟','🐠'], seaweed: true, lightRays: 1 },
-  { maxDepth: 300, name: 'Vùng Xanh', bg: ['#106a8e', '#0a4a6e'], creatures: ['🐙', '🦑', '🐡', '🦀'], ambientFish: ['🐡','🦀','🐙','🦑'], seaweed: true, lightRays: 0.5 },
-  { maxDepth: 600, name: 'Vùng Tối', bg: ['#0a4a6e', '#062840'], creatures: ['🦈', '🐋', '🐳', '🎐'], ambientFish: ['🎐','🦈','🐋'], seaweed: false, lightRays: 0.15 },
-  { maxDepth: 1000, name: 'Vực Thẳm', bg: ['#062840', '#010e1a'], creatures: ['🐉', '🦕', '🌺', '🌟'], ambientFish: ['🌺','🌟','🐉'], seaweed: false, lightRays: 0 },
+  { maxDepth: 100, name: 'Vùng Nắng', bg: ['#1a8fbe', '#106a8e'], creatures: ['', '', ''], ambientFish: ['','','',''], seaweed: true, lightRays: 1 },
+  { maxDepth: 300, name: 'Vùng Xanh', bg: ['#106a8e', '#0a4a6e'], creatures: ['', '', '', ''], ambientFish: ['','','',''], seaweed: true, lightRays: 0.5 },
+  { maxDepth: 600, name: 'Vùng Tối', bg: ['#0a4a6e', '#062840'], creatures: ['', '', '', ''], ambientFish: ['','',''], seaweed: false, lightRays: 0.15 },
+  { maxDepth: 1000, name: 'Vực Thẳm', bg: ['#062840', '#010e1a'], creatures: ['', '', '', ''], ambientFish: ['','',''], seaweed: false, lightRays: 0 },
 ];
 
 const OXYGEN_TOTAL = 180;
@@ -95,7 +95,7 @@ function setupOceanWorld() {
   }
 
   // Seaweed at bottom
-  const seaweeds = ['🌿', '🌱', '🌾', '🌾'];
+  const seaweeds = ['', '', '', ''];
   for (let i = 0; i < 6; i++) {
     const sw = document.createElement('div');
     sw.className = 'seaweed';
@@ -312,7 +312,7 @@ function handleTimeout() {
   S.depth = Math.max(0, S.depth - DEPTH_PUSHBACK);
 
   const st = document.getElementById('status-text');
-  st.textContent = '⏱️ Hết giờ! Bị đẩy lên!';
+  st.textContent = '⏱ Hết giờ! Bị đẩy lên!';
   st.className = 'status-text bad';
 
   animateSubmarine('rising');
@@ -399,9 +399,9 @@ function handleCorrect() {
   S.depth += DEPTH_PER_CORRECT;
   if (S.depth > S.maxDepth) S.maxDepth = S.depth;
 
-  const comboText = S.combo >= 3 ? ` 🔥x${S.combo}` : '';
+  const comboText = S.combo >= 3 ? ` <img src="/img/fire.png" class="em-icon">x${S.combo}` : '';
   const st = document.getElementById('status-text');
-  st.textContent = `✅ +${earned} ngọc trai!${comboText}`;
+  st.textContent = ` +${earned} ngọc trai!${comboText}`;
   st.className = 'status-text good';
 
   animateSubmarine('diving');
@@ -416,7 +416,7 @@ function handleWrong() {
   S.depth = Math.max(0, S.depth - DEPTH_PUSHBACK);
 
   const st = document.getElementById('status-text');
-  st.textContent = '❌ Bị đẩy lên! Cố lên nhé!';
+  st.textContent = ' Bị đẩy lên! Cố lên nhé!';
   st.className = 'status-text bad';
 
   animateSubmarine('rising');
@@ -476,7 +476,7 @@ function endGame(reason) {
 }
 
 function showResults(reason, collection) {
-  const reasonText = reason === 'oxygen' ? '⏱️ Hết oxy!' : '🔼 Đã nổi lên an toàn!';
+  const reasonText = reason === 'oxygen' ? '⏱ Hết oxy!' : ' Đã nổi lên an toàn!';
   const stars = S.maxDepth >= 800 ? 3 : S.maxDepth >= 400 ? 2 : S.maxDepth >= 100 ? 1 : 0;
 
   document.getElementById('result-container').innerHTML = `
@@ -484,16 +484,16 @@ function showResults(reason, collection) {
     <div class="result-depth">${S.maxDepth}m</div>
     <div style="font-size:1rem;color:rgba(255,255,255,0.7);">Độ sâu tối đa</div>
     <div class="result-stats">
-      <div class="result-stat"><span>💎 Ngọc trai</span><strong>${S.pearls}</strong></div>
-      <div class="result-stat"><span>✅ Đúng</span><strong>${S.correct}</strong></div>
-      <div class="result-stat"><span>❌ Sai</span><strong>${S.incorrect}</strong></div>
-      <div class="result-stat"><span>⭐ Sao</span><strong>${'⭐'.repeat(stars) || '—'}</strong></div>
-      <div class="result-stat"><span>🐚 Bộ sưu tập</span><strong>${collection.length}/20</strong></div>
+      <div class="result-stat"><span><img src="/img/diamond.png" class="em-icon"> Ngọc trai</span><strong>${S.pearls}</strong></div>
+      <div class="result-stat"><span> Đúng</span><strong>${S.correct}</strong></div>
+      <div class="result-stat"><span> Sai</span><strong>${S.incorrect}</strong></div>
+      <div class="result-stat"><span><img src="/img/star.png" class="em-icon"> Sao</span><strong>${'<img src="/img/star.png" class="em-icon">'.repeat(stars) || '—'}</strong></div>
+      <div class="result-stat"><span> Bộ sưu tập</span><strong>${collection.length}/20</strong></div>
     </div>
     ${S.creaturesFound.length > 0 ? `<div class="result-creatures"><div class="result-creatures-title">Sinh vật phát hiện:</div><div class="result-creatures-list">${S.creaturesFound.join(' ')}</div></div>` : ''}
     <div class="result-btns">
-      <button class="result-btn primary" onclick="resetAndPlay()">🔄 Lặn lại</button>
-      <button class="result-btn secondary" onclick="goHome()">🏠 Trang chủ</button>
+      <button class="result-btn primary" onclick="resetAndPlay()"> Lặn lại</button>
+      <button class="result-btn secondary" onclick="goHome()"> Trang chủ</button>
     </div>`;
   showScreen('result-screen');
 
@@ -538,7 +538,7 @@ async function logAnswer(q, selected, correct, isCorrect) {
     if (C && C.hasSpecies('submarine')) {
       subChar = C.createCharacter('submarine', host, { state: 'idle' });
     } else {
-      host.textContent = '🛥️';
+      host.textContent = '';
     }
   }
 

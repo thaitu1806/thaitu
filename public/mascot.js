@@ -21,10 +21,10 @@
   }
 
   // Cheerful + encouraging Vietnamese lines for a grade-2 audience.
-  const CHEER = ['Giỏi quá! 🎉', 'Tuyệt vời! ⭐', 'Đúng rồi! 👏', 'Siêu ghê! 🌟', 'Hay lắm! 💪', 'Xuất sắc! 🏆'];
-  const COMBO = ['Combo nè! 🔥', 'Liên tiếp luôn! ⚡', 'Đỉnh thật! 🚀'];
-  const ENCOURAGE = ['Không sao đâu! 💛', 'Thử lại nha! 🤗', 'Cố lên nào! 🌈', 'Gần đúng rồi! 😊', 'Bình tĩnh nhé! 🍀'];
-  const IDLE = ['Cùng học nào! 📚', 'Cố lên bạn ơi! 🌟'];
+  const CHEER = ['Giỏi quá! ', 'Tuyệt vời! ⭐', 'Đúng rồi! ', 'Siêu ghê! ', 'Hay lắm! ', 'Xuất sắc! '];
+  const COMBO = ['Combo nè! ', 'Liên tiếp luôn! ', 'Đỉnh thật! '];
+  const ENCOURAGE = ['Không sao đâu! ', 'Thử lại nha! ', 'Cố lên nào! ', 'Gần đúng rồi! ', 'Bình tĩnh nhé! '];
+  const IDLE = ['Cùng học nào! ', 'Cố lên bạn ơi! '];
 
   let root = null, face = null, bubble = null, toggleBtn = null;
   let bubbleTimer = null, stateTimer = null;
@@ -56,8 +56,8 @@
       <path class="m-arm-r" d="M80 58 Q90 54 88 46" fill="none" stroke="#e8a91e" stroke-width="5" stroke-linecap="round"/>
     </g>
     <g class="m-deco">
-      <text class="m-crown" x="50" y="14" text-anchor="middle" font-size="18">👑</text>
-      <text class="m-medal" x="64" y="74" text-anchor="middle" font-size="14">🏅</text>
+      <text class="m-crown" x="50" y="14" text-anchor="middle" font-size="18"></text>
+      <text class="m-medal" x="64" y="74" text-anchor="middle" font-size="14"></text>
       <circle class="m-spark m-spark-1" cx="22" cy="34" r="2.5" fill="#fff7a8"/>
       <circle class="m-spark m-spark-2" cx="80" cy="40" r="2" fill="#fff7a8"/>
       <circle class="m-spark m-spark-3" cx="74" cy="22" r="2.2" fill="#fff7a8"/>
@@ -104,9 +104,9 @@
     #hv-mascot-toggle {
       position: fixed; left: 8px; top: 50%; transform: translateY(-32px); z-index: 2147483000;
       width: 36px; height: 36px; border-radius: 50%; border: none;
-      background: rgba(0,0,0,0.35); color: #fff; font-size: 1rem; cursor: pointer;
+      background: transparent; color: #fff; font-size: 1rem; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2); padding: 0; line-height: 1; opacity: 0.7;
+      box-shadow: none; padding: 0; line-height: 1; opacity: 1;
       transition: transform .12s;
     }
     #hv-mascot-toggle:active { transform: scale(0.88); }
@@ -154,7 +154,7 @@
 
   function applyVisibility() {
     if (root) root.style.display = enabled ? 'block' : 'none';
-    if (toggleBtn) { toggleBtn.textContent = enabled ? '🌱' : '🚫'; toggleBtn.style.opacity = enabled ? '0.85' : '0.6'; toggleBtn.title = enabled ? 'Ẩn người bạn' : 'Hiện người bạn'; }
+    if (toggleBtn) { toggleBtn.innerHTML = enabled ? '<img src="/img/sprout.png" style="width:46px;height:46px;">' : ''; toggleBtn.style.opacity = enabled ? '1' : '0.6'; toggleBtn.title = enabled ? 'Ẩn người bạn' : 'Hiện người bạn'; }
   }
 
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -191,7 +191,7 @@
       curStage = st;
       if (leveledUp) {
         setState('happy');
-        say('Mình lớn lên rồi! 🌟 ' + STAGE_NAMES[st], 'good');
+        say('Mình lớn lên rồi!  ' + STAGE_NAMES[st], 'good');
         if (window.HocVuiSound) window.HocVuiSound.play('win');
         root.classList.add('evolve');
         setTimeout(() => root && root.classList.remove('evolve'), 1200);
@@ -238,7 +238,7 @@
     refreshStage(false);
     try { mo.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] }); } catch (e) {}
     // a friendly greeting shortly after entering a game
-    setTimeout(() => { if (enabled) say('Chào bạn! Cùng học nha! 👋', ''); }, 900);
+    setTimeout(() => { if (enabled) say('Chào bạn! Cùng học nha! ', ''); }, 900);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();

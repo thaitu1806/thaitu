@@ -69,7 +69,7 @@
     $('q-text').textContent = '⏳ Đang tải...';
     $('q-options').innerHTML = '';
     $('feedback').style.display = 'none';
-    if ($('ball-reaction')) $('ball-reaction').textContent = '⚽';
+    if ($('ball-reaction')) $('ball-reaction').textContent = '';
     await fetchQ();
     showNextQ();
   }
@@ -83,14 +83,14 @@
       strikerChar = null;
       const id = STRIKER_POOL[Math.floor(Math.random() * STRIKER_POOL.length)];
       if (C && C.hasSpecies(id)) strikerChar = C.createCharacter(id, sHost, { state: 'idle' });
-      else sHost.textContent = '⚽';
+      else sHost.textContent = '';
     }
     const kHost = $('keeper-char');
     if (kHost) {
       kHost.innerHTML = '';
       keeperChar = null;
       if (C && C.hasSpecies('keeper')) keeperChar = C.createCharacter('keeper', kHost, { state: 'idle' });
-      else kHost.textContent = '😈';
+      else kHost.textContent = '';
     }
   }
 
@@ -123,9 +123,9 @@
     $('shot-rate-text').textContent = `Tỷ lệ sút: ${pct}%`;
     $('shot-rate-fill').style.width = pct + '%';
     if (state.streak >= window.V55Logic.BOOST_STREAK) {
-      $('streak-info').textContent = `🔥 Combo ${state.streak} — Siêu sao!`;
+      $('streak-info').textContent = `<img src="/img/fire.png" class="em-icon"> Combo ${state.streak} — Siêu sao!`;
     } else if (state.streak >= window.V55Logic.MID_STREAK) {
-      $('streak-info').textContent = `⚡ Combo ${state.streak} — Đang nóng!`;
+      $('streak-info').textContent = `<img src="/img/bolt.png" class="em-icon"> Combo ${state.streak} — Đang nóng!`;
     } else if (state.streak > 0) {
       $('streak-info').textContent = `Combo ${state.streak}`;
     } else {
@@ -189,30 +189,30 @@
     const ballHost = $('striker-char') || $('ball-area');
     if (state.myGoals > prevMy) {
       fb.className = 'feedback bonus';
-      fb.textContent = `⚽🥅 GOAL! ${state.myGoals}-${state.oppGoals}`;
-      if (react) react.innerHTML = '<span class="floating">⚽🥅</span>';
+      fb.textContent = ` GOAL! ${state.myGoals}-${state.oppGoals}`;
+      if (react) react.innerHTML = '<span class="floating"></span>';
       syncChars('happy');
       spawnParticles(ballHost, 'kick', 10);
       spawnBall(ballHost);
       setTimeout(() => syncChars('idle'), 900);
     } else if (ok) {
       fb.className = 'feedback good';
-      fb.textContent = '✅ Đúng nhưng cú sút ra ngoài!';
-      if (react) react.textContent = '⚽😅';
+      fb.textContent = ' Đúng nhưng cú sút ra ngoài!';
+      if (react) react.textContent = '';
       syncChars('happy');
       spawnParticles(ballHost, 'sparkle', 5);
       setTimeout(() => syncChars('idle'), 700);
     } else if (state.oppGoals > prevOpp) {
       fb.className = 'feedback bad';
-      fb.textContent = `❌ Đối thủ ghi bàn! ${state.myGoals}-${state.oppGoals}`;
-      if (react) react.textContent = '😈⚽';
+      fb.textContent = ` Đối thủ ghi bàn! ${state.myGoals}-${state.oppGoals}`;
+      if (react) react.textContent = '';
       syncChars('scared');
       spawnParticles(ballHost, 'puff', 8);
       setTimeout(() => syncChars('idle'), 900);
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = '❌ Sai, đối thủ sút trượt.';
-      if (react) react.textContent = '⚽💨';
+      fb.textContent = ' Sai, đối thủ sút trượt.';
+      if (react) react.textContent = '';
       syncChars('scared');
       setTimeout(() => syncChars('idle'), 700);
     }
@@ -229,7 +229,7 @@
     const fb = $('feedback'); fb.style.display = 'block';
     fb.className = 'feedback bad';
     fb.textContent = state.oppGoals > prevOpp ? '⏰ Hết giờ! Đối thủ ghi bàn.' : '⏰ Hết giờ!';
-    const react = $('ball-reaction'); if (react) react.textContent = '⏰⚽';
+    const react = $('ball-reaction'); if (react) react.textContent = '⏰';
     syncChars('scared');
     if (state.oppGoals > prevOpp) spawnParticles($('striker-char') || $('ball-area'), 'puff', 8);
     setTimeout(() => syncChars('idle'), 900);
@@ -261,16 +261,16 @@
 
     setTimeout(() => {
       $('result-badges').textContent = `${state.myGoals} - ${state.oppGoals}`;
-      let title = '⚽ Kết Trận';
-      if (state.outcome === 'won') title = '🏆 Chiến Thắng Rực Rỡ!';
-      else if (state.outcome === 'lost') title = '😅 Thua Cuộc';
+      let title = ' Kết Trận';
+      if (state.outcome === 'won') title = '<img src="/img/trophy.png" class="em-icon"> Chiến Thắng Rực Rỡ!';
+      else if (state.outcome === 'lost') title = ' Thua Cuộc';
       $('result-title').textContent = title;
-      $('result-emoji').textContent = state.outcome === 'won' ? '🏆' : state.outcome === 'lost' ? '😅' : '⚽';
+      $('result-emoji').textContent = state.outcome === 'won' ? '<img src="/img/trophy.png" class="em-icon">' : state.outcome === 'lost' ? '' : '';
       $('result-detail').innerHTML = `
-        🥅 Tỷ số: ${state.myGoals} - ${state.oppGoals}<br>
-        🎯 Sút: ${state.myGoals}/${state.shots}<br>
-        ✅ Đúng: ${state.correct}/${total} (${acc}%)<br>
-        ⭐ Sao: ${stars}/3
+         Tỷ số: ${state.myGoals} - ${state.oppGoals}<br>
+         Sút: ${state.myGoals}/${state.shots}<br>
+         Đúng: ${state.correct}/${total} (${acc}%)<br>
+        <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3
       `;
       ss('result-screen');
       if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch(e){} }
@@ -344,12 +344,12 @@
     }
   }
 
-  // A single ⚽ that arcs toward the goal when you score.
+  // A single  that arcs toward the goal when you score.
   function spawnBall(parent) {
     if (!parent) return;
     const p = document.createElement('span');
     p.className = 'pfx pfx-ball';
-    p.textContent = '⚽';
+    p.textContent = '';
     p.style.setProperty('--tx', (Math.random() * 30 + 20) + 'px');
     p.style.setProperty('--ty', -(Math.random() * 20 + 30) + 'px');
     parent.appendChild(p);

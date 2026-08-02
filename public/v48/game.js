@@ -202,16 +202,16 @@
     }
     if (delta >= 2) {
       fb.className = 'feedback bonus';
-      fb.textContent = `✨ Combo! Cứu thêm ${delta} khủng long!`;
+      fb.textContent = ` Combo! Cứu thêm ${delta} khủng long!`;
     } else if (delta === 1) {
       fb.className = 'feedback good';
-      fb.textContent = '✅ Cứu được 1 khủng long!';
+      fb.textContent = ' Cứu được 1 khủng long!';
     } else if (ok) {
       fb.className = 'feedback good';
-      fb.textContent = '✅ Đúng!';
+      fb.textContent = ' Đúng!';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = '❌ Sai! Núi lửa nguy hiểm hơn.';
+      fb.textContent = ' Sai! Núi lửa nguy hiểm hơn.';
     }
     renderHud(); renderDanger();
     // Settle rescued state shortly after happy bounce.
@@ -259,18 +259,18 @@
     }
 
     setTimeout(() => {
-      const badges = state.dinos.map(d => d.rescued ? d.emoji : '🌋').join(' ');
+      const badges = state.dinos.map(d => d.rescued ? d.emoji : '').join(' ');
       $('result-badges').textContent = badges;
-      let title = '🦖 Kết Thúc';
-      if (state.outcome === 'won') title = '🏆 Anh Hùng Cứu Hộ!';
-      else if (state.outcome === 'erupted') title = '🌋 Núi Lửa Phun Trào!';
+      let title = ' Kết Thúc';
+      if (state.outcome === 'won') title = '<img src="/img/trophy.png" class="em-icon"> Anh Hùng Cứu Hộ!';
+      else if (state.outcome === 'erupted') title = ' Núi Lửa Phun Trào!';
       $('result-title').textContent = title;
-      $('result-emoji').textContent = state.outcome === 'won' ? '🏆' : state.outcome === 'erupted' ? '🌋' : '🦖';
+      $('result-emoji').textContent = state.outcome === 'won' ? '<img src="/img/trophy.png" class="em-icon">' : state.outcome === 'erupted' ? '' : '';
       $('result-detail').innerHTML = `
-        ⛑️ Đã cứu: ${state.rescuedCount}/${state.totalDinos}<br>
-        🌋 Nguy hiểm: ${state.danger}/${state.maxDanger}<br>
-        ✅ Đúng: ${state.correct}/${total} (${acc}%)<br>
-        ⭐ Sao: ${stars}/3
+         Đã cứu: ${state.rescuedCount}/${state.totalDinos}<br>
+         Nguy hiểm: ${state.danger}/${state.maxDanger}<br>
+         Đúng: ${state.correct}/${total} (${acc}%)<br>
+        <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3
       `;
       ss('result-screen');
       const v = $('volcano'); if (v) v.classList.remove('is-erupting');

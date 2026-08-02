@@ -9,9 +9,9 @@
   const MAX_Q = 40;
   const HERO_HP = 100;
   const BOSSES = [
-    { name: 'Yêu Tinh', emoji: '👹', hp: 60, dmg: 10 },
-    { name: 'Rồng Lửa', emoji: '🐲', hp: 90, dmg: 14 },
-    { name: 'Quỷ Vương', emoji: '👺', hp: 120, dmg: 18 },
+    { name: 'Yêu Tinh', emoji: '', hp: 60, dmg: 10 },
+    { name: 'Rồng Lửa', emoji: '', hp: 90, dmg: 14 },
+    { name: 'Quỷ Vương', emoji: '', hp: 120, dmg: 18 },
   ];
 
   let userData = { totalBoss: 0, totalWins: 0 };
@@ -94,9 +94,9 @@
   function renderBars() {
     const bMax = BOSSES[bossIdx].hp;
     $('boss-hp-fill').style.width = Math.max(0, bossHp / bMax * 100) + '%';
-    $('boss-hp-label').textContent = `${BOSSES[bossIdx].name} ❤️${Math.max(0, bossHp)}`;
+    $('boss-hp-label').textContent = `${BOSSES[bossIdx].name} <img src="/img/heart.png" class="em-icon">${Math.max(0, bossHp)}`;
     $('hero-hp-fill').style.width = Math.max(0, heroHp / HERO_HP * 100) + '%';
-    $('hero-hp-label').textContent = `🦸 ❤️${Math.max(0, heroHp)}`;
+    $('hero-hp-label').textContent = ` <img src="/img/heart.png" class="em-icon">${Math.max(0, heroHp)}`;
   }
 
   function isFinished() { return outcome !== null || heroHp <= 0 || (bossesDown >= BOSSES.length) || served >= MAX_Q; }
@@ -107,7 +107,7 @@
     if (outcome || served >= MAX_Q) { finish(); return; }
     curQ = nextQ(); served++; locked = false; qStart = Date.now();
     const subj = curQ.subject || subject;
-    $('q-badge').textContent = subj === 'vietnamese' ? '📖' : subj === 'english' ? '🔤' : '🔢';
+    $('q-badge').textContent = subj === 'vietnamese' ? '' : subj === 'english' ? '' : '';
     $('q-text').textContent = curQ.question_text;
     $('feedback').style.display = 'none';
     const opts = $('q-options'); opts.innerHTML = '';
@@ -153,8 +153,8 @@
       else { charge = combo % 3; }
       bossHp -= dmg;
       heroAttack(isSuper, dmg);
-      if (isSuper) { fb.className = 'feedback bonus'; fb.textContent = `⚡ ĐẠI CHIÊU! -${dmg} máu boss!`; }
-      else { fb.className = 'feedback good'; fb.textContent = `✅ Trúng đòn! -${dmg} máu boss.`; }
+      if (isSuper) { fb.className = 'feedback bonus'; fb.textContent = `<img src="/img/bolt.png" class="em-icon"> ĐẠI CHIÊU! -${dmg} máu boss!`; }
+      else { fb.className = 'feedback good'; fb.textContent = ` Trúng đòn! -${dmg} máu boss.`; }
       if (bossHp <= 0) {
         bossesDown++; userData.totalBoss += 1;
         defeatBoss();
@@ -170,7 +170,7 @@
       const dmg = BOSSES[bossIdx].dmg;
       heroHp -= dmg;
       bossAttack(dmg);
-      fb.className = 'feedback bad'; fb.textContent = `❌ Sai! Boss phản đòn -${dmg} máu.`;
+      fb.className = 'feedback bad'; fb.textContent = ` Sai! Boss phản đòn -${dmg} máu.`;
     }
     renderHud(); renderBars();
     setTimeout(() => { if (isFinished()) finish(); else showNextQ(); }, 1100);
@@ -249,10 +249,10 @@
     if (window.HocVuiSound) window.HocVuiSound.play(outcome === 'won' ? 'win' : 'lose');
     if (window.HocVuiCollection) window.HocVuiCollection.reward(stars);
     setTimeout(() => {
-      $('result-emoji').textContent = outcome === 'won' ? '👑' : outcome === 'lost' ? '💀' : '⚔️';
-      $('result-title').textContent = outcome === 'won' ? '👑 Phá Đảo Thành Công!' : outcome === 'lost' ? '💀 Anh Hùng Gục Ngã!' : '⚔️ Kết Thúc';
-      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}">⭐</span>`).join('');
-      $('result-detail').innerHTML = `👹 Boss đã hạ: ${bossesDown}/3<br>❤️ Máu còn: ${Math.max(0, heroHp)}/${HERO_HP}<br>✅ Đúng: ${correct}/${total} (${acc}%)<br>✨ Combo cao nhất: ${maxCombo}`;
+      $('result-emoji').textContent = outcome === 'won' ? '' : outcome === 'lost' ? '' : '';
+      $('result-title').textContent = outcome === 'won' ? ' Phá Đảo Thành Công!' : outcome === 'lost' ? ' Anh Hùng Gục Ngã!' : ' Kết Thúc';
+      $('result-stars').innerHTML = [1, 2, 3].map(i => `<span class="star ${i <= stars ? 'on' : ''}"><img src="/img/star.png" class="em-icon"></span>`).join('');
+      $('result-detail').innerHTML = ` Boss đã hạ: ${bossesDown}/3<br><img src="/img/heart.png" class="em-icon"> Máu còn: ${Math.max(0, heroHp)}/${HERO_HP}<br> Đúng: ${correct}/${total} (${acc}%)<br> Combo cao nhất: ${maxCombo}`;
       ss('result-screen');
       if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch (e) {} }
     }, outcome === 'won' ? 1200 : 200);

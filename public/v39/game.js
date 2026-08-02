@@ -8,34 +8,34 @@ const TOTAL_QUESTIONS = 10;
 const UNLOCK_COST = 3; // fabric needed to unlock each item
 
 const CATEGORIES = [
-  { id: 'hat', name: 'Mũ', emoji: '🎩' },
-  { id: 'top', name: 'Áo', emoji: '👕' },
-  { id: 'bottom', name: 'Quần', emoji: '👖' },
-  { id: 'shoes', name: 'Giày', emoji: '👟' },
-  { id: 'accessory', name: 'Phụ kiện', emoji: '🎀' }
+  { id: 'hat', name: 'Mũ', emoji: '' },
+  { id: 'top', name: 'Áo', emoji: '' },
+  { id: 'bottom', name: 'Quần', emoji: '' },
+  { id: 'shoes', name: 'Giày', emoji: '' },
+  { id: 'accessory', name: 'Phụ kiện', emoji: '' }
 ];
 
 const ITEMS = [
   // Hats
-  { id: 'hat1', category: 'hat', emoji: '🎩', name: 'Mũ Phớt' },
-  { id: 'hat2', category: 'hat', emoji: '👒', name: 'Mũ Rộng' },
-  { id: 'hat3', category: 'hat', emoji: '🧢', name: 'Mũ Lưỡi Trai' },
+  { id: 'hat1', category: 'hat', emoji: '', name: 'Mũ Phớt' },
+  { id: 'hat2', category: 'hat', emoji: '', name: 'Mũ Rộng' },
+  { id: 'hat3', category: 'hat', emoji: '', name: 'Mũ Lưỡi Trai' },
   // Tops
-  { id: 'top1', category: 'top', emoji: '👕', name: 'Áo Thun' },
-  { id: 'top2', category: 'top', emoji: '👚', name: 'Áo Kiểu' },
-  { id: 'top3', category: 'top', emoji: '🧥', name: 'Áo Khoác' },
+  { id: 'top1', category: 'top', emoji: '', name: 'Áo Thun' },
+  { id: 'top2', category: 'top', emoji: '', name: 'Áo Kiểu' },
+  { id: 'top3', category: 'top', emoji: '', name: 'Áo Khoác' },
   // Bottoms
-  { id: 'bot1', category: 'bottom', emoji: '👖', name: 'Quần Jean' },
-  { id: 'bot2', category: 'bottom', emoji: '👗', name: 'Váy Đầm' },
-  { id: 'bot3', category: 'bottom', emoji: '🩳', name: 'Quần Short' },
+  { id: 'bot1', category: 'bottom', emoji: '', name: 'Quần Jean' },
+  { id: 'bot2', category: 'bottom', emoji: '', name: 'Váy Đầm' },
+  { id: 'bot3', category: 'bottom', emoji: '', name: 'Quần Short' },
   // Shoes
-  { id: 'shoe1', category: 'shoes', emoji: '👟', name: 'Giày Thể Thao' },
-  { id: 'shoe2', category: 'shoes', emoji: '👠', name: 'Giày Cao Gót' },
-  { id: 'shoe3', category: 'shoes', emoji: '🥾', name: 'Bốt' },
+  { id: 'shoe1', category: 'shoes', emoji: '', name: 'Giày Thể Thao' },
+  { id: 'shoe2', category: 'shoes', emoji: '', name: 'Giày Cao Gót' },
+  { id: 'shoe3', category: 'shoes', emoji: '', name: 'Bốt' },
   // Accessories
-  { id: 'acc1', category: 'accessory', emoji: '🎀', name: 'Nơ' },
-  { id: 'acc2', category: 'accessory', emoji: '👜', name: 'Túi Xách' },
-  { id: 'acc3', category: 'accessory', emoji: '🕶️', name: 'Kính Mát' }
+  { id: 'acc1', category: 'accessory', emoji: '', name: 'Nơ' },
+  { id: 'acc2', category: 'accessory', emoji: '', name: 'Túi Xách' },
+  { id: 'acc3', category: 'accessory', emoji: '', name: 'Kính Mát' }
 ];
 
 // State
@@ -223,7 +223,7 @@ function endQuiz() {
   const popup = document.createElement('div');
   popup.className = 'fabric-earned';
   popup.innerHTML = `
-    <h3>🧵 Kiếm Được Vải!</h3>
+    <h3> Kiếm Được Vải!</h3>
     <div class="big-num">+${fabricEarned}</div>
     <p>Tổng: ${gameData.fabric} vải | Đúng: ${totalCorrect}/${totalAnswered}</p>
   `;
@@ -279,7 +279,7 @@ function renderItems() {
     card.innerHTML = `
       <span class="item-emoji">${item.emoji}</span>
       <span class="item-name">${item.name}</span>
-      <span class="item-cost">${isUnlocked ? (isEquipped ? '✅ Đang mặc' : '👆 Chọn') : '🔒 ' + UNLOCK_COST + ' vải'}</span>
+      <span class="item-cost">${isUnlocked ? (isEquipped ? ' Đang mặc' : ' Chọn') : ' ' + UNLOCK_COST + ' vải'}</span>
     `;
 
     card.onclick = () => handleItemClick(item, isUnlocked, isEquipped);
@@ -359,7 +359,7 @@ function showCatwalk() {
     }
   });
 
-  modelDiv.textContent = equippedItems.length > 0 ? equippedItems.join(' ') : '🧍';
+  modelDiv.textContent = equippedItems.length > 0 ? equippedItems.join(' ') : '';
 
   // Calculate score
   const equippedCount = Object.keys(gameData.equipped).length;
@@ -367,9 +367,9 @@ function showCatwalk() {
 
   // Judge scores
   const judges = [
-    { emoji: '👩‍🎨', name: 'Cô Hoa' },
-    { emoji: '🧑‍💼', name: 'Chú Minh' },
-    { emoji: '👵', name: 'Bà Lan' }
+    { emoji: '', name: 'Cô Hoa' },
+    { emoji: '', name: 'Chú Minh' },
+    { emoji: '', name: 'Bà Lan' }
   ];
 
   const judgesDiv = document.getElementById('judges');
@@ -396,9 +396,9 @@ function showCatwalk() {
   // Detail
   const detail = document.getElementById('catwalk-detail');
   detail.innerHTML = `
-    👗 Trang phục: ${equippedCount}/5 món<br>
-    🧵 Vải còn: ${gameData.fabric}<br>
-    👕 Đã mở khóa: ${gameData.unlocked.length}/15
+     Trang phục: ${equippedCount}/5 món<br>
+     Vải còn: ${gameData.fabric}<br>
+     Đã mở khóa: ${gameData.unlocked.length}/15
   `;
 
   // Sparkles
@@ -409,7 +409,7 @@ function showCatwalk() {
 function spawnSparkles() {
   const container = document.getElementById('sparkles');
   container.innerHTML = '';
-  const sparkleEmojis = ['✨', '⭐', '💫', '🌟', '💖'];
+  const sparkleEmojis = ['', '<img src="/img/star.png" class="em-icon">', '', '', ''];
   for (let i = 0; i < 15; i++) {
     const el = document.createElement('div');
     el.className = 'sparkle';
@@ -476,7 +476,7 @@ function mountWardrobeModel() {
   if (C && C.hasSpecies('fashionista')) {
     wardrobeChar = C.createCharacter('fashionista', host, { state: 'idle' });
   } else {
-    host.textContent = '🧍';
+    host.textContent = '';
   }
 }
 
@@ -489,7 +489,7 @@ function mountRunwayModel() {
   if (C && C.hasSpecies('fashionista')) {
     runwayChar = C.createCharacter('fashionista', host, { state: 'happy' });
   } else {
-    host.textContent = '🧍';
+    host.textContent = '';
   }
 }
 

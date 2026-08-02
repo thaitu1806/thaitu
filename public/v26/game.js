@@ -4,14 +4,14 @@
 
   const STORAGE_KEY = 'v26_wheel';
   const SEGMENTS = [
-    { label: '💰+10', type: 'coins', value: 10, icon: '💰' },
-    { label: '💰+20', type: 'coins', value: 20, icon: '💰' },
-    { label: '💰+50', type: 'coins', value: 50, icon: '💰' },
-    { label: '⭐+1', type: 'stars', value: 1, icon: '⭐' },
-    { label: '🎯x2', type: 'double', value: 0, icon: '🎯' },
-    { label: '💎+5', type: 'diamonds', value: 5, icon: '💎' },
-    { label: '🍀Free', type: 'free_spin', value: 1, icon: '🍀' },
-    { label: '😢', type: 'empty', value: 0, icon: '😢' }
+    { label: '+10', type: 'coins', value: 10, icon: '' },
+    { label: '+20', type: 'coins', value: 20, icon: '' },
+    { label: '+50', type: 'coins', value: 50, icon: '' },
+    { label: '<img src="/img/star.png" class="em-icon">+1', type: 'stars', value: 1, icon: '<img src="/img/star.png" class="em-icon">' },
+    { label: 'x2', type: 'double', value: 0, icon: '' },
+    { label: '<img src="/img/diamond.png" class="em-icon">+5', type: 'diamonds', value: 5, icon: '<img src="/img/diamond.png" class="em-icon">' },
+    { label: 'Free', type: 'free_spin', value: 1, icon: '' },
+    { label: '', type: 'empty', value: 0, icon: '' }
   ];
 
   // State
@@ -67,7 +67,7 @@
     if (doubleNextReward && !doubleEl) {
       doubleEl = document.createElement('div');
       doubleEl.className = 'double-active';
-      doubleEl.textContent = '🎯 x2 lần sau!';
+      doubleEl.textContent = ' x2 lần sau!';
       document.body.appendChild(doubleEl);
     } else if (!doubleNextReward && doubleEl) {
       doubleEl.remove();
@@ -131,8 +131,8 @@
     if (seg.type === 'double') {
       // x2 doesn't get doubled itself
       doubleNextReward = true;
-      prizeText = '🎯 Lần quay sau x2!';
-      icon = '🎯';
+      prizeText = ' Lần quay sau x2!';
+      icon = '';
     } else {
       // Apply double if active (for prize types)
       if (seg.type !== 'empty' && seg.type !== 'free_spin') {
@@ -143,25 +143,25 @@
         case 'coins':
           const coinVal = seg.value * multiplier;
           state.coins += coinVal;
-          prizeText = `💰 +${coinVal} xu` + (wasDouble ? ' (x2!)' : '');
+          prizeText = ` +${coinVal} xu` + (wasDouble ? ' (x2!)' : '');
           break;
         case 'stars':
           const starVal = seg.value * multiplier;
           state.stars += starVal;
-          prizeText = `⭐ +${starVal} sao` + (wasDouble ? ' (x2!)' : '');
+          prizeText = `<img src="/img/star.png" class="em-icon"> +${starVal} sao` + (wasDouble ? ' (x2!)' : '');
           break;
         case 'diamonds':
           const diaVal = seg.value * multiplier;
           state.diamonds += diaVal;
-          prizeText = `💎 +${diaVal} kim cương` + (wasDouble ? ' (x2!)' : '');
+          prizeText = `<img src="/img/diamond.png" class="em-icon"> +${diaVal} kim cương` + (wasDouble ? ' (x2!)' : '');
           break;
         case 'free_spin':
           state.tokens += 1;
-          prizeText = '🍀 +1 lượt quay miễn phí!';
+          prizeText = ' +1 lượt quay miễn phí!';
           doubleNextReward = false; // reset double on free spin
           break;
         case 'empty':
-          prizeText = '😢 Không có gì...';
+          prizeText = ' Không có gì...';
           doubleNextReward = false; // reset double on empty
           break;
       }
@@ -180,7 +180,7 @@
 
   function showResult(icon, text, isWin) {
     document.getElementById('result-icon').textContent = icon;
-    document.getElementById('result-text').textContent = isWin ? 'Chúc mừng! 🎉' : 'Tiếc quá!';
+    document.getElementById('result-text').textContent = isWin ? 'Chúc mừng! <img src="/img/party.png" class="em-icon">' : 'Tiếc quá!';
     document.getElementById('result-prize').textContent = text;
     resultOverlay.classList.add('active');
 
@@ -321,7 +321,7 @@
     const feedback = document.getElementById('quiz-feedback');
     if (selected.toLowerCase() === correct.toLowerCase()) {
       quizCorrectCount++;
-      feedback.textContent = '✅ Đúng rồi!';
+      feedback.textContent = ' Đúng rồi!';
       feedback.style.color = '#6BCB77';
 
       // Check if earned a token (every 3 correct)
@@ -329,10 +329,10 @@
         state.tokens++;
         tokensEarnedThisQuiz++;
         saveState();
-        feedback.textContent = '✅ Đúng rồi! 🎟️ +1 lượt quay!';
+        feedback.textContent = ' Đúng rồi!  +1 lượt quay!';
       }
     } else {
-      feedback.textContent = `❌ Sai rồi! Đáp án: ${correct}`;
+      feedback.textContent = ` Sai rồi! Đáp án: ${correct}`;
       feedback.style.color = '#ff6b6b';
     }
 
@@ -344,7 +344,7 @@
       btnNext.textContent = 'Câu tiếp →';
     } else {
       btnNext.style.display = 'block';
-      btnNext.textContent = '🎡 Xem kết quả';
+      btnNext.textContent = ' Xem kết quả';
     }
   }
 
@@ -360,9 +360,9 @@
   function endQuiz() {
     const feedback = document.getElementById('quiz-feedback');
     feedback.style.color = '#ffe066';
-    feedback.textContent = `🏁 Hoàn thành! Đúng ${quizCorrectCount}/10 - Nhận ${tokensEarnedThisQuiz} 🎟️ lượt quay!`;
+    feedback.textContent = ` Hoàn thành! Đúng ${quizCorrectCount}/10 - Nhận ${tokensEarnedThisQuiz}  lượt quay!`;
 
-    document.getElementById('quiz-question').textContent = `🎉 Bạn trả lời đúng ${quizCorrectCount}/10 câu!`;
+    document.getElementById('quiz-question').textContent = `<img src="/img/party.png" class="em-icon"> Bạn trả lời đúng ${quizCorrectCount}/10 câu!`;
     document.getElementById('quiz-options').innerHTML = '';
     btnNext.style.display = 'none';
     btnBackHub.style.display = 'block';
@@ -424,7 +424,7 @@
     if (C && C.hasSpecies('host')) {
       hostChar = C.createCharacter('host', slot, { state: 'idle' });
     } else {
-      slot.textContent = '🎩'; // emoji fallback
+      slot.textContent = ''; // emoji fallback
     }
   }
 

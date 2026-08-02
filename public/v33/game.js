@@ -8,18 +8,18 @@ const STEPS_PER_MISSION = 3;
 const MAX_FAILS_PER_MISSION = 2;
 const TIMER_SECONDS = 10;
 
-const ANIMALS = ['🐱', '🐶', '🐰', '🐦', '🐸', '🐢', '🐿️', '🦊', '🐧', '🐼'];
+const ANIMALS = ['', '', '', '', '', '', '', '', '', ''];
 const LOCATIONS = [
-  { name: 'trên cây', emoji: '🌲' },
-  { name: 'dưới ao', emoji: '💧' },
-  { name: 'trong hang', emoji: '🕳️' },
-  { name: 'trên núi', emoji: '⛰️' },
-  { name: 'giữa sông', emoji: '🏞️' },
-  { name: 'trên mái nhà', emoji: '🏠' },
-  { name: 'trong bụi rậm', emoji: '🌿' },
-  { name: 'dưới cầu', emoji: '🌉' },
-  { name: 'trên đảo', emoji: '🏝️' },
-  { name: 'trong rừng', emoji: '🌳' }
+  { name: 'trên cây', emoji: '' },
+  { name: 'dưới ao', emoji: '' },
+  { name: 'trong hang', emoji: '' },
+  { name: 'trên núi', emoji: '' },
+  { name: 'giữa sông', emoji: '' },
+  { name: 'trên mái nhà', emoji: '' },
+  { name: 'trong bụi rậm', emoji: '' },
+  { name: 'dưới cầu', emoji: '' },
+  { name: 'trên đảo', emoji: '' },
+  { name: 'trong rừng', emoji: '' }
 ];
 
 // State
@@ -98,7 +98,7 @@ function renderRescuedGrid(collection) {
   const grid = document.getElementById('rescued-grid');
   grid.innerHTML = ANIMALS.map(a => {
     const rescued = collection.includes(a);
-    return `<div class="animal-badge ${rescued ? 'rescued' : 'empty'}">${rescued ? a : '❓'}</div>`;
+    return `<div class="animal-badge ${rescued ? 'rescued' : 'empty'}">${rescued ? a : ''}</div>`;
   }).join('');
 }
 
@@ -137,7 +137,7 @@ function startMission() {
   state.fails = 0;
 
   document.getElementById('mission-num').textContent = `Nhiệm vụ ${state.currentMission + 1}/${TOTAL_MISSIONS}`;
-  document.getElementById('mission-fails').textContent = `❌ 0/${MAX_FAILS_PER_MISSION}`;
+  document.getElementById('mission-fails').textContent = ` 0/${MAX_FAILS_PER_MISSION}`;
   document.getElementById('location-emoji').textContent = mission.location.emoji;
   document.getElementById('animal-emoji').textContent = mission.animal;
   document.getElementById('mission-text').textContent = `${mission.animal} mắc kẹt ${mission.location.name} ${mission.location.emoji}`;
@@ -237,7 +237,7 @@ function handleAnswer(btn, question) {
 
   if (selected === correct) {
     btn.classList.add('correct');
-    document.getElementById('q-feedback').textContent = '✅ Đúng rồi!';
+    document.getElementById('q-feedback').textContent = ' Đúng rồi!';
     handleCorrectAnswer();
   } else {
     btn.classList.add('wrong');
@@ -245,7 +245,7 @@ function handleAnswer(btn, question) {
     document.querySelectorAll('.q-option').forEach(b => {
       if (b.dataset.answer.toLowerCase() === correct) b.classList.add('correct');
     });
-    document.getElementById('q-feedback').textContent = '❌ Sai rồi!';
+    document.getElementById('q-feedback').textContent = ' Sai rồi!';
     handleWrongAnswer();
   }
 }
@@ -266,7 +266,7 @@ function handleCorrectAnswer() {
 
 function handleWrongAnswer() {
   state.fails++;
-  document.getElementById('mission-fails').textContent = `❌ ${state.fails}/${MAX_FAILS_PER_MISSION}`;
+  document.getElementById('mission-fails').textContent = ` ${state.fails}/${MAX_FAILS_PER_MISSION}`;
 
   setTimeout(() => {
     if (state.fails >= MAX_FAILS_PER_MISSION) {
@@ -283,14 +283,14 @@ function rescueSuccess() {
   state.rescuedAnimals.push(mission.animal);
 
   document.getElementById('rescue-anim').textContent = mission.animal;
-  document.getElementById('rescue-msg').textContent = `🎉 Đã cứu ${mission.animal} thành công!`;
+  document.getElementById('rescue-msg').textContent = `<img src="/img/party.png" class="em-icon"> Đã cứu ${mission.animal} thành công!`;
 
   showScreen('rescue-screen');
 }
 
 function missionFailed() {
   const mission = state.missions[state.currentMission];
-  document.getElementById('rescue-anim').textContent = '😢';
+  document.getElementById('rescue-anim').textContent = '';
   document.getElementById('rescue-msg').textContent = `Không cứu được ${mission.animal}... Tiếp tục nào!`;
 
   showScreen('rescue-screen');
@@ -322,11 +322,11 @@ function endGame() {
   }).join('');
 
   if (rescued >= 8) {
-    document.getElementById('result-title').textContent = '🏆 Tuyệt vời! Đội trưởng cứu hộ!';
+    document.getElementById('result-title').textContent = '<img src="/img/trophy.png" class="em-icon"> Tuyệt vời! Đội trưởng cứu hộ!';
   } else if (rescued >= 5) {
-    document.getElementById('result-title').textContent = '⭐ Giỏi lắm! Thành viên cứu hộ!';
+    document.getElementById('result-title').textContent = '<img src="/img/star.png" class="em-icon"> Giỏi lắm! Thành viên cứu hộ!';
   } else {
-    document.getElementById('result-title').textContent = '💪 Cố gắng thêm nhé!';
+    document.getElementById('result-title').textContent = ' Cố gắng thêm nhé!';
   }
 
   savePersist(rescued, state.rescuedAnimals);
@@ -450,7 +450,7 @@ init();
     const $ = id => document.getElementById(id);
 
     // Mount the start-screen mascot immediately.
-    heroChar = mount('hero-mascot', 'rescue_worker', '🚁', 96);
+    heroChar = mount('hero-mascot', 'rescue_worker', '', 96);
 
     // Observe each screen's active state to (re)mount sprites at the right time.
     function onScreenActive(id, fn) {
@@ -464,20 +464,20 @@ init();
     }
 
     onScreenActive('start-screen', () => {
-      if (!heroChar) heroChar = mount('hero-mascot', 'rescue_worker', '🚁', 96);
+      if (!heroChar) heroChar = mount('hero-mascot', 'rescue_worker', '', 96);
     });
     onScreenActive('mission-screen', () => {
-      rescuerChar = mount('rescuer-mascot', 'rescue_worker', '🚁', 80);
+      rescuerChar = mount('rescuer-mascot', 'rescue_worker', '', 80);
     });
     onScreenActive('rescue-screen', () => {
       const msg = $('rescue-msg');
       const success = !msg || msg.textContent.indexOf('Đã cứu') !== -1 || msg.textContent.indexOf('thành công') !== -1;
       if (success) {
-        chopperChar = mount('rescue-chopper', 'rescue_chopper', '🚁', 110);
+        chopperChar = mount('rescue-chopper', 'rescue_chopper', '', 110);
         celebrate(chopperChar, 'rescue-chopper', 'confetti', 18);
       } else {
         // Mission failed — show a gentle idle chopper, no confetti.
-        chopperChar = mount('rescue-chopper', 'rescue_chopper', '🚁', 110);
+        chopperChar = mount('rescue-chopper', 'rescue_chopper', '', 110);
       }
     });
 

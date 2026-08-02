@@ -34,13 +34,13 @@ const db = firebase.database();
     document.getElementById('my-name').value = data.name;
     document.getElementById('my-name').style.display = 'none';
     document.getElementById('my-name-label').style.display = 'block';
-    document.getElementById('my-name-label').textContent = `Chào ${data.name}! ⚡`;
+    document.getElementById('my-name-label').textContent = `Chào ${data.name}! <img src="/img/bolt.png" class="em-icon">`;
   } catch {
     // Network error - trust local
     document.getElementById('my-name').value = p.name;
     document.getElementById('my-name').style.display = 'none';
     document.getElementById('my-name-label').style.display = 'block';
-    document.getElementById('my-name-label').textContent = `Chào ${p.name}! ⚡`;
+    document.getElementById('my-name-label').textContent = `Chào ${p.name}! <img src="/img/bolt.png" class="em-icon">`;
   }
 })();
 
@@ -276,10 +276,10 @@ function handleUpdate(data) {
     // Opponent answered
     if (!resultShown && !data.roundResult) {
       if (myRole === 'host' && data.guestAnswer) {
-        document.getElementById('ob-status').textContent = '⚡ Đối thủ đã trả lời!';
+        document.getElementById('ob-status').textContent = '<img src="/img/bolt.png" class="em-icon"> Đối thủ đã trả lời!';
       }
       if (myRole === 'guest' && data.hostAnswer) {
-        document.getElementById('ob-status').textContent = '⚡ Đối thủ đã trả lời!';
+        document.getElementById('ob-status').textContent = '<img src="/img/bolt.png" class="em-icon"> Đối thủ đã trả lời!';
       }
     }
 
@@ -305,7 +305,7 @@ function showBattle(data) {
 
 function showRound(data, q) {
   document.getElementById('ob-round').textContent = `${data.currentRound + 1}/${data.questions.length}`;
-  document.getElementById('ob-badge').textContent = q.subject === 'math' ? '🔢 Toán' : '📖 TV';
+  document.getElementById('ob-badge').textContent = q.subject === 'math' ? ' Toán' : ' TV';
   document.getElementById('ob-text').textContent = q.question_text;
   document.getElementById('ob-status').textContent = '';
   document.getElementById('ob-p1-score').textContent = data.hostScore || 0;
@@ -357,7 +357,7 @@ document.getElementById('ob-options').addEventListener('click', (e) => {
   answeredThisRound = true;
   document.querySelectorAll('.ob-btn').forEach(b => b.disabled = true);
   btn.classList.add('selected');
-  document.getElementById('ob-status').textContent = '✅ Đã trả lời! Chờ đối thủ...';
+  document.getElementById('ob-status').textContent = ' Đã trả lời! Chờ đối thủ...';
 
   const key = myRole === 'host' ? 'hostAnswer' : 'guestAnswer';
   roomRef.update({ [key]: { answer: btn.dataset.opt, time: Date.now() } });
@@ -439,7 +439,7 @@ function showRoundResult(data) {
   document.getElementById('ob-p2-score').textContent = data.guestScore || 0;
 
   const myCorrect = myRole === 'host' ? r.hostCorrect : r.guestCorrect;
-  document.getElementById('ob-status').textContent = myCorrect ? '✅ Đúng rồi!' : '❌ Sai rồi!';
+  document.getElementById('ob-status').textContent = myCorrect ? ' Đúng rồi!' : ' Sai rồi!';
   playSound(myCorrect ? 'correct' : 'wrong');
 }
 
@@ -452,7 +452,7 @@ function showMatchEnd(data) {
   const iWon = (myRole === 'host' && m.winner === 'host') || (myRole === 'guest' && m.winner === 'guest');
   const tie = m.winner === 'tie';
 
-  document.getElementById('res-icon').textContent = tie ? '🤝' : iWon ? '🏆🎉' : '😢';
+  document.getElementById('res-icon').textContent = tie ? '' : iWon ? '<img src="/img/trophy.png" class="em-icon"><img src="/img/party.png" class="em-icon">' : '';
   document.getElementById('res-title').textContent = tie ? 'Hòa!' : iWon ? 'Bạn thắng!' : 'Bạn thua!';
   document.getElementById('res-p1-name').textContent = data.host;
   document.getElementById('res-p2-name').textContent = data.guest;
@@ -614,8 +614,8 @@ function startRaceMode(data) {
   raceState.myQuestionOrder = shuffleArray(data.questions);
 
   // Update track UI
-  document.getElementById('race-p1-name').textContent = `🌻 ${data.host}`;
-  document.getElementById('race-p2-name').textContent = `🧟 ${data.guest}`;
+  document.getElementById('race-p1-name').textContent = ` ${data.host}`;
+  document.getElementById('race-p2-name').textContent = ` ${data.guest}`;
   document.getElementById('race-track-len').textContent = raceState.trackLength;
   document.getElementById('race-track-len2').textContent = raceState.trackLength;
   document.getElementById('race-pos-host').textContent = '0';
@@ -714,7 +714,7 @@ document.getElementById('race-options')?.addEventListener('click', (e) => {
 
   if (isCorrect) {
     raceState.myPosition++;
-    document.getElementById('race-feedback').textContent = '✅ Đúng! Tiến lên!';
+    document.getElementById('race-feedback').textContent = ' Đúng! Tiến lên!';
     playSound('correct');
 
     // Update Firebase with my new position
@@ -726,7 +726,7 @@ document.getElementById('race-options')?.addEventListener('click', (e) => {
     // Check if I won
     if (raceState.myPosition >= raceState.trackLength) {
       raceState.finished = true;
-      document.getElementById('race-feedback').textContent = '🏆 Bạn về đích!';
+      document.getElementById('race-feedback').textContent = '<img src="/img/trophy.png" class="em-icon"> Bạn về đích!';
       if (myRole === 'host') {
         roomRef.update({
           state: 'finished',
@@ -742,7 +742,7 @@ document.getElementById('race-options')?.addEventListener('click', (e) => {
       return;
     }
   } else {
-    document.getElementById('race-feedback').textContent = '❌ Sai rồi!';
+    document.getElementById('race-feedback').textContent = ' Sai rồi!';
     playSound('wrong');
   }
 
@@ -768,7 +768,7 @@ function handleRaceUpdate(data) {
     raceState.finished = true;
     clearInterval(raceState.timerInterval);
     document.querySelectorAll('.race-btn').forEach(b => b.disabled = true);
-    document.getElementById('race-feedback').textContent = '😢 Đối thủ về đích trước!';
+    document.getElementById('race-feedback').textContent = ' Đối thủ về đích trước!';
 
     if (myRole === 'guest') {
       roomRef.update({

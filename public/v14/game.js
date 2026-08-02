@@ -2,20 +2,20 @@
 // Boss battles, map progression, rescue citizens!
 
 const ZONES = [
-  { id: 'forest', name: 'Rừng Xanh', icon: '🌲', bg: 'linear-gradient(180deg,#1a4a2e,#0d2818)', boss: '🦠', bossName: 'Virus Rêu', citizens: ['🐰','🐿️','🦊'], bossHP: 3 },
-  { id: 'desert', name: 'Sa Mạc Nóng', icon: '🏜️', bg: 'linear-gradient(180deg,#8b5e3c,#4a2c17)', boss: '🔥', bossName: 'Virus Lửa', citizens: ['🐪','🦎','🦅'], bossHP: 3 },
-  { id: 'snow', name: 'Vùng Tuyết', icon: '❄️', bg: 'linear-gradient(180deg,#4a6fa5,#2a3f6f)', boss: '💀', bossName: 'Virus Băng', citizens: ['🐧','🐻‍❄️','🦌'], bossHP: 4 },
-  { id: 'cave', name: 'Hang Động', icon: '⛰️', bg: 'linear-gradient(180deg,#3d2b1f,#1a1008)', boss: '🕷️', bossName: 'Virus Bóng Tối', citizens: ['🦇','🐉','🦉'], bossHP: 4 },
-  { id: 'castle', name: 'Lâu Đài Cuối', icon: '👾', bg: 'linear-gradient(180deg,#2d0a4e,#0f0020)', boss: '👾', bossName: 'Boss Cuối Cùng', citizens: ['🐱','🐶','🐼'], bossHP: 5 },
+  { id: 'forest', name: 'Rừng Xanh', icon: '', bg: 'linear-gradient(180deg,#1a4a2e,#0d2818)', boss: '', bossName: 'Virus Rêu', citizens: ['','',''], bossHP: 3 },
+  { id: 'desert', name: 'Sa Mạc Nóng', icon: '', bg: 'linear-gradient(180deg,#8b5e3c,#4a2c17)', boss: '<img src="/img/fire.png" class="em-icon">', bossName: 'Virus Lửa', citizens: ['','',''], bossHP: 3 },
+  { id: 'snow', name: 'Vùng Tuyết', icon: '', bg: 'linear-gradient(180deg,#4a6fa5,#2a3f6f)', boss: '', bossName: 'Virus Băng', citizens: ['','',''], bossHP: 4 },
+  { id: 'cave', name: 'Hang Động', icon: '', bg: 'linear-gradient(180deg,#3d2b1f,#1a1008)', boss: '', bossName: 'Virus Bóng Tối', citizens: ['','',''], bossHP: 4 },
+  { id: 'castle', name: 'Lâu Đài Cuối', icon: '', bg: 'linear-gradient(180deg,#2d0a4e,#0f0020)', boss: '', bossName: 'Boss Cuối Cùng', citizens: ['','',''], bossHP: 5 },
 ];
 
 const STORIES = [
   'Hành tinh đang gặp nguy! Virus Ngu Dốt đang tấn công khắp nơi...',
-  '🌲 Rừng Xanh đã an toàn! Nhưng Sa Mạc vẫn nguy hiểm...',
-  '🏜️ Sa Mạc đã được giải phóng! Phía trước là Vùng Tuyết lạnh giá...',
-  '❄️ Vùng Tuyết ấm lại rồi! Hang Động tối tăm đang chờ...',
-  '⛰️ Hang Động sáng trở lại! Chỉ còn Lâu Đài Boss Cuối...',
-  '🎉 HÀNH TINH ĐÃ ĐƯỢC CỨU! Con giỏi quá!'
+  ' Rừng Xanh đã an toàn! Nhưng Sa Mạc vẫn nguy hiểm...',
+  ' Sa Mạc đã được giải phóng! Phía trước là Vùng Tuyết lạnh giá...',
+  ' Vùng Tuyết ấm lại rồi! Hang Động tối tăm đang chờ...',
+  ' Hang Động sáng trở lại! Chỉ còn Lâu Đài Boss Cuối...',
+  '<img src="/img/party.png" class="em-icon"> HÀNH TINH ĐÃ ĐƯỢC CỨU! Con giỏi quá!'
 ];
 
 const QUESTIONS_PER_ZONE = 5;
@@ -89,12 +89,12 @@ function showMap() {
   container.innerHTML = ZONES.map((z, i) => {
     const cleared = S.zonesCleared.includes(i);
     const unlocked = i === 0 || S.zonesCleared.includes(i - 1);
-    const status = cleared ? '✅ Đã giải phóng' : unlocked ? '⚔️ Sẵn sàng chiến đấu!' : '🔒 Chưa mở';
+    const status = cleared ? ' Đã giải phóng' : unlocked ? ' Sẵn sàng chiến đấu!' : ' Chưa mở';
     const cls = cleared ? 'cleared' : unlocked ? 'unlocked' : 'locked';
     return `<div class="map-zone ${cls}" data-zone="${i}">
       <div class="zone-icon">${z.icon}</div>
       <div class="zone-info"><div class="zone-name">${z.name}</div><div class="zone-status">${status}</div></div>
-      <div class="zone-badge">${cleared ? '⭐' : unlocked ? '▶️' : '🔒'}</div>
+      <div class="zone-badge">${cleared ? '<img src="/img/star.png" class="em-icon">' : unlocked ? '▶' : ''}</div>
     </div>`;
   }).join('');
   document.getElementById('map-story').textContent = STORIES[S.zonesCleared.length] || '';
@@ -141,7 +141,7 @@ function showBattleEnemy(isBoss) {
     hpFill.style.width = '100%';
     document.querySelector('.enemy-hp-bar').style.display = '';
   } else {
-    enemyEl.textContent = '🦠';
+    enemyEl.textContent = '';
     enemyEl.style.fontSize = '3.5rem';
     labelEl.textContent = `Virus ${S.questionInZone + 1}/${QUESTIONS_PER_ZONE}`;
     document.querySelector('.enemy-hp-bar').style.display = 'none';
@@ -150,7 +150,7 @@ function showBattleEnemy(isBoss) {
 
 function updateBattleHUD() {
   document.getElementById('hud-progress').textContent = S.isBoss ? `BOSS` : `${S.questionInZone + 1}/${QUESTIONS_PER_ZONE}`;
-  document.getElementById('hud-shield').textContent = S.shield > 0 ? '🛡️'.repeat(S.shield) : '';
+  document.getElementById('hud-shield').textContent = S.shield > 0 ? ''.repeat(S.shield) : '';
 }
 
 function nextBattleQuestion() {
@@ -200,7 +200,7 @@ function handleTimeout() {
   document.querySelectorAll('.bq-btn').forEach(b => { b.disabled = true; b.classList.add('disabled'); });
   const correctBtn = document.querySelector(`.bq-btn[data-opt="${q.correct_answer}"]`);
   if (correctBtn) correctBtn.classList.add('correct');
-  document.getElementById('bq-status').textContent = '⏱️ Hết giờ!';
+  document.getElementById('bq-status').textContent = '⏱ Hết giờ!';
   document.getElementById('bq-status').className = 'bq-status bad';
   handleWrongAnswer(q);
 }
@@ -244,7 +244,7 @@ function handleCorrectAnswer(q) {
   setTimeout(() => hero.classList.remove('attack'), 500);
 
   // Show effect
-  showHeroEffect(quick ? '💥x2' : '💫');
+  showHeroEffect(quick ? 'x2' : '');
 
   if (S.isBoss) {
     const dmg = quick ? 2 : 1;
@@ -259,10 +259,10 @@ function handleCorrectAnswer(q) {
     setTimeout(() => enemy.classList.remove('hit'), 500);
 
     // Damage number
-    showDamageNumber(quick ? '-2 💥' : '-1', quick ? 'crit' : '');
+    showDamageNumber(quick ? '-2 ' : '-1', quick ? 'crit' : '');
     screenShake();
 
-    st.textContent = quick ? '💥 Critical! -2HP!' : '✅ Trúng! -1HP!';
+    st.textContent = quick ? ' Critical! -2HP!' : ' Trúng! -1HP!';
     st.className = 'bq-status good';
 
     if (S.bossHP <= 0) {
@@ -272,9 +272,9 @@ function handleCorrectAnswer(q) {
       return;
     }
   } else {
-    st.textContent = S.combo >= 3 ? `✅ Combo x${S.combo}! 🛡️+1` : '✅ Đúng rồi!';
+    st.textContent = S.combo >= 3 ? ` Combo x${S.combo}! +1` : ' Đúng rồi!';
     st.className = 'bq-status good';
-    showDamageNumber('✓', '');
+    showDamageNumber('', '');
     // Combo shield
     if (S.combo >= 3 && S.combo % 3 === 0) { S.shield = Math.min(S.shield + 1, 3); }
   }
@@ -289,10 +289,10 @@ function handleWrongAnswer(q) {
 
   if (S.shield > 0) {
     S.shield--;
-    st.textContent = '🛡️ Shield hấp thụ! An toàn!';
+    st.textContent = ' Shield hấp thụ! An toàn!';
     st.className = 'bq-status';
-    showHeroEffect('🛡️');
-    showDamageNumber('🛡️ Block!', '');
+    showHeroEffect('');
+    showDamageNumber(' Block!', '');
   } else if (S.isBoss) {
     S.bossHP = Math.min(S.bossMaxHP, S.bossHP + 1);
     S.bossCombo = 0;
@@ -304,10 +304,10 @@ function handleWrongAnswer(q) {
     setTimeout(() => enemy.classList.remove('heal'), 600);
     showDamageNumber('+1 HP', 'heal');
     screenShake();
-    st.textContent = '❌ Sai! Boss hồi +1HP!';
+    st.textContent = ' Sai! Boss hồi +1HP!';
     st.className = 'bq-status bad';
   } else {
-    st.textContent = '❌ Sai rồi! Cố lên!';
+    st.textContent = ' Sai rồi! Cố lên!';
     st.className = 'bq-status bad';
     screenShake();
   }
@@ -440,22 +440,22 @@ function endGame(won) {
   saveSession();
 
   const stars = S.zonesCleared.length >= 5 ? 3 : S.zonesCleared.length >= 3 ? 2 : S.zonesCleared.length >= 1 ? 1 : 0;
-  const title = won ? '🎉 HÀNH TINH ĐÃ ĐƯỢC CỨU!' : `⚔️ Đã giải phóng ${S.zonesCleared.length}/5 vùng!`;
+  const title = won ? '<img src="/img/party.png" class="em-icon"> HÀNH TINH ĐÃ ĐƯỢC CỨU!' : ` Đã giải phóng ${S.zonesCleared.length}/5 vùng!`;
 
   document.getElementById('result-container').innerHTML = `
     <div class="result-title">${title}</div>
     <div class="result-rescued">${S.rescued.join(' ') || '—'}</div>
     <div class="result-stats">
-      <div class="result-stat"><span>✅ Câu đúng</span><strong>${S.correct}</strong></div>
-      <div class="result-stat"><span>❌ Câu sai</span><strong>${S.incorrect}</strong></div>
-      <div class="result-stat"><span>🗺️ Vùng đất</span><strong>${S.zonesCleared.length}/5</strong></div>
-      <div class="result-stat"><span>🐰 Cư dân cứu</span><strong>${S.rescued.length}</strong></div>
-      <div class="result-stat"><span>⭐ Sao</span><strong>${'⭐'.repeat(stars) || '—'}</strong></div>
-      <div class="result-stat"><span>🐚 Tổng đã cứu</span><strong>${all.length}/15</strong></div>
+      <div class="result-stat"><span> Câu đúng</span><strong>${S.correct}</strong></div>
+      <div class="result-stat"><span> Câu sai</span><strong>${S.incorrect}</strong></div>
+      <div class="result-stat"><span> Vùng đất</span><strong>${S.zonesCleared.length}/5</strong></div>
+      <div class="result-stat"><span> Cư dân cứu</span><strong>${S.rescued.length}</strong></div>
+      <div class="result-stat"><span><img src="/img/star.png" class="em-icon"> Sao</span><strong>${'<img src="/img/star.png" class="em-icon">'.repeat(stars) || '—'}</strong></div>
+      <div class="result-stat"><span> Tổng đã cứu</span><strong>${all.length}/15</strong></div>
     </div>
     <div class="result-btns">
-      <button class="result-btn primary" onclick="location.reload()">🔄 Chơi lại</button>
-      <button class="result-btn secondary" onclick="location.href='/'">🏠 Trang chủ</button>
+      <button class="result-btn primary" onclick="location.reload()"> Chơi lại</button>
+      <button class="result-btn secondary" onclick="location.href='/'"> Trang chủ</button>
     </div>`;
   showScreen('result-screen');
   if (window.checkAndShowPrompt && getPlayerId()) window.checkAndShowPrompt(getPlayerId());
@@ -488,7 +488,7 @@ async function logAnswer(q, selected, correct, isCorrect) {
     if (C && C.hasSpecies('rescuer_hero')) {
       heroChar = C.createCharacter('rescuer_hero', host, { state: 'idle', size: 92 });
     } else {
-      host.textContent = '🚀';
+      host.textContent = '';
     }
   }
 
@@ -501,7 +501,7 @@ async function logAnswer(q, selected, correct, isCorrect) {
     if (C && C.hasSpecies('rescuer_germ')) {
       enemyChar = C.createCharacter('rescuer_germ', host, { state: 'idle', size: 84 });
     } else {
-      host.textContent = '🦠';
+      host.textContent = '';
     }
   }
 

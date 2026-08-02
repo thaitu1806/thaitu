@@ -13,7 +13,7 @@
   <!-- LOGIN SCREEN -->
   <div id="admin-login" class="admin-login-overlay">
     <div class="admin-login-box">
-      <div class="login-icon">🔒</div>
+      <div class="login-icon"></div>
       <h2>Đăng nhập quản lý</h2>
       <p class="login-sub">Dành cho bố mẹ</p>
       <input type="text" id="login-user" placeholder="Tên đăng nhập" autocomplete="username">
@@ -26,20 +26,20 @@
 
   <div class="admin-container" id="admin-main" style="display:none">
     <header class="admin-header">
-      <h1>🛠️ Quản lý câu hỏi</h1>
+      <h1> Quản lý câu hỏi</h1>
       <a href="/" class="btn-link">← Về game</a>
     </header>
 
     <div class="admin-tabs">
-      <button class="tab active" data-tab="generator">🎲 Sinh tự động</button>
-      <button class="tab" data-tab="ai-generator">🤖 AI</button>
-      <button class="tab" data-tab="manual">✏️ Thêm thủ công</button>
-      <button class="tab" data-tab="list">📋 Danh sách</button>
-      <button class="tab" data-tab="exams">📝 Bài thi</button>
-      <button class="tab" data-tab="players">👤 Người chơi</button>
-      <button class="tab" data-tab="parents">👨‍👩‍👧 Phụ huynh</button>
-      <button class="tab" data-tab="stats">📊 Thống kê</button>
-      <button class="tab" data-tab="shop">🛒 Shop</button>
+      <button class="tab active" data-tab="generator"> Sinh tự động</button>
+      <button class="tab" data-tab="ai-generator"> AI</button>
+      <button class="tab" data-tab="manual"> Thêm thủ công</button>
+      <button class="tab" data-tab="list"> Danh sách</button>
+      <button class="tab" data-tab="exams"> Bài thi</button>
+      <button class="tab" data-tab="players"> Người chơi</button>
+      <button class="tab" data-tab="parents"> Phụ huynh</button>
+      <button class="tab" data-tab="stats"> Thống kê</button>
+      <button class="tab" data-tab="shop"> Shop</button>
     </div>
 
     <!-- TAB: GENERATOR -->
@@ -72,15 +72,15 @@
             <label>Số lượng:</label>
             <input type="number" id="gen-count" value="20" min="1" max="100">
           </div>
-          <button class="btn btn-generate" id="btn-generate">🎲 Sinh câu hỏi</button>
+          <button class="btn btn-generate" id="btn-generate"> Sinh câu hỏi</button>
         </div>
 
         <div id="gen-preview" class="gen-preview hidden">
           <h3>Xem trước (<span id="gen-preview-count">0</span> câu)</h3>
           <div id="gen-preview-list" class="preview-list"></div>
           <div class="preview-actions">
-            <button class="btn btn-save" id="btn-save-generated">💾 Lưu tất cả</button>
-            <button class="btn btn-clear" id="btn-clear-preview">🗑️ Xóa</button>
+            <button class="btn btn-save" id="btn-save-generated"> Lưu tất cả</button>
+            <button class="btn btn-clear" id="btn-clear-preview"> Xóa</button>
           </div>
         </div>
       </div>
@@ -89,7 +89,7 @@
     <!-- TAB: AI GENERATOR -->
     <div class="tab-content" id="tab-ai-generator">
       <div class="generator-panel">
-        <h2>🤖 Tạo câu hỏi bằng AI</h2>
+        <h2> Tạo câu hỏi bằng AI</h2>
         <p style="color:#666;margin-bottom:15px;">Dùng AI để tạo câu hỏi mới theo chương trình giáo dục Việt Nam.</p>
         <div id="ai-gen-status" class="ai-status-badge" style="margin-bottom:15px;"></div>
         <div class="gen-controls">
@@ -122,7 +122,7 @@
             <label>Số lượng:</label>
             <input type="number" id="ai-gen-count" value="5" min="1" max="20">
           </div>
-          <button class="btn btn-ai-generate" id="btn-ai-generate">🤖 Tạo câu hỏi bằng AI</button>
+          <button class="btn btn-ai-generate" id="btn-ai-generate"> Tạo câu hỏi bằng AI</button>
         </div>
 
         <div id="ai-gen-loading" class="hidden" style="text-align:center;padding:20px;">
@@ -134,8 +134,8 @@
           <h3>Câu hỏi AI (<span id="ai-gen-preview-count">0</span> câu)</h3>
           <div id="ai-gen-preview-list" class="preview-list"></div>
           <div class="preview-actions">
-            <button class="btn btn-save" id="btn-save-ai-generated">💾 Lưu tất cả vào ngân hàng</button>
-            <button class="btn btn-clear" id="btn-clear-ai-preview">🗑️ Xóa</button>
+            <button class="btn btn-save" id="btn-save-ai-generated"> Lưu tất cả vào ngân hàng</button>
+            <button class="btn btn-clear" id="btn-clear-ai-preview"> Xóa</button>
           </div>
         </div>
       </div>
@@ -192,7 +192,7 @@
           <label>Giải thích (tùy chọn):</label>
           <input type="text" name="explanation" placeholder="Giải thích đáp án...">
         </div>
-        <button type="submit" class="btn btn-save">💾 Lưu câu hỏi</button>
+        <button type="submit" class="btn btn-save"> Lưu câu hỏi</button>
       </form>
       <div id="manual-message" class="message hidden"></div>
     </div>
@@ -234,35 +234,35 @@
 
     <!-- TAB: PLAYERS -->
     <div class="tab-content" id="tab-players">
-      <h2>👤 Quản lý người chơi</h2>
+      <h2> Quản lý người chơi</h2>
       <div id="players-content"></div>
       <div id="player-detail-modal" class="modal hidden"></div>
     </div>
 
     <!-- TAB: PARENTS -->
     <div class="tab-content" id="tab-parents">
-      <h2>👨‍👩‍👧 Quản lý phụ huynh</h2>
+      <h2> Quản lý phụ huynh</h2>
       <p style="color:#666;margin-bottom:14px;">Danh sách tài khoản phụ huynh đã đăng ký và các con đã liên kết.</p>
       <div id="parents-content"></div>
     </div>
 
     <!-- TAB: SHOP -->
     <div class="tab-content" id="tab-shop">
-      <h2>🛒 Quản lý Shop & Phần thưởng</h2>
+      <h2> Quản lý Shop & Phần thưởng</h2>
 
       <!-- Diamond Economy Stats -->
       <div class="shop-stats" id="shop-stats">
         <div class="stats-overview">
-          <div class="stat-card"><div class="stat-number" id="stat-earned">0</div><div class="stat-label">💎 Tổng phát</div></div>
-          <div class="stat-card"><div class="stat-number" id="stat-spent">0</div><div class="stat-label">💎 Tổng tiêu</div></div>
-          <div class="stat-card"><div class="stat-number" id="stat-top">-</div><div class="stat-label">🏆 Top mua</div></div>
+          <div class="stat-card"><div class="stat-number" id="stat-earned">0</div><div class="stat-label"> Tổng phát</div></div>
+          <div class="stat-card"><div class="stat-number" id="stat-spent">0</div><div class="stat-label"> Tổng tiêu</div></div>
+          <div class="stat-card"><div class="stat-number" id="stat-top">-</div><div class="stat-label"> Top mua</div></div>
         </div>
       </div>
 
       <!-- Shop Items CRUD -->
       <div class="detail-section">
-        <h3>📦 Vật phẩm Shop</h3>
-        <button class="btn btn-save" id="btn-show-shop-form" onclick="toggleShopForm()">➕ Thêm vật phẩm</button>
+        <h3> Vật phẩm Shop</h3>
+        <button class="btn btn-save" id="btn-show-shop-form" onclick="toggleShopForm()"> Thêm vật phẩm</button>
 
         <div id="shop-item-form" class="shop-form hidden" style="margin-top:15px;">
           <input type="hidden" id="shop-edit-id">
@@ -278,7 +278,7 @@
                 <option value="voucher">Phần thưởng thực</option>
               </select>
             </div>
-            <div class="ea-row"><label>Giá 💎:</label><input type="number" id="shop-price" value="10" min="1"></div>
+            <div class="ea-row"><label>Giá :</label><input type="number" id="shop-price" value="10" min="1"></div>
             <div class="ea-row"><label>Cấp tối thiểu:</label>
               <select id="shop-level">
                 <option value="bronze">Bronze</option>
@@ -288,10 +288,10 @@
                 <option value="master">Master</option>
               </select>
             </div>
-            <div class="ea-row"><label>Hình/Emoji:</label><input type="text" id="shop-image" placeholder="🎁 hoặc URL hình"></div>
+            <div class="ea-row"><label>Hình/Emoji:</label><input type="text" id="shop-image" placeholder=" hoặc URL hình"></div>
             <div class="ea-row"><label>Giới hạn/tuần:</label><input type="number" id="shop-max-week" placeholder="Không giới hạn" min="0"></div>
             <div style="display:flex;gap:10px;margin-top:10px;">
-              <button class="btn btn-save" onclick="saveShopItem()">💾 Lưu</button>
+              <button class="btn btn-save" onclick="saveShopItem()"> Lưu</button>
               <button class="btn btn-clear" onclick="cancelShopForm()">Hủy</button>
             </div>
           </div>
@@ -302,14 +302,14 @@
 
       <!-- Voucher Approval -->
       <div class="detail-section">
-        <h3>🎫 Phiếu thưởng chờ duyệt</h3>
+        <h3> Phiếu thưởng chờ duyệt</h3>
         <div id="vouchers-list"></div>
       </div>
     </div>
 
     <!-- TAB: EXAMS -->
     <div class="tab-content" id="tab-exams">
-      <h2>📝 Quản lý bài thi</h2>
+      <h2> Quản lý bài thi</h2>
       <div class="exam-admin-create">
         <h3>Tạo bài thi mới</h3>
         <div class="ea-form">
@@ -322,7 +322,7 @@
           </div>
           <div class="ea-row"><label>Số câu:</label><input type="number" id="ea-count" value="10" min="5" max="30"></div>
           <div class="ea-row"><label>Thời gian (phút):</label><input type="number" id="ea-time" value="15" min="5" max="60"></div>
-          <button class="btn btn-save" id="btn-create-exam">📝 Tạo bài thi (tự chọn câu hỏi)</button>
+          <button class="btn btn-save" id="btn-create-exam"> Tạo bài thi (tự chọn câu hỏi)</button>
         </div>
       </div>
       <div class="exam-admin-list">
@@ -334,6 +334,7 @@
   </div>
 
   <script src="admin.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

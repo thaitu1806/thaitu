@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
   <script src="api-config.js"></script>
+  <script src="ocean-bg.js" defer></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <link rel="icon" href="/logo-icon.png" type="image/png">
@@ -19,13 +20,7 @@
       font-family: 'Nunito', sans-serif;
       min-height: 100vh;
       color: var(--ink);
-      background: #eaf3ff;
-      background-image:
-        radial-gradient(circle at 12% 8%, rgba(79,172,254,0.55), transparent 42%),
-        radial-gradient(circle at 88% 4%, rgba(168,85,247,0.40), transparent 40%),
-        radial-gradient(circle at 50% 100%, rgba(0,242,254,0.40), transparent 55%),
-        linear-gradient(160deg, #eef5ff 0%, #e6edff 100%);
-      background-attachment: fixed;
+      background: transparent;
       padding: env(safe-area-inset-top, 14px) 14px 40px;
     }
     .wrap { max-width: 900px; margin: 0 auto; }
@@ -285,28 +280,26 @@
         <h1 class="home-title"><img src="/wordmark.png" alt="Học Vui" style="height:1.6em;vertical-align:middle;margin-left:-32px;"></h1>
         <p class="home-sub">Chọn cách chơi nào!</p>
       </div>
-      <button class="menu-btn" id="menu-btn" type="button" aria-label="Menu">☰</button>
+      <button class="menu-btn" id="menu-btn" type="button" aria-label="Menu"></button>
     </div>
 
     <!-- Dropdown menu (hidden by default) -->
     <div class="menu-dropdown" id="menu-dropdown">
-      <a href="/guide.html">📖 Hướng dẫn chơi</a>
-      <a href="#" id="link-report">🏅 Phiếu bé ngoan</a>
-      <a href="/lab/">🧪 Trò chơi mới</a>
-      <a href="/profile.html">👤 Hồ sơ của con</a>
-      <a href="/parent.html">👨‍👩‍👧 Phụ huynh</a>
-      <a href="/admin.html">🔒 Quản trị</a>
+      <a href="/profile.html"> Hồ sơ của con</a>
+      <a href="#" id="link-report"> Phiếu bé ngoan</a>
+      <a href="/parent.html"> Phụ huynh</a>
+      <a href="/admin.html"> Quản trị</a>
     </div>
 
     <div id="reward-bar" style="display:none;">
-      <span class="chip-stat" id="rb-streak">🔥 0 ngày</span>
+      <span class="chip-stat" id="rb-streak"><img src="/img/fire.png" style="width:16px;height:16px;vertical-align:middle;"> 0 ngày</span>
       <span class="separator">|</span>
-      <span class="chip-stat" id="rb-diamonds">💎 0</span>
+      <span class="chip-stat" id="rb-diamonds"><img src="/img/diamond.png" style="width:16px;height:16px;vertical-align:middle;"> 0</span>
       <span class="separator">|</span>
-      <span class="chip-stat" id="rb-quests">📋 0/0 NV</span>
+      <span class="chip-stat" id="rb-quests"><img src="/img/clipboard.png" style="width:16px;height:16px;vertical-align:middle;"> 0/0 NV</span>
       <span class="separator">|</span>
-      <a class="chip-stat" id="rb-shop" href="/shop.html">🛒 Shop</a>
-      <button class="chip-stat" id="rb-album" type="button" style="border:none;cursor:pointer;background:linear-gradient(135deg,#a06bff,#7a3bd6);color:#fff;">📔 Sưu tập</button>
+      <a class="chip-stat" id="rb-shop" href="/shop.html"> Shop</a>
+      <button class="chip-stat" id="rb-album" type="button" style="border:none;cursor:pointer;background:linear-gradient(135deg,#a06bff,#7a3bd6);color:#fff;"> Sưu tập</button>
     </div>
 
     <!-- PET SHOWCASE (evolving buddy + progress) -->
@@ -317,12 +310,12 @@
         <div class="pet-progress-txt" id="pet-progress-txt">0 câu đúng</div>
         <div class="pet-bar"><div class="pet-bar-fill" id="pet-bar-fill"></div></div>
       </div>
-      <button class="pet-album-btn" id="pet-album-btn" type="button">📔</button>
+      <button class="pet-album-btn" id="pet-album-btn" type="button"></button>
     </div>
 
     <!-- CHƠI TIẾP (1 chạm vào game gần nhất) -->
     <a id="continue-banner" class="continue-banner" href="#" style="display:none;">
-      <span class="cb-icon" id="cb-icon">🎮</span>
+      <span class="cb-icon" id="cb-icon"></span>
       <span class="cb-text">
         <span class="cb-label">▶ Chơi tiếp</span>
         <span class="cb-name" id="cb-name"></span>
@@ -370,29 +363,38 @@
     </div>
 
     <div class="game-grid" id="game-grid"></div>
-    <p class="empty-msg" id="empty-msg" style="display:none;">Không tìm thấy trò chơi nào 🔍</p>
+    <p class="empty-msg" id="empty-msg" style="display:none;">Không tìm thấy trò chơi nào </p>
 
   </div>
 
   <!-- PROFILE GATE POPUP -->
+  <style>
+    .grade-icon { display:inline-block; width:24px; height:24px; background-image:url('/img/stickers-2-clean.png'); background-size:240px 267px; background-repeat:no-repeat; vertical-align:middle; flex-shrink:0; }
+    .grade-icon-0 { background-position:-168px -146px; }
+    .grade-icon-1 { background-position:0px -146px; }
+    .grade-icon-2 { background-position:-24px -146px; }
+    .grade-icon-3 { background-position:-48px -146px; }
+    .grade-icon-4 { background-position:-72px -146px; }
+    .grade-icon-5 { background-position:-120px -146px; }
+  </style>
   <div id="profile-gate" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); font-family:'Nunito',sans-serif; align-items:center; justify-content:center;">
     <div style="background:white; border-radius:24px; padding:30px 25px; max-width:320px; width:88%; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.3); animation:popIn 0.3s;">
-      <div style="font-size:3.5rem; margin-bottom:8px;">🧒</div>
+      <div style="font-size:3.5rem; margin-bottom:8px;"></div>
       <h2 style="font-size:1.3rem; color:#333; margin-bottom:5px;">Chào con!</h2>
       <p style="color:#888; font-size:0.9rem; margin-bottom:18px;">Nhập tên để bắt đầu chơi nhé</p>
       <input type="text" id="gate-name" placeholder="Tên của con..." maxlength="15" style="width:100%; padding:14px; border:2px solid #e0e0e0; border-radius:12px; font-size:1.1rem; text-align:center; outline:none; font-family:inherit; margin-bottom:12px;">
       <div class="grade-selector" style="margin-bottom:14px;">
         <label style="display:block; font-weight:700; font-size:0.9rem; color:#555; margin-bottom:8px;">Lớp của con:</label>
         <div class="grade-options" id="gate-grade-options" style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
-          <button type="button" data-grade="0" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">🧸 5 tuổi</button>
-          <button type="button" data-grade="1" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">🎒 Lớp 1</button>
-          <button type="button" data-grade="2" class="grade-btn active" style="padding:10px 14px; border:2px solid #4facfe; border-radius:12px; background:#e3f2fd; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">📚 Lớp 2</button>
-          <button type="button" data-grade="3" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">📖 Lớp 3</button>
-          <button type="button" data-grade="4" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">📘 Lớp 4</button>
-          <button type="button" data-grade="5" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s;">📗 Lớp 5</button>
+          <button type="button" data-grade="0" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px;"><span class="grade-icon grade-icon-0"></span> 5 tuổi</button>
+          <button type="button" data-grade="1" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px;"><span class="grade-icon grade-icon-1"></span> Lớp 1</button>
+          <button type="button" data-grade="2" class="grade-btn active" style="padding:10px 14px; border:2px solid #4facfe; border-radius:12px; background:#e3f2fd; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px;"><span class="grade-icon grade-icon-2"></span> Lớp 2</button>
+          <button type="button" data-grade="3" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px;"><span class="grade-icon grade-icon-3"></span> Lớp 3</button>
+          <button type="button" data-grade="4" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px;"><span class="grade-icon grade-icon-4"></span> Lớp 4</button>
+          <button type="button" data-grade="5" class="grade-btn" style="padding:10px 14px; border:2px solid #e0e0e0; border-radius:12px; background:white; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px;"><span class="grade-icon grade-icon-5"></span> Lớp 5</button>
         </div>
       </div>
-      <button id="gate-btn" style="width:100%; padding:14px; background:linear-gradient(135deg,#4facfe,#00f2fe); color:white; border:none; border-radius:12px; font-size:1.1rem; font-weight:700; cursor:pointer;">🎮 Vào chơi!</button>
+      <button id="gate-btn" style="width:100%; padding:14px; background:linear-gradient(135deg,#4facfe,#00f2fe); color:white; border:none; border-radius:12px; font-size:1.1rem; font-weight:700; cursor:pointer;"> Vào chơi!</button>
       <p id="gate-msg" style="color:#f44336; font-size:0.85rem; margin-top:8px; min-height:18px;"></p>
     </div>
   </div>
@@ -403,65 +405,65 @@
      Plain "/vNN/" path strings are kept here so routing-consistency.test.js (which
      scans the raw HTML for /v2/.. /v40/) still passes. */
   const GAMES = [
-    { p:'/v2/',  i:'🗺️', n:'Phiêu Lưu Kho Báu', d:'Băng qua đảo hoang tới rương vàng!', c:'phieu', bg:'#fff1e0' },
-    { p:'/v3/',  i:'💪', n:'Kéo Co Trí Tuệ', d:'Đáp đúng nhanh hơn để kéo dây thắng!', c:'dau', bg:'#e9f7ec' },
-    { p:'/v4/',  i:'📱', n:'Đấu Online', d:'Mỗi bạn 1 điện thoại!', c:'dau', bg:'#fdeaea' },
-    { p:'/v5/',  i:'🎲', n:'Cờ Cá Ngựa', d:'Lắc xúc xắc, trả lời đúng để tiến!', c:'dau', bg:'#f3edff' },
-    { p:'/v6/',  i:'🏎️', n:'Đua Xe Trí Tuệ', d:'Tăng tốc, combo bơm nitro về đích!', c:'dau', bg:'#fdeef5' },
-    { p:'/v7/',  i:'🧗', n:'Leo Vách Đá', d:'Chọn đúng mỏm đá để leo lên đỉnh!', c:'phieu', bg:'#e7f6ff' },
-    { p:'/v8/',  i:'🏰', n:'Xếp Tháp Thăng Bằng', d:'Căn thời điểm thả khối, xây tháp cao!', c:'sangtao', bg:'#fff1e0' },
-    { p:'/v9/',  i:'⚔️', n:'Phá Đảo Boss', d:'Tung chiêu hạ gục 3 con boss!', c:'dau', bg:'#eef0f5' },
-    { p:'/v10/', i:'💎', n:'Đào Vàng Dò Mìn', d:'Đào ô tìm báu vật, tránh mìn!', c:'giaitri', bg:'#eef0f5' },
-    { p:'/v11/', i:'💰', n:'Tỉ Phú Trí Tuệ', d:'Mua tỉnh thành, thu tiền thuê!', c:'kinhdoanh', bg:'#fff8e0' },
-    { p:'/v12/', i:'🧩', n:'Lật Hình Trí Tuệ', d:'Ghép câu hỏi với đáp án!', c:'giaitri', bg:'#f3edff' },
-    { p:'/v13/', i:'🌊', n:'Thám Hiểm Đại Dương', d:'Lặn sâu, khám phá sinh vật biển!', c:'phieu', bg:'#e7f6ff' },
-    { p:'/v14/', i:'🚀', n:'Giải Cứu Hành Tinh', d:'Hạ boss virus, cứu cư dân!', c:'phieu', bg:'#f3edff' },
-    { p:'/v15/', i:'🦁', n:'Vườn Thú Kỳ Diệu', d:'Xây vườn thú, sưu tập thú cưng!', c:'kinhdoanh', bg:'#fff1e0' },
-    { p:'/v16/', i:'👨‍🍳', n:'Đầu Bếp Nhí', d:'Nấu ăn, phục vụ khách!', c:'kinhdoanh', bg:'#fdeaea' },
-    { p:'/v17/', i:'🚀', n:'Phi Hành Gia Nhí', d:'Khám phá Hệ Mặt Trời!', c:'phieu', bg:'#eef0f5' },
-    { p:'/v18/', i:'⚔️', n:'Ninja Toán Học', d:'Chém câu hỏi, luyện võ trí tuệ!', c:'phieu', bg:'#fff1e0' },
-    { p:'/v19/', i:'🔍', n:'Thám Tử Nhí', d:'Giải mã manh mối, phá án!', c:'phieu', bg:'#f3edff' },
-    { p:'/v20/', i:'🌾', n:'Nông Trại Vui Vẻ', d:'Trồng cây, thu hoạch, kiếm xu!', c:'kinhdoanh', bg:'#e9f7ec' },
-    { p:'/v21/', i:'🚒', n:'Siêu Nhân Cứu Hỏa', d:'Dập lửa, cứu người!', c:'phieu', bg:'#fdeaea' },
-    { p:'/v22/', i:'🏎️', n:'Đua Xe Tri Thức', d:'Đua tốc độ với bạn bè!', c:'dau', bg:'#e7f6ff' },
-    { p:'/v23/', i:'🏥', n:'Bệnh Viện Thú Cưng', d:'Chữa bệnh cho thú!', c:'kinhdoanh', bg:'#fdeef5' },
-    { p:'/v24/', i:'🏙️', n:'Xây Thành Phố', d:'Xây dựng thành phố mơ ước!', c:'sangtao', bg:'#e9f7ec' },
-    { p:'/v25/', i:'🎈', n:'Pháo Đài Bóng Bay', d:'Bắn hạ bóng bay, bảo vệ pháo đài!', c:'giaitri', bg:'#e7f6ff' },
-    { p:'/v26/', i:'🎡', n:'Vòng Quay May Mắn', d:'Quay vòng quay, nhận thưởng!', c:'giaitri', bg:'#fdeef5' },
-    { p:'/v27/', i:'🧙', n:'Lớp Học Phép Thuật', d:'Học thần chú, chiến đấu bóng tối!', c:'phieu', bg:'#f3edff' },
-    { p:'/v28/', i:'📖', n:'Truyện Cổ Tích', d:'Đọc truyện, mở trang bằng trí tuệ!', c:'sangtao', bg:'#fff8e0' },
-    { p:'/v29/', i:'🏝️', n:'Đảo Hoang Sinh Tồn', d:'Kiếm tài nguyên, craft bè thoát đảo!', c:'phieu', bg:'#fff1e0' },
-    { p:'/v30/', i:'🎪', n:'Giải Đố Vui', d:'Mini-games đa dạng, điểm cao!', c:'giaitri', bg:'#fdeef5' },
-    { p:'/v31/', i:'📮', n:'Bưu Điện Vui', d:'Giao thư đúng địa chỉ!', c:'kinhdoanh', bg:'#e9f7ec' },
-    { p:'/v32/', i:'🔬', n:'Nhà Khoa Học Nhí', d:'Thí nghiệm, tạo sinh vật mới!', c:'sangtao', bg:'#f3edff' },
-    { p:'/v33/', i:'🚁', n:'Đội Cứu Hộ', d:'Cứu động vật mắc kẹt!', c:'phieu', bg:'#e9f7ec' },
-    { p:'/v34/', i:'🎵', n:'Nhạc Sĩ Nhí', d:'Tạo bài hát từ nốt nhạc!', c:'sangtao', bg:'#f3edff' },
-    { p:'/v35/', i:'🍦', n:'Tiệm Kem', d:'Xếp kem, phục vụ khách!', c:'kinhdoanh', bg:'#fdeef5' },
-    { p:'/v36/', i:'🤿', n:'Thợ Lặn Kho Báu', d:'Lật ô tìm kho báu!', c:'phieu', bg:'#e7f6ff' },
-    { p:'/v37/', i:'🏃', n:'Vận Động Viên', d:'Olympic mini, giành huy chương!', c:'dau', bg:'#e9f7ec' },
-    { p:'/v38/', i:'🦷', n:'Bác Sĩ Răng', d:'Chữa răng, thu nụ cười!', c:'kinhdoanh', bg:'#e7f6ff' },
-    { p:'/v39/', i:'👗', n:'Thời Trang Show', d:'Thiết kế outfit, trình diễn!', c:'sangtao', bg:'#fdeef5' },
-    { p:'/v40/', i:'🛒', n:'Siêu Thị Mini', d:'Tính tiền, nâng cấp shop!', c:'kinhdoanh', bg:'#fff8e0' },
-    { p:'/v41/', i:'🍄', n:'Phiêu Lưu Mario', d:'Nhảy qua chướng ngại bằng trí tuệ!', c:'phieu', bg:'#fdeaea' },
-    { p:'/v42/', i:'🎈', n:'Khinh Khí Cầu', d:'Bay cao lên mây, núi và vũ trụ!', c:'phieu', bg:'#e7f6ff' },
-    { p:'/v43/', i:'🍕', n:'Pizzeria Của Bé', d:'Làm pizza, phục vụ khách, kiếm tip!', c:'kinhdoanh', bg:'#fff1e0' },
-    { p:'/v44/', i:'🦈', n:'Vũ Trụ Cá Mập', d:'Đua tàu không gian, vượt boss cá mập!', c:'phieu', bg:'#eef0f5' },
-    { p:'/v45/', i:'🤖', n:'Lập Trình Robot', d:'Mở khóa lệnh, đưa robot về đích!', c:'sangtao', bg:'#e7f6ff' },
-    { p:'/v46/', i:'🌵', n:'Tiệm Cây Cảnh', d:'Tưới cây, sưu tập bonsai!', c:'kinhdoanh', bg:'#e9f7ec' },
-    { p:'/v47/', i:'🧪', n:'Lab Slime', d:'Pha màu, săn slime hiếm!', c:'sangtao', bg:'#f3edff' },
-    { p:'/v48/', i:'🦖', n:'Cứu Hộ Khủng Long', d:'Cứu khủng long trước khi núi lửa phun!', c:'phieu', bg:'#fff1e0' },
-    { p:'/v49/', i:'🎧', n:'DJ Nhí', d:'Mix nhịp, lên đỉnh sàn diễn!', c:'sangtao', bg:'#f3edff' },
-    { p:'/v50/', i:'⚓', n:'Tàu Ngầm Đại Dương', d:'Lặn sâu, săn báu vật đáy biển!', c:'phieu', bg:'#e7f6ff' },
-    { p:'/v51/', i:'🐢', n:'Vườn Thú Pokémon Việt', d:'Bắt 8 loài thú trong rừng!', c:'phieu', bg:'#e9f7ec' },
-    { p:'/v52/', i:'🏮', n:'Lễ Hội Trung Thu', d:'Thắp đèn lồng đón trăng rằm!', c:'sangtao', bg:'#fdeaea' },
-    { p:'/v53/', i:'🐱', n:'Đặc Vụ Mèo', d:'Lẻn qua tầng, thu thập tài liệu mật!', c:'phieu', bg:'#eef0f5' },
-    { p:'/v54/', i:'🧙', n:'Phù Thủy Thuốc', d:'Pha chế thuốc thần kỳ trong vạc!', c:'sangtao', bg:'#f3edff' },
-    { p:'/v55/', i:'⚽', n:'Sân Bóng Trí Tuệ', d:'Sút bóng vào lưới, ghi bàn!', c:'dau', bg:'#e9f7ec' },
-    { p:'/v56/', i:'⛄', n:'Người Tuyết Cứu Bắc Cực', d:'Xây người tuyết, cứu Bắc Cực!', c:'sangtao', bg:'#e7f6ff' },
-    { p:'/v57/', i:'👘', n:'Tiệm May Áo Dài', d:'May áo dài truyền thống Việt!', c:'kinhdoanh', bg:'#fdeef5' },
-    { p:'/v58/', i:'🌾', n:'Hành Trình Lúa Gạo', d:'Gieo, nảy mầm, đơm bông, thu hoạch!', c:'kinhdoanh', bg:'#e9f7ec' },
-    { p:'/v59/', i:'🚴', n:'Đua Xe Đạp', d:'Đạp xe, giữ sức, cán đích!', c:'dau', bg:'#fff1e0' },
-    { p:'/v60/', i:'📜', n:'Cổ Tích Việt Nam', d:'Đọc truyện cổ tích, học bài học cha ông!', c:'sangtao', bg:'#fff8e0' }
+    { p:'/v2/',  i:'', n:'Phiêu Lưu Kho Báu', d:'Băng qua đảo hoang tới rương vàng!', c:'phieu', bg:'#fff1e0' },
+    { p:'/v3/',  i:'', n:'Kéo Co Trí Tuệ', d:'Đáp đúng nhanh hơn để kéo dây thắng!', c:'dau', bg:'#e9f7ec' },
+    { p:'/v4/',  i:'', n:'Đấu Online', d:'Mỗi bạn 1 điện thoại!', c:'dau', bg:'#fdeaea' },
+    { p:'/v5/',  i:'', n:'Cờ Cá Ngựa', d:'Lắc xúc xắc, trả lời đúng để tiến!', c:'dau', bg:'#f3edff' },
+    { p:'/v6/',  i:'', n:'Đua Xe Trí Tuệ', d:'Tăng tốc, combo bơm nitro về đích!', c:'dau', bg:'#fdeef5' },
+    { p:'/v7/',  i:'', n:'Leo Vách Đá', d:'Chọn đúng mỏm đá để leo lên đỉnh!', c:'phieu', bg:'#e7f6ff' },
+    { p:'/v8/',  i:'', n:'Xếp Tháp Thăng Bằng', d:'Căn thời điểm thả khối, xây tháp cao!', c:'sangtao', bg:'#fff1e0' },
+    { p:'/v9/',  i:'', n:'Phá Đảo Boss', d:'Tung chiêu hạ gục 3 con boss!', c:'dau', bg:'#eef0f5' },
+    { p:'/v10/', i:'', n:'Đào Vàng Dò Mìn', d:'Đào ô tìm báu vật, tránh mìn!', c:'giaitri', bg:'#eef0f5' },
+    { p:'/v11/', i:'', n:'Tỉ Phú Trí Tuệ', d:'Mua tỉnh thành, thu tiền thuê!', c:'kinhdoanh', bg:'#fff8e0' },
+    { p:'/v12/', i:'', n:'Lật Hình Trí Tuệ', d:'Ghép câu hỏi với đáp án!', c:'giaitri', bg:'#f3edff' },
+    { p:'/v13/', i:'', n:'Thám Hiểm Đại Dương', d:'Lặn sâu, khám phá sinh vật biển!', c:'phieu', bg:'#e7f6ff' },
+    { p:'/v14/', i:'', n:'Giải Cứu Hành Tinh', d:'Hạ boss virus, cứu cư dân!', c:'phieu', bg:'#f3edff' },
+    { p:'/v15/', i:'', n:'Vườn Thú Kỳ Diệu', d:'Xây vườn thú, sưu tập thú cưng!', c:'kinhdoanh', bg:'#fff1e0' },
+    { p:'/v16/', i:'', n:'Đầu Bếp Nhí', d:'Nấu ăn, phục vụ khách!', c:'kinhdoanh', bg:'#fdeaea' },
+    { p:'/v17/', i:'', n:'Phi Hành Gia Nhí', d:'Khám phá Hệ Mặt Trời!', c:'phieu', bg:'#eef0f5' },
+    { p:'/v18/', i:'', n:'Ninja Toán Học', d:'Chém câu hỏi, luyện võ trí tuệ!', c:'phieu', bg:'#fff1e0' },
+    { p:'/v19/', i:'', n:'Thám Tử Nhí', d:'Giải mã manh mối, phá án!', c:'phieu', bg:'#f3edff' },
+    { p:'/v20/', i:'', n:'Nông Trại Vui Vẻ', d:'Trồng cây, thu hoạch, kiếm xu!', c:'kinhdoanh', bg:'#e9f7ec' },
+    { p:'/v21/', i:'', n:'Siêu Nhân Cứu Hỏa', d:'Dập lửa, cứu người!', c:'phieu', bg:'#fdeaea' },
+    { p:'/v22/', i:'', n:'Đua Xe Tri Thức', d:'Đua tốc độ với bạn bè!', c:'dau', bg:'#e7f6ff' },
+    { p:'/v23/', i:'', n:'Bệnh Viện Thú Cưng', d:'Chữa bệnh cho thú!', c:'kinhdoanh', bg:'#fdeef5' },
+    { p:'/v24/', i:'', n:'Xây Thành Phố', d:'Xây dựng thành phố mơ ước!', c:'sangtao', bg:'#e9f7ec' },
+    { p:'/v25/', i:'', n:'Pháo Đài Bóng Bay', d:'Bắn hạ bóng bay, bảo vệ pháo đài!', c:'giaitri', bg:'#e7f6ff' },
+    { p:'/v26/', i:'', n:'Vòng Quay May Mắn', d:'Quay vòng quay, nhận thưởng!', c:'giaitri', bg:'#fdeef5' },
+    { p:'/v27/', i:'', n:'Lớp Học Phép Thuật', d:'Học thần chú, chiến đấu bóng tối!', c:'phieu', bg:'#f3edff' },
+    { p:'/v28/', i:'', n:'Truyện Cổ Tích', d:'Đọc truyện, mở trang bằng trí tuệ!', c:'sangtao', bg:'#fff8e0' },
+    { p:'/v29/', i:'', n:'Đảo Hoang Sinh Tồn', d:'Kiếm tài nguyên, craft bè thoát đảo!', c:'phieu', bg:'#fff1e0' },
+    { p:'/v30/', i:'', n:'Giải Đố Vui', d:'Mini-games đa dạng, điểm cao!', c:'giaitri', bg:'#fdeef5' },
+    { p:'/v31/', i:'', n:'Bưu Điện Vui', d:'Giao thư đúng địa chỉ!', c:'kinhdoanh', bg:'#e9f7ec' },
+    { p:'/v32/', i:'', n:'Nhà Khoa Học Nhí', d:'Thí nghiệm, tạo sinh vật mới!', c:'sangtao', bg:'#f3edff' },
+    { p:'/v33/', i:'', n:'Đội Cứu Hộ', d:'Cứu động vật mắc kẹt!', c:'phieu', bg:'#e9f7ec' },
+    { p:'/v34/', i:'', n:'Nhạc Sĩ Nhí', d:'Tạo bài hát từ nốt nhạc!', c:'sangtao', bg:'#f3edff' },
+    { p:'/v35/', i:'', n:'Tiệm Kem', d:'Xếp kem, phục vụ khách!', c:'kinhdoanh', bg:'#fdeef5' },
+    { p:'/v36/', i:'', n:'Thợ Lặn Kho Báu', d:'Lật ô tìm kho báu!', c:'phieu', bg:'#e7f6ff' },
+    { p:'/v37/', i:'', n:'Vận Động Viên', d:'Olympic mini, giành huy chương!', c:'dau', bg:'#e9f7ec' },
+    { p:'/v38/', i:'', n:'Bác Sĩ Răng', d:'Chữa răng, thu nụ cười!', c:'kinhdoanh', bg:'#e7f6ff' },
+    { p:'/v39/', i:'', n:'Thời Trang Show', d:'Thiết kế outfit, trình diễn!', c:'sangtao', bg:'#fdeef5' },
+    { p:'/v40/', i:'', n:'Siêu Thị Mini', d:'Tính tiền, nâng cấp shop!', c:'kinhdoanh', bg:'#fff8e0' },
+    { p:'/v41/', i:'', n:'Phiêu Lưu Mario', d:'Nhảy qua chướng ngại bằng trí tuệ!', c:'phieu', bg:'#fdeaea' },
+    { p:'/v42/', i:'', n:'Khinh Khí Cầu', d:'Bay cao lên mây, núi và vũ trụ!', c:'phieu', bg:'#e7f6ff' },
+    { p:'/v43/', i:'', n:'Pizzeria Của Bé', d:'Làm pizza, phục vụ khách, kiếm tip!', c:'kinhdoanh', bg:'#fff1e0' },
+    { p:'/v44/', i:'', n:'Vũ Trụ Cá Mập', d:'Đua tàu không gian, vượt boss cá mập!', c:'phieu', bg:'#eef0f5' },
+    { p:'/v45/', i:'', n:'Lập Trình Robot', d:'Mở khóa lệnh, đưa robot về đích!', c:'sangtao', bg:'#e7f6ff' },
+    { p:'/v46/', i:'', n:'Tiệm Cây Cảnh', d:'Tưới cây, sưu tập bonsai!', c:'kinhdoanh', bg:'#e9f7ec' },
+    { p:'/v47/', i:'', n:'Lab Slime', d:'Pha màu, săn slime hiếm!', c:'sangtao', bg:'#f3edff' },
+    { p:'/v48/', i:'', n:'Cứu Hộ Khủng Long', d:'Cứu khủng long trước khi núi lửa phun!', c:'phieu', bg:'#fff1e0' },
+    { p:'/v49/', i:'', n:'DJ Nhí', d:'Mix nhịp, lên đỉnh sàn diễn!', c:'sangtao', bg:'#f3edff' },
+    { p:'/v50/', i:'', n:'Tàu Ngầm Đại Dương', d:'Lặn sâu, săn báu vật đáy biển!', c:'phieu', bg:'#e7f6ff' },
+    { p:'/v51/', i:'', n:'Vườn Thú Pokémon Việt', d:'Bắt 8 loài thú trong rừng!', c:'phieu', bg:'#e9f7ec' },
+    { p:'/v52/', i:'', n:'Lễ Hội Trung Thu', d:'Thắp đèn lồng đón trăng rằm!', c:'sangtao', bg:'#fdeaea' },
+    { p:'/v53/', i:'', n:'Đặc Vụ Mèo', d:'Lẻn qua tầng, thu thập tài liệu mật!', c:'phieu', bg:'#eef0f5' },
+    { p:'/v54/', i:'', n:'Phù Thủy Thuốc', d:'Pha chế thuốc thần kỳ trong vạc!', c:'sangtao', bg:'#f3edff' },
+    { p:'/v55/', i:'', n:'Sân Bóng Trí Tuệ', d:'Sút bóng vào lưới, ghi bàn!', c:'dau', bg:'#e9f7ec' },
+    { p:'/v56/', i:'', n:'Người Tuyết Cứu Bắc Cực', d:'Xây người tuyết, cứu Bắc Cực!', c:'sangtao', bg:'#e7f6ff' },
+    { p:'/v57/', i:'', n:'Tiệm May Áo Dài', d:'May áo dài truyền thống Việt!', c:'kinhdoanh', bg:'#fdeef5' },
+    { p:'/v58/', i:'', n:'Hành Trình Lúa Gạo', d:'Gieo, nảy mầm, đơm bông, thu hoạch!', c:'kinhdoanh', bg:'#e9f7ec' },
+    { p:'/v59/', i:'', n:'Đua Xe Đạp', d:'Đạp xe, giữ sức, cán đích!', c:'dau', bg:'#fff1e0' },
+    { p:'/v60/', i:'', n:'Cổ Tích Việt Nam', d:'Đọc truyện cổ tích, học bài học cha ông!', c:'sangtao', bg:'#fff8e0' }
   ];
 
   const CATS = [
@@ -529,7 +531,7 @@
     const gIdx = GAMES.indexOf(g);
     const iconHtml = gIdx >= 0 ? '<span class="gc-emoji" style="' + gameIconStyle(gIdx, 56) + '"></span>' : '<span class="gc-emoji">' + g.i + '</span>';
     return '<a href="' + g.p + '" class="game-card" data-path="' + g.p + '" style="--gc-bg:' + g.bg + '">' +
-      '<button class="gc-fav' + (fav ? ' on' : '') + '" data-fav="' + g.p + '" title="Yêu thích" aria-label="Yêu thích">' + (fav ? '⭐' : '☆') + '</button>' +
+      '<button class="gc-fav' + (fav ? ' on' : '') + '" data-fav="' + g.p + '" title="Yêu thích" aria-label="Yêu thích">' + (fav ? '⭐' : '') + '</button>' +
       '<span class="gc-cover">' +
         iconHtml +
         '<img class="gc-img" src="' + base + '.jpg" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
@@ -648,7 +650,7 @@
     if (window.HocVuiProgress && window.HocVuiProgress.showReportCard) window.HocVuiProgress.showReportCard();
   });
 
-  // ☰ Menu toggle
+  //  Menu toggle
   (function() {
     const btn = document.getElementById('menu-btn');
     const dd = document.getElementById('menu-dropdown');
@@ -656,12 +658,12 @@
     btn.addEventListener('click', function(e) {
       e.stopPropagation();
       dd.classList.toggle('open');
-      btn.textContent = dd.classList.contains('open') ? '✕' : '☰';
+      btn.textContent = dd.classList.contains('open') ? '' : '';
     });
     document.addEventListener('click', function(e) {
       if (!dd.contains(e.target) && e.target !== btn) {
         dd.classList.remove('open');
-        btn.textContent = '☰';
+        btn.textContent = '';
       }
     });
   })();
@@ -672,8 +674,8 @@
     const THRESH = [0, 15, 60, 200, 500];
     function petSvg(stage) {
       const bodyFill = stage >= 4 ? '#ffe27a' : '#ffd24d';
-      const crown = stage >= 4 ? '<text x="50" y="14" text-anchor="middle" font-size="18">👑</text>' : '';
-      const medal = stage >= 3 ? '<text x="66" y="74" text-anchor="middle" font-size="13">🏅</text>' : '';
+      const crown = stage >= 4 ? '<text x="50" y="14" text-anchor="middle" font-size="18"></text>' : '';
+      const medal = stage >= 3 ? '<text x="66" y="74" text-anchor="middle" font-size="13"></text>' : '';
       const sparks = stage >= 2 ? '<circle cx="22" cy="34" r="2.4" fill="#fff7a8"/><circle cx="80" cy="40" r="2" fill="#fff7a8"/>' : '';
       const glow = stage >= 4 ? 'filter:drop-shadow(0 0 5px #ffe27a);' : '';
       const scale = [0.82, 0.9, 1, 1.05, 1.1][stage] || 1;
@@ -701,7 +703,7 @@
         const prev = THRESH[stage];
         document.getElementById('pet-bar-fill').style.width = Math.min(100, Math.round((c - prev) / (next - prev) * 100)) + '%';
       } else {
-        document.getElementById('pet-progress-txt').textContent = `${c} câu đúng • Tối đa rồi! 🌟`;
+        document.getElementById('pet-progress-txt').textContent = `${c} câu đúng • Tối đa rồi! `;
         document.getElementById('pet-bar-fill').style.width = '100%';
       }
       card.style.display = 'flex';
@@ -731,12 +733,12 @@
             return;
           }
           const sub = document.querySelector('.home-sub');
-          if (sub) sub.textContent = `Xin chào ${data.name}! 🎉`;
+          if (sub) sub.textContent = `Xin chào ${data.name}! `;
           localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade ?? 2 }));
           loadRewardBar(data.id);
         } catch {
           const sub = document.querySelector('.home-sub');
-          if (sub) sub.textContent = `Xin chào ${p.name}! 🎉`;
+          if (sub) sub.textContent = `Xin chào ${p.name}! `;
           loadRewardBar(p.id);
         }
       }
@@ -752,17 +754,17 @@
           ]);
           if (streakRes.ok) {
             const streak = await streakRes.json();
-            document.getElementById('rb-streak').textContent = `🔥 ${streak.current_streak || 0} ngày`;
+            document.getElementById('rb-streak').innerHTML = `<img src="/img/fire.png" style="width:16px;height:16px;vertical-align:middle;"> ${streak.current_streak || 0} ngày`;
           }
           if (diamondsRes.ok) {
             const diamonds = await diamondsRes.json();
-            document.getElementById('rb-diamonds').textContent = `💎 ${diamonds.total_diamonds || 0}`;
+            document.getElementById('rb-diamonds').innerHTML = `<img src="/img/diamond.png" style="width:16px;height:16px;vertical-align:middle;"> ${diamonds.total_diamonds || 0}`;
           }
           if (questsRes.ok) {
             const quests = await questsRes.json();
             const questList = Array.isArray(quests) ? quests : (quests.quests || []);
             const completed = questList.filter(q => q.is_completed).length;
-            document.getElementById('rb-quests').textContent = `📋 ${completed}/${questList.length} NV`;
+            document.getElementById('rb-quests').innerHTML = `<img src="/img/clipboard.png" style="width:16px;height:16px;vertical-align:middle;"> ${completed}/${questList.length} NV`;
           }
         } catch {}
       }
@@ -800,7 +802,7 @@
           localStorage.setItem('hocvui_profile', JSON.stringify({ id: data.id, name: data.name, grade: data.grade ?? selectedGrade }));
           gate.style.display = 'none';
           const sub = document.querySelector('.home-sub');
-          if (sub) sub.textContent = `Xin chào ${data.name}! 🎉`;
+          if (sub) sub.textContent = `Xin chào ${data.name}! `;
           loadRewardBar(data.id);
         } catch {
           document.getElementById('gate-msg').textContent = 'Lỗi kết nối!';
@@ -808,6 +810,7 @@
       }
     })();
   </script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>🎲 Cờ Cá Ngựa - Học Vui</title>
+  <title> Cờ Cá Ngựa - Học Vui</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -23,27 +23,27 @@
     <!-- SETUP SCREEN -->
     <section id="setup-screen" class="screen active">
       <div class="setup-container">
-        <h1 class="setup-title">🎲 Cờ Cá Ngựa</h1>
+        <h1 class="setup-title"> Cờ Cá Ngựa</h1>
         <p class="setup-subtitle">Chọn người chơi và bắt đầu!</p>
-        <button class="help-btn" id="help-btn-open">❓</button>
+        <button class="help-btn" id="help-btn-open"></button>
         <div class="help-popup" id="help-popup">
           <div class="help-content">
-            <h3>🎲 Cách chơi Cờ Cá Ngựa</h3>
+            <h3> Cách chơi Cờ Cá Ngựa</h3>
             <p>• Tung 2 xúc xắc → bấm ô đích → trả lời câu hỏi<br>
             • Đúng = quân tiến đến ô đó<br>
             • Sai = mất lượt, quân đứng yên<br>
             • Ô ⭐ sao = tiến thêm 2 ô bonus<br>
-            • Ô ⚠️ bẫy = random: zombie thắng/bạn thắng/thử thách<br>
+            • Ô  bẫy = random: zombie thắng/bạn thắng/thử thách<br>
             • Quân đạp lên quân khác = đá về start<br>
-            • Ai về đích 🏆 trước thắng!<br>
-            • Chơi 2-4 người hoặc với Bot 🤖</p>
+            • Ai về đích  trước thắng!<br>
+            • Chơi 2-4 người hoặc với Bot </p>
             <button onclick="document.getElementById('help-popup').classList.remove('active')">Hiểu rồi!</button>
           </div>
         </div>
 
         <!-- Player Count Selector -->
         <div class="setup-section">
-          <label class="setup-label">👥 Số người chơi</label>
+          <label class="setup-label"> Số người chơi</label>
           <div class="btn-group" id="player-count-group">
             <button class="btn-option active" data-count="2">2</button>
             <button class="btn-option" data-count="3">3</button>
@@ -53,7 +53,7 @@
 
         <!-- Player Slots -->
         <div class="setup-section">
-          <label class="setup-label">🎮 Người chơi</label>
+          <label class="setup-label"> Người chơi</label>
           <div id="player-slots" class="player-slots">
             <!-- Dynamically generated -->
           </div>
@@ -61,7 +61,7 @@
 
         <!-- Subject Selector -->
         <div class="setup-section">
-          <label class="setup-label">📚 Môn học</label>
+          <label class="setup-label"> Môn học</label>
           <div class="btn-group" id="subject-group">
             <button class="btn-option active" data-subject="math">Toán</button>
             <button class="btn-option" data-subject="vietnamese">Tiếng Việt</button>
@@ -72,7 +72,7 @@
 
         <!-- Difficulty Selector -->
         <div class="setup-section">
-          <label class="setup-label">📊 Mức độ</label>
+          <label class="setup-label"> Mức độ</label>
           <div class="btn-group" id="difficulty-group">
             <button class="btn-option active" data-difficulty="easy">Dễ</button>
             <button class="btn-option" data-difficulty="medium">Trung bình</button>
@@ -82,33 +82,33 @@
 
         <!-- Trap Count Selector -->
         <div class="setup-section">
-          <label class="setup-label">⚠️ Số ô bẫy: <span id="trap-count-display">5</span></label>
+          <label class="setup-label"> Số ô bẫy: <span id="trap-count-display">5</span></label>
           <input type="range" id="trap-count-slider" class="trap-slider" min="5" max="20" value="5" step="1">
         </div>
 
         <!-- Start Button -->
-        <button class="btn-start" id="btn-start" disabled>🚀 Bắt đầu!</button>
-        <button class="btn-guide" id="btn-guide">📖 Hướng Dẫn Cách Chơi</button>
+        <button class="btn-start" id="btn-start" disabled> Bắt đầu!</button>
+        <button class="btn-guide" id="btn-guide"> Hướng Dẫn Cách Chơi</button>
 
-        <button class="btn-online" id="btn-online-mode">🌐 Chơi Online</button>
+        <button class="btn-online" id="btn-online-mode"> Chơi Online</button>
 
-        <a href="/" class="home-link">🏠 Về trang chủ</a>
+        <a href="/" class="home-link"> Về trang chủ</a>
       </div>
     </section>
 
     <!-- ONLINE SETUP SCREEN -->
     <section id="online-screen" class="screen">
       <div class="setup-container">
-        <h1 class="setup-title">🌐 Online Cờ Cá Ngựa</h1>
+        <h1 class="setup-title"> Online Cờ Cá Ngựa</h1>
         <p class="setup-subtitle">Chơi với bạn bè qua mã phòng</p>
 
         <div class="setup-section">
-          <label class="setup-label">👤 Tên của bạn</label>
+          <label class="setup-label"> Tên của bạn</label>
           <input type="text" id="v5-online-name" class="online-input" placeholder="Nhập tên..." maxlength="12">
         </div>
 
         <div class="setup-section">
-          <label class="setup-label">👥 Số người chơi</label>
+          <label class="setup-label"> Số người chơi</label>
           <div class="btn-group" id="v5-online-count">
             <button class="btn-option active" data-count="2">2</button>
             <button class="btn-option" data-count="3">3</button>
@@ -117,7 +117,7 @@
         </div>
 
         <div class="setup-section">
-          <label class="setup-label">📚 Môn học</label>
+          <label class="setup-label"> Môn học</label>
           <div class="btn-group" id="v5-online-subject">
             <button class="btn-option active" data-subject="math">Toán</button>
             <button class="btn-option" data-subject="vietnamese">Tiếng Việt</button>
@@ -127,7 +127,7 @@
         </div>
 
         <div class="setup-section">
-          <label class="setup-label">📊 Mức độ</label>
+          <label class="setup-label"> Mức độ</label>
           <div class="btn-group" id="v5-online-difficulty">
             <button class="btn-option active" data-difficulty="easy">Dễ</button>
             <button class="btn-option" data-difficulty="medium">Trung bình</button>
@@ -136,11 +136,11 @@
         </div>
 
         <div class="setup-section">
-          <label class="setup-label">⚠️ Số ô bẫy: <span id="v5-online-trap-display">5</span></label>
+          <label class="setup-label"> Số ô bẫy: <span id="v5-online-trap-display">5</span></label>
           <input type="range" id="v5-online-trap-slider" class="trap-slider" min="5" max="20" value="5" step="1">
         </div>
 
-        <button class="btn-start" id="v5-create-room">🏠 Tạo phòng</button>
+        <button class="btn-start" id="v5-create-room"> Tạo phòng</button>
 
         <div class="setup-section" style="margin-top:16px;">
           <label class="setup-label">Hoặc nhập mã phòng:</label>
@@ -150,19 +150,19 @@
           </div>
         </div>
 
-        <button class="btn-option" id="v5-back-setup" style="width:100%;margin-top:12px;">⬅️ Quay lại</button>
+        <button class="btn-option" id="v5-back-setup" style="width:100%;margin-top:12px;">⬅ Quay lại</button>
       </div>
     </section>
 
     <!-- ONLINE WAITING SCREEN -->
     <section id="online-waiting-screen" class="screen">
       <div class="setup-container" style="text-align:center;">
-        <h2>🕐 Phòng chờ</h2>
+        <h2> Phòng chờ</h2>
         <p class="setup-subtitle">Mã phòng: <strong id="v5-display-code">----</strong></p>
         <p id="v5-waiting-status">Đang đợi...</p>
         <div id="v5-waiting-players" style="margin:16px 0;"></div>
-        <button class="btn-start hidden" id="v5-start-online">🎲 Bắt đầu!</button>
-        <button class="btn-option" id="v5-leave-room" style="width:100%;margin-top:12px;">❌ Rời phòng</button>
+        <button class="btn-start hidden" id="v5-start-online"> Bắt đầu!</button>
+        <button class="btn-option" id="v5-leave-room" style="width:100%;margin-top:12px;"> Rời phòng</button>
       </div>
     </section>
 
@@ -177,14 +177,14 @@
 
   <div id="guide-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card">
-      <h3 class="modal-title">📖 Cách Chơi Cờ Cá Ngựa</h3>
+      <h3 class="modal-title"> Cách Chơi Cờ Cá Ngựa</h3>
       <ul class="modal-rules">
-        <li>🎲 Bấm <b>Tung xúc xắc</b> rồi bấm vào <b>ô đích</b> để di chuyển.</li>
-        <li>✅ Trả lời <b>đúng</b> = quân tiến tới ô đích. <b>Sai</b> = đứng yên, mất lượt.</li>
+        <li> Bấm <b>Tung xúc xắc</b> rồi bấm vào <b>ô đích</b> để di chuyển.</li>
+        <li> Trả lời <b>đúng</b> = quân tiến tới ô đích. <b>Sai</b> = đứng yên, mất lượt.</li>
         <li>⭐ Ô sao = tiến thêm <b>2 ô</b> thưởng.</li>
-        <li>⚠️ Ô bẫy = ngẫu nhiên: zombie thắng (lùi 3 ô) / bạn thắng (đứng yên) / thử thách câu hỏi.</li>
-        <li>🦶 Đạp lên quân khác = <b>đá</b> quân đó về vạch xuất phát.</li>
-        <li>🏆 Ai về <b>đích</b> trước thì thắng! Chơi 2-4 người hoặc với máy 🤖.</li>
+        <li> Ô bẫy = ngẫu nhiên: zombie thắng (lùi 3 ô) / bạn thắng (đứng yên) / thử thách câu hỏi.</li>
+        <li> Đạp lên quân khác = <b>đá</b> quân đó về vạch xuất phát.</li>
+        <li> Ai về <b>đích</b> trước thì thắng! Chơi 2-4 người hoặc với máy .</li>
       </ul>
       <button class="btn-start" id="btn-guide-close">Hiểu rồi!</button>
     </div>
@@ -192,12 +192,12 @@
 
   <div id="exit-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card exit-modal-card">
-      <div class="exit-modal-icon">🚪</div>
+      <div class="exit-modal-icon"></div>
       <p class="exit-modal-text">Thoát game?</p>
       <p class="exit-modal-sub">Tiến trình hiện tại sẽ không được lưu.</p>
       <div class="exit-modal-actions">
         <button class="exit-modal-cancel" id="btn-exit-cancel">Tiếp tục chơi</button>
-        <button class="exit-modal-confirm" id="btn-exit-confirm">🚪 Thoát</button>
+        <button class="exit-modal-confirm" id="btn-exit-confirm"> Thoát</button>
       </div>
     </div>
   </div>
@@ -218,6 +218,7 @@
   <script src="/quest-widget.js"></script>
   <script src="/diamond-animation.js"></script>
   <script src="/help-rules.js"></script>
+  <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>
   <script src="/engagement.js"></script>
   <script src="/avatar.js"></script>

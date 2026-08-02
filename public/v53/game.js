@@ -95,7 +95,7 @@
     if (spyId && C && C.hasSpecies(spyId)) {
       spyChar = C.createCharacter(spyId, host, { state: 'idle' });
     } else {
-      host.textContent = '🐱';
+      host.textContent = '';
     }
   }
 
@@ -128,7 +128,7 @@
       else if (i === state.floor) f.classList.add('current');
       const label = document.createElement('span');
       label.className = 'floor-label';
-      label.textContent = `Tầng ${i} ${i === state.floors ? '🎯' : i < state.floor ? '✓' : ''}`;
+      label.textContent = `Tầng ${i} ${i === state.floors ? '' : i < state.floor ? '' : ''}`;
       f.appendChild(label);
       if (i === agentFloor) {
         f.classList.add('has-agent');
@@ -147,7 +147,7 @@
     for (let i = 0; i < state.maxAlarms; i++) {
       const a = document.createElement('span');
       a.className = 'alarm-pip' + (i < state.alarms ? ' on' : '');
-      a.textContent = '🚨';
+      a.textContent = '';
       row.appendChild(a);
     }
   }
@@ -223,10 +223,10 @@
       fb.textContent = `${last} Lấy được tài liệu mật!`;
     } else if (ok) {
       fb.className = 'feedback good';
-      fb.textContent = '✅ Lén qua tầng!';
+      fb.textContent = ' Lén qua tầng!';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = '🚨 Bị phát hiện! Báo động kêu.';
+      fb.textContent = ' Bị phát hiện! Báo động kêu.';
     }
     renderHud(); renderTower(); renderAlarms(); renderIntel();
     // Animate the freshly-mounted agent + spawn particles on its floor.
@@ -278,19 +278,19 @@
     }
 
     setTimeout(() => {
-      const badges = state.intel.join(' ') || '🐱';
+      const badges = state.intel.join(' ') || '';
       $('result-badges').textContent = badges;
-      let title = '🐱 Kết Nhiệm Vụ';
-      if (state.outcome === 'won') title = '🎯 Đặc Vụ Xuất Sắc!';
-      else if (state.outcome === 'caught') title = '🚨 Bị Bắt Rồi!';
+      let title = ' Kết Nhiệm Vụ';
+      if (state.outcome === 'won') title = ' Đặc Vụ Xuất Sắc!';
+      else if (state.outcome === 'caught') title = ' Bị Bắt Rồi!';
       $('result-title').textContent = title;
-      $('result-emoji').textContent = state.outcome === 'won' ? '🎯' : state.outcome === 'caught' ? '🚨' : '🐱';
+      $('result-emoji').textContent = state.outcome === 'won' ? '' : state.outcome === 'caught' ? '' : '';
       $('result-detail').innerHTML = `
-        🏢 Tầng: ${state.floor}/${state.floors}<br>
-        📁 Tài liệu: ${state.intel.length}<br>
-        🚨 Báo động: ${state.alarms}/${state.maxAlarms}<br>
-        ✅ Đúng: ${state.correct}/${total} (${acc}%)<br>
-        ⭐ Sao: ${stars}/3
+         Tầng: ${state.floor}/${state.floors}<br>
+         Tài liệu: ${state.intel.length}<br>
+         Báo động: ${state.alarms}/${state.maxAlarms}<br>
+         Đúng: ${state.correct}/${total} (${acc}%)<br>
+        <img src="/img/star.png" class="em-icon"> Sao: ${stars}/3
       `;
       ss('result-screen');
       if (typeof window.checkAndShowPrompt === 'function') { try { window.checkAndShowPrompt(); } catch(e){} }
@@ -326,8 +326,8 @@
     for (let i = 0; i < count; i++) {
       const p = document.createElement('span');
       p.className = 'pfx pfx-' + kind;
-      if (kind === 'intel') p.textContent = '📁';
-      else if (kind === 'alarm') p.textContent = '❗';
+      if (kind === 'intel') p.textContent = '';
+      else if (kind === 'alarm') p.textContent = '';
       p.style.setProperty('--tx', (Math.random() * 70 - 35) + 'px');
       p.style.setProperty('--ty', -(Math.random() * 38 + 22) + 'px');
       p.style.setProperty('--delay', (Math.random() * 0.15) + 's');

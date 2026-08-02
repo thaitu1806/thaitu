@@ -74,7 +74,7 @@
     const layer = $('layer-clouds');
     if (!layer) return;
     layer.innerHTML = '';
-    const emojis = ['☁️', '🌥️', '⛅'];
+    const emojis = ['', '', ''];
     let html = '';
     for (let pass = 0; pass < 2; pass++) {
       for (let i = 0; i < 5; i++) {
@@ -102,7 +102,7 @@
     if (C && C.hasSpecies(id)) {
       heroChar = C.createCharacter(id, host, { state: 'idle' });
     } else {
-      host.textContent = '🦸';
+      host.textContent = '';
     }
   }
 
@@ -346,10 +346,10 @@
     if (isCorrect) {
       const fast = msRemaining > (window.V41Logic.TIMER_SECONDS * 1000) / 2;
       fb.className = 'feedback good';
-      fb.textContent = fast ? '✨ Xuất sắc! +2 xu' : '✅ Đúng rồi! +1 xu';
+      fb.textContent = fast ? ' Xuất sắc! +2 xu' : ' Đúng rồi! +1 xu';
     } else {
       fb.className = 'feedback bad';
-      fb.textContent = '❌ Sai mất! Mất 1 mạng.';
+      fb.textContent = ' Sai mất! Mất 1 mạng.';
     }
   }
 
@@ -387,7 +387,7 @@
     if (state.outcome === 'won') {
       setHeroState('happy', 0);
       spawnConfetti($('game-screen'), 40);
-      $('star-row').textContent = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+      $('star-row').textContent = '<img src="/img/star.png" class="em-icon">'.repeat(stars) + ''.repeat(3 - stars);
       $('victory-detail').innerHTML = renderDetail({ stars, accuracy, total });
       showScreen('victory-screen');
     } else {
@@ -402,10 +402,10 @@
 
   function renderDetail({ stars, accuracy, total }) {
     return `
-      ✅ Đúng: ${state.correct}/${total} (${accuracy}%)<br>
-      ❤️ Mạng còn: ${state.lives}/${window.V41Logic.STARTING_LIVES}<br>
-      💰 Xu kiếm: ${state.coins}<br>
-      🏆 Sao: ${stars}/3
+       Đúng: ${state.correct}/${total} (${accuracy}%)<br>
+      <img src="/img/heart.png" class="em-icon"> Mạng còn: ${state.lives}/${window.V41Logic.STARTING_LIVES}<br>
+       Xu kiếm: ${state.coins}<br>
+      <img src="/img/trophy.png" class="em-icon"> Sao: ${stars}/3
     `;
   }
 

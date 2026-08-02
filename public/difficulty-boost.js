@@ -81,8 +81,8 @@
     widget.id = 'hv-diff-challenge';
     widget.style.cssText = 'margin:12px auto;max-width:320px;padding:12px 16px;border-radius:14px;background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:2px solid #ffb74d;text-align:center;font-family:inherit;';
     var pct = Math.min(100, Math.round((ch.done / ch.target) * 100));
-    widget.innerHTML = '<div style="font-weight:900;font-size:0.9rem;color:#e65100;margin-bottom:6px;">🏆 Thử thách tuần</div>' +
-      '<div style="font-size:0.82rem;font-weight:700;color:#555;margin-bottom:8px;">Chơi ' + ch.target + ' ván Vừa/Khó → 🎁 +50💎</div>' +
+    widget.innerHTML = '<div style="font-weight:900;font-size:0.9rem;color:#e65100;margin-bottom:6px;"><img src="/img/trophy.png" style="width:18px;height:18px;vertical-align:middle;"> Thử thách tuần</div>' +
+      '<div style="font-size:0.82rem;font-weight:700;color:#555;margin-bottom:8px;">Chơi ' + ch.target + ' ván Vừa/Khó → <img src="/img/gift.png" style="width:16px;height:16px;vertical-align:middle;"> +50<img src="/img/diamond.png" style="width:16px;height:16px;vertical-align:middle;"></div>' +
       '<div style="height:8px;background:#ffe0b2;border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#ff9800,#ff5722);border-radius:4px;transition:width .4s;"></div></div>' +
       '<div style="font-size:0.75rem;font-weight:800;color:#bf360c;margin-top:4px;">' + ch.done + '/' + ch.target + (ch.claimed ? ' ✅ Đã nhận!' : '') + '</div>';
 

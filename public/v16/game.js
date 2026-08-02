@@ -2,28 +2,28 @@
 // Cook dishes, serve customers, earn coins!
 
 const RESTAURANTS = [
-  { id: 'cart', name: 'Xe Đẩy', icon: '🛒', unlock: 0, customers: 6 },
-  { id: 'small', name: 'Quán Nhỏ', icon: '🏪', unlock: 5, customers: 8 },
-  { id: 'restaurant', name: 'Nhà Hàng', icon: '🍜', unlock: 15, customers: 10 },
-  { id: 'fivestar', name: '5 Sao', icon: '⭐', unlock: 30, customers: 12 },
+  { id: 'cart', name: 'Xe Đẩy', icon: '', unlock: 0, customers: 6 },
+  { id: 'small', name: 'Quán Nhỏ', icon: '', unlock: 5, customers: 8 },
+  { id: 'restaurant', name: 'Nhà Hàng', icon: '', unlock: 15, customers: 10 },
+  { id: 'fivestar', name: '5 Sao', icon: '<img src="/img/star.png" class="em-icon">', unlock: 30, customers: 12 },
 ];
 
 const DISHES = [
-  { id: 'pho', name: 'Phở', emoji: '🍜', steps: ['🥩 Thái thịt','💧 Nấu nước','🍜 Bày tô'], baseCoins: 12 },
-  { id: 'rice', name: 'Cơm Rang', emoji: '🍳', steps: ['🍚 Nấu cơm','🥚 Đập trứng','🍳 Xào'], baseCoins: 10 },
-  { id: 'roll', name: 'Gỏi Cuốn', emoji: '🥗', steps: ['🥬 Rửa rau','🍤 Luộc tôm','🥗 Cuốn'], baseCoins: 11 },
-  { id: 'flan', name: 'Bánh Flan', emoji: '🍮', steps: ['🥚 Đánh trứng','🍯 Pha caramel','🍮 Hấp'], baseCoins: 14, unlock: 10 },
-  { id: 'cupcake', name: 'Cupcake', emoji: '🧁', steps: ['🧈 Trộn bột','🎨 Trang trí','🧁 Nướng'], baseCoins: 13, unlock: 20 },
-  { id: 'pizza', name: 'Pizza', emoji: '🍕', steps: ['🫓 Cán bột','🧀 Phủ topping','🍕 Nướng'], baseCoins: 15, unlock: 35 },
-  { id: 'sushi', name: 'Sushi', emoji: '🍣', steps: ['🍚 Nấu cơm','🐟 Cắt cá','🍣 Cuốn'], baseCoins: 16, unlock: 50 },
-  { id: 'icecream', name: 'Kem', emoji: '🍦', steps: ['🥛 Pha sữa','❄️ Đông lạnh','🍦 Trang trí'], baseCoins: 14, unlock: 75 },
+  { id: 'pho', name: 'Phở', emoji: '', steps: [' Thái thịt',' Nấu nước',' Bày tô'], baseCoins: 12 },
+  { id: 'rice', name: 'Cơm Rang', emoji: '', steps: [' Nấu cơm',' Đập trứng',' Xào'], baseCoins: 10 },
+  { id: 'roll', name: 'Gỏi Cuốn', emoji: '', steps: [' Rửa rau',' Luộc tôm',' Cuốn'], baseCoins: 11 },
+  { id: 'flan', name: 'Bánh Flan', emoji: '', steps: [' Đánh trứng',' Pha caramel',' Hấp'], baseCoins: 14, unlock: 10 },
+  { id: 'cupcake', name: 'Cupcake', emoji: '', steps: [' Trộn bột',' Trang trí',' Nướng'], baseCoins: 13, unlock: 20 },
+  { id: 'pizza', name: 'Pizza', emoji: '', steps: [' Cán bột',' Phủ topping',' Nướng'], baseCoins: 15, unlock: 35 },
+  { id: 'sushi', name: 'Sushi', emoji: '', steps: [' Nấu cơm',' Cắt cá',' Cuốn'], baseCoins: 16, unlock: 50 },
+  { id: 'icecream', name: 'Kem', emoji: '', steps: [' Pha sữa',' Đông lạnh',' Trang trí'], baseCoins: 14, unlock: 75 },
 ];
 
 const CUSTOMERS = [
-  { emoji: '👦', name: 'Bé Nam' }, { emoji: '👧', name: 'Bé Hoa' },
-  { emoji: '👨', name: 'Chú Ba' }, { emoji: '👩', name: 'Cô Tư' },
-  { emoji: '👴', name: 'Ông Hai' }, { emoji: '👵', name: 'Bà Năm' },
-  { emoji: '🧑', name: 'Anh Minh' }, { emoji: '👱', name: 'Chị Lan' },
+  { emoji: '', name: 'Bé Nam' }, { emoji: '', name: 'Bé Hoa' },
+  { emoji: '', name: 'Chú Ba' }, { emoji: '', name: 'Cô Tư' },
+  { emoji: '', name: 'Ông Hai' }, { emoji: '', name: 'Bà Năm' },
+  { emoji: '', name: 'Anh Minh' }, { emoji: '', name: 'Chị Lan' },
 ];
 
 const QUESTION_TIME = 10;
@@ -131,7 +131,7 @@ function nextCustomer() {
   document.getElementById('burn-indicator').textContent = '';
   document.getElementById('hud-served').textContent = S.customersServed;
   document.getElementById('hud-coins').textContent = S.coins;
-  document.getElementById('hud-combo').textContent = S.combo >= 2 ? `🔥x${S.combo}` : '';
+  document.getElementById('hud-combo').textContent = S.combo >= 2 ? `<img src="/img/fire.png" class="em-icon">x${S.combo}` : '';
 
   renderCookingSteps();
   startPatience();
@@ -163,7 +163,7 @@ function stopPatience() { if (S.patienceTimer) { clearInterval(S.patienceTimer);
 
 function customerLeft() {
   S.combo = 0;
-  showServeAnimation('😠', 'Khách bỏ đi!', '0 xu');
+  showServeAnimation('', 'Khách bỏ đi!', '0 xu');
   document.getElementById('customer-emoji').classList.add('angry');
   setTimeout(() => {
     document.getElementById('customer-emoji').classList.remove('angry');
@@ -240,7 +240,7 @@ document.getElementById('qp-answers').addEventListener('click', e => {
 function handleCorrect() {
   S.correct++;
   const st = document.getElementById('qp-status');
-  st.textContent = '✅ Ngon!'; st.className = 'qp-status good';
+  st.textContent = ' Ngon!'; st.className = 'qp-status good';
 
   // Mark step done
   const steps = document.querySelectorAll('.cook-step');
@@ -258,8 +258,8 @@ function handleWrong() {
   S.incorrect++;
   S.burns++;
   const st = document.getElementById('qp-status');
-  st.textContent = `🔥 Cháy! (${S.burns}/2)`; st.className = 'qp-status bad';
-  document.getElementById('burn-indicator').textContent = '🔥'.repeat(S.burns);
+  st.textContent = `<img src="/img/fire.png" class="em-icon"> Cháy! (${S.burns}/2)`; st.className = 'qp-status bad';
+  document.getElementById('burn-indicator').textContent = '<img src="/img/fire.png" class="em-icon">'.repeat(S.burns);
 
   // Mark step burned
   const steps = document.querySelectorAll('.cook-step');
@@ -284,12 +284,12 @@ function dishComplete() {
 
   const tipText = tipMultiplier >= 2 ? ' (Perfect! x2)' : tipMultiplier >= 1.5 ? ' (Tip!)' : '';
   document.getElementById('customer-emoji').classList.add('happy');
-  showServeAnimation('😍', `${S.currentDish.emoji} Ngon quá!`, `+${earned} xu${tipText}`);
+  showServeAnimation('', `${S.currentDish.emoji} Ngon quá!`, `+${earned} xu${tipText}`);
 
   setTimeout(() => {
     document.getElementById('customer-emoji').classList.remove('happy');
     document.getElementById('hud-coins').textContent = S.coins;
-    document.getElementById('hud-combo').textContent = S.combo >= 2 ? `🔥x${S.combo}` : '';
+    document.getElementById('hud-combo').textContent = S.combo >= 2 ? `<img src="/img/fire.png" class="em-icon">x${S.combo}` : '';
     nextCustomer();
   }, 1800);
 }
@@ -298,7 +298,7 @@ function dishFailed() {
   stopPatience();
   S.combo = 0;
   document.getElementById('customer-emoji').classList.add('angry');
-  showServeAnimation('😠', 'Cháy rồi! Khách bỏ đi!', '0 xu');
+  showServeAnimation('', 'Cháy rồi! Khách bỏ đi!', '0 xu');
 
   setTimeout(() => {
     document.getElementById('customer-emoji').classList.remove('angry');
@@ -330,23 +330,23 @@ function endGame() {
   // Check unlocks
   let unlockText = '';
   const newDish = DISHES.find(d => d.unlock && progress.served >= d.unlock && progress.served - S.customersServed < d.unlock);
-  if (newDish) unlockText = `<div class="result-unlock"><div class="result-unlock-text">🎉 Mở khóa: ${newDish.emoji} ${newDish.name}!</div></div>`;
+  if (newDish) unlockText = `<div class="result-unlock"><div class="result-unlock-text"><img src="/img/party.png" class="em-icon"> Mở khóa: ${newDish.emoji} ${newDish.name}!</div></div>`;
 
   document.getElementById('result-container').innerHTML = `
-    <div class="result-title">👨‍🍳 Hết ca!</div>
-    <div class="result-emoji">${stars >= 3 ? '🌟🌟🌟' : stars >= 2 ? '⭐⭐' : '⭐'}</div>
+    <div class="result-title"> Hết ca!</div>
+    <div class="result-emoji">${stars >= 3 ? '' : stars >= 2 ? '<img src="/img/star.png" class="em-icon"><img src="/img/star.png" class="em-icon">' : '<img src="/img/star.png" class="em-icon">'}</div>
     <div class="result-stats">
-      <div class="result-stat"><span>🍽️ Khách phục vụ</span><strong>${S.customersServed}/${S.customersTotal}</strong></div>
-      <div class="result-stat"><span>💰 Xu kiếm</span><strong>${S.coins}</strong></div>
-      <div class="result-stat"><span>✅ Câu đúng</span><strong>${S.correct}</strong></div>
-      <div class="result-stat"><span>🔥 Combo max</span><strong>x${S.maxCombo}</strong></div>
-      <div class="result-stat"><span>⭐ Đánh giá</span><strong>${'⭐'.repeat(stars)}</strong></div>
-      <div class="result-stat"><span>📊 Tổng ca</span><strong>${progress.shifts}</strong></div>
+      <div class="result-stat"><span> Khách phục vụ</span><strong>${S.customersServed}/${S.customersTotal}</strong></div>
+      <div class="result-stat"><span> Xu kiếm</span><strong>${S.coins}</strong></div>
+      <div class="result-stat"><span> Câu đúng</span><strong>${S.correct}</strong></div>
+      <div class="result-stat"><span><img src="/img/fire.png" class="em-icon"> Combo max</span><strong>x${S.maxCombo}</strong></div>
+      <div class="result-stat"><span><img src="/img/star.png" class="em-icon"> Đánh giá</span><strong>${'<img src="/img/star.png" class="em-icon">'.repeat(stars)}</strong></div>
+      <div class="result-stat"><span> Tổng ca</span><strong>${progress.shifts}</strong></div>
     </div>
     ${unlockText}
     <div class="result-btns">
-      <button class="result-btn primary" onclick="location.reload()">🔄 Ca tiếp</button>
-      <button class="result-btn secondary" onclick="location.href='/'">🏠 Trang chủ</button>
+      <button class="result-btn primary" onclick="location.reload()"> Ca tiếp</button>
+      <button class="result-btn secondary" onclick="location.href='/'"> Trang chủ</button>
     </div>`;
   showScreen('result-screen');
   if (window.checkAndShowPrompt && getPlayerId()) window.checkAndShowPrompt(getPlayerId());
@@ -379,7 +379,7 @@ async function logAnswer(q, selected, correct, isCorrect) {
       if (C && C.hasSpecies('chef')) {
         chefChar = C.createCharacter('chef', chefHost, { state: 'idle' });
       } else {
-        chefHost.textContent = '👨‍🍳';
+        chefHost.textContent = '';
       }
     }
     if (helperHost && !helperChar) {
@@ -387,7 +387,7 @@ async function logAnswer(q, selected, correct, isCorrect) {
       if (C && C.hasSpecies('helper')) {
         helperChar = C.createCharacter('helper', helperHost, { state: 'idle' });
       } else {
-        helperHost.textContent = '🍲';
+        helperHost.textContent = '';
       }
     }
   }
