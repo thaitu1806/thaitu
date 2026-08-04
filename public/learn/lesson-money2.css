@@ -1,0 +1,51 @@
+/* === Interactive "Tiền Việt Nam" Lesson — Grade 2 === */
+#money2-interactive-screen { flex-direction:column;height:100%;background:linear-gradient(180deg,#fff8e1 0%,#e8f5e9 100%);font-family:'Nunito',system-ui,sans-serif; }
+#money2-interactive-screen .lmo2-header { display:flex;align-items:center;justify-content:space-between;padding:12px 16px; }
+#money2-interactive-screen .lmo2-header .btn-back-menu { background:rgba(255,255,255,0.7);border:none;border-radius:20px;padding:8px 14px;font-size:0.85rem;font-weight:700;color:#f57f17;cursor:pointer;font-family:inherit; }
+#money2-interactive-screen .lmo2-progress-wrap { flex:1;margin:0 14px;height:8px;background:rgba(0,0,0,0.08);border-radius:4px;overflow:hidden; }
+#money2-interactive-screen .lmo2-progress-bar { height:100%;background:linear-gradient(90deg,#ffd54f,#f57f17);border-radius:4px;transition:width 0.4s;width:25%; }
+#money2-interactive-screen .lmo2-body { flex:1;overflow-y:auto;padding:12px 16px 24px;display:flex;align-items:center;justify-content:center; }
+.lmo2-section { text-align:center;width:100%;max-width:400px;animation:lmo2FadeIn 0.3s; }
+.lmo2-title { font-size:1.1rem;font-weight:800;color:#f57f17;margin-bottom:8px; }
+.lmo2-hint { font-size:0.82rem;color:#888;margin-bottom:10px;font-style:italic; }
+.lmo2-question { font-size:1.05rem;font-weight:900;color:#333;margin-bottom:10px; }
+.lmo2-tabs { display:flex;gap:4px;justify-content:center;margin-bottom:12px;flex-wrap:wrap; }
+.lmo2-tab { padding:6px 10px;border-radius:16px;border:2px solid #e0e0e0;background:#fff;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit; }
+.lmo2-tab.active { background:#f57f17;color:#fff;border-color:#f57f17; }
+.lmo2-bills-row { display:flex;flex-direction:column;gap:10px;align-items:center;margin:10px 0; }
+.lmo2-bill-card { cursor:pointer;transition:transform 0.2s;border-radius:8px; }
+.lmo2-bill-card:hover { transform:scale(1.08); }
+.lmo2-explore-info { min-height:40px;margin:10px 0;padding:10px 14px;border-radius:12px;background:#fff;border-left:4px solid #f57f17;text-align:left;font-size:0.85rem; }
+.lmo2-exchange-pool { display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:10px 0; }
+.lmo2-pool-bill { cursor:pointer;transition:transform 0.2s; }
+.lmo2-pool-bill:hover { transform:scale(1.08); }
+.lmo2-exchange-total { font-size:1rem;font-weight:800;margin:8px 0; }
+.lmo2-exchange-selected { display:flex;gap:4px;flex-wrap:wrap;justify-content:center;min-height:36px;margin:6px 0; }
+.lmo2-header-row { display:flex;justify-content:space-between;align-items:center;margin-bottom:10px; }
+.lmo2-round-badge { font-size:0.85rem;font-weight:700;color:#666;background:rgba(0,0,0,0.05);border-radius:12px;padding:4px 10px; }
+.lmo2-score-badge { font-size:0.95rem;font-weight:800;color:#f57f17;display:flex;align-items:center;gap:4px; }
+.lmo2-piggy-bills { display:flex;flex-direction:column;gap:8px;align-items:center;margin:12px 0;padding:14px;background:#fff;border-radius:14px;border:2px dashed #f57f17; }
+.lmo2-options { display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:12px 0; }
+.lmo2-opt { padding:10px 16px;border-radius:14px;background:white;border:3px solid #e0e0e0;cursor:pointer;transition:all 0.2s;font-size:0.85rem;font-weight:700;font-family:inherit; }
+.lmo2-opt:hover { border-color:#ffd54f;transform:scale(1.03); }
+.lmo2-opt-correct { border-color:#4caf50!important;background:#e8f5e9!important; }
+.lmo2-opt-wrong { border-color:#ef5350!important;background:#ffebee!important;animation:lmo2Shake 0.4s; }
+.lmo2-change-info { background:#fff;padding:12px;border-radius:14px;border:2px solid #e0e0e0;margin:10px 0;font-size:0.9rem;line-height:1.8; }
+.lmo2-wallets { display:flex;gap:12px;justify-content:center;align-items:center;margin:12px 0; }
+.lmo2-wallet { background:#fff;padding:10px;border-radius:12px;border:2px solid #e0e0e0;min-width:100px; }
+.lmo2-wallet-label { font-size:0.8rem;font-weight:800;color:#555;margin-bottom:6px; }
+.lmo2-wallet-vs { font-size:1.3rem;font-weight:900;color:#f57f17; }
+.lmo2-feedback { min-height:36px;margin-top:8px; }
+.lmo2-fb-ok { color:#2e7d32;font-weight:700;font-size:1.05rem;animation:lmo2FadeIn 0.3s; }
+.lmo2-fb-wrong { color:#c62828;font-weight:700;font-size:1.05rem;animation:lmo2FadeIn 0.3s; }
+.lmo2-reward { text-align:center;max-width:340px;animation:lmo2FadeIn 0.4s; }
+.lmo2-reward-stars { margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;animation:lmo2Bounce 1.5s ease-in-out infinite; }
+.lmo2-star-dim { opacity:0.3;filter:grayscale(1); }
+.lmo2-reward-title { font-size:1.4rem;font-weight:900;color:#f57f17;margin-bottom:8px; }
+.lmo2-reward-score { font-size:1.05rem;color:#555;margin-bottom:12px; }
+.lmo2-reward-concepts { display:flex;flex-direction:column;gap:6px;margin-bottom:16px; }
+.lmo2-concept { padding:8px 14px;border-radius:12px;font-size:0.85rem;font-weight:700;background:#fff8e1;color:#f57f17;border:2px solid #ffd54f; }
+.lmo2-reward-actions { display:flex;gap:10px;justify-content:center;flex-wrap:wrap; }
+@keyframes lmo2FadeIn { from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
+@keyframes lmo2Shake { 0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-3px);}80%{transform:translateX(3px);} }
+@keyframes lmo2Bounce { 0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);} }

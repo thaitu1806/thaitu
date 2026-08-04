@@ -1,0 +1,113 @@
+/* === Interactive "Phép Trừ" Lesson — Grade 1 === */
+#sub1-interactive-screen {
+  flex-direction: column; height: 100%;
+  background: linear-gradient(180deg, #e8eaf6 0%, #fce4ec 100%);
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+#sub1-interactive-screen .ls1-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
+}
+#sub1-interactive-screen .ls1-header .btn-back-menu {
+  background: rgba(255,255,255,0.7); border: none; border-radius: 20px;
+  padding: 8px 14px; font-size: 0.85rem; font-weight: 700;
+  color: #c62828; cursor: pointer; font-family: inherit;
+}
+#sub1-interactive-screen .ls1-progress-wrap {
+  flex: 1; margin: 0 14px; height: 8px; background: rgba(0,0,0,0.08);
+  border-radius: 4px; overflow: hidden;
+}
+
+#sub1-interactive-screen .ls1-progress-bar {
+  height: 100%; background: linear-gradient(90deg, #ef5350, #c62828);
+  border-radius: 4px; transition: width 0.4s ease; width: 25%;
+}
+#sub1-interactive-screen .ls1-body {
+  flex: 1; overflow-y: auto; padding: 12px 16px 24px;
+  display: flex; align-items: center; justify-content: center;
+}
+.ls1-remove-section, .ls1-bond-section, .ls1-practice-section {
+  text-align: center; width: 100%; max-width: 380px; animation: ls1FadeIn 0.3s ease;
+}
+.ls1-title { font-size: 1.15rem; font-weight: 800; color: #c62828; margin-bottom: 8px; }
+.ls1-hint { font-size: 0.85rem; color: #888; margin-bottom: 10px; font-style: italic; }
+.ls1-question { font-size: 1.1rem; font-weight: 900; color: #333; margin-bottom: 10px; }
+.ls1-minus { color: #c62828; font-size: 2rem; font-weight: 900; margin: 0 4px; }
+.ls1-eq-sign { font-size: 1.5rem; font-weight: 900; color: #333; margin: 0 4px; }
+.ls1-counter { margin: 10px 0; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.ls1-equation { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 10px 0; transition: opacity 0.5s; }
+
+/* ── Items area ── */
+.ls1-items-area { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin: 12px 0; }
+.ls1-item {
+  width: 52px; height: 52px; border-radius: 14px; background: white;
+  border: 2px solid #e0e0e0; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.4s;
+}
+.ls1-item:hover { transform: scale(1.05); border-color: #ef5350; }
+.ls1-item.ls1-removed { opacity: 0; transform: scale(0.3) translateY(-30px); pointer-events: none; }
+
+/* ── Number Bond ── */
+.ls1-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.ls1-round-badge { font-size: 0.85rem; font-weight: 700; color: #666; background: rgba(0,0,0,0.05); border-radius: 12px; padding: 4px 10px; }
+.ls1-score-badge { font-size: 0.95rem; font-weight: 800; color: #f59e0b; display: flex; align-items: center; gap: 4px; }
+.ls1-bond-visual { display: flex; justify-content: center; gap: 3px; flex-wrap: wrap; margin: 10px 0; }
+.ls1-dot-keep { opacity: 1; }
+.ls1-dot-gone { opacity: 0.35; }
+.ls1-bond-missing { display: inline-block; width: 42px; height: 42px; border: 3px dashed #c62828; border-radius: 12px; line-height: 42px; text-align: center; font-size: 1.3rem; font-weight: 900; color: #c62828; }
+
+/* ── Options ── */
+.ls1-options { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.ls1-opts-hidden { display: none !important; }
+.ls1-opt {
+  padding: 10px 18px; border-radius: 14px; background: white;
+  border: 3px solid #e0e0e0; cursor: pointer; font-family: inherit;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.ls1-opt:hover { border-color: #ef5350; transform: scale(1.03); }
+.ls1-opt:active { transform: scale(0.94); }
+.ls1-opt-correct { border-color: #4caf50 !important; background: #e8f5e9 !important; }
+.ls1-opt-wrong { border-color: #ef5350 !important; background: #ffebee !important; animation: ls1Shake 0.4s ease; }
+.ls1-spike { border-radius: 50%; width: 64px; height: 64px; padding: 0; display: flex; align-items: center; justify-content: center; }
+
+/* ── Cross out ── */
+.ls1-cross-area { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; margin: 10px 0; }
+.ls1-cross-item { cursor: pointer; transition: all 0.3s; position: relative; }
+.ls1-cross-item.ls1-crossed { opacity: 0.3; }
+.ls1-cross-item.ls1-crossed::after { content: '✕'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #c62828; font-weight: 900; }
+
+/* ── Number line ── */
+.ls1-number-line { display: flex; justify-content: center; gap: 2px; margin: 12px 0; padding: 8px; background: rgba(255,255,255,0.6); border-radius: 12px; }
+.ls1-nl-num { padding: 4px; border-radius: 8px; }
+.ls1-nl-start { background: #e3f2fd; border: 2px solid #1565c0; border-radius: 8px; }
+.ls1-nl-end { background: #e8f5e9; border: 2px solid #2e7d32; border-radius: 8px; }
+.ls1-nl-path { background: #fff3e0; border-radius: 8px; }
+.ls1-jump-arrows { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
+.ls1-jump { font-size: 1.5rem; color: #c62828; animation: ls1JumpAnim 0.6s ease both; }
+
+/* ── Bubble ── */
+.ls1-bubble {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 20px 30px; border-radius: 50%; background: rgba(100,181,246,0.15);
+  border: 3px solid #64b5f6; margin: 12px 0; animation: ls1Float 2s ease-in-out infinite;
+}
+.ls1-bubble-eq { display: flex; align-items: center; gap: 4px; }
+
+/* ── Feedback + Reward ── */
+.ls1-feedback { min-height: 40px; margin-top: 8px; }
+.ls1-fb-ok { color: #2e7d32; font-weight: 700; font-size: 1.05rem; animation: ls1FadeIn 0.3s ease; }
+.ls1-fb-wrong { color: #c62828; font-weight: 700; font-size: 1.05rem; animation: ls1FadeIn 0.3s ease; }
+.ls1-reward { text-align: center; max-width: 340px; animation: ls1FadeIn 0.4s ease; }
+.ls1-reward-stars { margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; animation: ls1Bounce 1.5s ease-in-out infinite; }
+.ls1-star-dim { opacity: 0.3; filter: grayscale(1); }
+.ls1-reward-title { font-size: 1.4rem; font-weight: 900; color: #c62828; margin-bottom: 8px; }
+.ls1-reward-score { font-size: 1.05rem; color: #555; margin-bottom: 12px; }
+.ls1-reward-concepts { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.ls1-concept { padding: 8px 14px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; background: #fce4ec; color: #c62828; border: 2px solid #ef9a9a; }
+.ls1-reward-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ── Animations ── */
+@keyframes ls1FadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ls1Shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+@keyframes ls1Bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes ls1Float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes ls1JumpAnim { from { transform: translateY(0) scale(0.8); opacity: 0; } to { transform: translateY(-10px) scale(1); opacity: 1; } }

@@ -1,0 +1,121 @@
+/* === Interactive "Đồng Hồ" Lesson — Grade 2 === */
+#clock2-interactive-screen {
+  flex-direction: column; height: 100%;
+  background: linear-gradient(180deg, #e8f5e9 0%, #e3f2fd 100%);
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+#clock2-interactive-screen .lck2-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
+}
+#clock2-interactive-screen .lck2-header .btn-back-menu {
+  background: rgba(255,255,255,0.7); border: none; border-radius: 20px;
+  padding: 8px 14px; font-size: 0.85rem; font-weight: 700;
+  color: #2e7d32; cursor: pointer; font-family: inherit;
+}
+#clock2-interactive-screen .lck2-progress-wrap {
+  flex: 1; margin: 0 14px; height: 8px; background: rgba(0,0,0,0.08);
+  border-radius: 4px; overflow: hidden;
+}
+#clock2-interactive-screen .lck2-progress-bar {
+  height: 100%; background: linear-gradient(90deg, #66bb6a, #2e7d32);
+  border-radius: 4px; transition: width 0.4s ease; width: 25%;
+}
+#clock2-interactive-screen .lck2-body {
+  flex: 1; overflow-y: auto; padding: 12px 16px 24px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* General sections */
+.lck2-section { text-align: center; width: 100%; max-width: 400px; animation: lck2FadeIn 0.3s ease; }
+.lck2-title { font-size: 1.1rem; font-weight: 800; color: #2e7d32; margin-bottom: 8px; }
+.lck2-hint { font-size: 0.82rem; color: #888; margin-bottom: 10px; font-style: italic; }
+.lck2-question { font-size: 1.05rem; font-weight: 900; color: #333; margin-bottom: 10px; }
+
+/* Color-coded keywords */
+.lck2-hour-color { color: #d32f2f; font-weight: 800; }
+.lck2-minute-color { color: #1565c0; font-weight: 800; }
+
+/* Interactive clock */
+.lck2-clock-wrap { display: flex; flex-direction: column; align-items: center; margin: 12px 0; }
+.lck2-clock-svg { touch-action: none; cursor: pointer; }
+.lck2-clock-display { font-size: 1.4rem; font-weight: 900; color: #333; margin-top: 8px;
+  background: #f5f5f5; padding: 6px 16px; border-radius: 10px; font-family: 'Courier New', monospace; }
+.lck2-minute-ring { font-size: 0.7rem; font-weight: 700; fill: #1565c0; }
+
+/* Step 1: Explore — tap numbers */
+.lck2-explore-info { min-height: 44px; margin: 8px 0; padding: 10px 14px; border-radius: 12px;
+  background: #fff; border-left: 4px solid #2e7d32; text-align: left; font-size: 0.85rem; line-height: 1.5; }
+
+/* Step 2: Milestones */
+.lck2-milestones { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+.lck2-milestone { display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+  border-radius: 14px; background: #fff; border: 2px solid #e0e0e0; cursor: pointer; transition: all 0.2s; }
+.lck2-milestone:hover { border-color: #66bb6a; }
+.lck2-milestone.active { border-color: #2e7d32; background: #e8f5e9; }
+.lck2-milestone-clock { flex-shrink: 0; }
+.lck2-milestone-info { text-align: left; }
+.lck2-milestone-time { font-size: 0.9rem; font-weight: 800; color: #333; }
+.lck2-milestone-desc { font-size: 0.78rem; color: #666; margin-top: 2px; }
+.lck2-milestone-activity { font-size: 0.75rem; color: #2e7d32; font-weight: 700; margin-top: 2px; }
+
+/* Step 3: Practice header */
+.lck2-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.lck2-round-badge { font-size: 0.85rem; font-weight: 700; color: #666; background: rgba(0,0,0,0.05); border-radius: 12px; padding: 4px 10px; }
+.lck2-score-badge { font-size: 0.95rem; font-weight: 800; color: #2e7d32; display: flex; align-items: center; gap: 4px; }
+
+/* Practice type 1: Drag clock */
+.lck2-target-time { font-size: 1.2rem; font-weight: 900; color: #2e7d32; margin: 8px 0;
+  padding: 8px 16px; background: #e8f5e9; border-radius: 12px; display: inline-block; }
+.lck2-check-btn { margin-top: 10px; padding: 10px 24px; border-radius: 20px; background: #2e7d32;
+  color: #fff; border: none; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: transform 0.2s; }
+.lck2-check-btn:hover { transform: scale(1.04); }
+.lck2-check-btn:disabled { opacity: 0.5; cursor: default; }
+.lck2-story { font-size: 0.85rem; color: #555; margin-bottom: 8px; font-style: italic; }
+
+/* Practice type 2: Match analog ↔ digital */
+.lck2-match-area { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 12px 0; }
+.lck2-match-col { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.lck2-match-item { padding: 4px; border-radius: 12px; background: #fff; border: 3px solid #e0e0e0;
+  cursor: pointer; transition: all 0.2s; text-align: center; }
+.lck2-match-item:hover { border-color: #66bb6a; }
+.lck2-match-item.selected { border-color: #2e7d32; background: #e8f5e9; }
+.lck2-match-item.correct { border-color: #4caf50 !important; background: #c8e6c9 !important; }
+.lck2-match-item.wrong { border-color: #ef5350 !important; background: #ffebee !important; animation: lck2Shake 0.4s; }
+.lck2-match-item.done { opacity: 0.4; pointer-events: none; }
+.lck2-digital { font-family: 'Courier New', monospace; font-size: 1.1rem; font-weight: 900;
+  padding: 8px 14px; background: #263238; color: #76ff03; border-radius: 8px; letter-spacing: 2px; }
+
+/* Practice type 3: Sort daily schedule */
+.lck2-sort-cards { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.lck2-sort-card { display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+  border-radius: 14px; background: #fff; border: 2px solid #e0e0e0; cursor: pointer; transition: all 0.2s; }
+.lck2-sort-card:hover { border-color: #66bb6a; transform: scale(1.02); }
+.lck2-sort-card.picked { border-color: #2e7d32; background: #e8f5e9; pointer-events: none; opacity: 0.5; }
+.lck2-sort-card.wrong { animation: lck2Shake 0.4s; }
+.lck2-sort-card-emoji { font-size: 1.5rem; }
+.lck2-sort-card-text { font-size: 0.85rem; font-weight: 700; color: #333; }
+.lck2-sort-card-time { font-size: 0.75rem; color: #666; }
+.lck2-sort-slots { display: flex; gap: 6px; justify-content: center; margin-bottom: 10px; flex-wrap: wrap; }
+.lck2-sort-slot { width: 60px; height: 36px; border: 2px dashed #ccc; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: #bbb; }
+.lck2-sort-slot.filled { border-style: solid; border-color: #4caf50; background: #e8f5e9; color: #333; }
+
+/* Feedback */
+.lck2-feedback { min-height: 36px; margin-top: 8px; }
+.lck2-fb-ok { color: #2e7d32; font-weight: 700; font-size: 1.05rem; animation: lck2FadeIn 0.3s ease; }
+.lck2-fb-wrong { color: #c62828; font-weight: 700; font-size: 1.05rem; animation: lck2FadeIn 0.3s ease; }
+
+/* Reward */
+.lck2-reward { text-align: center; max-width: 340px; animation: lck2FadeIn 0.4s ease; }
+.lck2-reward-stars { margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; animation: lck2Bounce 1.5s ease-in-out infinite; }
+.lck2-star-dim { opacity: 0.3; filter: grayscale(1); }
+.lck2-reward-title { font-size: 1.4rem; font-weight: 900; color: #2e7d32; margin-bottom: 8px; }
+.lck2-reward-score { font-size: 1.05rem; color: #555; margin-bottom: 12px; }
+.lck2-reward-concepts { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.lck2-concept { padding: 8px 14px; border-radius: 12px; font-size: 0.85rem; font-weight: 700;
+  background: #e8f5e9; color: #2e7d32; border: 2px solid #a5d6a7; }
+.lck2-reward-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+@keyframes lck2FadeIn { from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
+@keyframes lck2Shake { 0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-3px);}80%{transform:translateX(3px);} }
+@keyframes lck2Bounce { 0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);} }

@@ -1,0 +1,127 @@
+/* === Interactive "Hình Khối" Lesson — Grade 1 === */
+#shapes1-interactive-screen {
+  flex-direction: column; height: 100%;
+  background: linear-gradient(180deg, #e3f2fd 0%, #f3e5f5 100%);
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+#shapes1-interactive-screen .lsh1-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
+}
+#shapes1-interactive-screen .lsh1-header .btn-back-menu {
+  background: rgba(255,255,255,0.7); border: none; border-radius: 20px;
+  padding: 8px 14px; font-size: 0.85rem; font-weight: 700;
+  color: #5c6bc0; cursor: pointer; font-family: inherit;
+}
+#shapes1-interactive-screen .lsh1-progress-wrap {
+  flex: 1; margin: 0 14px; height: 8px; background: rgba(0,0,0,0.08);
+  border-radius: 4px; overflow: hidden;
+}
+#shapes1-interactive-screen .lsh1-progress-bar {
+  height: 100%; background: linear-gradient(90deg, #7c4dff, #536dfe);
+  border-radius: 4px; transition: width 0.4s ease; width: 25%;
+}
+#shapes1-interactive-screen .lsh1-body {
+  flex: 1; overflow-y: auto; padding: 12px 16px 24px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Tabs */
+.lsh1-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+.lsh1-tab { padding: 8px 16px; border-radius: 20px; border: 2px solid #e0e0e0; background: #fff;
+  font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+.lsh1-tab.active { background: #5c6bc0; color: #fff; border-color: #5c6bc0; }
+
+/* Explore grid */
+.lsh1-explore { text-align: center; width: 100%; max-width: 400px; animation: lsh1FadeIn 0.3s ease; }
+.lsh1-title { font-size: 1.1rem; font-weight: 800; color: #5c6bc0; margin-bottom: 8px; }
+.lsh1-hint { font-size: 0.82rem; color: #888; margin-bottom: 10px; font-style: italic; }
+.lsh1-grid-2d { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+.lsh1-grid-3d { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
+.lsh1-shape-card { display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 6px; border-radius: 14px; background: #fff; border: 2px solid #e0e0e0;
+  cursor: pointer; transition: all 0.25s; }
+.lsh1-shape-card:hover { transform: scale(1.04); border-color: #b39ddb; }
+.lsh1-shape-card.explored { border-color: #7c4dff; background: #ede7f6; }
+.lsh1-shape-sprite { display: inline-block; background-repeat: no-repeat; border-radius: 8px; }
+.lsh1-shape-name { font-size: 0.78rem; font-weight: 700; color: #666; transition: color 0.2s; }
+.lsh1-info-bubble { padding: 10px 14px; border-radius: 12px; background: #fff; margin-top: 10px;
+  text-align: left; font-size: 0.85rem; line-height: 1.5; border-left: 4px solid #7c4dff; }
+
+/* Practice sections */
+.lsh1-practice { text-align: center; width: 100%; max-width: 400px; animation: lsh1FadeIn 0.3s ease; }
+.lsh1-question { font-size: 1.05rem; font-weight: 900; color: #333; margin-bottom: 10px; }
+.lsh1-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.lsh1-round-badge { font-size: 0.85rem; font-weight: 700; color: #666; background: rgba(0,0,0,0.05); border-radius: 12px; padding: 4px 10px; }
+.lsh1-score-badge { font-size: 0.95rem; font-weight: 800; color: #7c4dff; display: flex; align-items: center; gap: 4px; }
+
+/* Drag match (Step 1) */
+.lsh1-match-area { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin: 12px 0; align-items: flex-start; }
+.lsh1-drag-col { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.lsh1-drag-item { width: 60px; height: 60px; border-radius: 14px; background: #fff; border: 3px solid #e0e0e0;
+  display: flex; align-items: center; justify-content: center; cursor: grab; transition: all 0.2s; position: relative; }
+.lsh1-drag-item.dragging { opacity: 0.5; transform: scale(0.9); }
+.lsh1-drag-item.matched { border-color: #4caf50; background: #e8f5e9; pointer-events: none; }
+.lsh1-drop-target { width: 70px; height: 70px; border-radius: 14px; border: 3px dashed #b39ddb;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  transition: all 0.2s; background: rgba(255,255,255,0.5); }
+.lsh1-drop-target.over { border-color: #7c4dff; background: #ede7f6; transform: scale(1.05); }
+.lsh1-drop-target.correct { border-color: #4caf50; background: #e8f5e9; border-style: solid; }
+.lsh1-drop-target.wrong { border-color: #ef5350; background: #ffebee; animation: lsh1Shake 0.4s ease; }
+.lsh1-drop-label { font-size: 0.7rem; font-weight: 700; color: #666; }
+
+/* Classify (Step 1 type 2) */
+.lsh1-classify-items { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
+.lsh1-classify-item { padding: 8px 14px; border-radius: 14px; background: #fff; border: 2px solid #e0e0e0;
+  cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: all 0.2s; }
+.lsh1-classify-item:hover { border-color: #b39ddb; transform: scale(1.03); }
+.lsh1-classify-item.done { opacity: 0.4; pointer-events: none; }
+.lsh1-classify-bins { display: flex; gap: 12px; justify-content: center; margin-bottom: 12px; }
+.lsh1-bin { padding: 10px 14px; border-radius: 14px; border: 3px dashed #b39ddb; min-width: 80px;
+  text-align: center; transition: all 0.2s; background: rgba(255,255,255,0.5); cursor: pointer; }
+.lsh1-bin.over { border-color: #7c4dff; background: #ede7f6; }
+.lsh1-bin-label { font-size: 0.75rem; font-weight: 700; color: #5c6bc0; margin-bottom: 4px; }
+.lsh1-bin-items { min-height: 24px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+.lsh1-bin-chip { font-size: 0.75rem; background: #e8f5e9; padding: 2px 8px; border-radius: 8px; font-weight: 600; }
+
+/* Options (Step 2) */
+.lsh1-options { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.lsh1-opt { padding: 10px 16px; border-radius: 14px; background: white; border: 3px solid #e0e0e0;
+  cursor: pointer; transition: transform 0.2s, border-color 0.2s; display: flex; align-items: center; gap: 6px; }
+.lsh1-opt:hover { border-color: #b39ddb; transform: scale(1.03); }
+.lsh1-opt-correct { border-color: #4caf50 !important; background: #e8f5e9 !important; }
+.lsh1-opt-wrong { border-color: #ef5350 !important; background: #ffebee !important; animation: lsh1Shake 0.4s ease; }
+
+/* Multi-select */
+.lsh1-multi-opts { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+.lsh1-multi-opt { padding: 10px 14px; border-radius: 14px; background: white; border: 3px solid #e0e0e0;
+  cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.lsh1-multi-opt:hover { border-color: #b39ddb; }
+.lsh1-multi-opt.selected { border-color: #7c4dff; background: #ede7f6; }
+.lsh1-multi-opt.correct { border-color: #4caf50 !important; background: #e8f5e9 !important; }
+.lsh1-multi-opt.wrong { border-color: #ef5350 !important; background: #ffebee !important; }
+.lsh1-multi-opt-label { font-size: 0.75rem; font-weight: 700; color: #555; }
+.lsh1-submit-btn { margin-top: 10px; padding: 10px 24px; border-radius: 20px; background: #7c4dff;
+  color: #fff; border: none; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: transform 0.2s; }
+.lsh1-submit-btn:hover { transform: scale(1.04); }
+.lsh1-submit-btn:disabled { opacity: 0.5; cursor: default; }
+
+/* Feedback */
+.lsh1-feedback { min-height: 36px; margin-top: 8px; }
+.lsh1-fb-ok { color: #2e7d32; font-weight: 700; font-size: 1.05rem; animation: lsh1FadeIn 0.3s ease; }
+.lsh1-fb-wrong { color: #c62828; font-weight: 700; font-size: 1.05rem; animation: lsh1FadeIn 0.3s ease; }
+
+/* Reward */
+.lsh1-reward { text-align: center; max-width: 340px; animation: lsh1FadeIn 0.4s ease; }
+.lsh1-reward-stars { margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; animation: lsh1Bounce 1.5s ease-in-out infinite; }
+.lsh1-star-dim { opacity: 0.3; filter: grayscale(1); }
+.lsh1-reward-title { font-size: 1.4rem; font-weight: 900; color: #5c6bc0; margin-bottom: 8px; }
+.lsh1-reward-score { font-size: 1.05rem; color: #555; margin-bottom: 12px; }
+.lsh1-reward-concepts { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.lsh1-concept { padding: 8px 14px; border-radius: 12px; font-size: 0.85rem; font-weight: 700;
+  background: #ede7f6; color: #5c6bc0; border: 2px solid #b39ddb; }
+.lsh1-reward-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+@keyframes lsh1FadeIn { from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
+@keyframes lsh1Shake { 0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-3px);}80%{transform:translateX(3px);} }
+@keyframes lsh1Bounce { 0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);} }

@@ -42,6 +42,54 @@ function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; r
 function prevSlide() { if (currentSlide > 0) { currentSlide--; renderSlide(); } }
 function goSlide(i) { currentSlide = i; renderSlide(); }
 
+// Confirm before going back to menu
+function confirmBack() {
+  const existing = document.getElementById('learn-exit-popup');
+  if (existing) { existing.remove(); return; }
+
+  const overlay = document.createElement('div');
+  overlay.id = 'learn-exit-popup';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);animation:fadeIn 0.2s;';
+
+  const card = document.createElement('div');
+  card.style.cssText = 'background:#fff;border-radius:20px;padding:24px 20px;max-width:320px;width:90%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.3);animation:popIn 0.3s;';
+
+  const icon = document.createElement('div');
+  icon.innerHTML = '<img src="/img/exit.png" style="width:48px;height:48px;">';
+  icon.style.cssText = 'margin-bottom:8px;';
+
+  const text = document.createElement('p');
+  text.textContent = 'Thoát bài học?';
+  text.style.cssText = 'font-size:1.05rem;font-weight:800;color:#333;margin-bottom:6px;';
+
+  const sub = document.createElement('p');
+  sub.textContent = 'Tiến trình sẽ không được lưu.';
+  sub.style.cssText = 'font-size:0.85rem;color:#777;margin-bottom:18px;';
+
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:10px;justify-content:center;';
+
+  const cancel = document.createElement('button');
+  cancel.textContent = 'Tiếp tục học';
+  cancel.style.cssText = 'padding:10px 18px;background:#eee;color:#333;border:none;border-radius:12px;font-weight:700;font-size:0.95rem;cursor:pointer;font-family:inherit;';
+  cancel.addEventListener('click', () => overlay.remove());
+
+  const confirm = document.createElement('button');
+  confirm.textContent = 'Thoát';
+  confirm.style.cssText = 'padding:10px 18px;background:#f44336;color:#fff;border:none;border-radius:12px;font-weight:700;font-size:0.95rem;cursor:pointer;font-family:inherit;';
+  confirm.addEventListener('click', () => { overlay.remove(); showScreen('menu-screen'); });
+
+  btnRow.appendChild(cancel);
+  btnRow.appendChild(confirm);
+  card.appendChild(icon);
+  card.appendChild(text);
+  card.appendChild(sub);
+  card.appendChild(btnRow);
+  overlay.appendChild(card);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+
 // Swipe support
 let touchStartX = 0;
 document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });

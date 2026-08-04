@@ -1,0 +1,124 @@
+/* === Interactive "Phép Cộng" Lesson — Grade 1 === */
+#add1-interactive-screen {
+  flex-direction: column; height: 100%;
+  background: linear-gradient(180deg, #fff3e0 0%, #e8f5e9 100%);
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+#add1-interactive-screen .la1-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
+}
+#add1-interactive-screen .la1-header .btn-back-menu {
+  background: rgba(255,255,255,0.7); border: none; border-radius: 20px;
+  padding: 8px 14px; font-size: 0.85rem; font-weight: 700;
+  color: #e65100; cursor: pointer; font-family: inherit;
+}
+#add1-interactive-screen .la1-progress-wrap {
+  flex: 1; margin: 0 14px; height: 8px; background: rgba(0,0,0,0.08);
+  border-radius: 4px; overflow: hidden;
+}
+#add1-interactive-screen .la1-progress-bar {
+  height: 100%; background: linear-gradient(90deg, #ff8a65, #e65100);
+  border-radius: 4px; transition: width 0.4s ease; width: 25%;
+}
+#add1-interactive-screen .la1-body {
+  flex: 1; overflow-y: auto; padding: 12px 16px 24px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── COMBINE ── */
+.la1-combine-section, .la1-bond-section, .la1-practice-section {
+  text-align: center; width: 100%; max-width: 380px; animation: la1FadeIn 0.3s ease;
+}
+.la1-title { font-size: 1.15rem; font-weight: 800; color: #e65100; margin-bottom: 8px; }
+.la1-hint { font-size: 0.85rem; color: #888; margin-bottom: 10px; font-style: italic; }
+.la1-question { font-size: 1.15rem; font-weight: 900; color: #333; margin-bottom: 10px; }
+
+.la1-combine-area {
+  display: flex; align-items: center; justify-content: center; gap: 12px; margin: 14px 0;
+}
+.la1-group { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
+.la1-combine-item {
+  width: 52px; height: 52px; border-radius: 14px; background: white;
+  border: 2px solid #e0e0e0; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.3s; animation: la1PopIn 0.3s ease both;
+}
+.la1-combine-item:hover { transform: scale(1.05); border-color: #ff8a65; }
+.la1-combine-item:active { transform: scale(0.9); }
+.la1-combine-item.la1-combined {
+  opacity: 0.3; transform: scale(0.7); pointer-events: none; border-color: #aaa;
+}
+.la1-plate {
+  width: 80px; height: 80px; border-radius: 50%; background: #fff8e1;
+  border: 3px solid #ffb74d; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(255,152,0,0.2);
+}
+
+.la1-equation { font-size: 1rem; font-weight: 800; margin: 10px 0; transition: opacity 0.5s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.la1-equation-big { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 14px 0; }
+.la1-op { font-size: 2rem; font-weight: 900; color: #e65100; }
+
+/* ── NUMBER BOND ── */
+.la1-bond-header, .la1-round-badge, .la1-score-badge { /* reuse from count1 */ }
+.la1-bond-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.la1-round-badge { font-size: 0.85rem; font-weight: 700; color: #666; background: rgba(0,0,0,0.05); border-radius: 12px; padding: 4px 10px; }
+.la1-score-badge { font-size: 0.95rem; font-weight: 800; color: #f59e0b; display: flex; align-items: center; gap: 4px; }
+.la1-bond-display { font-size: 1.1rem; margin: 12px 0; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.la1-bond-missing { display: inline-block; width: 48px; height: 48px; border: 3px dashed #e65100; border-radius: 12px; line-height: 48px; text-align: center; font-size: 1.5rem; font-weight: 900; color: #e65100; }
+.la1-bond-visual { display: flex; justify-content: center; gap: 3px; flex-wrap: wrap; margin-bottom: 12px; }
+.la1-dot-a { opacity: 1; }
+.la1-dot-b { opacity: 0.6; }
+
+/* ── OPTIONS ── */
+.la1-options { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.la1-opt {
+  padding: 10px 18px; border-radius: 14px; background: white;
+  border: 3px solid #e0e0e0; cursor: pointer; font-family: inherit;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.la1-opt:hover { border-color: #ff8a65; transform: scale(1.03); }
+.la1-opt:active { transform: scale(0.94); }
+.la1-opt-correct { border-color: #4caf50 !important; background: #e8f5e9 !important; animation: la1Pop 0.3s ease; }
+.la1-opt-wrong { border-color: #ef5350 !important; background: #ffebee !important; animation: la1Shake 0.4s ease; }
+
+/* ── DOTS HINT ── */
+.la1-dots-hint { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; }
+.la1-dots-group { display: flex; gap: 2px; flex-wrap: wrap; padding: 6px 10px; border-radius: 12px; }
+.la1-dots-a { background: rgba(255,138,101,0.15); }
+.la1-dots-b { background: rgba(66,165,245,0.15); }
+.la1-dots-plus { font-size: 1.2rem; font-weight: 900; color: #666; }
+
+/* ── FEEDBACK ── */
+.la1-feedback { min-height: 40px; margin-top: 8px; }
+.la1-fb-ok { color: #2e7d32; font-weight: 700; font-size: 1.05rem; animation: la1FadeIn 0.3s ease; }
+.la1-fb-wrong { color: #c62828; font-weight: 700; font-size: 1.05rem; animation: la1FadeIn 0.3s ease; }
+
+/* ── REWARD ── */
+.la1-reward { text-align: center; max-width: 340px; animation: la1FadeIn 0.4s ease; }
+.la1-reward-stars { margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; animation: la1Bounce 1.5s ease-in-out infinite; }
+.la1-star-dim { opacity: 0.3; filter: grayscale(1); }
+.la1-reward-title { font-size: 1.4rem; font-weight: 900; color: #e65100; margin-bottom: 8px; }
+.la1-reward-score { font-size: 1.05rem; color: #555; margin-bottom: 12px; }
+.la1-reward-concepts { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.la1-concept { padding: 8px 14px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; background: #fff3e0; color: #e65100; border: 2px solid #ffcc80; }
+.la1-reward-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ── Animations ── */
+@keyframes la1FadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes la1PopIn { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+@keyframes la1Pop { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+@keyframes la1Bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes la1Shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+
+@media (max-width: 380px) {
+  .la1-combine-item { width: 44px; height: 44px; }
+  .la1-plate { width: 64px; height: 64px; }
+}
+
+/* ── Word Problem (Dạng 3) ── */
+.la1-word-problem {
+  background: white; border-radius: 14px; padding: 14px 16px;
+  margin-bottom: 12px; font-size: 1rem; font-weight: 600; color: #333;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: left; line-height: 1.6;
+}
+.la1-opts-col { flex-direction: column; align-items: center; }
+.la1-opt-wide { width: 100%; max-width: 280px; text-align: center; font-size: 1.1rem; }

@@ -14,6 +14,17 @@
   <link rel="stylesheet" href="/learn/lesson-shapes.css">
   <link rel="stylesheet" href="/learn/lesson-animals.css">
   <link rel="stylesheet" href="/learn/lesson-count1.css">
+  <link rel="stylesheet" href="/learn/lesson-add1.css">
+  <link rel="stylesheet" href="/learn/lesson-sub1.css">
+  <link rel="stylesheet" href="/learn/lesson-compare1.css">
+  <link rel="stylesheet" href="/learn/lesson-order1.css">
+  <link rel="stylesheet" href="/learn/lesson-shapes1.css">
+  <link rel="stylesheet" href="/learn/lesson-clock2.css">
+  <link rel="stylesheet" href="/learn/lesson-units2.css">
+  <link rel="stylesheet" href="/learn/lesson-multiply2.css">
+  <link rel="stylesheet" href="/learn/lesson-carry2.css">
+  <link rel="stylesheet" href="/learn/lesson-shapes2.css">
+  <link rel="stylesheet" href="/learn/lesson-money2.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
   <style>
     .grade-icon { display:inline-block; width:20px; height:20px; background-image:url('/img/stickers-2-clean.png'); background-size:200px 223px; background-repeat:no-repeat; vertical-align:middle; }
@@ -56,7 +67,7 @@
     <!-- LESSON SCREEN -->
     <div id="lesson-screen" class="screen">
       <div class="lesson-header">
-        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
         <span id="lesson-title" class="lesson-title"></span>
         <span id="lesson-page" class="lesson-page">1/5</span>
       </div>
@@ -73,7 +84,7 @@
     <!-- CLOCK INTERACTIVE -->
     <div id="clock-play-screen" class="screen">
       <div class="lesson-header">
-        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
         <span class="lesson-title"> Kéo Kim Đồng Hồ</span>
         <span></span>
       </div>
@@ -100,7 +111,7 @@
     <!-- INTERACTIVE COUNTING LESSON (Grade 0) -->
     <div id="count0-interactive-screen" class="screen">
       <div class="lc-header">
-        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
         <div class="lc-progress-wrap"><div class="lc-progress-bar"></div></div>
         <span style="font-size:0.85rem;font-weight:700;color:#6b4fa0;"> Đếm 1-5</span>
       </div>
@@ -112,7 +123,7 @@
     <!-- INTERACTIVE COMPARE LESSON (Grade 0) -->
     <div id="compare0-interactive-screen" class="screen">
       <div class="lcp-header">
-        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
         <div class="lcp-progress-wrap"><div class="lcp-progress-bar"></div></div>
         <span style="font-size:0.85rem;font-weight:700;color:#2e7d32;">Nhiều - Ít</span>
       </div>
@@ -124,7 +135,7 @@
     <!-- INTERACTIVE SIZE LESSON (Grade 0) -->
     <div id="size0-interactive-screen" class="screen">
       <div class="lsz-header">
-        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
         <div class="lsz-progress-wrap"><div class="lsz-progress-bar"></div></div>
         <span style="font-size:0.85rem;font-weight:700;color:#e65100;">To - Nhỏ</span>
       </div>
@@ -136,7 +147,7 @@
     <!-- INTERACTIVE COLORS LESSON (Grade 0) -->
     <div id="colors0-interactive-screen" class="screen">
       <div class="lcl-header">
-        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
         <div class="lcl-progress-wrap"><div class="lcl-progress-bar"></div></div>
         <span style="font-size:0.85rem;font-weight:700;color:#ad1457;">Màu Sắc</span>
       </div>
@@ -148,7 +159,7 @@
     <!-- INTERACTIVE SHAPES LESSON (Grade 0) -->
     <div id="shapes0-interactive-screen" class="screen">
       <div class="lsh-header">
-        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
         <div class="lsh-progress-wrap"><div class="lsh-progress-bar"></div></div>
         <span style="font-size:0.85rem;font-weight:700;color:#1565c0;">Hình Dạng</span>
       </div>
@@ -160,7 +171,7 @@
     <!-- INTERACTIVE ANIMALS LESSON (Grade 0) -->
     <div id="animals0-interactive-screen" class="screen">
       <div class="lan-header">
-        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
         <div class="lan-progress-wrap"><div class="lan-progress-bar"></div></div>
         <span style="font-size:0.85rem;font-weight:700;color:#2e7d32;">Con Vật</span>
       </div>
@@ -172,12 +183,144 @@
     <!-- INTERACTIVE COUNT1 LESSON (Grade 1) -->
     <div id="count1-interactive-screen" class="screen">
       <div class="lc1-header">
-        <button class="btn-back-menu" onclick="showScreen('menu-screen')">← Quay lại</button>
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
         <div class="lc1-progress-wrap"><div class="lc1-progress-bar"></div></div>
         <span style="font-size:0.85rem;font-weight:700;color:#1565c0;">Đếm Đến 20</span>
       </div>
       <div class="lc1-body">
         <!-- Filled dynamically by lesson-count1.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE ADD1 LESSON (Grade 1) -->
+    <div id="add1-interactive-screen" class="screen">
+      <div class="la1-header">
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
+        <div class="la1-progress-wrap"><div class="la1-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#e65100;">Phép Cộng</span>
+      </div>
+      <div class="la1-body">
+        <!-- Filled dynamically by lesson-add1.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE SUB1 LESSON (Grade 1) -->
+    <div id="sub1-interactive-screen" class="screen">
+      <div class="ls1-header">
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
+        <div class="ls1-progress-wrap"><div class="ls1-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#c62828;">Phép Trừ</span>
+      </div>
+      <div class="ls1-body">
+        <!-- Filled dynamically by lesson-sub1.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE COMPARE1 LESSON (Grade 1) -->
+    <div id="compare1-interactive-screen" class="screen">
+      <div class="lcm1-header">
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
+        <div class="lcm1-progress-wrap"><div class="lcm1-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#2e7d32;">So Sánh Số</span>
+      </div>
+      <div class="lcm1-body">
+        <!-- Filled dynamically by lesson-compare1.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE ORDER1 LESSON (Grade 1) -->
+    <div id="order1-interactive-screen" class="screen">
+      <div class="lor1-header">
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
+        <div class="lor1-progress-wrap"><div class="lor1-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#f57f17;">Thứ Tự Số</span>
+      </div>
+      <div class="lor1-body">
+        <!-- Filled dynamically by lesson-order1.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE SHAPES1 LESSON (Grade 1) -->
+    <div id="shapes1-interactive-screen" class="screen">
+      <div class="lsh1-header">
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
+        <div class="lsh1-progress-wrap"><div class="lsh1-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#5c6bc0;">Hình Khối</span>
+      </div>
+      <div class="lsh1-body">
+        <!-- Filled dynamically by lesson-shapes1.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE CLOCK2 LESSON (Grade 2) -->
+    <div id="clock2-interactive-screen" class="screen">
+      <div class="lck2-header">
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
+        <div class="lck2-progress-wrap"><div class="lck2-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#2e7d32;">Đồng Hồ</span>
+      </div>
+      <div class="lck2-body">
+        <!-- Filled dynamically by lesson-clock2.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE UNITS2 LESSON (Grade 2) -->
+    <div id="units2-interactive-screen" class="screen">
+      <div class="lun2-header">
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
+        <div class="lun2-progress-wrap"><div class="lun2-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#e65100;">Đo Lường</span>
+      </div>
+      <div class="lun2-body">
+        <!-- Filled dynamically by lesson-units2.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE MULTIPLY2 LESSON (Grade 2) -->
+    <div id="multiply2-interactive-screen" class="screen">
+      <div class="lmu2-header">
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
+        <div class="lmu2-progress-wrap"><div class="lmu2-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#ad1457;">Bảng Nhân</span>
+      </div>
+      <div class="lmu2-body">
+        <!-- Filled dynamically by lesson-multiply2.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE CARRY2 LESSON (Grade 2) -->
+    <div id="carry2-interactive-screen" class="screen">
+      <div class="lca2-header">
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
+        <div class="lca2-progress-wrap"><div class="lca2-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#283593;">Cộng Có Nhớ</span>
+      </div>
+      <div class="lca2-body">
+        <!-- Filled dynamically by lesson-carry2.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE SHAPES2 LESSON (Grade 2) -->
+    <div id="shapes2-interactive-screen" class="screen">
+      <div class="lsg2-header">
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
+        <div class="lsg2-progress-wrap"><div class="lsg2-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#2e7d32;">Hình Học</span>
+      </div>
+      <div class="lsg2-body">
+        <!-- Filled dynamically by lesson-shapes2.js -->
+      </div>
+    </div>
+
+    <!-- INTERACTIVE MONEY2 LESSON (Grade 2) -->
+    <div id="money2-interactive-screen" class="screen">
+      <div class="lmo2-header">
+        <button class="btn-back-menu" onclick="confirmBack()">← Quay lại</button>
+        <div class="lmo2-progress-wrap"><div class="lmo2-progress-bar"></div></div>
+        <span style="font-size:0.85rem;font-weight:700;color:#f57f17;">Tiền Việt Nam</span>
+      </div>
+      <div class="lmo2-body">
+        <!-- Filled dynamically by lesson-money2.js -->
       </div>
     </div>
   </div>
@@ -210,6 +353,17 @@
   <script src="/learn/lesson-shapes.js"></script>
   <script src="/learn/lesson-animals.js"></script>
   <script src="/learn/lesson-count1.js"></script>
+  <script src="/learn/lesson-add1.js"></script>
+  <script src="/learn/lesson-sub1.js"></script>
+  <script src="/learn/lesson-compare1.js"></script>
+  <script src="/learn/lesson-order1.js"></script>
+  <script src="/learn/lesson-shapes1.js"></script>
+  <script src="/learn/lesson-clock2.js"></script>
+  <script src="/learn/lesson-units2.js"></script>
+  <script src="/learn/lesson-multiply2.js"></script>
+  <script src="/learn/lesson-carry2.js"></script>
+  <script src="/learn/lesson-shapes2.js"></script>
+  <script src="/learn/lesson-money2.js"></script>
   <script src="/number-sprites.js"></script>
   <script src="/sprite-icons.js"></script>
   <script src="/sounds.js"></script>

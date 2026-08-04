@@ -1,0 +1,127 @@
+/* === Interactive "Đo Lường" Lesson — Grade 2 === */
+#units2-interactive-screen {
+  flex-direction: column; height: 100%;
+  background: linear-gradient(180deg, #fff3e0 0%, #e8f5e9 100%);
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+#units2-interactive-screen .lun2-header {
+  display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
+}
+#units2-interactive-screen .lun2-header .btn-back-menu {
+  background: rgba(255,255,255,0.7); border: none; border-radius: 20px;
+  padding: 8px 14px; font-size: 0.85rem; font-weight: 700;
+  color: #e65100; cursor: pointer; font-family: inherit;
+}
+#units2-interactive-screen .lun2-progress-wrap {
+  flex: 1; margin: 0 14px; height: 8px; background: rgba(0,0,0,0.08);
+  border-radius: 4px; overflow: hidden;
+}
+#units2-interactive-screen .lun2-progress-bar {
+  height: 100%; background: linear-gradient(90deg, #ffb74d, #e65100);
+  border-radius: 4px; transition: width 0.4s ease; width: 25%;
+}
+#units2-interactive-screen .lun2-body {
+  flex: 1; overflow-y: auto; padding: 12px 16px 24px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* General */
+.lun2-section { text-align: center; width: 100%; max-width: 400px; animation: lun2FadeIn 0.3s ease; }
+.lun2-title { font-size: 1.1rem; font-weight: 800; color: #e65100; margin-bottom: 8px; }
+.lun2-hint { font-size: 0.82rem; color: #888; margin-bottom: 10px; font-style: italic; }
+.lun2-question { font-size: 1.05rem; font-weight: 900; color: #333; margin-bottom: 10px; }
+.lun2-unit { font-weight: 800; color: #e65100; }
+
+/* Tabs for explore */
+.lun2-tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 12px; }
+.lun2-tab { padding: 7px 14px; border-radius: 18px; border: 2px solid #e0e0e0; background: #fff;
+  font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+.lun2-tab.active { background: #e65100; color: #fff; border-color: #e65100; }
+
+/* Ruler */
+.lun2-ruler-wrap { position: relative; margin: 16px auto; overflow: hidden; border-radius: 8px; background: #fffde7; padding: 10px 0; }
+.lun2-ruler-svg { display: block; margin: 0 auto; }
+.lun2-ruler-object { position: absolute; left: 0; top: 4px; height: 28px; border-radius: 6px;
+  background: linear-gradient(90deg, #ffcc02, #ff9800); transition: width 0.3s; display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; color: #fff; cursor: ew-resize; touch-action: none; }
+.lun2-ruler-result { margin-top: 8px; font-size: 1rem; font-weight: 800; color: #e65100; min-height: 28px; }
+
+/* Scale */
+.lun2-scale-wrap { display: flex; flex-direction: column; align-items: center; margin: 12px 0; }
+.lun2-scale-svg { display: block; }
+.lun2-scale-items { display: flex; gap: 8px; justify-content: center; margin: 10px 0; flex-wrap: wrap; }
+.lun2-scale-item { padding: 8px 12px; border-radius: 12px; background: #fff; border: 2px solid #e0e0e0;
+  cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: all 0.2s; }
+.lun2-scale-item:hover { border-color: #ffb74d; transform: scale(1.03); }
+.lun2-scale-item.placed { border-color: #e65100; background: #fff3e0; pointer-events: none; opacity: 0.5; }
+.lun2-scale-result { font-size: 1rem; font-weight: 800; color: #e65100; min-height: 28px; margin-top: 8px; }
+
+/* Capacity */
+.lun2-capacity-wrap { display: flex; flex-direction: column; align-items: center; margin: 12px 0; }
+.lun2-tank { position: relative; width: 100px; height: 120px; border: 3px solid #1565c0; border-top: none;
+  border-radius: 0 0 12px 12px; overflow: hidden; background: #e3f2fd; }
+.lun2-tank-water { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(0deg, #1565c0, #42a5f5);
+  transition: height 0.4s ease; border-radius: 0 0 9px 9px; }
+.lun2-tank-label { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center;
+  font-size: 0.8rem; font-weight: 800; color: #fff; }
+.lun2-pour-btn { padding: 10px 20px; border-radius: 16px; background: #1565c0; color: #fff; border: none;
+  font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-top: 10px; font-family: inherit; transition: transform 0.2s; }
+.lun2-pour-btn:hover { transform: scale(1.04); }
+.lun2-pour-btn:disabled { opacity: 0.5; cursor: default; }
+.lun2-capacity-result { font-size: 1rem; font-weight: 800; color: #1565c0; min-height: 28px; margin-top: 8px; }
+
+/* Conversion step */
+.lun2-convert-visual { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+.lun2-block { width: 28px; height: 28px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700; color: #fff; background: #ffb74d; border: 2px solid #e65100; transition: all 0.3s; }
+.lun2-block.filled { background: #e65100; }
+.lun2-convert-eq { font-size: 1.1rem; font-weight: 900; color: #333; margin: 10px 0; }
+.lun2-compare-svg { display: block; margin: 10px auto; }
+
+/* Practice */
+.lun2-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.lun2-round-badge { font-size: 0.85rem; font-weight: 700; color: #666; background: rgba(0,0,0,0.05); border-radius: 12px; padding: 4px 10px; }
+.lun2-score-badge { font-size: 0.95rem; font-weight: 800; color: #e65100; display: flex; align-items: center; gap: 4px; }
+
+/* Options */
+.lun2-options { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.lun2-opt { padding: 10px 18px; border-radius: 14px; background: white; border: 3px solid #e0e0e0;
+  cursor: pointer; transition: transform 0.2s, border-color 0.2s; font-size: 0.9rem; font-weight: 700; font-family: inherit; }
+.lun2-opt:hover { border-color: #ffb74d; transform: scale(1.03); }
+.lun2-opt-correct { border-color: #4caf50 !important; background: #e8f5e9 !important; }
+.lun2-opt-wrong { border-color: #ef5350 !important; background: #ffebee !important; animation: lun2Shake 0.4s; }
+
+/* Input answer */
+.lun2-input-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 12px 0; }
+.lun2-input { width: 80px; padding: 10px; border-radius: 12px; border: 3px solid #e0e0e0; font-size: 1.1rem;
+  font-weight: 800; text-align: center; font-family: inherit; outline: none; transition: border-color 0.2s; }
+.lun2-input:focus { border-color: #e65100; }
+.lun2-input-unit { font-size: 1rem; font-weight: 800; color: #e65100; }
+.lun2-submit-btn { padding: 10px 22px; border-radius: 18px; background: #e65100; color: #fff; border: none;
+  font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: transform 0.2s; }
+.lun2-submit-btn:hover { transform: scale(1.04); }
+.lun2-submit-btn:disabled { opacity: 0.5; cursor: default; }
+
+/* Word problem */
+.lun2-word-problem { text-align: left; background: #fff; padding: 12px 16px; border-radius: 14px;
+  border-left: 4px solid #e65100; margin: 12px 0; font-size: 0.9rem; line-height: 1.6; }
+
+/* Feedback */
+.lun2-feedback { min-height: 36px; margin-top: 8px; }
+.lun2-fb-ok { color: #2e7d32; font-weight: 700; font-size: 1.05rem; animation: lun2FadeIn 0.3s ease; }
+.lun2-fb-wrong { color: #c62828; font-weight: 700; font-size: 1.05rem; animation: lun2FadeIn 0.3s ease; }
+
+/* Reward */
+.lun2-reward { text-align: center; max-width: 340px; animation: lun2FadeIn 0.4s ease; }
+.lun2-reward-stars { margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; animation: lun2Bounce 1.5s ease-in-out infinite; }
+.lun2-star-dim { opacity: 0.3; filter: grayscale(1); }
+.lun2-reward-title { font-size: 1.4rem; font-weight: 900; color: #e65100; margin-bottom: 8px; }
+.lun2-reward-score { font-size: 1.05rem; color: #555; margin-bottom: 12px; }
+.lun2-reward-concepts { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.lun2-concept { padding: 8px 14px; border-radius: 12px; font-size: 0.85rem; font-weight: 700;
+  background: #fff3e0; color: #e65100; border: 2px solid #ffcc80; }
+.lun2-reward-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+@keyframes lun2FadeIn { from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
+@keyframes lun2Shake { 0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-3px);}80%{transform:translateX(3px);} }
+@keyframes lun2Bounce { 0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);} }
